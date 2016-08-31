@@ -6,16 +6,114 @@
 	<version>1.0</version>
 	<name>Osmium</name>
 	<description>Abstraction layer for Sponge and Bukkit that allows for development on both platforms simultaneously.</description>
+	<url>https://github.com/kmecpp/Osmium</url>
+
+
+	<repositories>
+		<!-- Spigot -->
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
+
+		<!-- Sponge -->
+		<repository>
+			<id>sponge-maven-repo</id>
+			<name>Sponge maven repo</name>
+			<url>http://repo.spongepowered.org/maven</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<!-- Spigot API -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.10.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Sponge API -->
+		<dependency>
+			<groupId>org.spongepowered</groupId>
+			<artifactId>spongeapi</artifactId>
+			<version>4.2.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- JLIB -->
+		<dependency>
+			<groupId>com.kmecpp</groupId>
+			<artifactId>jlib</artifactId>
+			<version>LATEST</version>
+		</dependency>
+
+		<!-- JFlame -->
+		<dependency>
+			<groupId>com.kmecpp</groupId>
+			<artifactId>jflame</artifactId>
+			<version>LATEST</version>
+		</dependency>
+
+		<!-- Javassist -->
+		<dependency>
+			<groupId>javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.12.1.GA</version>
+		</dependency>
+	</dependencies>
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.3</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+					<proc>none</proc>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<archive>
+						<index>true</index>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+						<manifestEntries>
+							<Built-By>kmecpp</Built-By>
+							<URL>${project.url}</URL>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.4.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<finalName>${project.name}</finalName>
 				</configuration>
 			</plugin>
 		</plugins>
