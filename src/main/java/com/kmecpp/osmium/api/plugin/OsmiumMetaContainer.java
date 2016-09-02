@@ -1,6 +1,6 @@
 package com.kmecpp.osmium.api.plugin;
 
-public class OsmiumPluginDataContainer {
+public class OsmiumMetaContainer {
 
 	private String name;
 	private String version;
@@ -9,7 +9,7 @@ public class OsmiumPluginDataContainer {
 	private String[] authors;
 	private String[] dependencies;
 
-	public OsmiumPluginDataContainer(Class<?> source, String name, String version, String description, String url, String[] authors, String[] dependencies) {
+	public OsmiumMetaContainer(Class<?> source, String name, String version, String description, String url, String[] authors, String[] dependencies) {
 		this.name = name;
 		this.version = version;
 		this.description = description;

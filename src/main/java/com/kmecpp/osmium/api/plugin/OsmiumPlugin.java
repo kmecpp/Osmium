@@ -1,26 +1,48 @@
 package com.kmecpp.osmium.api.plugin;
 
-// @Plugin(id = "Id",
-// name = "Name",
-// version = "Version",
-// description = "Description",
-// authors = { "kmecpp" },
-// dependencies = { @Dependency(id = "Depend", optional = true) },
-// url = "Url")
+import com.kmecpp.jlib.Validate;
+
 public abstract class OsmiumPlugin {
 
 	public static final String NAME = "";
 
 	//Effectively final variables
 	private static OsmiumPlugin plugin;
+	private static OsmiumMeta meta;
 	private static Initializer initializer;
 
 	public OsmiumPlugin() {
 		plugin = this;
+		meta = this.getClass().getAnnotation(OsmiumMeta.class);
+		Validate.notNull(meta, "Osmium plugins must be annotated with @OsmiumMeta");
 	}
 
 	public static OsmiumPlugin getPlugin() {
 		return plugin;
+	}
+
+	public static final String getName() {
+		return meta.name();
+	}
+
+	public static final String getVersion() {
+		return meta.version();
+	}
+
+	public static final String getDescription() {
+		return meta.description();
+	}
+
+	public static final String getUrl() {
+		return meta.url();
+	}
+
+	public static final String[] getAuthors() {
+		return meta.authors();
+	}
+
+	public static final String[] getDependencies() {
+		return meta.dependencies();
 	}
 
 	public void preInit() {
@@ -39,9 +61,12 @@ public abstract class OsmiumPlugin {
 		OsmiumPlugin.initializer = initializer;
 	}
 
-	//INITIALIZATION
-	public abstract String getPluginName();
+	public static final Initializer getInitializer() {
+		return initializer;
+	}
 
-	public abstract ConfigurationSpec getConfigurationSpec();
+	//INITIALIZATION
+
+	//	public abstract ConfigurationSpec getConfigurationSpec();
 
 }

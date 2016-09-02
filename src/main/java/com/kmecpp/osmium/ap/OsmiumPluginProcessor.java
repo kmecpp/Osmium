@@ -12,10 +12,13 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
+import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import com.kmecpp.jflame.Json;
@@ -24,14 +27,14 @@ import com.kmecpp.jlib.object.Objects;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMeta;
-import com.kmecpp.osmium.api.plugin.OsmiumPluginDataContainer;
-import com.kmecpp.osmium.platform.bukkit.BukkitPlugin;
+import com.kmecpp.osmium.api.plugin.OsmiumMetaContainer;
 import com.kmecpp.osmium.platform.sponge.SpongePlugin;
 
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtNewConstructor;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
@@ -43,9 +46,10 @@ import javassist.bytecode.annotation.StringMemberValue;
 @SupportedAnnotationTypes({
 		"com.kmecpp.osmium.api.plugin.OsmiumMeta"
 })
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class OsmiumPluginProcessor extends AbstractProcessor {
 
-	private final HashMap<String, OsmiumPluginDataContainer> plugins = new HashMap<>();
+	private final HashMap<String, OsmiumMetaContainer> plugins = new HashMap<>();
 
 	//	private Path outputPath;
 
@@ -74,7 +78,6 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		}
 
 		for (Element e : elements) {
-			System.out.println("ITERATING THROUGH: " + e.getSimpleName());
 			if (e.getKind() != ElementKind.CLASS) {
 				error("Invalid element of type " + e.getKind() + " annotated with @" + OsmiumMeta.class.getSimpleName());
 				continue;
@@ -83,14 +86,14 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 			OsmiumMeta annotation = e.getAnnotation(OsmiumMeta.class);
 			String id = annotation.name().toLowerCase();
 			if (!plugins.containsKey(id)) {
-				plugins.put(id, new OsmiumPluginDataContainer(e.getClass(),
+				plugins.put(id, new OsmiumMetaContainer(e.getClass(),
 						annotation.name(),
 						annotation.version(),
 						annotation.description(),
 						annotation.url(),
 						annotation.authors(),
 						annotation.dependencies()));
-				System.out.println(Objects.toClassString(plugins.get(id)));
+				info("Generating plugin metafiles with annotation: " + Objects.toClassString(plugins.get(id)));
 			} else {
 				error("Plugin with id '" + id + "' already exists!");
 			}
@@ -109,8 +112,8 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 			return;
 		}
 
-		Entry<String, OsmiumPluginDataContainer> entry = plugins.entrySet().iterator().next();
-		OsmiumPluginDataContainer meta = entry.getValue();
+		Entry<String, OsmiumMetaContainer> entry = plugins.entrySet().iterator().next();
+		OsmiumMetaContainer meta = entry.getValue();
 
 		//GENERATE META FILES
 
@@ -166,10 +169,54 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 			ClassPool pool = ClassPool.getDefault();
 
 			//Bukkit
-			pool.insertClassPath(new ClassClassPath(BukkitPlugin.class));
-			CtClass ctClassBukkit = pool.makeClass(BukkitClass); //"com.kmecpp.osmium.platform.sponge.SpongePluginAnnotated"
+			//			ClassFile bukkitClass = new ClassFile(new DataInputStream(new Filein)
+			//			BufferedReader br = new BufferedReader(processingEnv.getFiler()
+			//					.createClassFile("com.kmecpp.osmium.platform.bukkit.BukkitPlugin")
+			//					.openReader(false));
+			//			System.out.println("BR: " + br.readLine());
 
-			ctClassBukkit.setSuperclass(pool.getCtClass(BukkitPlugin.class.getName()));
+			//			ClassFile file = new ClassFile(new DataInputStream(
+
+			//			pool.makeClass("org.bukkit.plugin.java.JavaPlugin");
+			//			pool.insertClassPath("org.bukkit.plugin.java.JavaPlugin");//new ClassClassPath(JavaPlugin.class));
+
+			//			System.out.println("CONTENT: " + processingEnv.getFiler()
+			//					.getResource(StandardLocation.CLASS_OUTPUT, "com.kmecpp.osmium.platform.bukkit", "BukkitPlugin.class")
+			//					.getCharContent(false));
+			//					.getResource(StandardLocation.CLASS_OUTPUT, "com.kmecpp.osmium.platform.bukkit", "BukkitPlugin")
+			//					.openInputStream()));
+			//			System.out.println("FILE :" + file);
+			//			pool.insertClassPath(new ClassClassPath(BukkitPlugin.class));
+
+			/**
+			 * 
+			 */
+			//			pool.makeClass("org.bukkit.plugin.java.JavaPlugin");
+			//			pool.insertClassPath(new ClassClassPath(BukkitPlugin.class));
+			//			CtClass ctClassBukkit = pool.makeClass(BukkitClass);
+			//
+			//			ctClassBukkit.setSuperclass(pool.get(BukkitPlugin.class.getName()));
+
+			//			System.out.println(Class.forName("com.kmecpp.osmium.platform.bukkit.BukkitPlugin", false, ClassLoader.getSystemClassLoader())
+			//					.getProtectionDomain()
+			//					.getCodeSource()
+			//					.getLocation()
+			//					.getPath());
+			//			System.out.println(processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "root").toUri().getPath());
+			//			byte[] file = CodeCompiler.getBytecode(BukkitClass, ""
+			//					+ "import com.kmecpp.osmium.platform.bukkit.BukkitPlugin;"
+			//					+ "public class " + BukkitClass + " extends BukkitPlugin {}");
+			//			System.out.println("CONTENT: " + new String(file));
+			//			System.out.println("CONTENT2: " + new String(file, StandardCharsets.UTF_8));
+			//			JavaFileObject bukkitClass = processingEnv.getFiler().createClassFile(BukkitClass);
+			//			bukkitClass.openWriter().write(new String(file));
+			/**
+			 * 
+			 */
+
+			CtClass ctClassBukkit = pool.makeClass(BukkitClass);
+			ctClassBukkit.setSuperclass(pool.makeClass("com.kmecpp.osmium.platform.bukkit.BukkitPlugin"));
+			ctClassBukkit.addConstructor(CtNewConstructor.make(null, null, CtNewConstructor.PASS_PARAMS, null, null, ctClassBukkit));
 			writeMainClass(ctClassBukkit);
 
 			//Sponge
@@ -226,7 +273,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 
 	}
 
-	public ArrayMemberValue getAuthors(OsmiumPluginDataContainer meta, ConstPool cpool) {
+	public ArrayMemberValue getAuthors(OsmiumMetaContainer meta, ConstPool cpool) {
 		ArrayMemberValue arrayMember = new ArrayMemberValue(cpool);
 		String[] authors = meta.getAuthors();
 		MemberValue[] elements = new MemberValue[authors.length];
@@ -237,7 +284,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		return arrayMember;
 	}
 
-	public ArrayMemberValue getDependencies(OsmiumPluginDataContainer meta, ConstPool cpool) {
+	public ArrayMemberValue getDependencies(OsmiumMetaContainer meta, ConstPool cpool) {
 		ArrayMemberValue arrayMember = new ArrayMemberValue(cpool);
 		String[] dependencies = meta.getDependencies();
 		MemberValue[] elements = new MemberValue[dependencies.length];
@@ -249,7 +296,8 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 	}
 
 	public void writeMainClass(CtClass ctClass) throws CannotCompileException, IOException {
-		ctClass.writeFile(new File(processingEnv.getFiler().createClassFile("root").toUri()).getParent());
+		FileObject file = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "root");
+		ctClass.writeFile(new File(file.toUri()).getParent());
 	}
 
 	public void writeRawFile(String file, String contents) {
