@@ -2,40 +2,35 @@ package com.kmecpp.osmium;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MarkerFactory;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
 
+import com.kmecpp.osmium.api.OsmiumPlugin;
 import com.kmecpp.osmium.api.command.OsmiumCommand;
 import com.kmecpp.osmium.api.event.OsmiumEvent;
 import com.kmecpp.osmium.api.event.OsmiumListener;
-import com.kmecpp.osmium.api.plugin.ConfigManager;
 
 public final class Osmium {
 
 	public static final String OSMIUM = "Osmium";
 
-	private static ConfigManager configManager;
-	private static Logger logger;
+	private static Logger logger = LoggerFactory.getLogger(OSMIUM);
 
 	private Osmium() {
 	}
 
-	public static ConfigManager getConfigManager() {
-		return configManager;
-	}
-
 	@Listener
 	public void onGameConstruction(GameConstructionEvent e) {
-		logger = LoggerFactory.getLogger(this.getClass().getName());
-		configManager = new ConfigManager(Sponge.getGame().getConfigManager().getPluginConfig(this));
-
-		//		initializer = getInitializer();
+		//		logger = LoggerFactory.getLogger(this.getClass().getName());
+		//		configManager = new ConfigManager(Sponge.getGame().getConfigManager().getPluginConfig(this));
 	}
 
 	//COMMANDS
 	public static final void registerCommand(OsmiumCommand command) {
+		Platform.execute(() -> {
+			Sponge.getCommandManager().register(OsmiumPlugin.getPlugin(), null, "erg");
+		}, null);
 		//		Sponge.getCommandManager().register(plugin, command.getSpec(), command.getAliases());
 	}
 
@@ -53,17 +48,24 @@ public final class Osmium {
 		return false;
 	}
 
-	//LOGGING
-	public static final Logger getLogger() {
-		return logger;
-	}
-
 	public static final void log(String message) {
 		logger.info(message);
 	}
 
-	public static final void logCore(String message) {
-		logger.info(MarkerFactory.getMarker(OSMIUM), message);
+	public static final void debug(String message) {
+		logger.debug(message);
+	}
+
+	public static final void info(String message) {
+		logger.info(message);
+	}
+
+	public static final void warn(String message) {
+		logger.warn(message);
+	}
+
+	public static final void error(String message) {
+		logger.error(message);
 	}
 
 	public static final Platform getPlatform() {

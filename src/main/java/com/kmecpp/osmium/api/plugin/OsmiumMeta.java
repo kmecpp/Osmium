@@ -11,7 +11,7 @@ public @interface OsmiumMeta {
 
 	String name();
 
-	String version() default "";
+	String version(); //Required by Bukkit
 
 	String description() default "";
 

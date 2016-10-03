@@ -1,5 +1,7 @@
 package com.kmecpp.osmium;
 
+import java.util.Optional;
+
 public class Reflection {
 
 	/**
@@ -16,6 +18,23 @@ public class Reflection {
 		} catch (ClassNotFoundException e) {
 		}
 		return false;
+	}
+
+	/**
+	 * Attempts to load a class from the fully qualified given class name into
+	 * an optional
+	 * 
+	 * @param className
+	 *            the fully qualified class name
+	 * @return the class
+	 */
+	public static Optional<Class<?>> loadClass(String className) {
+		try {
+			return Optional.of(Class.forName(className));
+		} catch (ClassNotFoundException e) {
+			return Optional.empty();
+		}
+
 	}
 
 }

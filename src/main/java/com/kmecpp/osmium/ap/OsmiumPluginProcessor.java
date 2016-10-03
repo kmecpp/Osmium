@@ -78,24 +78,27 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		}
 
 		for (Element e : elements) {
-			if (e.getKind() != ElementKind.CLASS) {
-				error("Invalid element of type " + e.getKind() + " annotated with @" + OsmiumMeta.class.getSimpleName());
-				continue;
-			}
-
-			OsmiumMeta annotation = e.getAnnotation(OsmiumMeta.class);
-			String id = annotation.name().toLowerCase();
-			if (!plugins.containsKey(id)) {
-				plugins.put(id, new OsmiumMetaContainer(e.getClass(),
-						annotation.name(),
-						annotation.version(),
-						annotation.description(),
-						annotation.url(),
-						annotation.authors(),
-						annotation.dependencies()));
-				info("Generating plugin metafiles with annotation: " + Objects.toClassString(plugins.get(id)));
-			} else {
-				error("Plugin with id '" + id + "' already exists!");
+			try {
+				if (e.getKind() != ElementKind.CLASS) {
+					error("Invalid element of type " + e.getKind() + " annotated with @" + OsmiumMeta.class.getSimpleName());
+					continue;
+				}
+				OsmiumMeta annotation = e.getAnnotation(OsmiumMeta.class);
+				String id = annotation.name().toLowerCase();
+				if (!plugins.containsKey(id)) {
+					plugins.put(id, new OsmiumMetaContainer(((TypeElement) e).getQualifiedName().toString(), //new OsmiumMetaContainer(Class.forName(((TypeElement) e).getQualifiedName().toString()).asSubclass(OsmiumPlugin.class),
+							annotation.name(),
+							annotation.version(),
+							annotation.description(),
+							annotation.url(),
+							annotation.authors(),
+							annotation.dependencies()));
+					info("Generating plugin metafiles for annotation: " + Objects.toClassString(plugins.get(id)));
+				} else {
+					error("Plugin with id '" + id + "' already exists!");
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
 
 		}
@@ -130,7 +133,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		writeRawFile(Platform.SPONGE.getMetaFile(), plugins.toFormattedString());
 
 		//Bukkit plugin.yml
-		StringBuilder sb = new StringBuilder()
+		StringBuilder pluginYml = new StringBuilder()
 				.append("name: " + meta.getName() + "\n")
 				.append("main: " + meta.getName() + "Bukkit" + "\n")
 				.append("version: " + meta.getVersion() + "\n")
@@ -138,7 +141,11 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 				.append("website: " + meta.getUrl() + "\n")
 				.append("authors: " + Arrays.toString(meta.getAuthors()) + "\n")
 				.append("dependencies: " + Arrays.toString(meta.getDependencies()) + "\n");
-		writeRawFile(Platform.BUKKIT.getMetaFile(), sb.toString());
+		writeRawFile(Platform.BUKKIT.getMetaFile(), pluginYml.toString());
+
+		StringBuilder osmiumYml = new StringBuilder()
+				.append("main: " + meta.getSourceClass());
+		writeRawFile("osmium.yml", osmiumYml.toString());
 
 		//GENERATE MAIN CLASSES
 		//		String SpongeClass = meta.getName() + Platform.SPONGE.getName();

@@ -1,6 +1,13 @@
 package com.kmecpp.osmium;
 
-import com.kmecpp.jlib.StringUtil;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.spongepowered.api.Sponge;
+
+import com.kmecpp.jlib.utils.StringUtil;
+import com.kmecpp.osmium.platform.bukkit.BukkitPlugin;
+import com.kmecpp.osmium.platform.sponge.SpongePlugin;
 
 public enum Platform {
 
@@ -11,7 +18,7 @@ public enum Platform {
 	private final String metaFile;
 	private final boolean active;
 
-	Platform(String className, String metaFile) {
+	private Platform(String className, String metaFile) {
 		this.className = className;
 		this.metaFile = metaFile;
 		this.active = Reflection.classExists(className); //If running in an IDE both Platforms are active
@@ -37,6 +44,16 @@ public enum Platform {
 		return getPlatform() != null;
 	}
 
+	public static Path getPluginFolder() {
+		if (SPONGE.isActive()) {
+			return Sponge.getGame().getConfigManager().getPluginConfig(SpongePlugin.getInstance()).getDirectory();
+		}
+		if (BUKKIT.isActive()) {
+			return Paths.get(BukkitPlugin.getInstance().getDataFolder().toURI());
+		}
+		return null;
+	}
+
 	public static Platform getPlatform() {
 		if (SPONGE.isActive()) {
 			return SPONGE; //Primary platform
@@ -44,6 +61,15 @@ public enum Platform {
 			return BUKKIT;
 		}
 		return null;
+	}
+
+	public static void execute(Runnable sponge, Runnable bukkit) {
+		if (SPONGE.isActive()) {
+			sponge.run();
+		}
+		if (BUKKIT.isActive()) {
+			bukkit.run();
+		}
 	}
 
 	public static void execute(PlatformSpecificExecutor executor) {

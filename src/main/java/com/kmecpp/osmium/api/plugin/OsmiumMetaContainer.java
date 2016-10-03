@@ -2,20 +2,28 @@ package com.kmecpp.osmium.api.plugin;
 
 public class OsmiumMetaContainer {
 
-	private String name;
-	private String version;
-	private String description;
-	private String url;
-	private String[] authors;
-	private String[] dependencies;
+	private final String sourceClass;
 
-	public OsmiumMetaContainer(Class<?> source, String name, String version, String description, String url, String[] authors, String[] dependencies) {
+	private final String name;
+	private final String version;
+	private final String description;
+	private final String url;
+	private final String[] authors;
+	private final String[] dependencies;
+
+	public OsmiumMetaContainer(String sourceClass, String name, String version, String description, String url, String[] authors, String[] dependencies) {
+		this.sourceClass = sourceClass;
+
 		this.name = name;
 		this.version = version;
 		this.description = description;
 		this.url = url;
 		this.authors = authors;
 		this.dependencies = dependencies;
+	}
+
+	public String getSourceClass() {
+		return sourceClass;
 	}
 
 	public String getName() {
