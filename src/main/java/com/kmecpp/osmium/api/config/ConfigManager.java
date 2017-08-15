@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.kmecpp.jlib.object.ObjectValue;
-import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.OsmiumPlugin;
+import com.kmecpp.osmium.api.platform.Platform;
 
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;

@@ -25,8 +25,8 @@ import com.kmecpp.jflame.Json;
 import com.kmecpp.jflame.value.JsonArray;
 import com.kmecpp.jlib.object.Objects;
 import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.Platform;
-import com.kmecpp.osmium.api.plugin.OsmiumMeta;
+import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.api.plugin.PluginProperties;
 import com.kmecpp.osmium.api.plugin.OsmiumMetaContainer;
 import com.kmecpp.osmium.platform.sponge.SpongePlugin;
 
@@ -72,7 +72,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 			return true;
 		}
 
-		Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(OsmiumMeta.class);
+		Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(PluginProperties.class);
 		if (elements.size() == 0) {
 			return false;
 		}
@@ -80,10 +80,10 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		for (Element e : elements) {
 			try {
 				if (e.getKind() != ElementKind.CLASS) {
-					error("Invalid element of type " + e.getKind() + " annotated with @" + OsmiumMeta.class.getSimpleName());
+					error("Invalid element of type " + e.getKind() + " annotated with @" + PluginProperties.class.getSimpleName());
 					continue;
 				}
-				OsmiumMeta annotation = e.getAnnotation(OsmiumMeta.class);
+				PluginProperties annotation = e.getAnnotation(PluginProperties.class);
 				String id = annotation.name().toLowerCase();
 				if (!plugins.containsKey(id)) {
 					plugins.put(id, new OsmiumMetaContainer(((TypeElement) e).getQualifiedName().toString(), //new OsmiumMetaContainer(Class.forName(((TypeElement) e).getQualifiedName().toString()).asSubclass(OsmiumPlugin.class),
@@ -107,9 +107,9 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 
 	private void finish() {
 		if (plugins.size() > 1) {
-			error("Multiple classes found with @" + OsmiumMeta.class.getSimpleName() + " annotation! Only one is permitted for Bukkit compatibility.");
+			error("Multiple classes found with @" + PluginProperties.class.getSimpleName() + " annotation! Only one is permitted for Bukkit compatibility.");
 		} else if (plugins.size() < 1) {
-			error("Failed to find an @" + OsmiumMeta.class.getSimpleName() + " annotated class!");
+			error("Failed to find an @" + PluginProperties.class.getSimpleName() + " annotated class!");
 		}
 		if (plugins.size() != 1) {
 			return;

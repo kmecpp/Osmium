@@ -1,4 +1,4 @@
-package com.kmecpp.osmium;
+package com.kmecpp.osmium.api.platform;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import org.spongepowered.api.Sponge;
 
 import com.kmecpp.jlib.utils.StringUtil;
+import com.kmecpp.osmium.Reflection;
 import com.kmecpp.osmium.platform.bukkit.BukkitPlugin;
 import com.kmecpp.osmium.platform.sponge.SpongePlugin;
 
@@ -82,6 +83,16 @@ public enum Platform {
 		if (!exists()) {
 			throw new Error("No platform is present!");
 		}
+	}
+
+	public static <T> T get(Retriever<T> sponge, Retriever<T> bukkit) {
+		if (SPONGE.isActive()) {
+			return sponge.get();
+		}
+		if (BUKKIT.isActive()) {
+			return bukkit.get();
+		}
+		return null;
 	}
 
 	public static interface PlatformSpecificExecutor {
