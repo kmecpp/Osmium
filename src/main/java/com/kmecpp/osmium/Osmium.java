@@ -1,6 +1,7 @@
 package com.kmecpp.osmium;
 
 import com.kmecpp.osmium.api.event.EventManager;
+import com.kmecpp.osmium.api.platform.Platform;
 
 public final class Osmium {
 

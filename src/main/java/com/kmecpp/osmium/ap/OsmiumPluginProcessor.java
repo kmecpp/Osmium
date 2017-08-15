@@ -26,8 +26,9 @@ import com.kmecpp.jflame.value.JsonObject;
 import com.kmecpp.jlib.object.Objects;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
-import com.kmecpp.osmium.api.plugin.Plugin;
+// github.com/kmecpp/Osmium
 import com.kmecpp.osmium.api.plugin.OsmiumMetaContainer;
+import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.platform.sponge.SpongePlugin;
 
 import javassist.CannotCompileException;
@@ -83,12 +84,13 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 							+ Plugin.class.getSimpleName());
 					continue;
 				}
+
 				Plugin annotation = e.getAnnotation(Plugin.class);
 				String id = annotation.name().toLowerCase();
 				if (!plugins.containsKey(id)) {
 					plugins.put(id, new OsmiumMetaContainer(((TypeElement) e).getQualifiedName().toString(), // new
-																												// OsmiumMetaContainer(Class.forName(((TypeElement)
-																												// e).getQualifiedName().toString()).asSubclass(OsmiumPlugin.class),
+							// OsmiumMetaContainer(Class.forName(((TypeElement)
+							// e).getQualifiedName().toString()).asSubclass(OsmiumPlugin.class),
 							annotation.name(), annotation.version(), annotation.description(), annotation.url(),
 							annotation.authors(), annotation.dependencies()));
 					info("Generating plugin metafiles for annotation: " + Objects.toClassString(plugins.get(id)));
@@ -108,6 +110,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 			error("Multiple classes found with @" + Plugin.class.getSimpleName()
 					+ " annotation! Only one is permitted for Bukkit compatibility.");
 		} else if (plugins.size() < 1) {
+
 			error("Failed to find an @" + Plugin.class.getSimpleName() + " annotated class!");
 		}
 		if (plugins.size() != 1) {
@@ -121,16 +124,21 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 
 		// Sponge mcmod.info
 		JsonArray plugins = new JsonArray();
-		plugins.add(new JsonObject().add("modid", entry.getKey()).add("name", meta.getName())
-				.add("version", meta.getVersion()).add("description", meta.getDescription()).add("url", meta.getUrl())
+		plugins.add(new JsonObject().add("modid", entry.getKey())
+				.add("name", meta.getName())
+				.add("version", meta.getVersion())
+				.add("description", meta.getDescription())
+				.add("url", meta.getUrl())
 				.add("authorList", JsonArray.from(meta.getAuthors()))
 				.add("dependencies", JsonArray.from(meta.getDependencies())));
 		writeRawFile(Platform.SPONGE.getMetaFile(), plugins.getFormatted());
 
 		// Bukkit plugin.yml
 		StringBuilder pluginYml = new StringBuilder().append("name: " + meta.getName() + "\n")
-				.append("main: " + meta.getName() + "Bukkit" + "\n").append("version: " + meta.getVersion() + "\n")
-				.append("description: " + meta.getDescription() + "\n").append("website: " + meta.getUrl() + "\n")
+				.append("main: " + meta.getName() + "Bukkit" + "\n")
+				.append("version: " + meta.getVersion() + "\n")
+				.append("description: " + meta.getDescription() + "\n")
+				.append("website: " + meta.getUrl() + "\n")
 				.append("authors: " + Arrays.toString(meta.getAuthors()) + "\n")
 				.append("dependencies: " + Arrays.toString(meta.getDependencies()) + "\n");
 		writeRawFile(Platform.BUKKIT.getMetaFile(), pluginYml.toString());

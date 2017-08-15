@@ -6,23 +6,27 @@ import org.slf4j.LoggerFactory;
 import com.kmecpp.jlib.Validate;
 import com.kmecpp.osmium.OsmiumData;
 
+/**
+ * The abstract superclass of all Osmium plugins.
+ */
 public abstract class OsmiumPlugin {
 
-	public static final String NAME = "";
+	private static final String LOG_MARKER = getName();
+	private static Class<? extends OsmiumPlugin> main = OsmiumData.getMainClass();
+	private static PluginProperties properties = main.getAnnotation(PluginProperties.class);
 
 	//Effectively final variables
 	private static OsmiumPlugin plugin;
-	private static Plugin meta;
 	private static Logger logger;
 
 	private static Initializer initializer;
 	private static Class<?> config;
 
 	public OsmiumPlugin() {
+		Validate.notNull(properties, "Osmium plugins must be annotated with @OsmiumMeta");
+
 		plugin = this;
-		meta = this.getClass().getAnnotation(Plugin.class);
-		logger = LoggerFactory.getLogger(OsmiumData.getMainClass().getName());
-		Validate.notNull(meta, "Osmium plugins must be annotated with @OsmiumMeta");
+		logger = LoggerFactory.getLogger(properties.name());
 	}
 
 	public static Class<?> getConfig() {
@@ -45,28 +49,29 @@ public abstract class OsmiumPlugin {
 		return plugin;
 	}
 
+	//Meta
 	public static final String getName() {
-		return meta.name();
+		return properties.name();
 	}
 
 	public static final String getVersion() {
-		return meta.version();
+		return properties.version();
 	}
 
 	public static final String getDescription() {
-		return meta.description();
+		return properties.description();
 	}
 
 	public static final String getUrl() {
-		return meta.url();
+		return properties.url();
 	}
 
 	public static final String[] getAuthors() {
-		return meta.authors();
+		return properties.authors();
 	}
 
 	public static final String[] getDependencies() {
-		return meta.dependencies();
+		return properties.dependencies();
 	}
 
 	public static final Initializer getInitializer() {
@@ -77,20 +82,21 @@ public abstract class OsmiumPlugin {
 		OsmiumPlugin.initializer = initializer;
 	}
 
+	//Logging
 	public static void debug(String message) {
-		logger.debug(message);
+		logger.debug(LOG_MARKER, message);
 	}
 
 	public static void info(String message) {
-		logger.info(message);
+		logger.info(LOG_MARKER, message);
 	}
 
 	public static void warn(String message) {
-		logger.warn(message);
+		logger.warn(LOG_MARKER, message);
 	}
 
 	public static void error(String message) {
-		logger.error(message);
+		logger.error(LOG_MARKER, message);
 	}
 
 	public static Logger logger() {
