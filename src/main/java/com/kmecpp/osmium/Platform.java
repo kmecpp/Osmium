@@ -36,47 +36,51 @@ public enum Platform {
 		return metaFile;
 	}
 
-	public boolean isActive() {
-		return active;
-	}
-
 	public static boolean exists() {
 		return getPlatform() != null;
 	}
 
+	public static boolean isBukkit() {
+		return BUKKIT.active;
+	}
+
+	public static boolean isSponge() {
+		return SPONGE.active;
+	}
+
 	public static Path getPluginFolder() {
-		if (SPONGE.isActive()) {
+		if (SPONGE.active) {
 			return Sponge.getGame().getConfigManager().getPluginConfig(SpongePlugin.getInstance()).getDirectory();
 		}
-		if (BUKKIT.isActive()) {
+		if (BUKKIT.active) {
 			return Paths.get(BukkitPlugin.getInstance().getDataFolder().toURI());
 		}
 		return null;
 	}
 
 	public static Platform getPlatform() {
-		if (SPONGE.isActive()) {
+		if (SPONGE.active) {
 			return SPONGE; //Primary platform
-		} else if (BUKKIT.isActive()) {
+		} else if (BUKKIT.active) {
 			return BUKKIT;
 		}
 		return null;
 	}
 
 	public static void execute(Runnable sponge, Runnable bukkit) {
-		if (SPONGE.isActive()) {
+		if (SPONGE.active) {
 			sponge.run();
 		}
-		if (BUKKIT.isActive()) {
+		if (BUKKIT.active) {
 			bukkit.run();
 		}
 	}
 
 	public static void execute(PlatformSpecificExecutor executor) {
-		if (SPONGE.isActive()) {
+		if (SPONGE.active) {
 			executor.sponge();
 		}
-		if (BUKKIT.isActive()) {
+		if (BUKKIT.active) {
 			executor.bukkit();
 		}
 		if (!exists()) {

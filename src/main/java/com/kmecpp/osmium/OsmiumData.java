@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import com.kmecpp.jlib.utils.IOUtil;
 import com.kmecpp.jlib.utils.StringUtil;
-import com.kmecpp.osmium.api.OsmiumPlugin;
+import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public final class OsmiumData {
 
@@ -26,6 +26,10 @@ public final class OsmiumData {
 		}
 	}
 
+	public static String getPluginPackage() {
+		return null; //TODO
+	}
+
 	public static OsmiumPlugin constructPlugin() {
 		try {
 			return getMainClass().newInstance();
@@ -43,7 +47,7 @@ public final class OsmiumData {
 			if (parts.length == 2) {
 				properties.setProperty(parts[0].trim(), parts[1].trim());
 			} else {
-				Osmium.error("Could not to parse osmium data yaml!");
+				OsmiumLogger.error("Could not to parse osmium data yaml!");
 			}
 		}
 	}

@@ -3,7 +3,7 @@ package com.kmecpp.osmium.platform.bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.kmecpp.osmium.OsmiumData;
-import com.kmecpp.osmium.api.OsmiumPlugin;
+import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public class BukkitPlugin extends JavaPlugin {
 

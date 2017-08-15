@@ -1,12 +1,10 @@
-package com.kmecpp.osmium.api;
+package com.kmecpp.osmium.api.plugin;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kmecpp.jlib.Validate;
 import com.kmecpp.osmium.OsmiumData;
-import com.kmecpp.osmium.api.plugin.Initializer;
-import com.kmecpp.osmium.api.plugin.OsmiumMeta;
 
 public abstract class OsmiumPlugin {
 
@@ -14,7 +12,7 @@ public abstract class OsmiumPlugin {
 
 	//Effectively final variables
 	private static OsmiumPlugin plugin;
-	private static OsmiumMeta meta;
+	private static Plugin meta;
 	private static Logger logger;
 
 	private static Initializer initializer;
@@ -22,7 +20,7 @@ public abstract class OsmiumPlugin {
 
 	public OsmiumPlugin() {
 		plugin = this;
-		meta = this.getClass().getAnnotation(OsmiumMeta.class);
+		meta = this.getClass().getAnnotation(Plugin.class);
 		logger = LoggerFactory.getLogger(OsmiumData.getMainClass().getName());
 		Validate.notNull(meta, "Osmium plugins must be annotated with @OsmiumMeta");
 	}

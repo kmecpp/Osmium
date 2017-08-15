@@ -7,9 +7,9 @@ import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
 import com.kmecpp.osmium.OsmiumData;
-import com.kmecpp.osmium.api.OsmiumPlugin;
+import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-// @Plugin added by osmium annotation processor
+// @Plugin added by Osmium annotation processor
 public abstract class SpongePlugin {
 
 	private static final OsmiumPlugin PLUGIN = OsmiumData.constructPlugin();
