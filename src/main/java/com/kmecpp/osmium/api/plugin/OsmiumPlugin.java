@@ -1,9 +1,17 @@
 package com.kmecpp.osmium.api.plugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.jar.JarFile;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kmecpp.jlib.Validate;
+import com.kmecpp.jlib.reflection.Reflection;
 import com.kmecpp.osmium.OsmiumData;
 
 /**
@@ -11,25 +19,50 @@ import com.kmecpp.osmium.OsmiumData;
  */
 public abstract class OsmiumPlugin {
 
-	private static final String LOG_MARKER = getName();
-	private static Class<? extends OsmiumPlugin> main = OsmiumData.getMainClass();
-	private static PluginProperties properties = main.getAnnotation(PluginProperties.class);
+	private Class<? extends OsmiumPlugin> main = OsmiumData.getMainClass();
+	private Plugin properties = main.getAnnotation(Plugin.class);
+	private HashMap<Class<?>, Object> listeners = new HashMap<>();
+
+	private final String LOG_MARKER = properties.name();
 
 	//Effectively final variables
-	private static OsmiumPlugin plugin;
-	private static Logger logger;
+	private OsmiumPlugin plugin;
+	private Logger logger;
 
-	private static Initializer initializer;
-	private static Class<?> config;
+	private Class<?> config;
+
+	private HashSet<Class<?>> pluginClasses = new HashSet<>();
 
 	public OsmiumPlugin() {
 		Validate.notNull(properties, "Osmium plugins must be annotated with @OsmiumMeta");
+
+		try {
+			pluginClasses = new HashSet<>(Reflection.getClasses(new JarFile(new File(main.getProtectionDomain().getCodeSource().getLocation().toURI())), main.getPackage().getName()));
+		} catch (IOException | URISyntaxException e) {
+			e.printStackTrace();
+		}
 
 		plugin = this;
 		logger = LoggerFactory.getLogger(properties.name());
 	}
 
-	public static Class<?> getConfig() {
+	public Class<? extends OsmiumPlugin> getMainClass() {
+		return main;
+	}
+
+	public HashSet<Class<?>> getPluginClasses() {
+		return pluginClasses;
+	}
+
+	public HashMap<Class<?>, Object> getListeners() {
+		return listeners;
+	}
+
+	public void enableEvents(Object listener) {
+
+	}
+
+	public Class<?> getConfig() {
 		return config;
 	}
 
@@ -45,65 +78,57 @@ public abstract class OsmiumPlugin {
 	public void postInit() {
 	}
 
-	public static OsmiumPlugin getPlugin() {
+	public OsmiumPlugin getPlugin() {
 		return plugin;
 	}
 
 	//Meta
-	public static final String getName() {
+	public final String getName() {
 		return properties.name();
 	}
 
-	public static final String getVersion() {
+	public final String getVersion() {
 		return properties.version();
 	}
 
-	public static final String getDescription() {
+	public final String getDescription() {
 		return properties.description();
 	}
 
-	public static final String getUrl() {
+	public final String getUrl() {
 		return properties.url();
 	}
 
-	public static final String[] getAuthors() {
+	public final String[] getAuthors() {
 		return properties.authors();
 	}
 
-	public static final String[] getDependencies() {
+	public final String[] getDependencies() {
 		return properties.dependencies();
 	}
 
-	public static final Initializer getInitializer() {
-		return initializer;
-	}
-
-	public final void setInitializer(Initializer initializer) {
-		OsmiumPlugin.initializer = initializer;
-	}
-
 	//Logging
-	public static void debug(String message) {
+	public void debug(String message) {
 		logger.debug(LOG_MARKER, message);
 	}
 
-	public static void info(String message) {
+	public void info(String message) {
 		logger.info(LOG_MARKER, message);
 	}
 
-	public static void warn(String message) {
+	public void warn(String message) {
 		logger.warn(LOG_MARKER, message);
 	}
 
-	public static void error(String message) {
+	public void error(String message) {
 		logger.error(LOG_MARKER, message);
 	}
 
-	public static Logger logger() {
+	public Logger logger() {
 		return logger;
 	}
 
-	public static void setLogger(Logger logger) {
-		OsmiumPlugin.logger = logger;
+	public void setLogger(Logger logger) {
+		this.logger = logger;
 	}
 }

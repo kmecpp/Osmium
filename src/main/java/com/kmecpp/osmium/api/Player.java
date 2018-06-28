@@ -1,6 +1,8 @@
 package com.kmecpp.osmium.api;
 
-public interface Player {
+public interface Player extends Abstraction {
+
+	String getName();
 
 	boolean respawn();
 

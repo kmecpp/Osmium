@@ -1,6 +1,6 @@
 package com.kmecpp.osmiumplugin;
 
-import com.kmecpp.osmium.api.command.CommandManager;
+import com.kmecpp.osmium.api.commandold.CommandManager;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
 

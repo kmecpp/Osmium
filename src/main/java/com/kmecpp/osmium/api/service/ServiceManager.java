@@ -3,7 +3,6 @@ package com.kmecpp.osmium.api.service;
 import java.util.HashSet;
 
 import com.kmecpp.jlib.reflection.Reflection;
-import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.OsmiumData;
 import com.kmecpp.osmium.OsmiumLogger;
 
@@ -38,7 +37,7 @@ public class ServiceManager {
 			}
 			try {
 				Service service = (Service) cls.newInstance();
-				Osmium.getEventManager().registerEvents(service);
+				//				Osmium.getEventManager().registerEvents(service);
 				services.add(service);
 				service.start();
 			} catch (Exception e) {
@@ -82,7 +81,7 @@ public class ServiceManager {
 	}
 
 	public static void stop(Service service) {
-		Osmium.getEventManager().unregister(service);
+		//		Osmium.getEventManager().unregister(service);
 	}
 
 }

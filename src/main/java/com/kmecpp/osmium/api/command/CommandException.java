@@ -1,31 +1,26 @@
 package com.kmecpp.osmium.api.command;
 
+@SuppressWarnings("serial")
 public class CommandException extends RuntimeException {
 
-	private static final long serialVersionUID = 4700707760543287464L;
+	private CommandResult result;
+	private String message;
 
-	public static final CommandException USAGE_ERROR = new CommandException();
-	public static final CommandException PLAYERS_ONLY = new CommandException();
-	public static final CommandException UNKNOWN_COMMAND = new CommandException();
-	public static final CommandException LACKS_PERMISSION = new CommandException();
-
-	private final String message;
-
-	public CommandException() {
-		this(null);
+	public CommandException(CommandResult result) {
+		this(result, "");
 	}
 
-	public CommandException(String message) {
+	public CommandException(CommandResult result, String message) {
+		this.result = result;
 		this.message = message;
+	}
+
+	public CommandResult getResult() {
+		return result;
 	}
 
 	@Override
 	public String getMessage() {
-		return message;
-	}
-
-	@Override
-	public String getLocalizedMessage() {
 		return message;
 	}
 

@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.command;
+package com.kmecpp.osmium.api.commandold;
 
 import org.spongepowered.api.command.CommandResult;
 

@@ -43,7 +43,7 @@ public final class OsmiumData {
 
 		String data = readData();
 		for (String line : StringUtil.getLines(data)) {
-			System.out.println("LINE: " + line);
+			//			System.out.println("LINE: " + line);
 			String[] parts = line.split(":");
 			if (parts.length == 2) {
 				properties.setProperty(parts[0].trim(), parts[1].trim());

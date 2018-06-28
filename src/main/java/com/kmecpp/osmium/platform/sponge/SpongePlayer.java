@@ -6,24 +6,30 @@ import com.kmecpp.osmium.api.Player;
 
 public class SpongePlayer implements Player {
 
-	private org.spongepowered.api.entity.living.player.Player spongePlayer;
+	private org.spongepowered.api.entity.living.player.Player player;
 
 	public SpongePlayer(org.spongepowered.api.entity.living.player.Player player) {
-		this.spongePlayer = player;
+		this.player = player;
 	}
 
-	public org.spongepowered.api.entity.living.player.Player getSpongePlayer() {
-		return spongePlayer;
+	@Override
+	public org.spongepowered.api.entity.living.player.Player getSource() {
+		return player;
+	}
+
+	@Override
+	public String getName() {
+		return player.getName();
 	}
 
 	@Override
 	public void sendMessage(String message) {
-		spongePlayer.sendMessage(Text.of(message));
+		player.sendMessage(Text.of(message));
 	}
 
 	@Override
 	public boolean respawn() {
-		return spongePlayer.respawnPlayer();
+		return player.respawnPlayer();
 	}
 
 }

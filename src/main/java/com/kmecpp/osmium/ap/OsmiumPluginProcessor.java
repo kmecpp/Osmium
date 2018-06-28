@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -17,7 +18,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
@@ -26,7 +26,6 @@ import com.kmecpp.jflame.value.JsonObject;
 import com.kmecpp.jlib.object.Objects;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
-// github.com/kmecpp/Osmium
 import com.kmecpp.osmium.api.plugin.OsmiumMetaContainer;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.platform.sponge.SpongePlugin;
@@ -44,7 +43,7 @@ import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
-@SupportedAnnotationTypes({ "com.kmecpp.osmium.api.plugin.OsmiumMeta" })
+@SupportedAnnotationTypes({ "com.kmecpp.osmium.api.plugin.Plugin" })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class OsmiumPluginProcessor extends AbstractProcessor {
 
@@ -64,6 +63,12 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 	// }
 
 	@Override
+	public synchronized void init(ProcessingEnvironment processingEnv) {
+		super.init(processingEnv);
+		info("Generating platform specific files");
+	}
+
+	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		if (roundEnv.processingOver()) {
 			if (!roundEnv.errorRaised()) {
@@ -80,8 +85,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		for (Element e : elements) {
 			try {
 				if (e.getKind() != ElementKind.CLASS) {
-					error("Invalid element of type " + e.getKind() + " annotated with @"
-							+ Plugin.class.getSimpleName());
+					error("Invalid element of type " + e.getKind() + " annotated with @" + Plugin.class.getSimpleName());
 					continue;
 				}
 
@@ -93,7 +97,6 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 							// e).getQualifiedName().toString()).asSubclass(OsmiumPlugin.class),
 							annotation.name(), annotation.version(), annotation.description(), annotation.url(),
 							annotation.authors(), annotation.dependencies()));
-					info("Generating plugin metafiles for annotation: " + Objects.toClassString(plugins.get(id)));
 				} else {
 					error("Plugin with id '" + id + "' already exists!");
 				}
@@ -110,7 +113,6 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 			error("Multiple classes found with @" + Plugin.class.getSimpleName()
 					+ " annotation! Only one is permitted for Bukkit compatibility.");
 		} else if (plugins.size() < 1) {
-
 			error("Failed to find an @" + Plugin.class.getSimpleName() + " annotated class!");
 		}
 		if (plugins.size() != 1) {
@@ -121,6 +123,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		OsmiumMetaContainer meta = entry.getValue();
 
 		// GENERATE META FILES
+		info("Generating plugin metafiles for annotation: " + Objects.toClassString(meta));
 
 		// Sponge mcmod.info
 		JsonArray plugins = new JsonArray();
@@ -330,11 +333,13 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 	}
 
 	public void info(String message) {
-		getMessager().printMessage(Kind.NOTE, "[" + Osmium.OSMIUM + "] " + message);
+		System.out.println("[" + Osmium.OSMIUM.toUpperCase() + "] " + message);
+		//		getMessager().printMessage(Kind.NOTE, "[" + Osmium.OSMIUM + "] " + message);
 	}
 
 	public void error(String message) {
-		getMessager().printMessage(Kind.ERROR, "[" + Osmium.OSMIUM + "] " + message);
+		System.err.println("[" + Osmium.OSMIUM.toUpperCase() + "] " + message);
+		//		getMessager().printMessage(Kind.ERROR, "[" + Osmium.OSMIUM + "] " + message);
 	}
 
 	public Messager getMessager() {

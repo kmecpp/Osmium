@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api.event;
 
-public abstract class Event {
+import com.kmecpp.osmium.api.Abstraction;
 
+public interface Event extends Abstraction {
 }

@@ -33,21 +33,18 @@ public abstract class SpongePlugin {
 	}
 
 	@Listener
-	public void onGameInitialization(GamePreInitializationEvent e) {
+	public void onGamePreInitialization(GamePreInitializationEvent e) {
 		PLUGIN.preInit();
-		OsmiumPlugin.getInitializer().preInit();
 	}
 
 	@Listener
 	public void onGameInitialization(GameInitializationEvent e) {
 		PLUGIN.init();
-		OsmiumPlugin.getInitializer().preInit();
 	}
 
 	@Listener
-	public void onGameInitialization(GamePostInitializationEvent e) {
+	public void onGamePostInitialization(GamePostInitializationEvent e) {
 		PLUGIN.postInit();
-		OsmiumPlugin.getInitializer().postInit();
 	}
 
 }
