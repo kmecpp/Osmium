@@ -36,6 +36,89 @@ public void onPlayerJoin(PlayerJoinEvent e){
 
 ### Commands
 
+There are a few ways to create commands.
+
+The first way is the shortest and is useful when you only have a few very simple commands
+
+```
+Osmium.createCommand("spawn", "home")
+	.setDescription("Teleport to the spawn point of your current world")
+	.setPermission("myplugin.spawn");
+	.setPlayersOnly();
+	.onExecute((e) -> {
+		Player player = e.getPlayer();
+		player.teleport(player.getWorld().getSpawn());
+		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
+	})
+```
+
+Alternatively you can move the command into its own class. The same command would look like this
+
+```
+@Command(
+	aliases = { "spawn", "home"},
+	description = "Teleport to the spawn point of your current world",
+	permission = "myplugin.spawn",
+	playersOnly = true
+)
+public class EnjinNewsCommand extends OsmiumCommand {
+
+	@Override
+	public void execute(CommandEvent e) {
+		Player player = e.getPlayer();
+		player.teleport(player.getWorld().getSpawn());
+		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
+	}
+
+}
+```
+
+The last way to define a command is by using it as a parent for subcommands.
+
+Take the /spawn command from the previous examples. If we expand its functionality so we have a list of options
+
+Ex:
+- /spawn - Teleport to the current world's spawn
+- /spawn set - Sets the spawn point of the current world
+- /spawn delete - Sets the spawn point of the current world to (0,0,0)
+
+```
+@Command(
+	aliases = { "spawn", "home"},
+	description = "Teleport to the spawn point of your current world",
+	permission = "myplugin.spawn",
+	playersOnly = true
+)
+public class EnjinNewsCommand extends OsmiumCommand {
+
+	@Override
+	public void execute(CommandEvent e) {
+		Player player = e.getPlayer();
+		player.teleport(player.getWorld().getSpawn());
+		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
+	}
+	
+	@Command(aliases = "set", admin = true) //The subcommand is already playersOnly from its parent settings
+	public void onSet(CommandEvent e){
+		Player player = e.getPlayer();
+		player.getWorld().setSpawn(player.getLocation());
+		player.sendMessage(C.GREEN + "New spawn point set successfully!");
+	}
+	
+	@Command(aliases = "delete", admin = true)
+	public void onDelete(CommandEvent e){
+		Player player = e.getPlayer();
+		player.getWorld().setSpawn(new Location(0, 0, 0));
+		player.sendMessage(C.GREEN + "World spawn set to (0,0,0)");
+	}
+
+}
+```
+
+By default, if the executor is not overriden Osmium will display a list of the command arguments to the command sender.
+
+Also, if the command class contains subcommands, execute() will ONLY be called if the command is executed without parameters
+
 ### Configurations
 
 Creating a configuration file is as easy as defining a class with the settings that you need. 
@@ -62,3 +145,24 @@ Then, to access or modify the config, all you need to do is modify the fields of
 
 To reload or save the config, use Osmium.reloadConfig(Config.class) or Osmium.saveConfig(Config.class).
 
+
+### Platform Specific Code
+
+Osmium has many features in place to allow you to use platform specific code, for situations where corresponding functionality hasn't yet been implemented.
+
+For example:
+
+```
+Platform.isBukkit();
+Platform.isSponge();
+```
+
+or
+
+```
+Osmum.on(Platform.BUKKIT, () -> {
+	Bukkit.getBannedPlayers().forEach(System.out::println);
+});
+```
+
+To retrieve a value use Osmium.getValue(Callable bukkit, Callable sponge);

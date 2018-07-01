@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.command.CommandSender;
 
-public abstract class ComplexCommand extends Command {
+public abstract class ComplexCommand extends CommandBase {
 
 	private ArrayList<CommandArg> args = new ArrayList<>();
 	private ArrayList<CommandArg> publicArgs = new ArrayList<>();

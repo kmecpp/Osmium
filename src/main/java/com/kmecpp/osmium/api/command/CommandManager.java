@@ -12,7 +12,7 @@ import com.kmecpp.jlib.reflection.Reflection;
 
 public final class CommandManager {
 
-	private static ArrayList<Command> commands = new ArrayList<>();
+	private static ArrayList<CommandBase> commands = new ArrayList<>();
 	private static HashSet<String> overrides = new HashSet<>();
 
 	//	public static void registerCommand(String commandLabel, String[] aliases, Class<? extends Command> executor) {
@@ -29,7 +29,7 @@ public final class CommandManager {
 		String[] parts = commandStr.split(" ");
 		if (parts.length > 0) {
 			String label = parts[0];
-			for (Command command : commands) {
+			for (CommandBase command : commands) {
 				for (String alias : command.getAliases()) {
 					if (label.equalsIgnoreCase(alias)) {
 						command.execute(out, label, Arrays.copyOfRange(parts, 1, parts.length));
@@ -52,11 +52,11 @@ public final class CommandManager {
 	/**
 	 * Called to register the command directly into the main server command map
 	 */
-	public static final void register(Class<? extends Command> commandClass) {
+	public static final void register(Class<? extends CommandBase> commandClass) {
 		//Code for getting current version
 		//String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 		try {
-			Command command = commandClass.newInstance();
+			CommandBase command = commandClass.newInstance();
 			commands.add(command);
 
 			SimpleCommandMap commandMap = (SimpleCommandMap) Reflection.getFieldValue(Bukkit.getServer(), "commandMap");
@@ -75,7 +75,7 @@ public final class CommandManager {
 		}
 	}
 
-	public static ArrayList<Command> getCommands() {
+	public static ArrayList<CommandBase> getCommands() {
 		return commands;
 	}
 

@@ -1,10 +1,11 @@
 package com.kmecpp.osmium;
 
 import java.util.HashMap;
+import java.util.concurrent.Callable;
 
 import com.kmecpp.jlib.reflection.Reflection;
 import com.kmecpp.jlib.utils.IOUtil;
-import com.kmecpp.osmium.api.event.EventManager;
+import com.kmecpp.osmium.api.config.ConfigManager;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.tasks.Scheduler;
@@ -15,7 +16,7 @@ public final class Osmium {
 
 	private static final HashMap<Class<? extends OsmiumPlugin>, OsmiumPlugin> plugins = new HashMap<>();
 
-	private static final EventManager eventManager = new EventManager();
+	private static final ConfigManager configManager = new ConfigManager();
 	private static final Scheduler scheduler = new Scheduler();
 
 	/*
@@ -35,20 +36,33 @@ public final class Osmium {
 		return scheduler;
 	}
 
-	public static EventManager getEventManager() {
-		return eventManager;
-	}
-
 	public static final Platform getPlatform() {
 		return Platform.getPlatform();
 	}
 
 	public static void reloadConfig(Class<?> cls) {
-		
+		configManager.loadConfig(cls);
 	}
 
 	public static void saveConfig(Class<?> cls) {
+		configManager.saveConfig(cls);
+	}
 
+	public static void registerCommand() {
+	}
+
+	public static void on(Platform platform, Runnable runnable) {
+		if (Platform.getPlatform() == platform) {
+			runnable.run();
+		}
+	}
+
+	public static <T> T getValue(Callable<T> bukkit, Callable<T> sponge) {
+		try {
+			return Platform.isBukkit() ? bukkit.call() : Platform.isSponge() ? sponge.call() : null;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static OsmiumPlugin loadPlugin(Object pluginImpl) {

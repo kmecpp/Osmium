@@ -6,25 +6,28 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.inject.Singleton;
+
 import com.kmecpp.osmium.OsmiumLogger;
 
-import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
+@Singleton
 public class ConfigManager {
 
-	public static void loadConfig(Class<?> configClass) {
+	public void loadConfig(Class<?> configClass) {
 		update(configClass, true);
 	}
 
-	public static void saveConfig(Class<?> configClass) {
+	public void saveConfig(Class<?> configClass) {
 		update(configClass, false);
 	}
 
-	public static void update(Class<?> configClass, boolean loadOnly) {
+	public void update(Class<?> configClass, boolean loadOnly) {
 		try {
+			boolean firstSave = false;
 			Configuration properties = getConfigProperties(configClass);
 
 			Path path = Paths.get(properties.path());
@@ -35,10 +38,14 @@ public class ConfigManager {
 				}
 				file.createNewFile();
 				loadOnly = false;
+				firstSave = true;
 			}
 
 			ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setPath(path).build();
-			ConfigurationNode root = loader.load();
+			CommentedConfigurationNode root = loader.load();
+			if (firstSave) {
+				root.setComment(properties.header());
+			}
 
 			for (Field field : configClass.getDeclaredFields()) {
 				Setting setting = field.getAnnotation(Setting.class);
@@ -50,23 +57,29 @@ public class ConfigManager {
 
 					String nodePath = setting.path().isEmpty() ? getDefaultPath(field) : setting.path();
 					field.setAccessible(true);
-					ConfigurationNode node = root.getNode(nodePath);
+					CommentedConfigurationNode node = root.getNode(nodePath);
 					if (loadOnly) {
 						if (!node.isVirtual()) {
 							field.set(null, node.getValue());
 						}
 					} else {
+						if (firstSave) {
+							node.setComment(setting.comment());
+						}
+
 						node.setValue(field.get(null));
-						loader.save(root);
 					}
 				}
+			}
+			if (!loadOnly) {
+				loader.save(root);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static Configuration getConfigProperties(Class<?> cls) {
+	public Configuration getConfigProperties(Class<?> cls) {
 		Configuration properties = cls.getAnnotation(Configuration.class);
 		if (properties == null) {
 			throw new IllegalArgumentException("Configuration classes must be annotated with @" + Configuration.class.getSimpleName());
@@ -83,7 +96,7 @@ public class ConfigManager {
 	//		return sb.toString();
 	//	}
 
-	private static String getDefaultPath(Field field) {
+	private String getDefaultPath(Field field) {
 		String name = field.getName();
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < name.length(); i++) {
