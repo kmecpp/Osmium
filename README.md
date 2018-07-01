@@ -37,3 +37,28 @@ public void onPlayerJoin(PlayerJoinEvent e){
 ### Commands
 
 ### Configurations
+
+Creating a configuration file is as easy as defining a class with the settings that you need. 
+
+```
+@Configuration(path = "plugin.conf")
+public class Config {
+
+	@Setting
+	public static boolean debug = false; //These are default values
+
+	@Setting
+	public static String apiKey;
+
+	@Setting
+	public static int radius;
+
+}
+```
+
+Thats it. There's no need to get involved with files or nodes or anything. Osmium will automatically detect a configuration from the annotation and update the fields accordingly.
+
+Then, to access or modify the config, all you need to do is modify the fields of the config class.
+
+To reload or save the config, use Osmium.reloadConfig(Config.class) or Osmium.saveConfig(Config.class).
+

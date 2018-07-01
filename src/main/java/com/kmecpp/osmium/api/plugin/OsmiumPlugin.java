@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,6 +52,18 @@ public abstract class OsmiumPlugin {
 		this.plugin = this;
 		this.logger = LoggerFactory.getLogger(properties.name());
 		//setupPlugin method is called immediately after construction via reflection
+
+		for (Field field : this.getClass().getDeclaredFields()) {
+			PluginInstance pluginInstance = field.getAnnotation(PluginInstance.class);
+			if (pluginInstance != null) {
+				if (pluginInstance.getClass() == this.getClass()) {
+					Reflection.setField(this, field, this);
+					break;
+				} else {
+					warn("Invalid field annotated with " + PluginInstance.class.getSimpleName() + ": " + field);
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unused")
@@ -132,6 +145,10 @@ public abstract class OsmiumPlugin {
 
 	public void enableEvents(Object listener) {
 		listeners.put(listener.getClass(), listener);
+	}
+
+	public void setDefaultConfig(Class<?> configClass) {
+		this.config = configClass;
 	}
 
 	public Class<?> getConfig() {

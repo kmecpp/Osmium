@@ -18,6 +18,16 @@ public final class Osmium {
 	private static final EventManager eventManager = new EventManager();
 	private static final Scheduler scheduler = new Scheduler();
 
+	/*
+	 * TODO:
+	 * - Configs
+	 * - Commands
+	 * - Schedulers
+	 * 
+	 * - More events
+	 * 
+	 */
+
 	private Osmium() {
 	}
 
@@ -31,6 +41,14 @@ public final class Osmium {
 
 	public static final Platform getPlatform() {
 		return Platform.getPlatform();
+	}
+
+	public static void reloadConfig(Class<?> cls) {
+		
+	}
+
+	public static void saveConfig(Class<?> cls) {
+
 	}
 
 	public static OsmiumPlugin loadPlugin(Object pluginImpl) {
