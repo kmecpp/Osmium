@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.platform.sponge;
+package com.kmecpp.osmium.api.plugin;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
@@ -6,45 +6,44 @@ import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
-import com.kmecpp.osmium.OsmiumData;
-import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.Osmium;
 
 // @Plugin added by Osmium annotation processor
 public abstract class SpongePlugin {
 
-	private static final OsmiumPlugin PLUGIN = OsmiumData.constructPlugin();
+	private final OsmiumPlugin plugin = Osmium.loadPlugin(this);
 
-	private static SpongePlugin instance;
+	private SpongePlugin spongeInstance;
 
 	public SpongePlugin() {
-		if (instance != null) {
+		if (spongeInstance != null) {
 			throw new RuntimeException("Plugin already constructed!");
 		}
-		SpongePlugin.instance = this;
+		this.spongeInstance = this;
 	}
 
-	public static SpongePlugin getInstance() {
-		return instance;
+	public SpongePlugin getSpongeInstance() {
+		return spongeInstance;
 	}
 
 	@Listener
 	public void onGameInitialization(GameConstructionEvent e) {
-		PLUGIN.onLoad();
+		plugin.onLoad();
 	}
 
 	@Listener
 	public void onGamePreInitialization(GamePreInitializationEvent e) {
-		PLUGIN.preInit();
+		plugin.preInit();
 	}
 
 	@Listener
 	public void onGameInitialization(GameInitializationEvent e) {
-		PLUGIN.init();
+		plugin.init();
 	}
 
 	@Listener
 	public void onGamePostInitialization(GamePostInitializationEvent e) {
-		PLUGIN.postInit();
+		plugin.postInit();
 	}
 
 }

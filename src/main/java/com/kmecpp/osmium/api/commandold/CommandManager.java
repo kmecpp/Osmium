@@ -3,8 +3,8 @@ package com.kmecpp.osmium.api.commandold;
 import java.util.ArrayList;
 
 import com.kmecpp.jlib.reflection.Reflection;
-import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.CommandSender;
+import com.kmecpp.osmium.api.platform.Platform;
 
 public class CommandManager {
 

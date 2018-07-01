@@ -2,8 +2,6 @@ package com.kmecpp.osmium.api.service;
 
 import java.util.HashSet;
 
-import com.kmecpp.jlib.reflection.Reflection;
-import com.kmecpp.osmium.OsmiumData;
 import com.kmecpp.osmium.OsmiumLogger;
 
 public class ServiceManager {
@@ -21,13 +19,12 @@ public class ServiceManager {
 		start(Service.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void initialize(Class<?> cls) {
-		for (Class<?> c : Reflection.getClasses(OsmiumData.getPluginPackage())) {
-			if (Reflection.isAssignable(c, Service.class)) {
-				classes.add((Class<? extends Service>) c);
-			}
-		}
+		//		for (Class<?> c : Reflection.getClasses(OsmiumProperties.getPluginPackage())) {
+		//			if (Reflection.isAssignable(c, Service.class)) {
+		//				classes.add((Class<? extends Service>) c);
+		//			}
+		//		}
 	}
 
 	public static void start(Class<? extends Service> serviceType) {

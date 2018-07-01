@@ -14,8 +14,8 @@ Join our Discord channel stay updated with the project or help out: https://disc
  * Platform independent
  * More concise command API and automatic registration of commands
  * More concise listener API and automatic registration of listeners
+ * Service API that allows hooking into common server events at any time
  * Super easy configuration handling
- * Service API which allows custom services
  * And much more...
  
 ## Examples

@@ -3,11 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kmecpp</groupId>
 	<artifactId>osmium</artifactId>
-	<version>1.0</version>
+	<version>1.0a</version>
 	<name>Osmium</name>
 	<description>Abstraction layer for Sponge and Bukkit that allows for development on both platforms simultaneously.</description>
 	<url>https://github.com/kmecpp/Osmium</url>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<repositories>
 		<!-- Spigot -->
@@ -118,6 +121,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.1.1</version>
+				<configuration>
+					<finalName>${project.name}</finalName>
+					<outputFile>${serverPath}/plugins/${project.name}-${project.version}.jar</outputFile>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -126,10 +133,8 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<finalName>${project.name}</finalName>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
 </project>

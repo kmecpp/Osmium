@@ -19,7 +19,10 @@ public class OsmiumMetaContainer {
 		this.description = description;
 		this.url = url;
 		this.authors = authors;
-		this.dependencies = dependencies;
+
+		this.dependencies = new String[dependencies.length + 1];
+		this.dependencies[0] = "Osmium";
+		System.arraycopy(dependencies, 0, this.dependencies, 1, dependencies.length);
 	}
 
 	public String getSourceClass() {
