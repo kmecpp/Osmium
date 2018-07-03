@@ -1,17 +1,9 @@
 package com.kmecpp.osmium.api.plugin;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.jar.JarFile;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +11,6 @@ import org.spongepowered.api.Sponge;
 
 import com.kmecpp.jlib.Validate;
 import com.kmecpp.jlib.reflection.Reflection;
-import com.kmecpp.osmium.OsmiumLogger;
-import com.kmecpp.osmium.api.event.Event;
-import com.kmecpp.osmium.api.event.Listener;
-import com.kmecpp.osmium.api.event.events.EventInfo;
 import com.kmecpp.osmium.api.platform.Platform;
 
 /**
@@ -33,7 +21,6 @@ public abstract class OsmiumPlugin {
 	//	private final Class<? extends OsmiumPlugin> main = OsmiumProperties.getMainClass();
 	//	private final OsmiumProperties osmiumProperties = new OsmiumProperties(this);
 	private final Plugin properties = this.getClass().getAnnotation(Plugin.class);
-	private final HashMap<Class<?>, Object> listeners = new HashMap<>();
 
 	private final String LOG_MARKER = properties.name();
 
@@ -44,7 +31,9 @@ public abstract class OsmiumPlugin {
 
 	private Class<?> config;
 
-	private HashSet<Class<?>> pluginClasses = new HashSet<>();
+	private ClassManager classManager;
+
+	//	private HashSet<Class<?>> pluginClasses = new HashSet<>();
 
 	public OsmiumPlugin() {
 		Validate.notNull(properties, "Osmium plugins must be annotated with @OsmiumMeta");
@@ -69,82 +58,19 @@ public abstract class OsmiumPlugin {
 	@SuppressWarnings("unused")
 	private void setupPlugin(Object pluginImpl) throws Exception {
 		this.pluginImpl = pluginImpl;
-
-		JarFile jarFile = new JarFile(new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()));
-		pluginClasses = Reflection.getClasses(pluginImpl.getClass().getClassLoader(), jarFile, this.getClass().getPackage().getName());
-	}
-
-	void registerEvents() {
-		for (Class<?> listener : plugin.getPluginClasses()) {
-			if (!Reflection.isConcrete(listener)) {
-				continue;
-			}
-
-			for (Method method : listener.getMethods()) {
-				Listener annotation = method.getAnnotation(Listener.class);
-				if (annotation != null) {
-					if (method.getParameterCount() != 1) {
-						plugin.error("Invalid listener method with signature: '" + method + "'");
-					} else if (!Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
-						plugin.error("Invalid listener method with signature: '" + method + "'");
-					} else {
-						Class<Event> eventClass = Reflection.cast(method.getParameterTypes()[0]);
-						EventInfo eventInfo = EventInfo.get(eventClass);
-
-						Object listenerInstance;
-						try {
-							boolean contains = plugin.getListeners().containsKey(listener);
-							listenerInstance = contains ? plugin.getListeners().get(listener) : listener.newInstance();
-							if (!contains) {
-								plugin.getListeners().put(listener, listenerInstance);
-							}
-						} catch (Exception e) {
-							OsmiumLogger.error("Cannot instantiate " + listener.getName() + "! Listener classes without a default constructor must be enabled with: plugin.enableEvents(listener)");
-							e.printStackTrace();
-							break;
-						}
-
-						if (Platform.isBukkit()) {
-							Class<? extends org.bukkit.event.Event> bukkitEventClass = eventInfo.getBukkitClass();
-							EventPriority priority = (EventPriority) annotation.order().getSource();
-							try {
-								Constructor<?> eventWrapper = eventInfo.getBukkitImplementation().getConstructor(bukkitEventClass);
-								Bukkit.getPluginManager().registerEvent(bukkitEventClass, (org.bukkit.event.Listener) asBukkitPlugin(), priority, (l, e) -> {
-									if (bukkitEventClass.isAssignableFrom(e.getClass())) {
-										try {
-											method.invoke(listenerInstance, eventWrapper.newInstance(e));
-										} catch (Exception ex) {
-											ex.printStackTrace();
-										}
-									}
-								}, asBukkitPlugin(), true);
-							} catch (Exception e) {
-								e.printStackTrace();
-								break;
-							}
-						} else if (Platform.isSponge()) {
-							//TODO
-						}
-					}
-				}
-			}
-		}
+		this.classManager = new ClassManager(this, pluginImpl.getClass());
 	}
 
 	//	public Class<? extends OsmiumPlugin> getMainClass() {
 	//		return this.getClass();
 	//	}
 
-	public HashSet<Class<?>> getPluginClasses() {
-		return pluginClasses;
-	}
+	//	public HashSet<Class<?>> getPluginClasses() {
+	//		return pluginClasses;
+	//	}
 
-	public HashMap<Class<?>, Object> getListeners() {
-		return listeners;
-	}
-
-	public void enableEvents(Object listener) {
-		listeners.put(listener.getClass(), listener);
+	public ClassManager getClassManager() {
+		return classManager;
 	}
 
 	public void setDefaultConfig(Class<?> configClass) {

@@ -9,6 +9,10 @@ public class SpongeBlock implements Block {
 
 	private org.spongepowered.api.world.Location<World> block;
 
+	public SpongeBlock(org.spongepowered.api.world.Location<World> block) {
+		this.block = block;
+	}
+
 	@Override
 	public org.spongepowered.api.world.Location<World> getSource() {
 		return block;

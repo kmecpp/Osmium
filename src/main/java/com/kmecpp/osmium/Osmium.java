@@ -1,5 +1,6 @@
 package com.kmecpp.osmium;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
@@ -48,9 +49,6 @@ public final class Osmium {
 		configManager.saveConfig(cls);
 	}
 
-	public static void registerCommand() {
-	}
-
 	public static void on(Platform platform, Runnable runnable) {
 		if (Platform.getPlatform() == platform) {
 			runnable.run();
@@ -67,37 +65,21 @@ public final class Osmium {
 
 	public static OsmiumPlugin loadPlugin(Object pluginImpl) {
 		try {
-			//			Bukkit.getPluginManager().loadPlugin(new File(pluginImpl.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()));
 			String[] lines = IOUtil.readLines(pluginImpl.getClass().getResource("/osmium.properties"));
-			String mainClassName = lines[0].split(":")[1].trim();
-			ClassLoader pluginClassLoader = pluginImpl.getClass().getClassLoader();
-
-			Class<? extends OsmiumPlugin> main = pluginClassLoader.loadClass(mainClassName).asSubclass(OsmiumPlugin.class);
-			//			Class<? extends OsmiumPlugin> main = URLClassLoader
-			//					.newInstance(new URL[] { pluginImpl.getClass().getProtectionDomain().getCodeSource().getLocation() }, Osmium.class.getClassLoader())
-			//					.loadClass(mainClassName)
-			//					.asSubclass(OsmiumPlugin.class);
-			//			Class<? extends OsmiumPlugin> main = Class.forName(mainClassName).asSubclass(OsmiumPlugin.class);
-
-			OsmiumPlugin plugin = main.newInstance();
-			Reflection.invokeMethod(OsmiumPlugin.class, plugin, "setupPlugin", pluginImpl);
-			//			Reflection.setField(OsmiumPlugin.class, plugin, "pluginImpl", pluginImpl);
-			plugins.put(main, plugin);
-
-			//			JarFile jar = new JarFile(new File(pluginImpl.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()));
-			//			Reflection.setField(OsmiumPlugin.class,
-			//					plugin,
-			//					"pluginClasses",
-			//					Reflection.getClasses(pluginClassLoader, jar, ""));
-
-			return plugin;
-		} catch (Exception e) {
 			try {
-				String name = IOUtil.readLines(pluginImpl.getClass().getResource("/osmium.properties"))[1].split(":")[1].trim();
-				throw new RuntimeException("Could not load Osmium plugin: " + name, e);
-			} catch (Exception ex) {
-				throw new RuntimeException("Invalid Osmium plugin: " + pluginImpl.getClass().getName(), e);
+				String mainClassName = lines[0].split(":")[1].trim();
+				ClassLoader pluginClassLoader = pluginImpl.getClass().getClassLoader();
+				Class<? extends OsmiumPlugin> main = pluginClassLoader.loadClass(mainClassName).asSubclass(OsmiumPlugin.class);
+
+				OsmiumPlugin plugin = main.newInstance();
+				Reflection.invokeMethod(OsmiumPlugin.class, plugin, "setupPlugin", pluginImpl);
+				plugins.put(main, plugin);
+				return plugin;
+			} catch (Exception e) {
+				throw new RuntimeException("Could not load Osmium plugin: " + lines[1].split(":")[1].trim(), e);
 			}
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to read osmium.properties from jar: " + pluginImpl.getClass().getName(), e);
 		}
 
 	}

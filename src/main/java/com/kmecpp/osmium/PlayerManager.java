@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.kmecpp.osmium.api.Player;
+import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.service.Service;
 

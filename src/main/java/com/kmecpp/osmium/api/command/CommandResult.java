@@ -1,25 +1,16 @@
 package com.kmecpp.osmium.api.command;
 
-public enum CommandResult {
+public class CommandResult {
 
-	SUCCESS(true),
-	ERROR(false),
-	USAGE_ERROR(false),
-	LACKS_PERMISSION(false),
-	UNKNOWN_COMMAND(false),
-	PLAYER_NOT_FOUND(false),
-	PLAYER_ONLY(false);
+	public static final CommandResult SUCCESS = new CommandResult();
+	public static final CommandResult ERROR = new CommandResult();
+	public static final CommandResult USAGE_ERROR = new CommandResult();
+	//	public static final CommandResult LACKS_PERMISSION = new CommandResult();
+	//	public static final CommandResult UNKNOWN_COMMAND = new CommandResult();
+	//	public static final CommandResult PLAYER_NOT_FOUND = new CommandResult();
+	//	public static final CommandResult PLAYERS_ONLY = new CommandResult();
 
-	private final boolean value;
 	private String message = null;
-
-	private CommandResult(boolean value) {
-		this.value = value;
-	}
-
-	public boolean boolValue() {
-		return this.value;
-	}
 
 	/**
 	 * Sets the global result message for this enum

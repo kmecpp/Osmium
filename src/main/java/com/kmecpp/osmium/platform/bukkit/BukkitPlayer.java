@@ -1,6 +1,6 @@
 package com.kmecpp.osmium.platform.bukkit;
 
-import com.kmecpp.osmium.api.Player;
+import com.kmecpp.osmium.api.entity.Player;
 
 public class BukkitPlayer implements Player {
 
@@ -32,6 +32,21 @@ public class BukkitPlayer implements Player {
 	@Override
 	public void sendMessage(String message) {
 		player.sendMessage(message);
+	}
+
+	@Override
+	public boolean isOp() {
+		return player.isOp();
+	}
+
+	@Override
+	public void setOp(boolean value) {
+		player.setOp(value);
+	}
+
+	@Override
+	public boolean hasPermission(String permission) {
+		return player.hasPermission(permission);
 	}
 
 }

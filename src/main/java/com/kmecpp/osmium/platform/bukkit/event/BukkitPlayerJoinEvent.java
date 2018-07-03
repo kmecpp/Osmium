@@ -1,6 +1,6 @@
 package com.kmecpp.osmium.platform.bukkit.event;
 
-import com.kmecpp.osmium.api.Player;
+import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
 import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
 

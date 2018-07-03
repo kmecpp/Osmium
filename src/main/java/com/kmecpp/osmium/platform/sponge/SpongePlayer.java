@@ -2,7 +2,7 @@ package com.kmecpp.osmium.platform.sponge;
 
 import org.spongepowered.api.text.Text;
 
-import com.kmecpp.osmium.api.Player;
+import com.kmecpp.osmium.api.entity.Player;
 
 public class SpongePlayer implements Player {
 
@@ -30,6 +30,23 @@ public class SpongePlayer implements Player {
 	@Override
 	public boolean respawn() {
 		return player.respawnPlayer();
+	}
+
+	@Override
+	public boolean isOp() {
+		return player.hasPermission("*");
+	}
+
+	@Override
+	public void setOp(boolean value) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean hasPermission(String permission) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
