@@ -30,7 +30,7 @@ public class BukkitPlayer implements Player {
 	}
 
 	@Override
-	public void sendMessage(String message) {
+	public void sendRawMessage(String message) {
 		player.sendMessage(message);
 	}
 

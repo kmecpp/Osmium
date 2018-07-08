@@ -37,7 +37,7 @@ public class BukkitBlockCommandSender implements BlockCommandSender {
 	}
 
 	@Override
-	public void sendMessage(String message) {
+	public void sendRawMessage(String message) {
 		sender.sendMessage(message);
 	}
 

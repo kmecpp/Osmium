@@ -39,7 +39,7 @@ public class GenericSpongeCommandSender implements CommandSender {
 	}
 
 	@Override
-	public void sendMessage(String message) {
+	public void sendRawMessage(String message) {
 		sender.sendMessage(Text.of(message));
 	}
 

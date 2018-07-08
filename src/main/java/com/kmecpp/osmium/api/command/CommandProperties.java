@@ -13,6 +13,15 @@ public class CommandProperties {
 		this.aliases = aliases;
 	}
 
+	public CommandProperties(Command command) {
+		this.aliases = command.aliases();
+		this.description = command.description();
+		this.permission = command.permission();
+		this.usage = command.usage();
+		this.admin = command.admin();
+		this.playersOnly = command.playersOnly();
+	}
+
 	public CommandProperties setDescription(String description) {
 		this.description = description;
 		return this;
@@ -36,6 +45,10 @@ public class CommandProperties {
 	public CommandProperties setPlayersOnly() {
 		this.playersOnly = true;
 		return this;
+	}
+
+	public String getPrimaryAlias() {
+		return aliases.length > 0 ? aliases[0] : null;
 	}
 
 	public String[] getAliases() {

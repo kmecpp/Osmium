@@ -14,17 +14,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.event.EventPriority;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.text.Text;
 
 import com.kmecpp.jlib.reflection.Reflection;
 import com.kmecpp.osmium.OsmiumLogger;
+import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
+import com.kmecpp.osmium.api.command.CommandProperties;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.command.OsmiumCommand;
 import com.kmecpp.osmium.api.event.Event;
@@ -50,36 +51,30 @@ public class ClassManager {
 	private final HashMap<Class<?>, Object> listeners = new HashMap<>();
 	private final HashMap<Class<?>, OsmiumCommand> commands = new HashMap<>();
 
-	protected ClassManager(OsmiumPlugin plugin, Class<?> mainClassImpl) {
+	protected ClassManager(OsmiumPlugin plugin, Class<?> mainClassImpl) throws Exception {
 		this.plugin = plugin;
 		this.mainClass = plugin.getClass();
 		this.mainClassImpl = mainClassImpl;
 
-		try {
-			ClassLoader classLoader = mainClassImpl.getClass().getClassLoader();
-			JarFile jarFile = new JarFile(new File(mainClass.getProtectionDomain().getCodeSource().getLocation().toURI()));
-			String packageName = mainClass.getPackage().getName();
+		ClassLoader classLoader = mainClassImpl.getClassLoader();
+		JarFile jarFile = new JarFile(new File(mainClass.getProtectionDomain().getCodeSource().getLocation().toURI()));
+		String packageName = mainClass.getPackage().getName();
 
-			Enumeration<JarEntry> entry = jarFile.entries();
-			while (entry.hasMoreElements()) {
-				String name = entry.nextElement().getName().replace("/", ".");
-				if (name.startsWith(packageName) && name.endsWith(".class")) {
-					try {
-						String className = name.substring(0, name.length() - 6);
-						if (classLoader == null) {
-							pluginClasses.add(Class.forName(className));
-						} else {
-							pluginClasses.add(classLoader.loadClass(className));
-						}
-					} catch (NoClassDefFoundError e) {
-						//Ignore unloaded classes
-					}
+		Enumeration<JarEntry> entry = jarFile.entries();
+		while (entry.hasMoreElements()) {
+			String name = entry.nextElement().getName().replace("/", ".");
+			if (name.startsWith(packageName) && name.endsWith(".class")) {
+				try {
+					String className = name.substring(0, name.length() - 6);
+					//					System.out.println("Loading class: " + className);
+					pluginClasses.add(classLoader.loadClass(className));
+				} catch (NoClassDefFoundError e) {
+					//Ignore unloaded classes
+					e.printStackTrace();
 				}
 			}
-			jarFile.close();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
+		jarFile.close();
 	}
 
 	//	public HashMap<Class<?>, Object> getListeners() {
@@ -93,11 +88,10 @@ public class ClassManager {
 	protected void initializeHooks() {
 		for (Class<?> cls : pluginClasses) {
 			if (!Reflection.isConcrete(cls)) {
-				return;
+				continue;
 			}
 
 			//COMMANDS
-
 			if (cls.isAnnotationPresent(Command.class)) {
 				if (!OsmiumCommand.class.isAssignableFrom(cls)) {
 					OsmiumLogger.warn("Class is annotated with @" + Command.class.getSimpleName() + " but does not extend " + OsmiumCommand.class.getSimpleName() + ": " + cls);
@@ -112,23 +106,23 @@ public class ClassManager {
 					continue;
 				}
 
-				Command properties = command.getProperties();
+				CommandProperties properties = command.getProperties();
 				commands.put(cls, command);
 
-				if (properties.aliases().length == 0) {
+				if (properties.getAliases().length == 0) {
 					OsmiumLogger.warn("Command does not have any aliases and will not be registered: " + cls);
 					continue;
 				}
 
 				if (Platform.isBukkit()) {
 					try {
-						String commandName = properties.aliases()[0];
-						String[] aliases = new String[properties.aliases().length - 1];
-						System.arraycopy(properties.aliases(), 1, aliases, 0, aliases.length);
+						String commandName = properties.getAliases()[0];
+						String[] aliases = new String[properties.getAliases().length - 1];
+						System.arraycopy(properties.getAliases(), 1, aliases, 0, aliases.length);
 
 						SimpleCommandMap commandMap = (SimpleCommandMap) Reflection.getFieldValue(Bukkit.getServer(), "commandMap");
 
-						commandMap.register(commandName, new BukkitCommand(commandName, "", "", Arrays.asList(aliases)) { //Usage message cannot be null or else stuff will break
+						commandMap.register(commandName, new BukkitCommand(commandName, properties.getDescription(), properties.getUsage(), Arrays.asList(aliases)) { //Usage message cannot be null or else stuff will break
 
 							@Override
 							public boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args) {
@@ -146,21 +140,24 @@ public class ClassManager {
 						e.printStackTrace();
 					}
 				} else if (Platform.isSponge()) {
-					//TODO
 					CommandSpec spec = CommandSpec.builder()
-							.description(Text.of(properties.description()))
-							.permission(properties.permission())
-							.executor((src, args) -> {
+							.description(SpongeAccess.getText(properties.getDescription()))
+							.permission(properties.getPermission())
+							.arguments(GenericArguments.remainingRawJoinedStrings(SpongeAccess.getText("args")))
+							.executor((src, context) -> {
 								CommandSender sender = src instanceof org.bukkit.entity.Player ? new SpongePlayer((org.spongepowered.api.entity.living.player.Player) src)
 										: src instanceof ConsoleSource ? new SpongeConsoleCommandSender((ConsoleSource) src)
 												: src instanceof CommandBlockSource ? new SpongeBlockCommandSender((CommandBlockSource) src)
 														: new GenericSpongeCommandSender(src);
 
-								//								CommandManager.invokeCommand(command, sender, commandLabel, args);
+								String[] args = context.<String> getOne("args").map((s) -> s.split(" ")).orElse(new String[0]);
+								CommandManager.invokeCommand(command, sender, properties.getAliases()[0], args);
+
 								return CommandResult.success();
 							})
 							.build();
-					Sponge.getCommandManager().register(plugin.asSpongePlugin(), spec, properties.aliases());
+
+					SpongeAccess.registerCommand(plugin.asSpongePlugin(), spec, properties.getAliases());
 				}
 			}
 

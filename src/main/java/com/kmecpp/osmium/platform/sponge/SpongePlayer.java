@@ -23,7 +23,7 @@ public class SpongePlayer implements Player {
 	}
 
 	@Override
-	public void sendMessage(String message) {
+	public void sendRawMessage(String message) {
 		player.sendMessage(Text.of(message));
 	}
 
@@ -39,14 +39,12 @@ public class SpongePlayer implements Player {
 
 	@Override
 	public void setOp(boolean value) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("Sponge players do not have operator status");
 	}
 
 	@Override
 	public boolean hasPermission(String permission) {
-		// TODO Auto-generated method stub
-		return false;
+		return player.hasPermission(permission);
 	}
 
 }

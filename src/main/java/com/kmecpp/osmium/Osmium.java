@@ -2,14 +2,24 @@ package com.kmecpp.osmium;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.Callable;
+
+import org.bukkit.Bukkit;
+import org.spongepowered.api.Sponge;
 
 import com.kmecpp.jlib.reflection.Reflection;
 import com.kmecpp.jlib.utils.IOUtil;
+import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.config.ConfigManager;
+import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.tasks.Scheduler;
+import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
+import com.kmecpp.osmium.platform.bukkit.BukkitWorld;
+import com.kmecpp.osmium.platform.sponge.SpongePlayer;
+import com.kmecpp.osmium.platform.sponge.SpongeWorld;
 
 public final class Osmium {
 
@@ -82,6 +92,28 @@ public final class Osmium {
 			throw new RuntimeException("Failed to read osmium.properties from jar: " + pluginImpl.getClass().getName(), e);
 		}
 
+	}
+
+	public static Optional<Player> getPlayer(String name) {
+		if (Platform.isBukkit()) {
+			return Optional.ofNullable(new BukkitPlayer(Bukkit.getPlayer(name)));
+		} else if (Platform.isSponge()) {
+			Optional<org.spongepowered.api.entity.living.player.Player> optionalPlayer = Sponge.getServer().getPlayer(name);
+			return optionalPlayer.isPresent() ? Optional.of(new SpongePlayer(optionalPlayer.get())) : Optional.empty();
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	public static Optional<World> getWorld(String name) {
+		if (Platform.isBukkit()) {
+			return Optional.ofNullable(new BukkitWorld(Bukkit.getWorld(name)));
+		} else if (Platform.isSponge()) {
+			Optional<org.spongepowered.api.world.World> optionalWorld = Sponge.getServer().getWorld(name);
+			return optionalWorld.isPresent() ? Optional.of(new SpongeWorld(optionalWorld.get())) : Optional.empty();
+		} else {
+			return Optional.empty();
+		}
 	}
 
 }

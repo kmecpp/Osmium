@@ -36,7 +36,7 @@ public class BukkitConsoleCommandSender implements ConsoleCommandSender {
 	}
 
 	@Override
-	public void sendMessage(String message) {
+	public void sendRawMessage(String message) {
 		sender.sendMessage(message);
 	}
 

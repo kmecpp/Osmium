@@ -12,6 +12,15 @@ public class ChatUtil {
 
 	public static final char COLOR_CHAR = '\u00A7';
 
+	public static String style(String style, String message) {
+		StringBuilder sb = new StringBuilder();
+		for (char c : style.toCharArray()) {
+			Chat chat = Chat.fromCode(c);
+			sb.append(chat == null ? c : chat.toString());
+		}
+		return sb.append(message != null ? message : "").toString();
+	}
+
 	/**
 	 * Strips color codes from the given String
 	 * 

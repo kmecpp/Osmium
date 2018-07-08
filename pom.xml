@@ -59,6 +59,7 @@
 			<groupId>org.spongepowered</groupId>
 			<artifactId>spongevanilla</artifactId>
 			<version>1.12.2-7.1.0-BETA-75</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- JLIB -->
@@ -94,6 +95,17 @@
 			<groupId>org.spongepowered</groupId>
 			<artifactId>configurate-hocon</artifactId>
 			<version>3.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.23.1</version>
 		</dependency>
 	</dependencies>
 

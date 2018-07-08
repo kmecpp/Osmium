@@ -67,7 +67,7 @@ public abstract class CmdValidate {
 	 */
 	public static void argsLength(String[] args, int min, int max) throws CommandException {
 		if (args.length < min || args.length > max) {
-			throw new CommandException(CommandResult.USAGE_ERROR);
+			throw CommandException.USAGE_ERROR;
 		}
 	}
 

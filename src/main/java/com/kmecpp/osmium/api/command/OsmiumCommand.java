@@ -1,44 +1,59 @@
 package com.kmecpp.osmium.api.command;
 
+import java.util.ArrayList;
+
 public abstract class OsmiumCommand {
 
-	private Command properties;
+	private CommandProperties properties;
+	private ArrayList<CommandProperties> args = new ArrayList<>();
+
+	private String title = "&a&lCommand List";
 
 	public OsmiumCommand() {
-		this.properties = this.getClass().getAnnotation(Command.class);
-	}
-
-	public Command getProperties() {
-		return properties;
+		this.properties = new CommandProperties(this.getClass().getAnnotation(Command.class));
 	}
 
 	public void configure() {
+	}
 
-		//<$p_player>
+	public final void setTitle(String title) {
+		this.title = title;
 	}
 
 	public void execute(CommandEvent e) {
+		e.sendMessage("");
+		e.sendMessage(title);
+		e.sendMessage("&e&m----------------------------------------");
+		e.sendMessage("");
+		for (CommandProperties arg : args) {
+			//			e.sendMessage(Text.of("b", "/" + arg.getPrimaryAlias()).append("e", " - ").append("b", arg.getDescription()).toString());
+			e.sendMessage("&b/" + arg.getPrimaryAlias() + "&e - &b" + arg.getDescription());
+		}
 
 	}
 
-	public void enableCommmandList(String title) {
+	public final CommandProperties getProperties() {
+		return properties;
+	}
+
+	public final void enableCommmandList(String title) {
 
 	}
 
-	public CommandProperties add(String... aliases) {
+	public final CommandProperties add(String... aliases) {
 		return new CommandProperties(aliases);
 	}
 
-	public void setArg(String label, CommandExecutor executor) {
+	public final void setArg(String label, CommandExecutor executor) {
 		setArg(label, "", "", executor);
 	}
 
-	public void setArg(String label, String usage, String description, CommandExecutor executor) {
+	public final void setArg(String label, String usage, String description, CommandExecutor executor) {
 
 	}
 
-	public void usageError() {
-		throw new CommandException(CommandResult.USAGE_ERROR);
+	public final void usageError() {
+		throw CommandException.USAGE_ERROR;
 	}
 
 }

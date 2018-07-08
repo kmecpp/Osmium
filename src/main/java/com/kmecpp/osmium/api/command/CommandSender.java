@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api.command;
 
 import com.kmecpp.osmium.api.Abstraction;
 
-public interface CommandSender extends Abstraction {
+public interface CommandSender extends Abstraction, Messageable {
 
 	/**
 	 * Checks if this object is an operator
@@ -30,6 +30,8 @@ public interface CommandSender extends Abstraction {
 
 	String getName();
 
-	void sendMessage(String message);
+	//	default void sendMessage(String style, String message) {
+	//		sendMessage(ChatUtil.style(style, message));
+	//	}
 
 }

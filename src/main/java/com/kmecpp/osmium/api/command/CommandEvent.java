@@ -1,8 +1,9 @@
 package com.kmecpp.osmium.api.command;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.entity.Player;
 
-public class CommandEvent {
+public class CommandEvent implements Messageable {
 
 	private CommandSender sender;
 	private String command;
@@ -35,8 +36,7 @@ public class CommandEvent {
 	}
 
 	public Player getPlayer(int index) {
-		//TODO
-		return null;
+		return Osmium.getPlayer(args[index]).orElseThrow(() -> CommandException.PLAYER_NOT_FOUND);
 	}
 
 	public Player getPlayer() {
@@ -54,5 +54,14 @@ public class CommandEvent {
 	public String[] getArgs() {
 		return args;
 	}
+
+	@Override
+	public void sendRawMessage(String message) {
+		sender.sendMessage(message);
+	}
+
+	//	public void sendRawMessage(String style, String message) {
+	//		sender.sendMessage(style, message);
+	//	}
 
 }
