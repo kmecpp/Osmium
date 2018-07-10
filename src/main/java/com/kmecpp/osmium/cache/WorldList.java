@@ -12,7 +12,9 @@ public class WorldList {
 
 	public static void addWorld(World world) {
 		World result = worlds.put(world.getName().toLowerCase(), world);
-		OsmiumLogger.warn("Implementation does not support worlds with the same name: " + world.getName() + " and " + result.getName() + ". Things will probably now explode");
+		if (result != null) {
+			OsmiumLogger.warn("Implementation does not support worlds with the same name: " + world.getName() + " and " + result.getName() + ". Things will probably now explode");
+		}
 	}
 
 	public static void removeWorld(String name) {

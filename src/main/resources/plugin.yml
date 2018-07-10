@@ -1,5 +1,5 @@
 name: Osmium
-main: com.kmecpp.osmium.platform.bukkit.OsmiumMain
+main: com.kmecpp.osmium.platform.bukkit.OsmiumBukkitMain
 version: 1.0
 description: API for Bukkit and Sponge
 website: https://github.com/kmecpp/Osmium

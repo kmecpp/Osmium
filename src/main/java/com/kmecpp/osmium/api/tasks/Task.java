@@ -5,7 +5,7 @@ import org.bukkit.scheduler.BukkitTask;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-public abstract class Task {
+public abstract class Task<T extends Task<T>> {
 
 	protected final OsmiumPlugin plugin;
 
@@ -15,7 +15,7 @@ public abstract class Task {
 	protected boolean async;
 	protected long delay;
 	protected long interval;
-	protected TaskExecutor executor;
+	protected TaskExecutor<T> executor;
 
 	public Task(OsmiumPlugin plugin) {
 		this.plugin = plugin;
@@ -25,61 +25,79 @@ public abstract class Task {
 		return plugin;
 	}
 
-	public <T> T getPluginImplemenation() {
+	public <I> I getPluginImplemenation() {
 		return plugin.getPluginImplementation();
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getTaskImplementation() {
-		return (T) taskImpl;
+	public <I> I getTaskImplementation() {
+		return (I) taskImpl;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public Task setName(String name) {
+	public Task<T> setName(String name) {
 		this.name = name;
-		return this;
+		return getInstance();
 	}
 
 	public long getDelay() {
 		return delay;
 	}
 
-	public Task setDelay(long delay) {
+	public T setDelay(long delay) {
 		this.delay = delay;
-		return this;
+		return getInstance();
 	}
 
 	public long getInterval() {
 		return interval;
 	}
 
-	public Task setInterval(long interval) {
+	public T setInterval(long interval) {
 		this.interval = interval;
-		return this;
+		return getInstance();
+	}
+
+	public T setInterval(long interval, TimeUnit unit) {
+		switch (unit) {
+		case SECOND:
+			this.interval = interval * 20;
+			break;
+		case MINUTE:
+			this.interval = interval * 20 * 60;
+			break;
+		case HOUR:
+			this.interval = interval * 20 * 60 * 60;
+			break;
+		case DAY:
+			this.interval = interval * 20 * 60 * 60 * 24;
+			break;
+		}
+		return getInstance();
 	}
 
 	public boolean isAsync() {
 		return async;
 	}
 
-	public Task setAsync(boolean async) {
+	public Task<T> setAsync(boolean async) {
 		this.async = async;
 		return this;
 	}
 
-	public TaskExecutor getExecutor() {
+	public TaskExecutor<T> getExecutor() {
 		return executor;
 	}
 
-	public Task setExecutor(TaskExecutor executor) {
+	public Task<T> setExecutor(TaskExecutor<T> executor) {
 		this.executor = executor;
 		return this;
 	}
 
-	public abstract Task start();
+	public abstract Task<T> start();
 
 	public void cancel() {
 		if (Platform.isBukkit()) {
@@ -87,6 +105,11 @@ public abstract class Task {
 		} else if (Platform.isSponge()) {
 			this.<org.spongepowered.api.scheduler.Task> getTaskImplementation().cancel();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T getInstance() {
+		return (T) this;
 	}
 
 }

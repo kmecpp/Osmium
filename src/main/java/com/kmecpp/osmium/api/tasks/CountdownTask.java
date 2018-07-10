@@ -8,38 +8,34 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-public class CountdownTask extends OsmiumTask {
+public class CountdownTask extends Task<CountdownTask> {
 
-	private int count;
+	private final int count;
+
 	private int remaining;
 
-	private TaskExecutor tickHandler;
-
-	public CountdownTask(OsmiumPlugin plugin) {
+	public CountdownTask(OsmiumPlugin plugin, int count) {
 		super(plugin);
-	}
-
-	public int getTick() {
-		return count;
-	}
-
-	public void setCount(int count) {
 		this.count = count;
 	}
 
-	public TaskExecutor getTickHandler() {
-		return tickHandler;
+	public int getCount() {
+		return count;
 	}
 
-	public void setTickHandler(TaskExecutor tickHandler) {
-		this.tickHandler = tickHandler;
+	public int getRemaining() {
+		return remaining;
 	}
 
+	public boolean isLast() {
+		return remaining <= 0;
+	}
+
+	@Override
 	public CountdownTask start() {
 		this.remaining = count;
 		if (Platform.isBukkit()) {
 			this.taskImpl = Bukkit.getScheduler().runTaskTimerAsynchronously((JavaPlugin) plugin.getPluginImplementation(), getCountdown(this), delay, interval);
-
 		} else if (Platform.isSponge()) {
 			this.taskImpl = org.spongepowered.api.scheduler.Task.builder()
 					.async()
@@ -56,11 +52,9 @@ public class CountdownTask extends OsmiumTask {
 
 			@Override
 			public void run() {
-				if (task.tickHandler != null) {
-					task.tickHandler.execute(task);
-				}
-				if (--task.remaining <= 0) {
-					task.executor.execute(task);
+				task.remaining--;
+				task.executor.execute(task);
+				if (task.remaining <= 0) {
 					task.cancel();
 				}
 			}

@@ -8,12 +8,13 @@ import org.spongepowered.api.scheduler.Task.Builder;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-public class OsmiumTask extends Task {
+public class OsmiumTask extends Task<OsmiumTask> {
 
 	public OsmiumTask(OsmiumPlugin plugin) {
 		super(plugin);
 	}
 
+	@Override
 	public OsmiumTask start() {
 		if (Platform.isBukkit()) {
 			if (async) {

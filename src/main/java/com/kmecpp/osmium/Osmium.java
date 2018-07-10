@@ -8,7 +8,6 @@ import java.util.concurrent.Callable;
 
 import org.bukkit.Bukkit;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.text.Text;
 
 import com.kmecpp.jlib.reflection.Reflection;
 import com.kmecpp.jlib.utils.IOUtil;
@@ -49,16 +48,16 @@ public final class Osmium {
 		if (Platform.isBukkit()) {
 			Bukkit.broadcastMessage(Chat.style(message));
 		} else if (Platform.isSponge()) {
-			Sponge.getServer().getBroadcastChannel().send(Text.of(Chat.style(message)));
+			Sponge.getServer().getBroadcastChannel().send(SpongeAccess.getText(Chat.style(message)));
 		}
 	}
 
-	public static OsmiumTask execute(OsmiumPlugin plugin) {
+	public static OsmiumTask schedule(OsmiumPlugin plugin) {
 		return new OsmiumTask(plugin);
 	}
 
-	public static CountdownTask executeCountdown(OsmiumPlugin plugin) {
-		return new CountdownTask(plugin);
+	public static CountdownTask countdown(OsmiumPlugin plugin, int count) {
+		return new CountdownTask(plugin, count);
 	}
 
 	//	public static Task getScheduler() {
