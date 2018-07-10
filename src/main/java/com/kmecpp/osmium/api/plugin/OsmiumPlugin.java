@@ -105,6 +105,11 @@ public abstract class OsmiumPlugin {
 		return (BukkitPlugin) pluginImpl;
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> T getPluginImplementation() {
+		return (T) pluginImpl;
+	}
+
 	//Meta
 	public final String getName() {
 		return properties.name();

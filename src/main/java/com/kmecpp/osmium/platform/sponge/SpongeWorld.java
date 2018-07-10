@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import java.util.UUID;
+
 import com.kmecpp.osmium.api.World;
 
 public class SpongeWorld implements World {
@@ -13,6 +15,11 @@ public class SpongeWorld implements World {
 	@Override
 	public org.spongepowered.api.world.World getSource() {
 		return world;
+	}
+
+	@Override
+	public UUID getUniqueId() {
+		return world.getUniqueId();
 	}
 
 	@Override

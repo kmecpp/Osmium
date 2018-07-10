@@ -18,6 +18,26 @@ Join our Discord channel stay updated with the project or help out: https://disc
  * Super easy configuration handling
  * And much more...
  
+<hr>
+ 
+## Status
+
+### Implemented:
+
+* Configs
+* Commands
+* Listeners
+* Schedulers
+* Some events
+
+### TODO:
+* More events
+* More methods
+* Inventories
+* Everything else...
+ 
+<hr>
+
 ## Examples
 
 

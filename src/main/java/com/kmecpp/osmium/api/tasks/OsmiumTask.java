@@ -1,0 +1,40 @@
+package com.kmecpp.osmium.api.tasks;
+
+import java.util.concurrent.TimeUnit;
+
+import org.bukkit.Bukkit;
+import org.spongepowered.api.scheduler.Task.Builder;
+
+import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+
+public class OsmiumTask extends Task {
+
+	public OsmiumTask(OsmiumPlugin plugin) {
+		super(plugin);
+	}
+
+	public OsmiumTask start() {
+		if (Platform.isBukkit()) {
+			if (async) {
+				taskImpl = Bukkit.getScheduler().runTaskTimer(getPluginImplemenation(), () -> executor.execute(this), delay, interval == 0 ? -1 : interval);
+			} else {
+				taskImpl = Bukkit.getScheduler().runTaskTimerAsynchronously(getPluginImplemenation(), () -> executor.execute(this), delay, interval == 0 ? -1 : interval);
+			}
+
+		} else if (Platform.isSponge()) {
+			Builder builder = org.spongepowered.api.scheduler.Task.builder();
+			if (name != null) {
+				builder.name(name);
+			}
+			if (async) {
+				builder.async();
+			}
+			builder.delay(delay * 50, TimeUnit.MILLISECONDS);
+			builder.interval(interval * 50, TimeUnit.MILLISECONDS);
+			taskImpl = builder.submit(getPluginImplemenation());
+		}
+		return this;
+	}
+
+}

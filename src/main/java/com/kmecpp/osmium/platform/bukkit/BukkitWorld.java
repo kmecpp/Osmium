@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import java.util.UUID;
+
 import com.kmecpp.osmium.api.World;
 
 public class BukkitWorld implements World {
@@ -8,6 +10,11 @@ public class BukkitWorld implements World {
 
 	public BukkitWorld(org.bukkit.World world) {
 		this.world = world;
+	}
+
+	@Override
+	public UUID getUniqueId() {
+		return world.getUID();
 	}
 
 	@Override

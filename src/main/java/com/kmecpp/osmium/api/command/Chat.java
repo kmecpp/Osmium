@@ -2,8 +2,6 @@ package com.kmecpp.osmium.api.command;
 
 import java.util.HashMap;
 
-import org.bukkit.ChatColor;
-
 public enum Chat {
 
 	BLACK('0'),
@@ -74,26 +72,26 @@ public enum Chat {
 	public static void main(String[] args) {
 		long start = System.nanoTime();
 		for (int i = 0; i < 10000; i++) {
-			style("eewefwefwe&iiwechweiuciwecuwicahiuwecawecawceaeafwfSfwewefwefawefaefaewfawefdicksebshits");
+			style("eewefwefweiiwechweiuciwe$cuwicahiuwecawecawceaeafwfSfwewefwefawefaefaewfawefdicksebshits");
 		}
 		long end = System.nanoTime();
 		System.out.println("Time Taken: " + ((end - start) / 1000000F) + "ms");
 	}
 
 	public static String style(String message) {
-		if (!message.contains("&")) {
-			return message;
-		}
+		//		if (!message.contains("&")) {
+		//			return message;
+		//		}
 
-		StringBuilder sb = new StringBuilder();
+		boolean styled = false;
 		char[] chars = message.toCharArray();
 		for (int i = 0; i < chars.length - 1; i++) {
-			if (chars[i] == '&') {
-				Chat chat = Chat.fromCode(chars[i + 1]);
-				sb.append(chat != null ? chat : "&" + chars[i + 1]);
+			if (chars[i] == '&' && Chat.fromCode(chars[i + 1]) != null) {
+				chars[i] = '\u00A7';
+				styled = true;
 			}
 		}
-		return sb.toString();
+		return styled ? new String(chars) : message;
 	}
 
 	@Override
