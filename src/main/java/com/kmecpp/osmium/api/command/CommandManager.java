@@ -1,9 +1,5 @@
 package com.kmecpp.osmium.api.command;
 
-import java.util.ArrayList;
-
-import com.kmecpp.osmium.api.platform.Platform;
-
 public final class CommandManager {
 
 	public static boolean invokeCommand(OsmiumCommand command, CommandSender sender, String commandLabel, String[] args) {
@@ -15,62 +11,62 @@ public final class CommandManager {
 		}
 	}
 
-	private static ArrayList<Command> commands = new ArrayList<>();
-
-	public CommandManager register(Class<? extends OsmiumCommand> command) {
-		//		commands.add(Reflection.newInstance(command));
-
-		if (Platform.isBukkit()) {
-
-		} else if (Platform.isSponge()) {
-
-		}
-		return this;
-	}
-
-	public static CommandBuilder register(String... aliases) {
-		return new CommandBuilder(aliases);
-	}
-
-	public static class CommandBuilder {
-
-		private String[] aliases;
-		private String permission;
-		private String description;
-
-		public CommandBuilder(String[] aliases) {
-			this.aliases = aliases;
-		}
-
-		public CommandBuilder permission(String permission) {
-			this.permission = permission;
-			return this;
-		}
-
-		public CommandBuilder description(String description) {
-			this.description = description;
-			return this;
-		}
-
-		public void executor(CommandExecutor executor) {
-			//			commands.add(new OsmiumCommand() {
-			//
-			//				@Override
-			//				public void configure() {
-			//					setAliases(aliases);
-			//					setPermission(permission);
-			//					setDescription(description);
-			//				}
-			//
-			//				@Override
-			//				public void execute(CommandSender sender, String label, String[] args) {
-			//					executor.execute(sender, label, args);
-			//				}
-			//
-			//			});
-		}
-
-	}
+	//	private static ArrayList<Command> commands = new ArrayList<>();
+	//
+	//	public CommandManager register(Class<? extends OsmiumCommand> command) {
+	//		//		commands.add(Reflection.newInstance(command));
+	//
+	//		if (Platform.isBukkit()) {
+	//
+	//		} else if (Platform.isSponge()) {
+	//
+	//		}
+	//		return this;
+	//	}
+	//
+	//	public static CommandBuilder register(String... aliases) {
+	//		return new CommandBuilder(aliases);
+	//	}
+	//
+	//	public static class CommandBuilder {
+	//
+	//		private String[] aliases;
+	//		private String permission;
+	//		private String description;
+	//
+	//		public CommandBuilder(String[] aliases) {
+	//			this.aliases = aliases;
+	//		}
+	//
+	//		public CommandBuilder permission(String permission) {
+	//			this.permission = permission;
+	//			return this;
+	//		}
+	//
+	//		public CommandBuilder description(String description) {
+	//			this.description = description;
+	//			return this;
+	//		}
+	//
+	//		public void executor(CommandExecutor executor) {
+	//			//			commands.add(new OsmiumCommand() {
+	//			//
+	//			//				@Override
+	//			//				public void configure() {
+	//			//					setAliases(aliases);
+	//			//					setPermission(permission);
+	//			//					setDescription(description);
+	//			//				}
+	//			//
+	//			//				@Override
+	//			//				public void execute(CommandSender sender, String label, String[] args) {
+	//			//					executor.execute(sender, label, args);
+	//			//				}
+	//			//
+	//			//			});
+	//		}
+	//
+	//	}
 
 	//	private static ArrayList<CommandBase> commands = new ArrayList<>();
 	//	private static HashSet<String> overrides = new HashSet<>();

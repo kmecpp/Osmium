@@ -4,3 +4,6 @@ version: 1.0
 description: API for Bukkit and Sponge
 website: https://github.com/kmecpp/Osmium
 authors: [kmecpp]
+commands:
+  osmium:
+    description: Osmium base command

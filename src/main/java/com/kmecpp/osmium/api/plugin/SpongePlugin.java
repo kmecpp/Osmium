@@ -5,6 +5,7 @@ import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingEvent;
 
 import com.kmecpp.osmium.Osmium;
 
@@ -44,6 +45,11 @@ public abstract class SpongePlugin {
 	@Listener
 	public void onGamePostInitialization(GamePostInitializationEvent e) {
 		plugin.postInit();
+	}
+
+	@Listener
+	public void onGamePostInitialization(GameStoppingEvent e) {
+		plugin.onDisable();
 	}
 
 }

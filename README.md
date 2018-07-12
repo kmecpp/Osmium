@@ -34,6 +34,7 @@ Join our Discord channel stay updated with the project or help out: https://disc
 * More events
 * More methods
 * Inventories
+* Databases
 * Everything else...
  
 <hr>
@@ -92,6 +93,8 @@ public class EnjinNewsCommand extends OsmiumCommand {
 
 }
 ```
+
+This single `CommandEvent` parameter system combines the ease of Sponge's object parsing system with the simplicity of Bukkit's API. Instead of being required to define arbitrary key names, all the arguments can be accessed and parsed using their index.
 
 The last way to define a command is by using it as a parent for subcommands.
 
@@ -165,6 +168,9 @@ Then, to access or modify the config, all you need to do is modify the fields of
 
 To reload or save the config, use Osmium.reloadConfig(Config.class) or Osmium.saveConfig(Config.class).
 
+### Databases
+
+TODO
 
 ### Platform Specific Code
 

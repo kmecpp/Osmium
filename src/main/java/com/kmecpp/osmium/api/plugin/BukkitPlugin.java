@@ -50,4 +50,9 @@ public class BukkitPlugin extends JavaPlugin implements Listener {
 		plugin.postInit();
 	}
 
+	@Override
+	public void onDisable() {
+		plugin.onDisable();
+	}
+
 }

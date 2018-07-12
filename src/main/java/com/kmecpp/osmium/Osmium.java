@@ -1,6 +1,8 @@
 package com.kmecpp.osmium;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
@@ -14,9 +16,11 @@ import com.kmecpp.jlib.utils.IOUtil;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.config.ConfigManager;
+import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.plugin.PluginInstance;
 import com.kmecpp.osmium.api.tasks.CountdownTask;
 import com.kmecpp.osmium.api.tasks.OsmiumTask;
 import com.kmecpp.osmium.cache.PlayerList;
@@ -24,12 +28,15 @@ import com.kmecpp.osmium.cache.WorldList;
 
 public final class Osmium {
 
-	public static final String OSMIUM = "Osmium";
+	public static final String NAME = "Osmium";
+	public static final String VERSION = "1.0";
 
 	private static final HashMap<Class<? extends OsmiumPlugin>, OsmiumPlugin> plugins = new HashMap<>();
+	private static final HashMap<Class<? extends OsmiumPlugin>, Database> databases = new HashMap<>();
 
 	private static final ConfigManager configManager = new ConfigManager();
 	//	private static final Task scheduler = new Task();
+	protected static boolean shuttingDown;
 
 	/*
 	 * TODO:
@@ -42,6 +49,23 @@ public final class Osmium {
 	 */
 
 	private Osmium() {
+	}
+
+	public static Database getDatabase(OsmiumPlugin plugin) {
+		Database database = databases.get(plugin.getClass());
+		if (database == null) {
+			database = new Database(plugin);
+			databases.put(plugin.getClass(), database);
+		}
+		return database;
+	}
+
+	public static void shutdown() {
+		if (Platform.isBukkit()) {
+			Bukkit.shutdown();
+		} else if (Platform.isSponge()) {
+			Sponge.getServer().shutdown();
+		}
 	}
 
 	public static void broadcast(String message) {
@@ -58,6 +82,10 @@ public final class Osmium {
 
 	public static CountdownTask countdown(OsmiumPlugin plugin, int count) {
 		return new CountdownTask(plugin, count);
+	}
+
+	public static boolean isShuttingDown() {
+		return shuttingDown;
 	}
 
 	//	public static Task getScheduler() {
@@ -99,6 +127,17 @@ public final class Osmium {
 				Class<? extends OsmiumPlugin> main = pluginClassLoader.loadClass(mainClassName).asSubclass(OsmiumPlugin.class);
 
 				OsmiumPlugin plugin = main.newInstance();
+				OsmiumLogger.info("Loading plugin: " + plugin.getName());
+
+				for (Field field : plugin.getClass().getDeclaredFields()) {
+					if (field.isAnnotationPresent(PluginInstance.class)
+							&& Modifier.isStatic(field.getModifiers())
+							&& OsmiumPlugin.class.isAssignableFrom(field.getType())) {
+						field.setAccessible(true);
+						field.set(null, plugin);
+					}
+				}
+
 				Reflection.invokeMethod(OsmiumPlugin.class, plugin, "setupPlugin", pluginImpl);
 				plugins.put(main, plugin);
 				return plugin;

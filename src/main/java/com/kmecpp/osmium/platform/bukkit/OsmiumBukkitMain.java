@@ -10,6 +10,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
 
@@ -18,6 +19,11 @@ public class OsmiumBukkitMain extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		Bukkit.getPluginManager().registerEvents(this, this);
+	}
+
+	@Override
+	public void onDisable() {
+		Osmium.shutdown();
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

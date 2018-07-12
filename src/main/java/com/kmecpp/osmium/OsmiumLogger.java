@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class OsmiumLogger {
 
-	private static Logger logger = LoggerFactory.getLogger(Osmium.OSMIUM);
+	private static Logger logger = LoggerFactory.getLogger(Osmium.NAME);
 
 	public static final void log(String message) {
 		logger.info(message);

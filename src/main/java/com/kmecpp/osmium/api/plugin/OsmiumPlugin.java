@@ -25,8 +25,8 @@ public abstract class OsmiumPlugin {
 	private final String LOG_MARKER = properties.name();
 
 	//Effectively final variables
-	private Object pluginImpl; //This field is set on instantiation using reflection
 	private OsmiumPlugin plugin;
+	private Object pluginImpl; //This field is set on instantiation using reflection
 	private Logger logger;
 
 	private Class<?> config;
@@ -91,6 +91,9 @@ public abstract class OsmiumPlugin {
 	}
 
 	public void postInit() {
+	}
+	
+	public void onDisable() {
 	}
 
 	public OsmiumPlugin getPlugin() {
