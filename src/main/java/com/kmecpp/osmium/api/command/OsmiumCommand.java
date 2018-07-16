@@ -2,15 +2,17 @@ package com.kmecpp.osmium.api.command;
 
 import java.util.ArrayList;
 
-public abstract class OsmiumCommand {
+import com.kmecpp.jlib.utils.StringUtil;
 
-	private CommandProperties properties;
-	private ArrayList<CommandProperties> args = new ArrayList<>();
+public class OsmiumCommand extends CommandProperties {
+
+	private ArrayList<OsmiumCommand> args = new ArrayList<>();
 
 	private String title = "&a&lCommand List";
 
-	public OsmiumCommand() {
-		this.properties = new CommandProperties(this.getClass().getAnnotation(Command.class));
+	public OsmiumCommand(String... aliases) {
+		super(aliases);
+		//		this.properties = new CommandProperties(this.getClass().getAnnotation(Command.class));
 	}
 
 	public void configure() {
@@ -21,27 +23,31 @@ public abstract class OsmiumCommand {
 	}
 
 	public void execute(CommandEvent e) {
-		e.sendMessage("");
-		e.sendMessage(title);
-		e.sendMessage("&e&m----------------------------------------");
-		e.sendMessage("");
-		for (CommandProperties arg : args) {
-			//			e.sendMessage(Text.of("b", "/" + arg.getPrimaryAlias()).append("e", " - ").append("b", arg.getDescription()).toString());
-			e.sendMessage("&b/" + arg.getPrimaryAlias() + "&e - &b" + arg.getDescription());
+		if (!args.isEmpty()) {
+			if (e.getArgs().length == 0) {
+				e.sendMessage("");
+				e.sendMessage(title);
+				e.sendMessage("&e&m----------------------------------------");
+				e.sendMessage("");
+				for (OsmiumCommand arg : args) {
+					e.sendMessage("&b/" + arg.getPrimaryAlias()
+							+ (arg.getDescription().isEmpty() ? "" : "&e - &b" + arg.getDescription()));
+				}
+			} else {
+				String arg = e.getArg(1);
+				for (CommandProperties a : args) {
+					for (String alias : a.getAliases()) {
+						if (alias.equalsIgnoreCase(arg)) {
+							//							a.execute();
+						}
+					}
+				}
+			}
 		}
-
 	}
 
-	public final CommandProperties getProperties() {
-		return properties;
-	}
-
-	public final void enableCommmandList(String title) {
-
-	}
-
-	public final CommandProperties add(String... aliases) {
-		return new CommandProperties(aliases);
+	public final OsmiumCommand add(String... aliases) {
+		return new OsmiumCommand(aliases);
 	}
 
 	public final void setArg(String label, CommandExecutor executor) {
@@ -50,6 +56,10 @@ public abstract class OsmiumCommand {
 
 	public final void setArg(String label, String usage, String description, CommandExecutor executor) {
 
+	}
+
+	public final void notFoundError(String type, String input) {
+		throw new CommandException("&4Error: &c" + StringUtil.capitalize(type) + " not found: '" + input + "'");
 	}
 
 	public final void usageError() {

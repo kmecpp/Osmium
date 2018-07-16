@@ -25,12 +25,11 @@ import com.kmecpp.osmium.OsmiumLogger;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
-import com.kmecpp.osmium.api.command.CommandProperties;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.command.OsmiumCommand;
 import com.kmecpp.osmium.api.event.Event;
+import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
-import com.kmecpp.osmium.api.event.events.EventInfo;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
@@ -106,23 +105,22 @@ public class ClassManager {
 					continue;
 				}
 
-				CommandProperties properties = command.getProperties();
 				commands.put(cls, command);
 
-				if (properties.getAliases().length == 0) {
+				if (command.getAliases().length == 0) {
 					OsmiumLogger.warn("Command does not have any aliases and will not be registered: " + cls);
 					continue;
 				}
 
 				if (Platform.isBukkit()) {
 					try {
-						String commandName = properties.getAliases()[0];
-						String[] aliases = new String[properties.getAliases().length - 1];
-						System.arraycopy(properties.getAliases(), 1, aliases, 0, aliases.length);
+						String commandName = command.getAliases()[0];
+						String[] aliases = new String[command.getAliases().length - 1];
+						System.arraycopy(command.getAliases(), 1, aliases, 0, aliases.length);
 
 						SimpleCommandMap commandMap = (SimpleCommandMap) Reflection.getFieldValue(Bukkit.getServer(), "commandMap");
 
-						commandMap.register(commandName, new BukkitCommand(commandName, properties.getDescription(), properties.getUsage(), Arrays.asList(aliases)) { //Usage message cannot be null or else stuff will break
+						commandMap.register(commandName, new BukkitCommand(commandName, command.getDescription(), command.getUsage(), Arrays.asList(aliases)) { //Usage message cannot be null or else stuff will break
 
 							@Override
 							public boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args) {
@@ -141,8 +139,8 @@ public class ClassManager {
 					}
 				} else if (Platform.isSponge()) {
 					CommandSpec spec = CommandSpec.builder()
-							.description(SpongeAccess.getText(properties.getDescription()))
-							.permission(properties.getPermission())
+							.description(SpongeAccess.getText(command.getDescription()))
+							.permission(command.getPermission())
 							.arguments(GenericArguments.remainingRawJoinedStrings(SpongeAccess.getText("args")))
 							.executor((src, context) -> {
 								CommandSender sender = src instanceof org.bukkit.entity.Player ? new SpongePlayer((org.spongepowered.api.entity.living.player.Player) src)
@@ -151,13 +149,13 @@ public class ClassManager {
 														: new GenericSpongeCommandSender(src);
 
 								String[] args = context.<String> getOne("args").map((s) -> s.split(" ")).orElse(new String[0]);
-								CommandManager.invokeCommand(command, sender, properties.getAliases()[0], args);
+								CommandManager.invokeCommand(command, sender, command.getAliases()[0], args);
 
 								return CommandResult.success();
 							})
 							.build();
 
-					SpongeAccess.registerCommand(plugin.asSpongePlugin(), spec, properties.getAliases());
+					SpongeAccess.registerCommand(plugin.asSpongePlugin(), spec, command.getAliases());
 				}
 			}
 

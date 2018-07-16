@@ -51,6 +51,10 @@ public class CommandEvent implements Messageable {
 		return command;
 	}
 
+	public String getArg(int index) {
+		return args[index];
+	}
+
 	public String[] getArgs() {
 		return args;
 	}
@@ -58,6 +62,18 @@ public class CommandEvent implements Messageable {
 	@Override
 	public void sendRawMessage(String message) {
 		sender.sendMessage(message);
+	}
+
+	public int args() {
+		return args.length;
+	}
+
+	public boolean isEmpty() {
+		return args.length == 0;
+	}
+
+	public boolean hasArgs() {
+		return args.length > 0;
 	}
 
 	//	public void sendRawMessage(String style, String message) {

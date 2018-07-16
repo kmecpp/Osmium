@@ -8,18 +8,25 @@ public class CommandProperties {
 	private String usage = "";
 	private boolean admin;
 	private boolean playersOnly;
+	private CommandExecutor executor;
+
+	//	public CommandProperties(String... aliases) {
+	//		this.aliases = aliases;
+	//	}
 
 	public CommandProperties(String... aliases) {
-		this.aliases = aliases;
-	}
+		if (aliases.length == 0) {
+			Command command = this.getClass().getAnnotation(Command.class);
 
-	public CommandProperties(Command command) {
-		this.aliases = command.aliases();
-		this.description = command.description();
-		this.permission = command.permission();
-		this.usage = command.usage();
-		this.admin = command.admin();
-		this.playersOnly = command.playersOnly();
+			this.aliases = command.aliases();
+			this.description = command.description();
+			this.permission = command.permission();
+			this.usage = command.usage();
+			this.admin = command.admin();
+			this.playersOnly = command.playersOnly();
+		} else {
+			this.aliases = aliases;
+		}
 	}
 
 	public CommandProperties setDescription(String description) {
@@ -45,6 +52,14 @@ public class CommandProperties {
 	public CommandProperties setPlayersOnly() {
 		this.playersOnly = true;
 		return this;
+	}
+
+	public void setExecutor(CommandExecutor executor) {
+		this.executor = executor;
+	}
+
+	public CommandExecutor getExecutor() {
+		return executor;
 	}
 
 	public String getPrimaryAlias() {

@@ -1,10 +1,10 @@
 # Osmium
 
-Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the easiest most concise way to create Minecraft plugins period.
+Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the *easiest most concise way to create Minecraft plugins period*.
 
-In addition to being able to target multiple different platforms, Osmium has many unique features which drastically reduce the amount of code necessary to complete many common tasks.
+In addition to being able to target multiple platforms, Osmium has many unique features which drastically reduce the amount of code necessary to complete many common tasks. Everything from listener/command registration, to config file handling, to database storage is handled completely automatically. Write code to describe functionality, not its implementation.
 
-Although it will take a very long time to implement enough features to have a complete Minecraft API, Osmium should be in a usable state fairly soon. Plugins requiring any part of a specific platform which Osmium has not yet implemented can simply write platform specific code as needed. Osmium even has easy methods to help you do this.
+Although it will take a very long time to implement enough features to have a complete Minecraft API, Osmium should be in a usable state fairly soon. Plugins requiring any part of a specific platform which Osmium has not yet implemented can easily write platform specific code as needed. Osmium even has many utility methods to help you do this.
 
 
 Join our Discord channel stay updated with the project or help out: https://discord.gg/YSgde2Y 
@@ -53,7 +53,7 @@ public void onPlayerJoin(PlayerJoinEvent e){
 	//Listener will work without any additional code needed
 }
 ```
-**Important Note:** The containing class MUST have a default constructor. If however, for whatever reason you do not want to do that, you just have to call plugin.enableEvents(listener) to provide Osmium with an instance of the class.
+**Important Note:** The containing class MUST have a default constructor. If for whatever reason this is not possible, you just have to call plugin.enableEvents(listener) to provide Osmium with an instance of the class.
 
 ### Commands
 
@@ -62,7 +62,7 @@ There are a few ways to create commands.
 The first way is the shortest and is useful when you only have a few very simple commands
 
 ```
-Osmium.createCommand("spawn", "home")
+Osmium.registerCommand("spawn", "home")
 	.setDescription("Teleport to the spawn point of your current world")
 	.setPermission("myplugin.spawn");
 	.setPlayersOnly();

@@ -110,7 +110,22 @@
 	</dependencies>
 
 	<build>
-		<sourceDirectory>src/main/java</sourceDirectory>
+		<sourceDirectory>target/filtered-sources/java</sourceDirectory>
+		<resources>
+			<!-- Filter Java files -->
+			<resource>
+				<filtering>true</filtering>
+				<directory>src/main/java</directory>
+				<targetPath>../filtered-sources/java</targetPath>
+				<includes>
+					<include>**/*.java</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

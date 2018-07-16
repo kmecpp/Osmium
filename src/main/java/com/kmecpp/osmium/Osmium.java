@@ -28,8 +28,8 @@ import com.kmecpp.osmium.cache.WorldList;
 
 public final class Osmium {
 
-	public static final String NAME = "Osmium";
-	public static final String VERSION = "1.0";
+	public static final String NAME = "${project.name}";
+	public static final String VERSION = "${project.version}";
 
 	private static final HashMap<Class<? extends OsmiumPlugin>, OsmiumPlugin> plugins = new HashMap<>();
 	private static final HashMap<Class<? extends OsmiumPlugin>, Database> databases = new HashMap<>();
@@ -49,6 +49,19 @@ public final class Osmium {
 	 */
 
 	private Osmium() {
+	}
+
+	public static Collection<OsmiumPlugin> getPlugins() {
+		return plugins.values();
+	}
+
+	public static Optional<OsmiumPlugin> getPlugin(String name) {
+		for (OsmiumPlugin plugin : plugins.values()) {
+			if (plugin.getName().equalsIgnoreCase(name)) {
+				return Optional.of(plugin);
+			}
+		}
+		return Optional.empty();
 	}
 
 	public static Database getDatabase(OsmiumPlugin plugin) {
@@ -164,6 +177,10 @@ public final class Osmium {
 
 	public static Optional<World> getWorld(String name) {
 		return Optional.of(WorldList.getWorld(name));
+	}
+
+	public static void registerCommand(String... aliases) {
+
 	}
 
 	//	public static Optional<Player> getPlayer(String name) {

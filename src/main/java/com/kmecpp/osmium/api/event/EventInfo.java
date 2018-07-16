@@ -1,12 +1,15 @@
-package com.kmecpp.osmium.api.event.events;
+package com.kmecpp.osmium.api.event;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import com.kmecpp.jlib.reflection.Reflection;
-import com.kmecpp.osmium.api.event.Event;
+import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
+import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
 import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerJoinEvent;
+import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerQuitEvent;
 import com.kmecpp.osmium.platform.sponge.event.SpongePlayerJoinEvent;
+import com.kmecpp.osmium.platform.sponge.event.SpongePlayerQuitEvent;
 
 public class EventInfo {
 
@@ -29,6 +32,7 @@ public class EventInfo {
 	 */
 	static {
 		register(PlayerJoinEvent.class, BukkitPlayerJoinEvent.class, SpongePlayerJoinEvent.class);
+		register(PlayerQuitEvent.class, BukkitPlayerQuitEvent.class, SpongePlayerQuitEvent.class);
 	}
 
 	public static void register(Class<? extends Event> event,

@@ -1,22 +1,22 @@
 package com.kmecpp.osmium.platform.sponge.event;
 
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
+import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 
 import com.kmecpp.osmium.api.entity.Player;
-import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
+import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
 import com.kmecpp.osmium.platform.sponge.SpongePlayer;
 
-public class SpongePlayerJoinEvent implements PlayerJoinEvent {
+public class SpongePlayerQuitEvent implements PlayerQuitEvent {
 
-	private ClientConnectionEvent.Join event;
+	private ClientConnectionEvent.Disconnect event;
 
-	public SpongePlayerJoinEvent(Join event) {
+	public SpongePlayerQuitEvent(Disconnect event) {
 		this.event = event;
 	}
 
 	@Override
-	public ClientConnectionEvent.Join getSource() {
+	public ClientConnectionEvent.Disconnect getSource() {
 		return event;
 	}
 
