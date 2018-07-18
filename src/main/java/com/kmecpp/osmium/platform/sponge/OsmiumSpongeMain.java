@@ -9,11 +9,13 @@ import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.UnloadWorldEvent;
 import org.spongepowered.api.plugin.Plugin;
 
+import com.kmecpp.osmium.AppInfo;
+import com.kmecpp.osmium.api.plugin.SpongePlugin;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
 
-@Plugin(name = "Osmium", id = "osmium", version = "1.0", authors = { "kmecpp" }, description = "API for Bukkit and Sponge", url = "https://github.com/kmecpp/Osmium")
-public class OsmiumSpongeMain {
+@Plugin(name = AppInfo.NAME, id = AppInfo.ID, version = AppInfo.VERSION, authors = { "kmecpp" }, description = "API for Bukkit and Sponge", url = "https://github.com/kmecpp/Osmium")
+public class OsmiumSpongeMain extends SpongePlugin {
 
 	@Listener(order = Order.PRE)
 	public void onGameInitialization(GameInitializationEvent e) {

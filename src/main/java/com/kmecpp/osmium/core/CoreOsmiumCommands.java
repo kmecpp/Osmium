@@ -2,20 +2,21 @@ package com.kmecpp.osmium.core;
 
 import java.util.Optional;
 
+import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.command.Command;
-import com.kmecpp.osmium.api.command.OsmiumCommand;
+import com.kmecpp.osmium.api.command.CommandProperties;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-@Command(aliases = { "osmium", "os", "om", "o" }, description = "Base command for interacting with the Osmium API")
-public class CoreOsmiumCommands extends OsmiumCommand {
+@CommandProperties(aliases = { "osmium", "os", "om", "o" }, description = "Base command for interacting with the Osmium API")
+public class CoreOsmiumCommands extends Command {
 
 	@Override
 	public void configure() {
 		add("info")
 				.setExecutor((e) -> {
-					e.sendMessage("&aPlugin: " + "&b" + Osmium.NAME);
-					e.sendMessage("&aVersion: " + "&b" + Osmium.VERSION);
+					e.sendMessage("&aPlugin: " + "&b" + AppInfo.NAME);
+					e.sendMessage("&aVersion: " + "&b" + AppInfo.VERSION);
 					e.sendMessage("&aAuthor: " + "&b" + "kmecpp");
 					e.sendMessage("&aURL: " + "&b" + "https://github.com/kmecpp/Osmium");
 				});

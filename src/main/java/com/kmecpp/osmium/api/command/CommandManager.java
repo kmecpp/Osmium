@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api.command;
 
 public final class CommandManager {
 
-	public static boolean invokeCommand(OsmiumCommand command, CommandSender sender, String commandLabel, String[] args) {
+	public static boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {
 		try {
 			command.execute(new CommandEvent(sender, commandLabel, args));
 			return true;

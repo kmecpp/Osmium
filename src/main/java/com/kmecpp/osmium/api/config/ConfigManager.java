@@ -8,8 +8,10 @@ import java.nio.file.Paths;
 
 import javax.inject.Singleton;
 
-import com.kmecpp.osmium.OsmiumLogger;
+import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
+import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -30,7 +32,7 @@ public class ConfigManager {
 			boolean firstSave = false;
 			Configuration properties = getConfigProperties(configClass);
 
-			Path path = Paths.get(properties.path());
+			Path path = Paths.get("plugins", Osmium.getPlugin(configClass).getName(), properties.path());
 			File file = path.toFile();
 			if (!file.exists()) {
 				if (file.getParentFile() != null) {
@@ -41,11 +43,12 @@ public class ConfigManager {
 				firstSave = true;
 			}
 
-			ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setPath(path).build();
+			ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
+					.setDefaultOptions(ConfigurationOptions.defaults().setHeader(properties.header()))
+					.setPath(path)
+					.build();
+
 			CommentedConfigurationNode root = loader.load();
-			if (firstSave) {
-				root.setComment(properties.header());
-			}
 
 			for (Field field : configClass.getDeclaredFields()) {
 				Setting setting = field.getAnnotation(Setting.class);
@@ -55,15 +58,15 @@ public class ConfigManager {
 						continue;
 					}
 
-					String nodePath = setting.path().isEmpty() ? getDefaultPath(field) : setting.path();
+					String nodePath = getPath(field, setting);
 					field.setAccessible(true);
-					CommentedConfigurationNode node = root.getNode(nodePath);
+					CommentedConfigurationNode node = root.getNode((Object[]) nodePath.split("\\."));
 					if (loadOnly) {
 						if (!node.isVirtual()) {
 							field.set(null, node.getValue());
 						}
 					} else {
-						if (firstSave) {
+						if (firstSave && !setting.comment().isEmpty()) {
 							node.setComment(setting.comment());
 						}
 
@@ -96,17 +99,21 @@ public class ConfigManager {
 	//		return sb.toString();
 	//	}
 
-	private String getDefaultPath(Field field) {
-		String name = field.getName();
+	private String getPath(Field field, Setting setting) {
+		String parent = (setting.parent().isEmpty() ? "" : setting.parent() + ".");
+		if (!setting.name().isEmpty()) {
+			return parent + setting.name();
+		}
+
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < name.length(); i++) {
-			char c = name.charAt(i);
+		for (int i = 0; i < field.getName().length(); i++) {
+			char c = field.getName().charAt(i);
 			if (i > 0 && Character.isUpperCase(c)) {
 				sb.append("-");
 			}
 			sb.append(Character.toLowerCase(c));
 		}
-		return sb.toString();
+		return parent + sb.toString();
 	}
 
 }

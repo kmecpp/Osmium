@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api.service;
 
 import java.util.HashSet;
 
-import com.kmecpp.osmium.OsmiumLogger;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
 public class ServiceManager {
 

@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.config;
+package com.kmecpp.osmium.api.plugin;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,12 +7,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Setting {
+public @interface PluginLogger {
 
-	String parent() default "";
+	String prefix();
 
-	String name() default "";
-
-	String comment() default "";
+	boolean color() default false;
 
 }

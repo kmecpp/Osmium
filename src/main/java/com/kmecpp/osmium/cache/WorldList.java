@@ -3,8 +3,8 @@ package com.kmecpp.osmium.cache;
 import java.util.Collection;
 import java.util.HashMap;
 
-import com.kmecpp.osmium.OsmiumLogger;
 import com.kmecpp.osmium.api.World;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
 public class WorldList {
 

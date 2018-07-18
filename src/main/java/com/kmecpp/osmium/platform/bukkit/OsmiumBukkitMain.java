@@ -3,18 +3,17 @@ package com.kmecpp.osmium.platform.bukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.plugin.BukkitPlugin;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
 
-public class OsmiumBukkitMain extends JavaPlugin implements Listener {
+public class OsmiumBukkitMain extends BukkitPlugin {
 
 	@Override
 	public void onEnable() {

@@ -1,24 +1,69 @@
 package com.kmecpp.osmium.api.command;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.ArrayList;
 
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Command {
+import com.kmecpp.jlib.utils.StringUtil;
 
-	String[] aliases();
+public class Command extends SimpleCommand {
 
-	String description() default "";
+	private ArrayList<Command> args = new ArrayList<>();
 
-	String permission() default "";
+	private String title = "&a&lCommand List";
 
-	String usage() default "";
+	public Command(String... aliases) {
+		super(aliases);
+		//		this.properties = new CommandProperties(this.getClass().getAnnotation(Command.class));
+	}
 
-	boolean admin() default false;
+	public void configure() {
+	}
 
-	boolean playersOnly() default false;
+	public final void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void execute(CommandEvent e) {
+		if (!args.isEmpty()) {
+			if (e.getArgs().length == 0) {
+				e.sendMessage("");
+				e.sendMessage(title);
+				e.sendMessage("&e&m----------------------------------------");
+				e.sendMessage("");
+				for (Command arg : args) {
+					e.sendMessage("&b/" + arg.getPrimaryAlias()
+							+ (arg.getDescription().isEmpty() ? "" : "&e - &b" + arg.getDescription()));
+				}
+			} else {
+				String arg = e.getArg(1);
+				for (SimpleCommand a : args) {
+					for (String alias : a.getAliases()) {
+						if (alias.equalsIgnoreCase(arg)) {
+							//							a.execute();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public final Command add(String... aliases) {
+		return new Command(aliases);
+	}
+
+	public final void setArg(String label, CommandExecutor executor) {
+		setArg(label, "", "", executor);
+	}
+
+	public final void setArg(String label, String usage, String description, CommandExecutor executor) {
+
+	}
+
+	public final void notFoundError(String type, String input) {
+		throw new CommandException("&4Error: &c" + StringUtil.capitalize(type) + " not found: '" + input + "'");
+	}
+
+	public final void usageError() {
+		throw CommandException.USAGE_ERROR;
+	}
 
 }

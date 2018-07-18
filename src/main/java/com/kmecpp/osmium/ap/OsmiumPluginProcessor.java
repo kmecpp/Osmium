@@ -24,7 +24,7 @@ import javax.tools.StandardLocation;
 import com.kmecpp.jflame.value.JsonArray;
 import com.kmecpp.jflame.value.JsonObject;
 import com.kmecpp.jlib.object.Objects;
-import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMetaContainer;
 import com.kmecpp.osmium.api.plugin.Plugin;
@@ -212,12 +212,12 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 	}
 
 	public void info(String message) {
-		System.out.println("[" + Osmium.NAME.toUpperCase() + "] " + message);
+		System.out.println("[" + AppInfo.NAME.toUpperCase() + "] " + message);
 		//		getMessager().printMessage(Kind.NOTE, "[" + Osmium.OSMIUM + "] " + message);
 	}
 
 	public void error(String message) {
-		System.err.println("[" + Osmium.NAME.toUpperCase() + "] " + message);
+		System.err.println("[" + AppInfo.NAME.toUpperCase() + "] " + message);
 		//		getMessager().printMessage(Kind.ERROR, "[" + Osmium.OSMIUM + "] " + message);
 	}
 

@@ -1,6 +1,6 @@
 # Osmium
 
-Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the *easiest most concise way to create Minecraft plugins period*.
+Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the *easiest most concise way to create Minecraft plugins period*. Everything in Osmium is done with only one method or one class. There is no registration of commands/listeners/configurations 
 
 In addition to being able to target multiple platforms, Osmium has many unique features which drastically reduce the amount of code necessary to complete many common tasks. Everything from listener/command registration, to config file handling, to database storage is handled completely automatically. Write code to describe functionality, not its implementation.
 

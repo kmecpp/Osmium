@@ -11,6 +11,7 @@ import org.spongepowered.api.Sponge;
 
 import com.kmecpp.jlib.Validate;
 import com.kmecpp.jlib.reflection.Reflection;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
 
 /**
@@ -22,12 +23,9 @@ public abstract class OsmiumPlugin {
 	//	private final OsmiumProperties osmiumProperties = new OsmiumProperties(this);
 	private final Plugin properties = this.getClass().getAnnotation(Plugin.class);
 
-	private final String LOG_MARKER = properties.name();
-
 	//Effectively final variables
-	private OsmiumPlugin plugin;
 	private Object pluginImpl; //This field is set on instantiation using reflection
-	private Logger logger;
+	private Logger logger = LoggerFactory.getLogger(properties.name());
 
 	private Class<?> config;
 
@@ -38,18 +36,16 @@ public abstract class OsmiumPlugin {
 	public OsmiumPlugin() {
 		Validate.notNull(properties, "Osmium plugins must be annotated with @OsmiumMeta");
 
-		this.plugin = this;
-		this.logger = LoggerFactory.getLogger(properties.name());
 		//setupPlugin method is called immediately after construction via reflection
 
 		for (Field field : this.getClass().getDeclaredFields()) {
 			PluginInstance pluginInstance = field.getAnnotation(PluginInstance.class);
 			if (pluginInstance != null) {
-				if (pluginInstance.getClass() == this.getClass()) {
-					Reflection.setField(this, field, this);
+				if (field.getType() == this.getClass()) {
+					Reflection.setField(null, field, this);
 					break;
 				} else {
-					warn("Invalid field annotated with " + PluginInstance.class.getSimpleName() + ": " + field);
+					OsmiumLogger.warn("Invalid field annotated with @" + PluginInstance.class.getSimpleName() + ": " + field);
 				}
 			}
 		}
@@ -92,12 +88,8 @@ public abstract class OsmiumPlugin {
 
 	public void postInit() {
 	}
-	
-	public void onDisable() {
-	}
 
-	public OsmiumPlugin getPlugin() {
-		return plugin;
+	public void onDisable() {
 	}
 
 	public SpongePlugin asSpongePlugin() {
@@ -140,19 +132,19 @@ public abstract class OsmiumPlugin {
 
 	//Logging
 	public void debug(String message) {
-		logger.debug(LOG_MARKER, message);
+		logger.debug(message);
 	}
 
 	public void info(String message) {
-		logger.info(LOG_MARKER, message);
+		logger.info(message);
 	}
 
 	public void warn(String message) {
-		logger.warn(LOG_MARKER, message);
+		logger.warn(message);
 	}
 
 	public void error(String message) {
-		logger.error(LOG_MARKER, message);
+		logger.error(message);
 	}
 
 	public Logger logger() {

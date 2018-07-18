@@ -15,10 +15,10 @@ import org.bukkit.Bukkit;
 
 import com.kmecpp.jlib.utils.IOUtil;
 import com.kmecpp.jlib.utils.StringUtil;
-import com.kmecpp.osmium.OsmiumConfiguration;
-import com.kmecpp.osmium.OsmiumLogger;
 import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
@@ -48,14 +48,14 @@ public class Database {
 	public void start() {
 		try {
 			HikariConfig config = new HikariConfig();
-			if (OsmiumConfiguration.enableMySQL) {
+			if (CoreOsmiumConfiguration.enableMysql) {
 				OsmiumLogger.info("Using MySQL for database storage");
 				usingMySql = true;
 
-				config.setJdbcUrl("jdbc:mysql://" + OsmiumConfiguration.mysqlHost + ":" + OsmiumConfiguration.mysqlPort + "/" + OsmiumConfiguration.mysqlDatabase);
+				config.setJdbcUrl("jdbc:mysql://" + CoreOsmiumConfiguration.mysqlHost + ":" + CoreOsmiumConfiguration.mysqlPort + "/" + CoreOsmiumConfiguration.mysqlDatabase);
 				config.setDriverClassName("com.mysql.jdbc.Driver");
-				config.setUsername(OsmiumConfiguration.mysqlUsername);
-				config.setPassword(OsmiumConfiguration.mysqlPassword);
+				config.setUsername(CoreOsmiumConfiguration.mysqlUsername);
+				config.setPassword(CoreOsmiumConfiguration.mysqlPassword);
 
 				source = new HikariDataSource(config);
 			} else {
@@ -190,7 +190,7 @@ public class Database {
 			statement.executeUpdate(update);
 		} catch (SQLException e) {
 			OsmiumLogger.error("Failed to execute database update!");
-			if (!OsmiumConfiguration.debug) {
+			if (!CoreOsmiumConfiguration.debug) {
 				OsmiumLogger.error("Failed update: '" + update + "'");
 			}
 			e.printStackTrace();

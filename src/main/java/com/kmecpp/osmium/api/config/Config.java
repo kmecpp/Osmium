@@ -3,7 +3,7 @@ package com.kmecpp.osmium.api.config;
 import java.io.File;
 import java.io.IOException;
 
-import com.kmecpp.osmium.OsmiumLogger;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;

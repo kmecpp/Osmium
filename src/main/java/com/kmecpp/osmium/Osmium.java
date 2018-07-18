@@ -18,6 +18,7 @@ import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.config.ConfigManager;
 import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.PluginInstance;
@@ -28,9 +29,7 @@ import com.kmecpp.osmium.cache.WorldList;
 
 public final class Osmium {
 
-	public static final String NAME = "${project.name}";
-	public static final String VERSION = "${project.version}";
-
+	private static final HashMap<String, OsmiumPlugin> pluginFiles = new HashMap<>();
 	private static final HashMap<Class<? extends OsmiumPlugin>, OsmiumPlugin> plugins = new HashMap<>();
 	private static final HashMap<Class<? extends OsmiumPlugin>, Database> databases = new HashMap<>();
 
@@ -62,6 +61,10 @@ public final class Osmium {
 			}
 		}
 		return Optional.empty();
+	}
+
+	public static OsmiumPlugin getPlugin(Class<?> cls) {
+		return pluginFiles.get(cls.getProtectionDomain().getCodeSource().getLocation().getFile());
 	}
 
 	public static Database getDatabase(OsmiumPlugin plugin) {
@@ -140,7 +143,6 @@ public final class Osmium {
 				Class<? extends OsmiumPlugin> main = pluginClassLoader.loadClass(mainClassName).asSubclass(OsmiumPlugin.class);
 
 				OsmiumPlugin plugin = main.newInstance();
-				OsmiumLogger.info("Loading plugin: " + plugin.getName());
 
 				for (Field field : plugin.getClass().getDeclaredFields()) {
 					if (field.isAnnotationPresent(PluginInstance.class)
@@ -151,8 +153,12 @@ public final class Osmium {
 					}
 				}
 
-				Reflection.invokeMethod(OsmiumPlugin.class, plugin, "setupPlugin", pluginImpl);
 				plugins.put(main, plugin);
+				pluginFiles.put(plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getFile(), plugin);
+				OsmiumLogger.info("Successfully loaded Osmium plugin: " + plugin.getName() + " v" + plugin.getVersion());
+				OsmiumLogger.debug("File location: " + plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
+
+				Reflection.invokeMethod(OsmiumPlugin.class, plugin, "setupPlugin", pluginImpl);//Setup plugin after everything else
 				return plugin;
 			} catch (Exception e) {
 				throw new RuntimeException("Could not load Osmium plugin: " + lines[1].split(":")[1].trim(), e);

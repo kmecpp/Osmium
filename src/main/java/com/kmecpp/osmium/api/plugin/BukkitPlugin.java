@@ -13,8 +13,7 @@ import com.kmecpp.osmium.Osmium;
  */
 public class BukkitPlugin extends JavaPlugin implements Listener {
 
-	private final OsmiumPlugin plugin = Osmium.loadPlugin(this); //OsmiumData.constructPlugin();
-
+	private OsmiumPlugin plugin = Osmium.loadPlugin(this); //OsmiumData.constructPlugin();
 	private BukkitPlugin bukkitInstance;
 
 	public BukkitPlugin() {
