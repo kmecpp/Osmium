@@ -2,6 +2,7 @@ package com.kmecpp.osmium;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,7 +12,6 @@ import java.util.concurrent.Callable;
 import org.bukkit.Bukkit;
 import org.spongepowered.api.Sponge;
 
-import com.kmecpp.jlib.reflection.Reflection;
 import com.kmecpp.jlib.utils.IOUtil;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Chat;
@@ -64,7 +64,7 @@ public final class Osmium {
 	}
 
 	public static OsmiumPlugin getPlugin(Class<?> cls) {
-		return pluginFiles.get(cls.getProtectionDomain().getCodeSource().getLocation().getFile());
+		return pluginFiles.get(Directory.getJarFilePath(cls));
 	}
 
 	public static Database getDatabase(OsmiumPlugin plugin) {
@@ -153,12 +153,19 @@ public final class Osmium {
 					}
 				}
 
-				plugins.put(main, plugin);
-				pluginFiles.put(plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getFile(), plugin);
-				OsmiumLogger.info("Successfully loaded Osmium plugin: " + plugin.getName() + " v" + plugin.getVersion());
-				OsmiumLogger.debug("File location: " + plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
+				String jarFilePath = Directory.getJarFilePath(plugin.getClass());
 
-				Reflection.invokeMethod(OsmiumPlugin.class, plugin, "setupPlugin", pluginImpl);//Setup plugin after everything else
+				plugins.put(main, plugin);
+				pluginFiles.put(jarFilePath, plugin);
+
+				Method method = OsmiumPlugin.class.getDeclaredMethod("setupPlugin", Object.class);
+				method.setAccessible(true);
+				method.invoke(plugin, pluginImpl);
+				//				Reflection.invokeMethod(OsmiumPlugin.class, plugin, "setupPlugin", pluginImpl);//Setup plugin after everything else
+
+				OsmiumLogger.info("Successfully loaded Osmium plugin: " + plugin.getName() + " v" + plugin.getVersion());
+				OsmiumLogger.debug("File location: " + jarFilePath);
+
 				return plugin;
 			} catch (Exception e) {
 				throw new RuntimeException("Could not load Osmium plugin: " + lines[1].split(":")[1].trim(), e);

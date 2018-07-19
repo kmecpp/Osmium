@@ -69,14 +69,14 @@ public enum Chat {
 		return chars.get(Character.toLowerCase(c));
 	}
 
-	public static void main(String[] args) {
-		long start = System.nanoTime();
-		for (int i = 0; i < 10000; i++) {
-			style("eewefwefweiiwechweiuciwe$cuwicahiuwecawecawceaeafwfSfwewefwefawefaefaewfawefdicksebshits");
-		}
-		long end = System.nanoTime();
-		System.out.println("Time Taken: " + ((end - start) / 1000000F) + "ms");
-	}
+	//	public static void main(String[] args) {
+	//		long start = System.nanoTime();
+	//		for (int i = 0; i < 10000; i++) {
+	//			style("eewefwefweiiwechweiuciwe$cuwicahiuwecawecawceaeafwfSfwewefwefawefaefaewfawefdicksebshits");
+	//		}
+	//		long end = System.nanoTime();
+	//		System.out.println("Time Taken: " + ((end - start) / 1000000F) + "ms");
+	//	}
 
 	public static String style(String message) {
 		//		if (!message.contains("&")) {

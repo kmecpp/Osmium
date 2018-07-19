@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.platform.bukkit;
+package com.kmecpp.osmium.core;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -12,16 +12,20 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.plugin.BukkitPlugin;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
+import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
+import com.kmecpp.osmium.platform.bukkit.BukkitWorld;
 
 public class OsmiumBukkitMain extends BukkitPlugin {
 
 	@Override
 	public void onEnable() {
+		super.onEnable();
 		Bukkit.getPluginManager().registerEvents(this, this);
 	}
 
 	@Override
 	public void onDisable() {
+		super.onDisable();
 		Osmium.shutdown();
 	}
 

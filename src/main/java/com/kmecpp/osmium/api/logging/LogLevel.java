@@ -1,25 +1,40 @@
 package com.kmecpp.osmium.api.logging;
 
 import org.bukkit.ChatColor;
+import org.spongepowered.api.text.format.TextColors;
+
+import com.kmecpp.osmium.api.platform.Platform;
 
 public enum LogLevel {
 
-	DEBUG(ChatColor.WHITE),
-	INFO(ChatColor.GREEN),
-	WARN(ChatColor.YELLOW),
-	ERROR(ChatColor.RED),
-	FATAL(ChatColor.RED)
+	DEBUG,
+	INFO,
+	WARN,
+	ERROR,
+	FATAL,
 
 	;
 
-	private final String color;
+	private Object colorImpl;
 
-	private LogLevel(ChatColor color) {
-		this.color = color.toString();
+	static {
+		if (Platform.isBukkit()) {
+			DEBUG.colorImpl = ChatColor.WHITE;
+			INFO.colorImpl = ChatColor.GREEN;
+			WARN.colorImpl = ChatColor.YELLOW;
+			ERROR.colorImpl = ChatColor.RED;
+			FATAL.colorImpl = ChatColor.RED;
+		} else if (Platform.isSponge()) {
+			DEBUG.colorImpl = TextColors.WHITE;
+			INFO.colorImpl = TextColors.GREEN;
+			WARN.colorImpl = TextColors.YELLOW;
+			ERROR.colorImpl = TextColors.RED;
+			FATAL.colorImpl = TextColors.RED;
+		}
 	}
 
-	public String getColor() {
-		return color;
+	public Object getColorImplementation() {
+		return colorImpl;
 	}
 
 	public java.util.logging.Level getLevel() {

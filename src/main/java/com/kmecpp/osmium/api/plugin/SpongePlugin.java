@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.plugin;
+ package com.kmecpp.osmium.api.plugin;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
@@ -39,6 +39,7 @@ public abstract class SpongePlugin {
 
 	@Listener
 	public void onGameInitialization(GameInitializationEvent e) {
+		plugin.getClassManager().initializeHooks();
 		plugin.init();
 	}
 

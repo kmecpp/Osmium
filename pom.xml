@@ -5,12 +5,13 @@
 	<artifactId>osmium</artifactId>
 	<version>1.0a</version>
 	<name>Osmium</name>
-
 	<description>Abstraction layer for Sponge and Bukkit that allows for development on both platforms simultaneously.</description>
 	<url>https://github.com/kmecpp/Osmium</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<bukkitMain>com.kmecpp.osmium.core.OsmiumBukkitMain</bukkitMain>
+		<spongeMain>com.kmecpp.osmium.core.OsmiumSpongeMain</spongeMain>
 	</properties>
 
 	<repositories>
@@ -168,12 +169,22 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.1.1</version>
-				<configuration>
-					<finalName>${project.name}</finalName>
-					<outputFile>${serverPath}/plugins/${project.name}-${project.version}.jar</outputFile>
-				</configuration>
 				<executions>
 					<execution>
+						<id>bukkit</id>
+						<configuration>
+							<outputFile>${bukkitServer}/plugins/${project.name}-${project.version}.jar</outputFile>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>sponge</id>
+						<configuration>
+							<outputFile>${spongeServer}/mods/${project.name}-${project.version}.jar</outputFile>
+						</configuration>
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>

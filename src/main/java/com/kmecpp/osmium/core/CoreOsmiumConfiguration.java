@@ -3,14 +3,14 @@ package com.kmecpp.osmium.core;
 import com.kmecpp.osmium.api.config.Configuration;
 import com.kmecpp.osmium.api.config.Setting;
 
-@Configuration(path = "osmium.yml", header = "Osmium configuration file, author: kmecpp, website: https://github.com/kmecpp/Osmium")
+@Configuration(path = "osmium.conf", header = "Osmium configuration file, author: kmecpp, website: https://github.com/kmecpp/Osmium")
 public class CoreOsmiumConfiguration {
 
 	@Setting
 	public static boolean debug = false;
 
 	@Setting
-	public static boolean coloredConsole = false;
+	public static boolean coloredConsole = true;
 
 	/*
 	 * DATABASE

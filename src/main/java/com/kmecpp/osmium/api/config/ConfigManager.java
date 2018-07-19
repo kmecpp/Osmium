@@ -4,10 +4,10 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.inject.Singleton;
 
+import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
@@ -32,7 +32,8 @@ public class ConfigManager {
 			boolean firstSave = false;
 			Configuration properties = getConfigProperties(configClass);
 
-			Path path = Paths.get("plugins", Osmium.getPlugin(configClass).getName(), properties.path());
+			//			Path path = Paths.get("plugins", Osmium.getPlugin(configClass).getName(), properties.path());
+			Path path = Directory.pluginFolder(Osmium.getPlugin(configClass)).resolve(properties.path());
 			File file = path.toFile();
 			if (!file.exists()) {
 				if (file.getParentFile() != null) {

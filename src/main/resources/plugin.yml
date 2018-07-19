@@ -1,9 +1,9 @@
-name: Osmium
-main: com.kmecpp.osmium.platform.bukkit.OsmiumBukkitMain
+name: ${project.name}
+main: ${bukkitMain}
 load: STARTUP
-version: 1.0
-description: API for Bukkit and Sponge
-website: https://github.com/kmecpp/Osmium
+version: ${project.version}
+description: ${project.description}
+website: ${project.url}
 authors: [kmecpp]
 commands:
   osmium:

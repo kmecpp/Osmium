@@ -179,8 +179,11 @@ Osmium has many features in place to allow you to use platform specific code, fo
 For example:
 
 ```
-Platform.isBukkit();
-Platform.isSponge();
+if(Platform.isBukkit()){
+	//Bukkit code
+} else if(Platform.isSponge()){
+	//Sponge code
+}
 ```
 
 or

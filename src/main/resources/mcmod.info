@@ -1,0 +1,12 @@
+[
+	{
+		"modid": "${project.artifactId}", 
+		"name": "${project.name}", 
+		"version": "${project.version}", 
+		"description": "${project.description}", 
+		"url": "${project.url}", 
+		"authorList": [
+			"kmecpp"
+		]
+	}
+]

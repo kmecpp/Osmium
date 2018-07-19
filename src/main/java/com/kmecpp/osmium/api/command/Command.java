@@ -6,12 +6,13 @@ import com.kmecpp.jlib.utils.StringUtil;
 
 public class Command extends SimpleCommand {
 
-	private ArrayList<Command> args = new ArrayList<>();
+	private ArrayList<SimpleCommand> args = new ArrayList<>();
 
-	private String title = "&a&lCommand List";
+	private String title = "&a&l" + StringUtil.capitalize(getPrimaryAlias()) + " Commands";
 
 	public Command(String... aliases) {
 		super(aliases);
+		configure();
 		//		this.properties = new CommandProperties(this.getClass().getAnnotation(Command.class));
 	}
 
@@ -23,13 +24,14 @@ public class Command extends SimpleCommand {
 	}
 
 	public void execute(CommandEvent e) {
+		System.out.println("Execute: " + e);
 		if (!args.isEmpty()) {
 			if (e.getArgs().length == 0) {
 				e.sendMessage("");
 				e.sendMessage(title);
 				e.sendMessage("&e&m----------------------------------------");
 				e.sendMessage("");
-				for (Command arg : args) {
+				for (SimpleCommand arg : args) {
 					e.sendMessage("&b/" + arg.getPrimaryAlias()
 							+ (arg.getDescription().isEmpty() ? "" : "&e - &b" + arg.getDescription()));
 				}
@@ -46,8 +48,8 @@ public class Command extends SimpleCommand {
 		}
 	}
 
-	public final Command add(String... aliases) {
-		return new Command(aliases);
+	public final SimpleCommand add(String... aliases) {
+		return new SimpleCommand(aliases);
 	}
 
 	public final void setArg(String label, CommandExecutor executor) {

@@ -54,7 +54,7 @@ public abstract class OsmiumPlugin {
 	@SuppressWarnings("unused")
 	private void setupPlugin(Object pluginImpl) throws Exception {
 		this.pluginImpl = pluginImpl;
-		this.classManager = new ClassManager(this, pluginImpl.getClass());
+		this.classManager = new ClassManager(this, pluginImpl);
 	}
 
 	//	public Class<? extends OsmiumPlugin> getMainClass() {
@@ -92,13 +92,13 @@ public abstract class OsmiumPlugin {
 	public void onDisable() {
 	}
 
-	public SpongePlugin asSpongePlugin() {
-		return (SpongePlugin) pluginImpl;
-	}
-
-	public BukkitPlugin asBukkitPlugin() {
-		return (BukkitPlugin) pluginImpl;
-	}
+	//	public SpongePlugin asSpongePlugin() {
+	//		return (SpongePlugin) pluginImpl;
+	//	}
+	//
+	//	public BukkitPlugin asBukkitPlugin() {
+	//		return (BukkitPlugin) pluginImpl;
+	//	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T getPluginImplementation() {
