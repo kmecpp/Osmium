@@ -48,13 +48,12 @@ public class ClassManager {
 				String className = name.substring(0, name.length() - 6);
 				try {
 					Class<?> cls = classLoader.loadClass(className);
+					cls.getDeclaredMethods(); //Verify that return types exist
 					onLoad(cls);
 					pluginClasses.add(cls);
-				} catch (ClassNotFoundException e) {
+				} catch (ClassNotFoundException | NoClassDefFoundError e) {
 					OsmiumLogger.debug("SKIPPING: " + className);
 					//Ignore classes depending on different platforms (TODO: COULD EASILY BREAK STUFF)
-				} catch (NoClassDefFoundError e) {
-					e.printStackTrace();
 				}
 			}
 		}

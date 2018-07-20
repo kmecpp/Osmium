@@ -1,0 +1,18 @@
+[
+	{
+		"modid": "${project_id}", 
+		"name": "${project_name}", 
+		"version": "${project_version}", 
+		"description": "${project_description}", 
+		"url": "${project_url}", 
+		"authorList": [
+			"kmecpp"
+		],
+		"dependencies": [
+			"spongeapi@${sponge_version}"
+		],
+		"requiredMods": [
+			"spongeapi@${sponge_version}"
+		]
+	}
+]

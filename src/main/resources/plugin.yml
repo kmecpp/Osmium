@@ -1,9 +1,9 @@
-name: ${project.name}
-main: ${bukkitMain}
+name: ${project_name}
+main: ${bukkit_main}
 load: STARTUP
-version: ${project.version}
-description: ${project.description}
-website: ${project.url}
+version: ${project_version}
+description: ${project_description}
+website: ${project_url}
 authors: [kmecpp]
 commands:
   osmium:

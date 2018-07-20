@@ -21,8 +21,11 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
-import com.kmecpp.jflame.value.JsonArray;
-import com.kmecpp.jflame.value.JsonObject;
+import org.spongepowered.plugin.meta.McModInfo;
+import org.spongepowered.plugin.meta.PluginDependency;
+import org.spongepowered.plugin.meta.PluginDependency.LoadOrder;
+import org.spongepowered.plugin.meta.PluginMetadata;
+
 import com.kmecpp.jlib.object.Objects;
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.api.platform.Platform;
@@ -113,16 +116,38 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		// GENERATE META FILES
 		info("Generating plugin metafiles for annotation: " + Objects.toClassString(meta));
 
+		PluginMetadata modinfo = new PluginMetadata(entry.getKey());
+		//				.setVersion(meta.getVersion())
+		//				.setDescription(meta.getDescription())
+		//				.setUrl(meta.getUrl())
+		//				.addAuthors(meta.getAuthors());
+		modinfo.setVersion(meta.getVersion());
+		modinfo.setDescription(meta.getDescription());
+		modinfo.setUrl(meta.getUrl());
+		for (String author : meta.getAuthors()) {
+			modinfo.addAuthor(author);
+		}
+		for (String dependency : meta.getDependencies()) {
+			modinfo.addDependency(new PluginDependency(LoadOrder.BEFORE, dependency.toLowerCase(), "", false));
+		}
+		try {
+
+			McModInfo.builder().build().write(getWriter(Platform.SPONGE.getMetaFile()), modinfo);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to write mcmod.info file into jar!", e);
+		}
+
 		// Sponge mcmod.info
-		JsonArray plugins = new JsonArray();
-		plugins.add(new JsonObject().add("modid", entry.getKey())
-				.add("name", meta.getName())
-				.add("version", meta.getVersion())
-				.add("description", meta.getDescription())
-				.add("url", meta.getUrl())
-				.add("authorList", JsonArray.from(meta.getAuthors()))
-				.add("dependencies", JsonArray.from(meta.getDependencies())));
-		writeRawFile(Platform.SPONGE.getMetaFile(), plugins.getFormatted());
+		//		JsonArray plugins = new JsonArray();
+		//		plugins.add(new JsonObject().add("modid", entry.getKey())
+		//				.add("name", meta.getName())
+		//				.add("version", meta.getVersion())
+		//				.add("description", meta.getDescription())
+		//				.add("url", meta.getUrl())
+		//				.add("authorList", JsonArray.from(meta.getAuthors()))
+		//				.add("dependencies", JsonArray.from(meta.getDependencies()))
+		//				.add("requiredMods", JsonArray.from(new String[] { "spongeapi@" + AppInfo.SPONGE_VERSION })));
+		//		writeRawFile(Platform.SPONGE.getMetaFile(), plugins.getFormatted());
 
 		// Bukkit plugin.yml
 		StringBuilder pluginYml = new StringBuilder().append("name: " + meta.getName() + "\n")
@@ -158,12 +183,12 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 			AnnotationsAttribute attribute = new AnnotationsAttribute(cpool, AnnotationsAttribute.visibleTag);
 			Annotation annotation = new Annotation("org.spongepowered.api.plugin.Plugin", cpool); //CANNOT USE DIRECT CLASS REFERENCE
 			annotation.addMemberValue("id", new StringMemberValue(meta.getName().toLowerCase(), cpool));
-			annotation.addMemberValue("name", new StringMemberValue(meta.getName(), cpool));
-			annotation.addMemberValue("version", new StringMemberValue(meta.getVersion(), cpool));
-			annotation.addMemberValue("description", new StringMemberValue(meta.getDescription(), cpool));
-			annotation.addMemberValue("authors", getAuthors(meta, cpool));
-			annotation.addMemberValue("dependencies", getDependencies(meta, cpool));
-			annotation.addMemberValue("url", new StringMemberValue(meta.getUrl(), cpool));
+			//			annotation.addMemberValue("name", new StringMemberValue(meta.getName(), cpool));
+			//			annotation.addMemberValue("version", new StringMemberValue(meta.getVersion(), cpool));
+			//			annotation.addMemberValue("description", new StringMemberValue(meta.getDescription(), cpool));
+			//			annotation.addMemberValue("authors", getAuthors(meta, cpool));
+			//			annotation.addMemberValue("dependencies", getDependencies(meta, cpool));
+			//			annotation.addMemberValue("url", new StringMemberValue(meta.getUrl(), cpool));
 			attribute.addAnnotation(annotation);
 			classFile.addAttribute(attribute);
 
@@ -202,9 +227,12 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		ctClass.writeFile(new File(file.toUri()).getParent());
 	}
 
+	private BufferedWriter getWriter(String file) throws IOException {
+		return new BufferedWriter(processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", file).openWriter());
+	}
+
 	public void writeRawFile(String file, String contents) {
-		try (BufferedWriter writer = new BufferedWriter(
-				processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", file).openWriter())) {
+		try (BufferedWriter writer = getWriter(file)) {
 			writer.write(contents);
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to create zipped file: '" + file + "'!", e);

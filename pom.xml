@@ -10,6 +10,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<sponge.version>7.0.0</sponge.version>
 		<bukkitMain>com.kmecpp.osmium.core.OsmiumBukkitMain</bukkitMain>
 		<spongeMain>com.kmecpp.osmium.core.OsmiumSpongeMain</spongeMain>
 	</properties>
@@ -54,15 +55,21 @@
 		<dependency>
 			<groupId>org.spongepowered</groupId>
 			<artifactId>spongeapi</artifactId>
-			<version>7.0.0</version>
+			<version>${sponge.version}</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.spongepowered</groupId>
-			<artifactId>spongevanilla</artifactId>
-			<version>1.12.2-7.1.0-BETA-75</version>
-			<scope>provided</scope>
+			<artifactId>plugin-meta</artifactId>
+			<version>0.4.3-SNAPSHOT</version>
 		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.spongepowered</groupId> -->
+		<!-- <artifactId>spongevanilla</artifactId> -->
+		<!-- <version>1.12.2-7.1.0-BETA-75</version> -->
+		<!-- <scope>provided</scope> -->
+		<!-- </dependency> -->
 
 		<!-- JLIB -->
 		<dependency>
@@ -138,6 +145,17 @@
 			</plugin>
 
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<delimiters>
+						<delimiter>${*}</delimiter>
+					</delimiters>
+				</configuration>
+			</plugin>
+
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
 				<configuration>
@@ -145,6 +163,32 @@
 					<target>1.8</target>
 					<proc>none</proc>
 				</configuration>
+				<!-- <executions> -->
+				<!-- <execution> -->
+				<!-- <id>process-annotations</id> -->
+				<!-- <phase>generate-sources</phase> -->
+				<!-- <goals> -->
+				<!-- <goal>compile</goal> -->
+				<!-- </goals> -->
+				<!-- <configuration> -->
+				<!-- <compilerArgs> -->
+				<!-- <arg>-proc:only</arg> -->
+				<!-- </compilerArgs> -->
+				<!-- </configuration> -->
+				<!-- </execution> -->
+				<!-- <execution> -->
+				<!-- <id>default-compile</id> -->
+				<!-- <phase>compile</phase> -->
+				<!-- <goals> -->
+				<!-- <goal>compile</goal> -->
+				<!-- </goals> -->
+				<!-- <configuration> -->
+				<!-- <compilerArgs> -->
+				<!-- <arg>-proc:none</arg> -->
+				<!-- </compilerArgs> -->
+				<!-- </configuration> -->
+				<!-- </execution> -->
+				<!-- </executions> -->
 			</plugin>
 
 			<plugin>

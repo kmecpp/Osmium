@@ -1,0 +1,129 @@
+import org.apache.tools.ant.filters.*
+
+plugins {
+    id 'java'
+
+    id 'eclipse'
+    id 'idea'
+
+    id 'maven'
+    //id 'org.spongepowered.plugin' version '0.8.1'
+}
+
+
+group = "com.kmecpp"
+version = project_version
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+/*
+ * COMPILIATION
+ */
+processResources {
+	expand(project.properties)
+}
+
+task processAppInfo(type: Copy) {
+    from 'src/main/java/com/kmecpp/osmium/AppInfo.java'
+    into 'build/generated/com/kmecpp/osmium/'
+    expand(project.properties)
+}
+
+task compileAppInfo(type: JavaCompile, dependsOn: processAppInfo) {
+    source = "build/generated"
+    classpath = sourceSets.main.compileClasspath
+    destinationDir = file('build/classes/java/main')
+}
+
+task mergeSources(type: Copy) {
+   from 'build/generated'
+   from 'src/main/java'
+   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+   into "build/finalSources"
+}
+
+sourceSets.main.java {
+	srcDirs = ["build/finalSources"]
+}
+
+/*
+compileJava {
+	exclude "com/kmecpp/osmium/AppInfo.java"
+	classpath += files("build/generated")
+}
+*/
+
+compileJava.dependsOn mergeSources, compileAppInfo
+/*
+ * END COMPILIATION
+ */
+
+repositories {
+    jcenter()
+    mavenLocal()
+    maven {
+    	url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    	url "http://repo.spongepowered.org/maven"
+    }
+}
+
+dependencies {
+	compile "org.spigotmc:spigot:$bukkit_version"
+	compile "org.spongepowered:spongeapi:$sponge_version"
+	
+	shade "com.kmecpp:jlib:+"
+	shade "org.spongepowered:plugin-meta:0.4.2-SNAPSHOT"
+	shade "org.spongepowered:configurate-hocon:3.6-SNAPSHOT"
+	shade "javassist:javassist:3.12.1.GA"
+	shade "com.zaxxer:HikariCP:+"
+
+    testCompile 'junit:junit:4.12'
+}
+/*
+sponge {
+    plugin {
+        meta {
+        println project_version
+            name = project_name
+            version = project_version
+            description = project_description
+            url = project_url
+        }
+    }
+}*/
+
+jar {
+	manifest.mainAttributes(
+		"Built-By": "kmecpp",
+		"Implementation-Title": archivesBaseName,
+		"Implementation-Version": project.version)
+				
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+}
+
+task deployBukkit(type: Copy) {
+	if (project.hasProperty("bukkit_server")) {
+		from "build/libs/"
+		into(project.getProperty("bukkit_server") + "/plugins")
+	}
+}
+
+task deploySponge(type: Copy) {
+	if (project.hasProperty("sponge_server")) {
+		from "build/libs/"
+		into(project.getProperty("sponge_server") + "/mods")
+	}
+}
+
+build.finalizedBy deployBukkit
+build.finalizedBy deploySponge

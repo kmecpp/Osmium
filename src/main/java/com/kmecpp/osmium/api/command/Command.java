@@ -3,6 +3,8 @@ package com.kmecpp.osmium.api.command;
 import java.util.ArrayList;
 
 import com.kmecpp.jlib.utils.StringUtil;
+import com.kmecpp.osmium.Log;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
 public class Command extends SimpleCommand {
 
@@ -25,6 +27,20 @@ public class Command extends SimpleCommand {
 
 	public void execute(CommandEvent e) {
 		System.out.println("Execute: " + e);
+		long start = System.nanoTime();
+		for (int i = 0; i < 10; i++) {
+			Log.info("Hey");
+		}
+		long end = System.nanoTime();
+		System.out.println("TIME: " + ((end - start) / 1000F) + "us");
+
+		start = System.nanoTime();
+		for (int i = 0; i < 10; i++) {
+			OsmiumLogger.info("Hey");
+		}
+		end = System.nanoTime();
+		System.out.println("TIME: " + ((end - start) / 1000F) + "us");
+
 		if (!args.isEmpty()) {
 			if (e.getArgs().length == 0) {
 				e.sendMessage("");

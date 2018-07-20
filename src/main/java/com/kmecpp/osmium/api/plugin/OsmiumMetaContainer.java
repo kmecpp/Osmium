@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.api.plugin;
 
+import com.kmecpp.osmium.AppInfo;
+
 public class OsmiumMetaContainer {
 
 	private final String sourceClass;
@@ -20,9 +22,10 @@ public class OsmiumMetaContainer {
 		this.url = url;
 		this.authors = authors;
 
-		this.dependencies = new String[dependencies.length + 1];
-		this.dependencies[0] = "Osmium";
-		System.arraycopy(dependencies, 0, this.dependencies, 1, dependencies.length);
+		this.dependencies = new String[dependencies.length + 2];
+		this.dependencies[0] = "spongeapi@" + AppInfo.SPONGE_VERSION;
+		this.dependencies[1] = "osmium";
+		System.arraycopy(dependencies, 0, this.dependencies, 2, dependencies.length);
 	}
 
 	public String getSourceClass() {

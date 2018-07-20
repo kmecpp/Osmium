@@ -14,7 +14,8 @@ import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.platform.sponge.SpongePlayer;
 import com.kmecpp.osmium.platform.sponge.SpongeWorld;
 
-@Plugin(name = AppInfo.NAME, id = AppInfo.ID, version = AppInfo.VERSION, authors = { "kmecpp" }, description = "API for Bukkit and Sponge", url = "https://github.com/kmecpp/Osmium")
+@Plugin(name = AppInfo.NAME, id = AppInfo.ID, version = AppInfo.VERSION,
+		authors = { AppInfo.AUTHOR }, description = AppInfo.DESCRIPTION, url = AppInfo.URL)
 public class OsmiumSpongeMain extends SpongePlugin {
 
 	//	@Listener(order = Order.PRE)
