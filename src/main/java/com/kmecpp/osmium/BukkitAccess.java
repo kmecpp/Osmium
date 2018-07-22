@@ -3,6 +3,7 @@ package com.kmecpp.osmium;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
@@ -24,15 +25,26 @@ import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
 
-	public static void registerCommand(Command command) {
+	public static void registerCommand(OsmiumPlugin plugin, Command command) {
 		try {
-			String commandName = command.getAliases()[0];
-			String[] aliases = new String[command.getAliases().length - 1];
-			System.arraycopy(command.getAliases(), 1, aliases, 0, aliases.length);
-
 			SimpleCommandMap commandMap = (SimpleCommandMap) Reflection.getFieldValue(Bukkit.getServer(), "commandMap");
+			List<String> aliases = Arrays.asList(Arrays.copyOfRange(command.getAliases(), 1, command.getAliases().length));
 
-			commandMap.register(commandName, new BukkitCommand(commandName, command.getDescription(), command.getUsage(), Arrays.asList(aliases)) { //Usage message cannot be null or else stuff will break
+			String name = command.getPrimaryAlias();
+			if (commandMap.getCommand(name) != null) {
+				for (int i = 0; i < command.getAliases().length; i++) {
+					String alias = command.getAliases()[i];
+					if (commandMap.getCommand(alias) == null) {
+						OsmiumLogger.debug("Modified primary alias: " + name + " -> " + alias);
+						command.setPrimaryAlias(alias);
+						break;
+					} else if (i == command.getAliases().length) {
+						CommandManager.sendFailedRegistrationMessage(plugin, command);
+					}
+				}
+			}
+
+			commandMap.register(command.getPrimaryAlias(), new BukkitCommand(command.getPrimaryAlias(), command.getDescription(), command.getUsage(), aliases) { //Usage message cannot be null or else stuff will break
 
 				@Override
 				public boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args) {
@@ -40,12 +52,11 @@ public class BukkitAccess {
 							: bukkitSender instanceof org.bukkit.command.ConsoleCommandSender ? new BukkitConsoleCommandSender((org.bukkit.command.ConsoleCommandSender) bukkitSender)
 									: bukkitSender instanceof org.bukkit.command.BlockCommandSender ? new BukkitBlockCommandSender((org.bukkit.command.BlockCommandSender) bukkitSender)
 											: new GenericBukkitCommandSender(bukkitSender);
-					System.out.println("Bukkit exeucte!");
 					return CommandManager.invokeCommand(command, sender, label, args);
 				}
 
 			});
-			OsmiumLogger.debug("Registered Bukkit command: /" + command.getPrimaryAlias());
+			Osmium.getCommandManager().register(plugin, command);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -1,31 +1,66 @@
 package com.kmecpp.osmium;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.kmecpp.osmium.api.logging.LogLevel;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
 
 public class Log {
 
 	public static void debug(String message) {
-		getPlugin().debug(message);
+		log(LogLevel.DEBUG, message);
 	}
 
 	public static void info(String message) {
-		getPlugin().info(message);
+		log(LogLevel.INFO, message);
 	}
 
 	public static void warn(String message) {
-		getPlugin().warn(message);
+		log(LogLevel.WARN, message);
 	}
 
 	public static void error(String message) {
-		getPlugin().error(message);
+		log(LogLevel.ERROR, message);
 	}
 
-	public static OsmiumPlugin getPlugin() {
+	public static void log(LogLevel level, String message) {
+		String className = Thread.currentThread().getStackTrace()[3].getClassName();
+
+		boolean success = false;
 		try {
-			return Osmium.getPlugin(Class.forName(Thread.currentThread().getStackTrace()[3].getClassName()));
-		} catch (ClassNotFoundException e) {
-			return null;
+			OsmiumPlugin plugin = Osmium.getPlugin(Class.forName(className));
+			if (plugin != null) {
+				logRaw(plugin.getLogger(), level, plugin.getName(), message);
+				success = true;
+			}
+		} catch (Exception e) {
+		}
+
+		if (!success) {
+			logRaw(LoggerFactory.getLogger(className), level, className, message);
 		}
 	}
+
+	public static void logRaw(Logger logger, LogLevel level, String prefix, String message) {
+		if (level.isDebug() && CoreOsmiumConfiguration.debug) {
+			logger.debug(message);
+		} else if (level.isInfo()) {
+			logger.info(message);
+		} else if (level.isWarn()) {
+			logger.warn(message);
+		} else if (level.isError()) {
+			logger.error(message);
+		}
+	}
+
+	//	public static OsmiumPlugin getPlugin() {
+	//		try {
+	//			return Osmium.getPlugin(Class.forName(Thread.currentThread().getStackTrace()[3].getClassName()));
+	//		} catch (ClassNotFoundException e) {
+	//			return null;
+	//		}
+	//	}
 
 }

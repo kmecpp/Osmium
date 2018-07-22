@@ -2,7 +2,8 @@ package com.kmecpp.osmium.api.command;
 
 public class SimpleCommand {
 
-	private String[] aliases;
+	private final String[] aliases;
+
 	private String description = "";
 	private String permission = "";
 	private String usage = "";
@@ -10,13 +11,19 @@ public class SimpleCommand {
 	private boolean playersOnly;
 	private CommandExecutor executor;
 
+	private String primaryAlias;
+	private String shortestAlias;
+
 	//	public CommandProperties(String... aliases) {
 	//		this.aliases = aliases;
 	//	}
 
-	public SimpleCommand(String... aliases) {
-		if (aliases.length == 0) {
+	public SimpleCommand(String name, String... aliases) {
+		if (Command.class.isAssignableFrom(this.getClass())) {
 			CommandProperties command = this.getClass().getAnnotation(CommandProperties.class);
+			if (command == null) {
+				throw new CommandException("Osmium commands must have an @" + CommandProperties.class.getSimpleName() + " annotation");
+			}
 
 			this.aliases = command.aliases();
 			this.description = command.description();
@@ -25,12 +32,44 @@ public class SimpleCommand {
 			this.admin = command.admin();
 			this.playersOnly = command.playersOnly();
 		} else {
-			this.aliases = aliases;
+			this.aliases = new String[aliases.length + 1];
+			this.aliases[0] = name;
+			for (int i = 0; i < aliases.length; i++) {
+				String alias = aliases[i];
+				this.aliases[i + 1] = alias;
+			}
+		}
+
+		if (this.aliases == null || this.aliases.length == 0) {
+			throw new IllegalArgumentException("Command must have at least one alias!");
+		}
+
+		this.primaryAlias = this.aliases[0];
+		for (String alias : this.aliases) {
+			if (this.shortestAlias == null || alias.length() < this.shortestAlias.length()) {
+				this.shortestAlias = alias;
+			}
 		}
 	}
 
 	public void execute(CommandEvent e) {
 		executor.execute(e);
+	}
+
+	public String[] getAliases() {
+		return aliases;
+	}
+
+	public String getPrimaryAlias() {
+		return primaryAlias;
+	}
+
+	public void setPrimaryAlias(String primaryAlias) {
+		this.primaryAlias = primaryAlias;
+	}
+
+	public String getShortestAlias() {
+		return shortestAlias;
 	}
 
 	public SimpleCommand setDescription(String description) {
@@ -66,20 +105,24 @@ public class SimpleCommand {
 		return executor;
 	}
 
-	public String getPrimaryAlias() {
-		return aliases.length > 0 ? aliases[0] : null;
-	}
-
-	public String[] getAliases() {
-		return aliases;
+	public boolean hasDescription() {
+		return !description.isEmpty();
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
+	public boolean hasPermission() {
+		return !permission.isEmpty();
+	}
+
 	public String getPermission() {
 		return permission;
+	}
+
+	public boolean hasUsage() {
+		return !usage.isEmpty();
 	}
 
 	public String getUsage() {

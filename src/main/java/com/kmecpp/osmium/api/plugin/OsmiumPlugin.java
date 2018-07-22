@@ -114,16 +114,32 @@ public abstract class OsmiumPlugin {
 		return properties.version();
 	}
 
+	public final boolean hasDescription() {
+		return !properties.description().isEmpty();
+	}
+
 	public final String getDescription() {
 		return properties.description();
 	}
 
-	public final String getUrl() {
+	public final boolean hasWebsite() {
+		return !properties.url().isEmpty();
+	}
+
+	public final String getWebsite() {
 		return properties.url();
+	}
+
+	public final boolean hasAuthors() {
+		return properties.authors().length > 0;
 	}
 
 	public final String[] getAuthors() {
 		return properties.authors();
+	}
+
+	public final boolean hasDependencies() {
+		return properties.dependencies().length > 0;
 	}
 
 	public final String[] getDependencies() {
@@ -147,7 +163,7 @@ public abstract class OsmiumPlugin {
 		logger.error(message);
 	}
 
-	public Logger logger() {
+	public Logger getLogger() {
 		return logger;
 	}
 

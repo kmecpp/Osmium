@@ -121,7 +121,7 @@ public class ClassManager {
 			}
 
 			if (Platform.isBukkit()) {
-				BukkitAccess.registerCommand(command);
+				BukkitAccess.registerCommand(plugin, command);
 			} else if (Platform.isSponge()) {
 				SpongeAccess.registerCommand(plugin, command);
 			}

@@ -15,7 +15,8 @@ import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
 
 public class OsmiumLogger {
 
-	private static Logger logger = LoggerFactory.getLogger(AppInfo.NAME);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AppInfo.NAME);
+	private static final String PREFIX = ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + AppInfo.NAME + "%L" + ChatColor.DARK_AQUA + "] ";
 
 	static {
 		Osmium.reloadConfig(CoreOsmiumConfiguration.class);
@@ -25,7 +26,7 @@ public class OsmiumLogger {
 		if (CoreOsmiumConfiguration.coloredConsole) {
 			log(LogLevel.DEBUG, AppInfo.NAME, message);
 		} else {
-			logger.debug(message);
+			LOGGER.debug(message);
 		}
 	}
 
@@ -33,7 +34,7 @@ public class OsmiumLogger {
 		if (CoreOsmiumConfiguration.coloredConsole) {
 			log(LogLevel.INFO, AppInfo.NAME, message);
 		} else {
-			logger.info(message);
+			LOGGER.info(message);
 		}
 	}
 
@@ -41,7 +42,7 @@ public class OsmiumLogger {
 		if (CoreOsmiumConfiguration.coloredConsole) {
 			log(LogLevel.WARN, AppInfo.NAME, message);
 		} else {
-			logger.warn(message);
+			LOGGER.warn(message);
 		}
 	}
 
@@ -49,7 +50,7 @@ public class OsmiumLogger {
 		if (CoreOsmiumConfiguration.coloredConsole) {
 			log(LogLevel.ERROR, AppInfo.NAME, message);
 		} else {
-			logger.error(message);
+			LOGGER.error(message);
 		}
 	}
 
@@ -63,7 +64,7 @@ public class OsmiumLogger {
 	 * @param message
 	 *            the message
 	 */
-	public static void log(LogLevel level, String prefix, String message) {
+	private static void log(LogLevel level, String prefix, String message) {
 		if (level == LogLevel.DEBUG && !CoreOsmiumConfiguration.debug) {
 			return;
 		}
@@ -71,11 +72,8 @@ public class OsmiumLogger {
 		boolean displayLevel = level != LogLevel.DEBUG && level != LogLevel.INFO;
 		if (Platform.isBukkit()) {
 			if (Bukkit.getConsoleSender() != null) { //This seems to only be an issue on legacy servers during startup
-				Bukkit.getConsoleSender().sendMessage(""
-						+ ChatColor.DARK_AQUA + "["
-						+ ChatColor.AQUA + prefix + (displayLevel ? ChatColor.DARK_AQUA + "|" + level.getColorImplementation() + level : "")
-						+ ChatColor.DARK_AQUA + "] "
-						+ level.getColorImplementation() + message);
+				String start = PREFIX.replace("%L", (displayLevel ? ChatColor.DARK_AQUA + "|" + level.getColorImplementation() + level : ""));
+				Bukkit.getConsoleSender().sendMessage(start + level.getColorImplementation() + message);
 			} else {
 				Bukkit.getLogger().log(level.getLevel(), "[" + prefix + "] " + message);
 			}
@@ -84,7 +82,7 @@ public class OsmiumLogger {
 					(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColorImplementation(), level) : Text.EMPTY),
 					TextColors.DARK_AQUA, "] ", level.getColorImplementation(), message));
 		} else {
-			logger.info("[" + prefix + "] " + message);
+			LOGGER.info(message);
 		}
 	}
 

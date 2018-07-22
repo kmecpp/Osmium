@@ -7,6 +7,8 @@ plugins {
     id 'idea'
 
     id 'maven'
+    id 'maven-publish'   
+    id 'signing'
     //id 'org.spongepowered.plugin' version '0.8.1'
 }
 
@@ -16,6 +18,27 @@ version = project_version
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+        	groupId = 'com.kmecpp'
+            artifactId = 'osmium'
+            version = project_version
+
+            from components.java
+        }
+    }
+    repositories {
+    	maven {
+    		url = "http://repo.kmecpp.com"
+    		credentials {
+    			username project.properties.mavenUser
+    			password project.properties.mavenPassword
+    		}
+    	}
+    }
+}
 
 configurations {
     shade
@@ -48,16 +71,27 @@ task mergeSources(type: Copy) {
    into "build/finalSources"
 }
 
+sourceSets {
+    generated {
+        java.srcDir "build/finalSources"
+    }
+}
+
+/*
 sourceSets.main.java {
 	srcDirs = ["build/finalSources"]
 }
 
-/*
 compileJava {
 	exclude "com/kmecpp/osmium/AppInfo.java"
 	classpath += files("build/generated")
 }
 */
+
+compileJava {
+    //sourceSets.main.java { srcDir "build/finalSources" }
+   	source = sourceSets.generated.java
+}
 
 compileJava.dependsOn mergeSources, compileAppInfo
 /*
@@ -66,19 +100,18 @@ compileJava.dependsOn mergeSources, compileAppInfo
 
 repositories {
     jcenter()
-    mavenLocal()
-    maven {
-    	url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
-    	url "http://repo.spongepowered.org/maven"
-    }
+    maven { url "http://repo.kmecpp.com" }
+    maven { url "http://repo.spongepowered.org/maven" }
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 }
 
 dependencies {
-	compile "org.spigotmc:spigot:$bukkit_version"
+	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648.jar")
+	//compile "org.spigotmc:spigot:$bukkit_version"
 	compile "org.spongepowered:spongeapi:$sponge_version"
 	
 	shade "com.kmecpp:jlib:+"
-	shade "org.spongepowered:plugin-meta:0.4.2-SNAPSHOT"
+	shade "org.spongepowered:plugin-meta:0.4.1"
 	shade "org.spongepowered:configurate-hocon:3.6-SNAPSHOT"
 	shade "javassist:javassist:3.12.1.GA"
 	shade "com.zaxxer:HikariCP:+"
@@ -103,7 +136,7 @@ jar {
 		"Built-By": "kmecpp",
 		"Implementation-Title": archivesBaseName,
 		"Implementation-Version": project.version)
-				
+						
     configurations.shade.each { dep ->
         from(project.zipTree(dep)){
             exclude 'META-INF', 'META-INF/**'
@@ -111,10 +144,37 @@ jar {
     }
 }
 
-task deployBukkit(type: Copy) {
+uploadArchives {
+    repositories {
+        mavenDeployer {
+        /*
+        	uniqueVersion = false
+        	repository(url: "http://repo.spongepowered.org") {
+        	}
+        
+            pom.whenConfigured {
+                pom -> pom.dependencies.removeAll { it.groupId == 'com.kmecpp' && it.artifactId == 'osmium' }
+            }
+
+            ivy {
+            	credentials {
+            		username project.properties.mavenUser
+            		password project.properties.mavenPassword
+            	}
+            	url "http://repo.kmecpp.com"
+            }*/
+        }
+    }
+
+}
+
+task deployBukkit(type: Exec) {
 	if (project.hasProperty("bukkit_server")) {
-		from "build/libs/"
-		into(project.getProperty("bukkit_server") + "/plugins")
+		println jar.archiveName
+		println project.getProperty("bukkit_server") + "\\plugins"
+		commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("bukkit_server") + "\\plugins", '/Y'
+		//from "build/libs/"
+		//into(project.getProperty("bukkit_server") + "/plugins")
 	}
 }
 

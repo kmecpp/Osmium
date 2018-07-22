@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.command;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public class CommandEvent implements Messageable {
 
@@ -36,7 +37,11 @@ public class CommandEvent implements Messageable {
 	}
 
 	public Player getPlayer(int index) {
-		return Osmium.getPlayer(args[index]).orElseThrow(() -> CommandException.PLAYER_NOT_FOUND);
+		return Osmium.getPlayer(args[index]).orElseThrow(() -> notFound("player", args[index]));
+	}
+
+	public OsmiumPlugin getPlugin(int index) {
+		return Osmium.getPlugin(args[index]).orElseThrow(() -> notFound("plugin", args[index]));
 	}
 
 	public Player getPlayer() {
@@ -49,6 +54,12 @@ public class CommandEvent implements Messageable {
 
 	public String getCommand() {
 		return command;
+	}
+
+	public void consumeArgument() {
+		String[] temp = new String[args.length - 1];
+		System.arraycopy(args, 1, temp, 0, temp.length);
+		this.args = temp;
 	}
 
 	public String getArg(int index) {
@@ -74,6 +85,10 @@ public class CommandEvent implements Messageable {
 
 	public boolean hasArgs() {
 		return args.length > 0;
+	}
+
+	public CommandException notFound(String name, String input) {
+		return new CommandException("Could not find " + name + ": " + "'" + input + "'");
 	}
 
 	//	public void sendRawMessage(String style, String message) {

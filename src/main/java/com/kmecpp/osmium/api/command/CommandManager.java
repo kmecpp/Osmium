@@ -1,14 +1,45 @@
 package com.kmecpp.osmium.api.command;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+
 public final class CommandManager {
+
+	private HashMap<OsmiumPlugin, ArrayList<Command>> commands = new HashMap<>();
+
+	public void register(OsmiumPlugin plugin, Command command) {
+		ArrayList<Command> pluginCommands = getCommands(plugin);
+		pluginCommands.add(command);
+		commands.put(plugin, pluginCommands);
+		OsmiumLogger.debug("Registered Osmium command: /" + command.getPrimaryAlias());
+	}
+
+	public HashMap<OsmiumPlugin, ArrayList<Command>> getCommands() {
+		return commands;
+	}
+
+	public ArrayList<Command> getCommands(OsmiumPlugin plugin) {
+		return commands.getOrDefault(plugin, new ArrayList<>());
+	}
 
 	public static boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {
 		try {
 			command.execute(new CommandEvent(sender, commandLabel, args));
 			return true;
 		} catch (CommandException e) {
+			sender.sendMessage("&c" + e.getMessage());
 			return false;
 		}
+	}
+
+	public static void sendFailedRegistrationMessage(OsmiumPlugin plugin, Command command) {
+		OsmiumLogger.warn("Unable to register /" + command.getPrimaryAlias() + " for plugin: " + plugin.getName() + " because its aliases are unavailable!");
+		OsmiumLogger.warn("To correct this issue, create a command rewrite rule in the osmium config");
+		OsmiumLogger.warn("commands." + command.getPrimaryAlias() + "={alternate}");
+
 	}
 
 	//	private static ArrayList<Command> commands = new ArrayList<>();

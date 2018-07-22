@@ -11,7 +11,6 @@ public enum LogLevel {
 	INFO,
 	WARN,
 	ERROR,
-	FATAL,
 
 	;
 
@@ -23,15 +22,30 @@ public enum LogLevel {
 			INFO.colorImpl = ChatColor.GREEN;
 			WARN.colorImpl = ChatColor.YELLOW;
 			ERROR.colorImpl = ChatColor.RED;
-			FATAL.colorImpl = ChatColor.RED;
 		} else if (Platform.isSponge()) {
 			DEBUG.colorImpl = TextColors.WHITE;
 			INFO.colorImpl = TextColors.GREEN;
 			WARN.colorImpl = TextColors.YELLOW;
 			ERROR.colorImpl = TextColors.RED;
-			FATAL.colorImpl = TextColors.RED;
 		}
 	}
+
+	public boolean isDebug() {
+		return this == DEBUG;
+	}
+
+	public boolean isInfo() {
+		return this == INFO;
+	}
+
+	public boolean isWarn() {
+		return this == WARN;
+	}
+
+	public boolean isError() {
+		return this == ERROR;
+	}
+
 
 	public Object getColorImplementation() {
 		return colorImpl;
@@ -44,7 +58,6 @@ public enum LogLevel {
 		case WARN:
 			return java.util.logging.Level.WARNING;
 		case ERROR:
-		case FATAL:
 			return java.util.logging.Level.SEVERE;
 		default:
 			return java.util.logging.Level.ALL;

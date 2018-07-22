@@ -15,6 +15,7 @@ import org.spongepowered.api.Sponge;
 import com.kmecpp.jlib.utils.IOUtil;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Chat;
+import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.config.ConfigManager;
 import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.entity.Player;
@@ -34,7 +35,7 @@ public final class Osmium {
 	private static final HashMap<Class<? extends OsmiumPlugin>, Database> databases = new HashMap<>();
 
 	private static final ConfigManager configManager = new ConfigManager();
-	//	private static final Task scheduler = new Task();
+	private static final CommandManager commandManager = new CommandManager();
 	protected static boolean shuttingDown;
 
 	/*
@@ -190,6 +191,10 @@ public final class Osmium {
 
 	public static Optional<World> getWorld(String name) {
 		return Optional.of(WorldList.getWorld(name));
+	}
+
+	public static CommandManager getCommandManager() {
+		return commandManager;
 	}
 
 	public static void registerCommand(String... aliases) {
