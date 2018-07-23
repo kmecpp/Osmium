@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.util;
+package com.kmecpp.osmium.api.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,6 +80,8 @@ public class Reflection {
 	 * Attempts to invokes the constructor without any parameters and returns
 	 * the created instance
 	 * 
+	 * @param <T>
+	 *            the type of the constructor
 	 * @param constructor
 	 *            the constructor to invoke
 	 * @return the instance created
@@ -112,6 +114,8 @@ public class Reflection {
 	 * Gets all the constructors of the given class which match the specified
 	 * number of parameters.
 	 * 
+	 * @param <T>
+	 *            the type of the class
 	 * @param cls
 	 *            the class to search to search for constructors
 	 * @param params

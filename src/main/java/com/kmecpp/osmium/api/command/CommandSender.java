@@ -22,7 +22,7 @@ public interface CommandSender extends Abstraction, Messageable {
 	/**
 	 * Gets the value of the specified permission, if set.
 	 *
-	 * @param name
+	 * @param permission
 	 *            the permission to check
 	 * @return whether or not the object has that permission
 	 */

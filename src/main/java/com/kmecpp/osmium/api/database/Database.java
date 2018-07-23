@@ -16,9 +16,9 @@ import org.bukkit.Bukkit;
 import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.util.IOUtil;
+import com.kmecpp.osmium.api.util.StringUtil;
 import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
-import com.kmecpp.osmium.util.IOUtil;
-import com.kmecpp.osmium.util.StringUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
@@ -323,10 +323,8 @@ public class Database {
 	 * Creates a database table with the given name representing the specified
 	 * class. If the table already exists, this method will fail silently.
 	 * 
-	 * @param name
-	 *            the name of the table to create
 	 * @param cls
-	 *            the class whose database representation to create
+	 *            the class containing the table data
 	 */
 	public void createTable(Class<?> cls) {
 		TableProperties data = new TableProperties(cls);

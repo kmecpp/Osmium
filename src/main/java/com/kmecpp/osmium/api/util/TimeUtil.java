@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.util;
+package com.kmecpp.osmium.api.util;
 
 import java.util.Calendar;
 import java.util.TimeZone;

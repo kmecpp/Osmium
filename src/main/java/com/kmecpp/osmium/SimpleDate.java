@@ -1,7 +1,7 @@
 package com.kmecpp.osmium;
 
 import com.kmecpp.osmium.api.database.CustomSerialization;
-import com.kmecpp.osmium.util.TimeUtil;
+import com.kmecpp.osmium.api.util.TimeUtil;
 
 public class SimpleDate implements CustomSerialization {
 

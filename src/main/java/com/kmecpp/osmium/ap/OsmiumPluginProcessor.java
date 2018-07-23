@@ -31,7 +31,7 @@ import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMetaContainer;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.plugin.SpongePlugin;
-import com.kmecpp.osmium.util.StringUtil;
+import com.kmecpp.osmium.api.util.StringUtil;
 
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;

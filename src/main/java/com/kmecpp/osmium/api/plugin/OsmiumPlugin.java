@@ -12,7 +12,7 @@ import org.spongepowered.api.Sponge;
 import com.google.common.base.Preconditions;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
-import com.kmecpp.osmium.util.Reflection;
+import com.kmecpp.osmium.api.util.Reflection;
 
 /**
  * The abstract superclass of all Osmium plugins.

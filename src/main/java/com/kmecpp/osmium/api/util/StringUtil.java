@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.util;
+package com.kmecpp.osmium.api.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -95,13 +95,11 @@ public class StringUtil {
 	/**
 	 * Ensures the length of all the strings in the array are modified to have
 	 * the given length.
-	 * <p>
 	 * This method forwards to
 	 * 
 	 * <pre>
 	 * ensureLength(strings, length, <strong>1</strong>, <strong>true</strong>)
 	 * </pre>
-	 * </p>
 	 * 
 	 * @param strings
 	 *            the strings to modify the length of
@@ -147,10 +145,6 @@ public class StringUtil {
 	 *            the string to modify the length of
 	 * @param length
 	 *            the new length for the string
-	 * @param align
-	 *            a positive value to modify the string from the left, a
-	 *            negative to modify it from the right, and zero to attempt to
-	 *            center the modifications
 	 * @return the modified string according to the rules defined above
 	 */
 	public static String ensureLength(String str, int length) {
@@ -600,7 +594,7 @@ public class StringUtil {
 	 * Capitalizes the each word in the string by converting the first letter to
 	 * upper case and all subsequent letters to lower case
 	 * 
-	 * @param string
+	 * @param str
 	 *            the String to capitalize
 	 * @return the capitalized version of the String
 	 */
@@ -705,7 +699,7 @@ public class StringUtil {
 	 * Repeat the given character the specified number of times to create a
 	 * String
 	 * 
-	 * @param char
+	 * @param c
 	 *            the character to repeat
 	 * @param times
 	 *            the number of times to repeat
@@ -737,7 +731,7 @@ public class StringUtil {
 	 * StringUtil.join(array, " ");
 	 * </pre>
 	 * 
-	 * @param arr
+	 * @param array
 	 *            the array whose String representation to return
 	 * @return the String representation of the contents of the array
 	 */
@@ -790,7 +784,7 @@ public class StringUtil {
 	 * Converts the {@link Iterable} to a {@link String}, separated by the given
 	 * delimiter
 	 * 
-	 * @param arr
+	 * @param iterable
 	 *            the iterable whose String representation to return
 	 * @param delimiter
 	 *            the separator String
@@ -859,6 +853,8 @@ public class StringUtil {
 	 * Deserializes an object from the string, assuming its class implements the
 	 * serializable interface, and then casts it to the specified class
 	 * 
+	 * @param <T>
+	 *            the type of the class
 	 * @param str
 	 *            the string to deserialize
 	 * @param c
@@ -866,8 +862,6 @@ public class StringUtil {
 	 * @throws RuntimeException
 	 *             if an error occurs during deserialization
 	 * @return the object representation of the String
-	 * @throws InvalidClassException
-	 *             if the given string does not represent a valid class
 	 * @throws ClassCastException
 	 *             if the object is is not assignable to the type
 	 */

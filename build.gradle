@@ -19,30 +19,47 @@ version = project_version
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
 publishing {
     publications {
-        maven(MavenPublication) {
-        	groupId = 'com.kmecpp'
-            artifactId = 'osmium'
-            version = project_version
-
+        mavenJava(MavenPublication) {
+            artifactId = project_id
             from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                name = project_name
+                description = project_description
+                url = project_url
+            }
         }
     }
     repositories {
     	maven {
-    		url = "http://repo.kmecpp.com"
-    		credentials {
-    			username project.properties.mavenUser
-    			password project.properties.mavenPassword
+    	    credentials {
+    			username = project.properties.mavenUser
+    			password = project.properties.mavenPassword
     		}
-    	}
+    		def releasesRepoUrl = "https://oss.sonatype.org/content/repositories/releases"
+    		def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+    		//url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+    		url = snapshotsRepoUrl //Be safe for now
+        }
     }
-}
-
-configurations {
-    shade
-    compile.extendsFrom shade
 }
 
 /*

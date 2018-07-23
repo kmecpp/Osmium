@@ -7,9 +7,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import com.kmecpp.osmium.util.Reflection;
+import com.kmecpp.osmium.api.util.Reflection;
+
+import java.util.Set;
 
 public class DBRow implements Iterable<DBValue> {
 
@@ -89,6 +90,8 @@ public class DBRow implements Iterable<DBValue> {
 	 * {@link DBRow}. This method only overwrites fields whose names match the
 	 * column names, case insensitive.
 	 * 
+	 * @param <T>
+	 *            the type of the object
 	 * @param obj
 	 *            the object to merge with this row
 	 * @return the modified object

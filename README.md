@@ -19,7 +19,16 @@ Join our Discord channel stay updated with the project or help out: https://disc
  * And much more...
  
 <hr>
- 
+
+## Maven
+
+	<dependency>
+    	<groupId>com.kmecpp</groupId>
+    	<artifactId>osmium</artifactId>
+    	<version>1.0-SNAPSHOT</version>
+	</dependency>
+
+
 ## Status
 
 ### Implemented:

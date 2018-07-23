@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kmecpp.osmium.util.ArrayUtil;
-import com.kmecpp.osmium.util.StringUtil;
+import com.kmecpp.osmium.api.util.ArrayUtil;
+import com.kmecpp.osmium.api.util.StringUtil;
 
 public class DBResult {
 
@@ -75,15 +75,15 @@ public class DBResult {
 
 	/**
 	 * Gets the only row in the result. If there are multiple rows or none this
-	 * method will throw a {@link DBRuntimeException}
+	 * method will throw an exception.
 	 * 
 	 * @return the result's only row
 	 */
 	public DBRow only() {
-		if (isUnique()) {
-			return first();
+		if (!isUnique()) {
+			throw new RuntimeException("Could not retrieve only row! Found: " + size());
 		}
-		throw new RuntimeException("Could not retrieve only row! Found: " + size());
+		return first();
 	}
 
 	public boolean isUnique() {

@@ -9,8 +9,8 @@ import com.kmecpp.osmium.Location;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.SimpleDate;
 import com.kmecpp.osmium.api.World;
-import com.kmecpp.osmium.util.Reflection;
-import com.kmecpp.osmium.util.StringUtil;
+import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.api.util.StringUtil;
 
 public enum DBType {
 

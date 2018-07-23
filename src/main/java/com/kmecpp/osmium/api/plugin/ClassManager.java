@@ -19,7 +19,7 @@ import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
-import com.kmecpp.osmium.util.Reflection;
+import com.kmecpp.osmium.api.util.Reflection;
 
 public class ClassManager {
 

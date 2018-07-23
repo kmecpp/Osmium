@@ -34,10 +34,10 @@ public class ChatUtil {
 	}
 
 	/**
-	 * Colors the String using the Essentials color code: '&'. Equivalent to<br>
+	 * Colors the String using the Essentials color code: '&amp;'. Equivalent to<br>
 	 * <br>
 	 * <code>
-	 * ChatColor.translateAlternateColorCodes('&', str);
+	 * ChatColor.translateAlternateColorCodes('&amp;', str);
 	 * </code>
 	 * 
 	 * @param str

@@ -24,9 +24,9 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.PluginInstance;
 import com.kmecpp.osmium.api.tasks.CountdownTask;
 import com.kmecpp.osmium.api.tasks.OsmiumTask;
+import com.kmecpp.osmium.api.util.IOUtil;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
-import com.kmecpp.osmium.util.IOUtil;
 
 public final class Osmium {
 

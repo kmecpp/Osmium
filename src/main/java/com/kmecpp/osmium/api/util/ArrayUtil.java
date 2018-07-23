@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.util;
+package com.kmecpp.osmium.api.util;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -28,6 +28,8 @@ public class ArrayUtil {
 	 * Creates a new array with the given type and length of 0.
 	 * 
 	 * @param type
+	 *            the class of the array type
+	 * @param <T>
 	 *            the type of the array to create
 	 * @return an empty array of the given type
 	 */
@@ -39,6 +41,8 @@ public class ArrayUtil {
 	 * Creates a new array with the given type and dimensions.
 	 * 
 	 * @param type
+	 *            the class of the array type
+	 * @param <T>
 	 *            the type of the array to create
 	 * @param length
 	 *            the length of the array to create.
@@ -53,6 +57,8 @@ public class ArrayUtil {
 	 * Gets the first non-array component type of the array. Useful for
 	 * retrieving the type of a multidimensional array.
 	 * 
+	 * @param <T>
+	 *            the type of the array
 	 * @param array
 	 *            the array to get the type of
 	 * @return the the type of the array
@@ -69,6 +75,9 @@ public class ArrayUtil {
 	/**
 	 * Gets the component type of the array.
 	 * 
+	 * @param <T>
+	 *            the type of the array
+	 * 
 	 * @param array
 	 *            the array to get the component type of
 	 * @return the component type of the array
@@ -81,6 +90,8 @@ public class ArrayUtil {
 	/**
 	 * Gets the length of the longest array out of the ones given.
 	 * 
+	 * @param <T>
+	 *            the type of the array
 	 * @param arrays
 	 *            the arrays to search through
 	 * @return the length of the longest array
@@ -100,8 +111,12 @@ public class ArrayUtil {
 	 * Flattens the given n-dimensional array to one dimension by combining the
 	 * arrays
 	 * 
+	 * @param <T>
+	 *            the type of the array
 	 * @param array
 	 *            the multidimensional array to flatten
+	 * @param cls
+	 *            the class of the array type
 	 * @return the flattened array
 	 */
 	@SuppressWarnings("unchecked")
@@ -120,6 +135,8 @@ public class ArrayUtil {
 	/**
 	 * Combines the arrays into a single one.
 	 * 
+	 * @param <T>
+	 *            the type of the array
 	 * @param arrays
 	 *            the arrays to combine
 	 * @return a single array containing all the elements of the originals
@@ -142,6 +159,8 @@ public class ArrayUtil {
 	 * columns become rows. If the matrix is not rectangular null elements are
 	 * substituted in place of unknown values.
 	 * 
+	 * @param <T>
+	 *            the type of the array
 	 * @param matrix
 	 *            the matrix to transpose
 	 * @return the transposed matrix
@@ -159,6 +178,8 @@ public class ArrayUtil {
 	 * Gets the column from the given matrix. If the matrix is not complete and
 	 * there are unknown elements, those elements are replaced by null.
 	 * 
+	 * @param <T>
+	 *            the type of the array
 	 * @param matrix
 	 *            the matrix whose column to get
 	 * @param column

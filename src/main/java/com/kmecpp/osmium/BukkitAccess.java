@@ -17,11 +17,11 @@ import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
-import com.kmecpp.osmium.util.Reflection;
 
 public class BukkitAccess {
 

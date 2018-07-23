@@ -35,7 +35,6 @@ public abstract class FileUtil {
 	 *            the source file to copy
 	 * @param destination
 	 *            the destination to copy the file to
-	 * @throws IOException
 	 */
 	public static void copy(File source, File destination) {
 		try {

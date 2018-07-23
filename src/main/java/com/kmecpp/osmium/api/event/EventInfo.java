@@ -5,11 +5,11 @@ import java.util.HashMap;
 
 import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
 import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
+import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerJoinEvent;
 import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerQuitEvent;
 import com.kmecpp.osmium.platform.sponge.event.SpongePlayerJoinEvent;
 import com.kmecpp.osmium.platform.sponge.event.SpongePlayerQuitEvent;
-import com.kmecpp.osmium.util.Reflection;
 
 public class EventInfo {
 

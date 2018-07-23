@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.util;
+package com.kmecpp.osmium.api.util;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -31,8 +31,7 @@ public class IOUtil {
 	 * 
 	 * @param file
 	 *            the file to create
-	 * @throws IOException
-	 *             if an IOException occurs while creating the file
+	 * @return the original file instance passed to the method
 	 */
 	public static File createFile(File file) {
 		try {
@@ -57,6 +56,7 @@ public class IOUtil {
 	 * @param destination
 	 *            the destination to copy the file to
 	 * @throws IOException
+	 *             if an IOException occurs
 	 */
 	public static void copyFile(File source, File destination) throws IOException {
 		if (source.isDirectory()) {

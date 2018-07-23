@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api.database;
 
 import java.util.UUID;
 
-import com.kmecpp.osmium.util.StringUtil;
+import com.kmecpp.osmium.api.util.StringUtil;
 
 public class DBValue {
 
