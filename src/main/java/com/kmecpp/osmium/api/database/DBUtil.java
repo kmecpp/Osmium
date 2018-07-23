@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
-import com.kmecpp.jlib.reflection.Reflection;
-import com.kmecpp.jlib.utils.StringUtil;
+import com.kmecpp.osmium.util.Reflection;
+import com.kmecpp.osmium.util.StringUtil;
 
 public class DBUtil {
 

@@ -10,7 +10,6 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.event.EventPriority;
 
-import com.kmecpp.jlib.reflection.Reflection;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
@@ -22,6 +21,7 @@ import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
+import com.kmecpp.osmium.util.Reflection;
 
 public class BukkitAccess {
 

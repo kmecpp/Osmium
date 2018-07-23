@@ -1,7 +1,7 @@
 package com.kmecpp.osmium.api.platform;
 
-import com.kmecpp.jlib.utils.StringUtil;
-import com.kmecpp.osmium.Reflection;
+import com.kmecpp.osmium.util.Reflection;
+import com.kmecpp.osmium.util.StringUtil;
 
 public enum Platform {
 

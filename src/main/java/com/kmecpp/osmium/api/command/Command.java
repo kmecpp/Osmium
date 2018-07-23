@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api.command;
 
 import java.util.ArrayList;
 
-import com.kmecpp.jlib.utils.StringUtil;
+import com.kmecpp.osmium.util.StringUtil;
 
 public class Command extends SimpleCommand {
 

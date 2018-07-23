@@ -13,12 +13,12 @@ import java.util.concurrent.CountDownLatch;
 
 import org.bukkit.Bukkit;
 
-import com.kmecpp.jlib.utils.IOUtil;
-import com.kmecpp.jlib.utils.StringUtil;
 import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
+import com.kmecpp.osmium.util.IOUtil;
+import com.kmecpp.osmium.util.StringUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;

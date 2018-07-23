@@ -5,12 +5,12 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.kmecpp.jlib.reflection.Reflection;
-import com.kmecpp.jlib.utils.StringUtil;
 import com.kmecpp.osmium.Location;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.SimpleDate;
 import com.kmecpp.osmium.api.World;
+import com.kmecpp.osmium.util.Reflection;
+import com.kmecpp.osmium.util.StringUtil;
 
 public enum DBType {
 

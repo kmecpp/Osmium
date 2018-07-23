@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kmecpp.jlib.utils.ArrayUtil;
-import com.kmecpp.jlib.utils.StringUtil;
+import com.kmecpp.osmium.util.ArrayUtil;
+import com.kmecpp.osmium.util.StringUtil;
 
 public class DBResult {
 

@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api.database;
 
 import java.lang.reflect.Field;
 
-import com.kmecpp.jlib.reflection.Reflection;
+import com.kmecpp.osmium.util.Reflection;
 
 public class TableProperties {
 

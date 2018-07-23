@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.kmecpp.jlib.reflection.Reflection;
+import com.kmecpp.osmium.util.Reflection;
 
 public class DBRow implements Iterable<DBValue> {
 

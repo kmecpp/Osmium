@@ -1,12 +1,9 @@
 package com.kmecpp.osmium.api.command;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-
-import com.kmecpp.jlib.function.StringFormatter;
 
 public class ChatUtil {
 
@@ -86,40 +83,10 @@ public class ChatUtil {
 		return stripColorCodes(stripFormattingCodes(str));
 	}
 
-	public static void sendList(CommandSender sender, String title, List<?> list) {
-		sendList(sender, title, "", list);
-	}
-
-	public static void sendList(CommandSender sender, String title, String itemPrefix, List<?> list) {
-		sendList(sender, title, CS.X6AB, itemPrefix, list);
-	}
-
 	public static void sendNumberedList(CommandSender sender, String title, CS colors, List<?> list) {
 		sendTitle(sender, colors, title);
 		for (int i = 0; i < list.size(); i++) {
 			sender.sendMessage(colors.getTertiary() + " " + (i + 1) + ") " + colors.getSecondary() + list.get(i));
-		}
-	}
-
-	public static <T> void sendList(CommandSender sender, String title, final CS colors, final String itemPrefix, List<T> list) {
-		sendList(sender, title, list, colors, new StringFormatter<T>() {
-
-			@Override
-			public String format(T obj) {
-				return colors.getTertiary() + " " + itemPrefix + " " + colors.getSecondary() + String.valueOf(obj);
-			}
-
-		});
-	}
-
-	public static <T> void sendList(CommandSender out, String title, CS colors, T[] arr, StringFormatter<T> message) {
-		sendList(out, title, Arrays.asList(arr), colors, message);
-	}
-
-	public static <T> void sendList(CommandSender out, String title, Iterable<T> list, CS colors, StringFormatter<T> formatter) {
-		sendTitle(out, colors, title);
-		for (T obj : list) {
-			out.sendMessage(colors.getTertiary() + formatter.format(obj));
 		}
 	}
 

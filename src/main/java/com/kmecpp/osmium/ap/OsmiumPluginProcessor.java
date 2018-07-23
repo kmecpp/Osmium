@@ -26,12 +26,12 @@ import org.spongepowered.plugin.meta.PluginDependency;
 import org.spongepowered.plugin.meta.PluginDependency.LoadOrder;
 import org.spongepowered.plugin.meta.PluginMetadata;
 
-import com.kmecpp.jlib.object.Objects;
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMetaContainer;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.plugin.SpongePlugin;
+import com.kmecpp.osmium.util.StringUtil;
 
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
@@ -114,7 +114,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		OsmiumMetaContainer meta = entry.getValue();
 
 		// GENERATE META FILES
-		info("Generating plugin metafiles for annotation: " + Objects.toClassString(meta));
+		info("Generating plugin metafiles for annotation: " + StringUtil.toString(meta));
 
 		PluginMetadata modinfo = new PluginMetadata(entry.getKey());
 		//				.setVersion(meta.getVersion())

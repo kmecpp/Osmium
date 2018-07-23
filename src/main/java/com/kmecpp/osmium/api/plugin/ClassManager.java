@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import com.kmecpp.jlib.reflection.Reflection;
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
@@ -20,6 +19,7 @@ import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.util.Reflection;
 
 public class ClassManager {
 

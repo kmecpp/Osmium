@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Sponge;
 
-import com.kmecpp.jlib.Validate;
-import com.kmecpp.jlib.reflection.Reflection;
+import com.google.common.base.Preconditions;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.util.Reflection;
 
 /**
  * The abstract superclass of all Osmium plugins.
@@ -34,7 +34,7 @@ public abstract class OsmiumPlugin {
 	//	private HashSet<Class<?>> pluginClasses = new HashSet<>();
 
 	public OsmiumPlugin() {
-		Validate.notNull(properties, "Osmium plugins must be annotated with @OsmiumMeta");
+		Preconditions.checkNotNull(properties, "Osmium plugins must be annotated with @OsmiumMeta");
 
 		//setupPlugin method is called immediately after construction via reflection
 

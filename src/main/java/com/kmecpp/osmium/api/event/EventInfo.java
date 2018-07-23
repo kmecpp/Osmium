@@ -3,13 +3,13 @@ package com.kmecpp.osmium.api.event;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import com.kmecpp.jlib.reflection.Reflection;
 import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
 import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
 import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerJoinEvent;
 import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerQuitEvent;
 import com.kmecpp.osmium.platform.sponge.event.SpongePlayerJoinEvent;
 import com.kmecpp.osmium.platform.sponge.event.SpongePlayerQuitEvent;
+import com.kmecpp.osmium.util.Reflection;
 
 public class EventInfo {
 
@@ -35,9 +35,7 @@ public class EventInfo {
 		register(PlayerQuitEvent.class, BukkitPlayerQuitEvent.class, SpongePlayerQuitEvent.class);
 	}
 
-	public static void register(Class<? extends Event> event,
-			Class<? extends Event> bukkitImplementation,
-			Class<? extends Event> spongeImplementation) {
+	public static void register(Class<? extends Event> event, Class<? extends Event> bukkitImplementation, Class<? extends Event> spongeImplementation) {
 
 		EVENTS.put(event, new EventInfo(bukkitImplementation, extractSourceClass(bukkitImplementation), spongeImplementation, extractSourceClass(bukkitImplementation)));
 	}

@@ -12,7 +12,6 @@ import java.util.concurrent.Callable;
 import org.bukkit.Bukkit;
 import org.spongepowered.api.Sponge;
 
-import com.kmecpp.jlib.utils.IOUtil;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.command.CommandManager;
@@ -27,6 +26,7 @@ import com.kmecpp.osmium.api.tasks.CountdownTask;
 import com.kmecpp.osmium.api.tasks.OsmiumTask;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
+import com.kmecpp.osmium.util.IOUtil;
 
 public final class Osmium {
 

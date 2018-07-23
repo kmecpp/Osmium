@@ -100,7 +100,7 @@ compileJava.dependsOn mergeSources, compileAppInfo
 
 repositories {
     jcenter()
-    maven { url "http://repo.kmecpp.com" }
+    //maven { url "http://ci.kmecpp.com/plugin/repository/everything/" }
     maven { url "http://repo.spongepowered.org/maven" }
     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 }
@@ -110,7 +110,7 @@ dependencies {
 	//compile "org.spigotmc:spigot:$bukkit_version"
 	compile "org.spongepowered:spongeapi:$sponge_version"
 	
-	shade "com.kmecpp:jlib:+"
+	//shade "com.kmecpp:jlib:+"
 	shade "org.spongepowered:plugin-meta:0.4.1"
 	shade "org.spongepowered:configurate-hocon:3.6-SNAPSHOT"
 	shade "javassist:javassist:3.12.1.GA"
