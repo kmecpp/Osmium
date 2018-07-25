@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Sponge;
 
 import com.google.common.base.Preconditions;
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
@@ -24,7 +25,8 @@ public abstract class OsmiumPlugin {
 	private final Plugin properties = this.getClass().getAnnotation(Plugin.class);
 
 	//Effectively final variables
-	private Object pluginImpl; //This field is set on instantiation using reflection
+	private Object pluginImplementation; //This field is set on instantiation using reflection
+	private Object metricsImplementation;
 	private Logger logger = LoggerFactory.getLogger(properties.name());
 
 	private Class<?> config;
@@ -53,7 +55,7 @@ public abstract class OsmiumPlugin {
 
 	@SuppressWarnings("unused")
 	private void setupPlugin(Object pluginImpl) throws Exception {
-		this.pluginImpl = pluginImpl;
+		this.pluginImplementation = pluginImpl;
 		this.classManager = new ClassManager(this, pluginImpl);
 	}
 
@@ -80,17 +82,39 @@ public abstract class OsmiumPlugin {
 	public void onLoad() {
 	}
 
-	public void preInit() {
+	public void onPreInit() {
 	}
 
-	public void init() {
+	public void onInit() {
 	}
 
-	public void postInit() {
+	public void onPostInit() {
+	}
+
+	public void onReload() {
 	}
 
 	public void onDisable() {
 	}
+
+	public void enableMetrics() {
+		Osmium.getMetrics().register(this);
+	}
+
+	public boolean isMetricsEnabled() {
+		return Osmium.getMetrics().isEnabled(this);
+	}
+
+	//	public void enableMetrics() {
+	//		if (Platform.isBukkit()) {
+	//			this.metricsImplementation = new BukkitMetrics(getPluginImplementation());
+	//		} else if (Platform.isSponge()) {
+	//			PluginContainer plugin = getPluginImplementation();
+	//			this.metricsImplementation = Reflection.newInstance(SpongeMetrics.class, plugin, plugin.getLogger(), Sponge.getConfigManager().getSharedConfig(plugin).getDirectory());
+	//			//			Reflection.newInstance(org.bstats.sponge.Metrics.class);
+	//			//			this.metricsImplementation = org.bstats.sponge.Metrics.
+	//		}
+	//	}
 
 	//	public SpongePlugin asSpongePlugin() {
 	//		return (SpongePlugin) pluginImpl;
@@ -102,10 +126,19 @@ public abstract class OsmiumPlugin {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getPluginImplementation() {
-		return (T) pluginImpl;
+		return (T) pluginImplementation;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getMetricsImplementation() {
+		return (T) metricsImplementation;
 	}
 
 	//Meta
+	public final String getId() {
+		return properties.name().toLowerCase().replace(' ', '-');
+	}
+
 	public final String getName() {
 		return properties.name();
 	}
@@ -173,9 +206,9 @@ public abstract class OsmiumPlugin {
 
 	public Path getPluginFolder() {
 		if (Platform.isSponge()) {
-			return Sponge.getGame().getConfigManager().getPluginConfig(pluginImpl).getDirectory();
+			return Sponge.getGame().getConfigManager().getPluginConfig(pluginImplementation).getDirectory();
 		} else if (Platform.isBukkit()) {
-			return Paths.get(((JavaPlugin) pluginImpl).getDataFolder().toURI());
+			return Paths.get(((JavaPlugin) pluginImplementation).getDataFolder().toURI());
 		}
 		return null;
 	}

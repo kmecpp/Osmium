@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.plugin;
 
 import java.util.concurrent.Callable;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,14 +14,16 @@ import com.kmecpp.osmium.Osmium;
  */
 public class BukkitPlugin extends JavaPlugin implements Listener {
 
-	private OsmiumPlugin plugin = Osmium.loadPlugin(this); //OsmiumData.constructPlugin();
-	private BukkitPlugin bukkitInstance;
+	private OsmiumPlugin plugin = Osmium.getPluginLoader().load(this); //OsmiumData.constructPlugin();
 
 	public BukkitPlugin() {
-		if (bukkitInstance != null) {
-			throw new RuntimeException("Plugin already constructed!");
+		if (plugin == null) {
+			Bukkit.getPluginManager().disablePlugin(this);
 		}
-		this.bukkitInstance = this;
+		//		if (bukkitInstance != null) {
+		//			throw new RuntimeException("Plugin already constructed!");
+		//		}
+		//		this.bukkitInstance = this;
 	}
 
 	public OsmiumPlugin execute(Callable<OsmiumPlugin> callable) {
@@ -32,10 +35,6 @@ public class BukkitPlugin extends JavaPlugin implements Listener {
 		}
 	}
 
-	public BukkitPlugin getBukkitInstance() {
-		return bukkitInstance;
-	}
-
 	@Override
 	public void onLoad() {
 		plugin.onLoad();
@@ -43,10 +42,10 @@ public class BukkitPlugin extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
-		plugin.preInit();
+		plugin.onPreInit();
 		plugin.getClassManager().initializeHooks();
-		plugin.init();
-		plugin.postInit();
+		plugin.onInit();
+		plugin.onPostInit();
 	}
 
 	@Override

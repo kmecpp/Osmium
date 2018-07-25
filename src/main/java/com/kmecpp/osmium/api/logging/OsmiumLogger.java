@@ -9,18 +9,14 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.kmecpp.osmium.AppInfo;
-import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
 
 public class OsmiumLogger {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppInfo.NAME);
-	private static final String PREFIX = ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + AppInfo.NAME + "%L" + ChatColor.DARK_AQUA + "] ";
-
-	static {
-		Osmium.reloadConfig(CoreOsmiumConfiguration.class);
-	}
+	private static final String PREFIX = Chat.DARK_AQUA + "[ " + Chat.AQUA + AppInfo.NAME + "%L" + Chat.DARK_AQUA + "] ";
 
 	public static final void debug(String message) {
 		if (CoreOsmiumConfiguration.coloredConsole) {

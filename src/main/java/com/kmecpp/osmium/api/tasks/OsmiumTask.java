@@ -31,9 +31,10 @@ public class OsmiumTask extends Task<OsmiumTask> {
 			if (async) {
 				builder.async();
 			}
-			builder.delay(delay * 50, TimeUnit.MILLISECONDS);
-			builder.interval(interval * 50, TimeUnit.MILLISECONDS);
-			taskImpl = builder.submit(getPluginImplemenation());
+			taskImpl = builder.delay(delay * 50, TimeUnit.MILLISECONDS)
+					.interval(interval * 50, TimeUnit.MILLISECONDS)
+					.execute((t) -> executor.execute(this))
+					.submit(getPluginImplemenation());
 		}
 		return this;
 	}

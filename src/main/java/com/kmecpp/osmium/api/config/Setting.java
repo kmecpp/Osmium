@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Setting {
 
-	String parent() default "";
+	//	String parent() default "";
 
 	String name() default "";
 

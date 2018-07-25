@@ -96,7 +96,7 @@ public class ClassManager {
 	}
 
 	private void onEnable(Class<?> cls) {
-		OsmiumLogger.debug("Loading class: " + cls.getName());
+		OsmiumLogger.debug("Initializing class: " + cls.getName());
 
 		//COMMANDS
 		if (cls.isAnnotationPresent(CommandProperties.class)) {

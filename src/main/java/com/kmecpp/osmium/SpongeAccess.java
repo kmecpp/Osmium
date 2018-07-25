@@ -62,7 +62,7 @@ public class SpongeAccess {
 
 	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) throws Exception {
 		Class<? extends org.spongepowered.api.event.Event> spongeEventClass = eventInfo.getSpongeClass();
-		Constructor<?> eventWrapper = eventInfo.getBukkitImplementation().getConstructor(spongeEventClass);
+		Constructor<?> eventWrapper = eventInfo.getSpongeImplementation().getConstructor(spongeEventClass);
 
 		Sponge.getEventManager().registerListener(plugin.getPluginImplementation(), spongeEventClass, (org.spongepowered.api.event.Order) order.getSource(), false,
 				new EventListener<org.spongepowered.api.event.Event>() {

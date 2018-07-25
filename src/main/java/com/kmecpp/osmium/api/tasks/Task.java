@@ -52,6 +52,11 @@ public abstract class Task<T extends Task<T>> {
 		return getInstance();
 	}
 
+	public T setDelay(long delay, TimeUnit unit) {
+		this.delay = getTicks(delay, unit);
+		return getInstance();
+	}
+
 	public long getInterval() {
 		return interval;
 	}
@@ -62,21 +67,23 @@ public abstract class Task<T extends Task<T>> {
 	}
 
 	public T setInterval(long interval, TimeUnit unit) {
+		this.interval = getTicks(interval, unit);
+		return getInstance();
+	}
+
+	private static long getTicks(long time, TimeUnit unit) {
 		switch (unit) {
 		case SECOND:
-			this.interval = interval * 20;
-			break;
+			return time * 20;
 		case MINUTE:
-			this.interval = interval * 20 * 60;
-			break;
+			return time * 20 * 60;
 		case HOUR:
-			this.interval = interval * 20 * 60 * 60;
-			break;
+			return time * 20 * 60 * 60;
 		case DAY:
-			this.interval = interval * 20 * 60 * 60 * 24;
-			break;
+			return time * 20 * 60 * 60 * 24;
+		default:
+			throw new IllegalArgumentException("Unknown time unit: " + unit);
 		}
-		return getInstance();
 	}
 
 	public boolean isAsync() {

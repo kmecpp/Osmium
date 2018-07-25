@@ -27,6 +27,7 @@ import org.spongepowered.plugin.meta.PluginDependency.LoadOrder;
 import org.spongepowered.plugin.meta.PluginMetadata;
 
 import com.kmecpp.osmium.AppInfo;
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMetaContainer;
 import com.kmecpp.osmium.api.plugin.Plugin;
@@ -84,7 +85,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 				}
 
 				Plugin annotation = e.getAnnotation(Plugin.class);
-				String id = annotation.name().toLowerCase();
+				String id = Osmium.getPluginId(annotation.name());
 				if (!plugins.containsKey(id)) {
 					plugins.put(id, new OsmiumMetaContainer(((TypeElement) e).getQualifiedName().toString(),
 							annotation.name(), annotation.version(), annotation.description(), annotation.url(),

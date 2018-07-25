@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -17,6 +18,19 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class Reflection {
+
+	public static Class<?> getInvokingClass() {
+		return getInvokingClass(0);
+	}
+
+	public static Class<?> getInvokingClass(int offset) {
+		String className = Thread.currentThread().getStackTrace()[2 + offset].getClassName();
+		try {
+			return Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			return null;
+		}
+	}
 
 	public static boolean isImplementation(Class<?> abstractClass, Class<?> implementingClass) {
 		return isConcrete(implementingClass) && abstractClass.isAssignableFrom(implementingClass);
@@ -92,6 +106,7 @@ public class Reflection {
 
 	public static <T> T newInstance(Constructor<T> constructor, Object... values) {
 		try {
+			constructor.setAccessible(true);
 			return constructor.newInstance((Object[]) values);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -100,11 +115,7 @@ public class Reflection {
 
 	public static <T> T newInstance(Class<T> cls, Object... params) {
 		try {
-			if (params.length == 0) {
-				return cls.newInstance();
-			} else {
-				return getConstructor(cls, params).newInstance(params);
-			}
+			return getConstructor(cls, params).newInstance(params);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -135,18 +146,18 @@ public class Reflection {
 		return constructors;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> getConstructor(Class<T> cls, Object... params) {
-		Class<?>[] paramTypes = new Class[params.length];
-		for (int i = 0; i < params.length; i++) {
-			paramTypes[i] = getClass(params[i]);
-		}
-
 		try {
-			Constructor<T> constructor = cls.getDeclaredConstructor(paramTypes);
-			constructor.setAccessible(true);
-			return constructor;
+			return (Constructor<T>) findMatch(cls.getDeclaredConstructors(), null, params);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			try {
+				Constructor<T> constructor = cls.getDeclaredConstructor(getParamTypes(params));
+				constructor.setAccessible(true);
+				return constructor;
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 	}
 
@@ -195,46 +206,109 @@ public class Reflection {
 			params = new Object[] {};
 		}
 		try {
-			ArrayList<Method> potentialMethods = new ArrayList<>();
-			methodLoop: for (Method method : cls.getDeclaredMethods()) {
-				if (method.getParameterTypes().length != params.length || !method.getName().equals(methodName)) {
-					continue;
-				}
+			return findMatch(cls.getDeclaredMethods(), methodName, params);
+		} catch (Exception e) {
+			try {
+				Method method = cls.getDeclaredMethod(methodName, getParamTypes(params));
 				method.setAccessible(true);
+				return method;
+			} catch (NoSuchMethodException | SecurityException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+		//		try {
+		//			ArrayList<Method> potentialMethods = new ArrayList<>();
+		//			methodLoop: for (Method method : cls.getDeclaredMethods()) {
+		//				if (method.getParameterTypes().length != params.length || !method.getName().equals(methodName)) {
+		//					continue;
+		//				}
+		//				method.setAccessible(true);
+		//
+		//				boolean exact = true;
+		//				for (int i = 0; i < method.getParameterCount(); i++) {
+		//					if (!method.getParameterTypes()[i].equals(getClass(params[i]))) {
+		//						if (method.getParameterTypes()[i].isAssignableFrom(params[i].getClass())) {
+		//							exact = false;
+		//						} else {
+		//							continue methodLoop;
+		//						}
+		//					}
+		//				}
+		//
+		//				if (exact) {
+		//					return method;
+		//				} else {
+		//					potentialMethods.add(method);
+		//				}
+		//			}
+		//
+		//			if (potentialMethods.size() == 1) {
+		//				return potentialMethods.get(0);
+		//			} else if (potentialMethods.size() > 1) {
+		//				Class<?>[] paramTypes = new Class[params.length];
+		//				for (int i = 0; i < params.length; i++) {
+		//					paramTypes[i] = getClass(params[i]);
+		//				}
+		//				Method method = cls.getDeclaredMethod(methodName, paramTypes);
+		//				return method;
+		//			} else {
+		//				throw new NoSuchMethodException();
+		//			}
+		//		} catch (Exception e) {
+		//			throw new RuntimeException("Could not find method " + methodName + " in class: " + cls.getName(), e);
+		//		}
+	}
 
-				boolean exact = true;
-				for (int i = 0; i < method.getParameterCount(); i++) {
-					if (!method.getParameterTypes()[i].equals(getClass(params[i]))) {
-						if (method.getParameterTypes()[i].isAssignableFrom(params[i].getClass())) {
-							exact = false;
-						} else {
-							continue methodLoop;
-						}
+	private static <T extends Executable> T findMatch(T[] members, String name, Object... params) throws NoSuchMethodException {
+		if (params == null) {
+			params = new Object[] {};
+		}
+		ArrayList<T> potentialMethods = new ArrayList<>();
+		methodLoop: for (T member : members) {
+			if (member.getParameterTypes().length != params.length || (name != null && !member.getName().equals(name))) {
+				continue;
+			}
+			member.setAccessible(true);
+
+			boolean exact = true;
+			for (int i = 0; i < member.getParameterCount(); i++) {
+				if (!member.getParameterTypes()[i].equals(getClass(params[i]))) {
+					if (member.getParameterTypes()[i].isAssignableFrom(params[i].getClass())) {
+						exact = false;
+					} else {
+						continue methodLoop;
 					}
 				}
-
-				if (exact) {
-					return method;
-				} else {
-					potentialMethods.add(method);
-				}
 			}
 
-			if (potentialMethods.size() == 1) {
-				return potentialMethods.get(0);
-			} else if (potentialMethods.size() > 1) {
-				Class<?>[] paramTypes = new Class[params.length];
-				for (int i = 0; i < params.length; i++) {
-					paramTypes[i] = getClass(params[i]);
-				}
-				Method method = cls.getDeclaredMethod(methodName, paramTypes);
-				return method;
+			if (exact) {
+				return member;
 			} else {
-				throw new NoSuchMethodException();
+				potentialMethods.add(member);
 			}
-		} catch (Exception e) {
-			throw new RuntimeException("Could not find method " + methodName + " in class: " + cls.getName(), e);
 		}
+
+		if (potentialMethods.size() == 1) {
+			return potentialMethods.get(0);
+		} else if (potentialMethods.size() > 1) {
+			return potentialMethods.get(0);
+			//			Class<?>[] paramTypes = new Class[params.length];
+			//			for (int i = 0; i < params.length; i++) {
+			//				paramTypes[i] = getClass(params[i]);
+			//			}
+			//			T method = cls.getDeclaredMethod(methodName, paramTypes);
+			//			return method;
+		} else {
+			throw new NoSuchMethodException();
+		}
+	}
+
+	public static Class<?>[] getParamTypes(Object... params) {
+		Class<?>[] types = new Class[params.length];
+		for (int i = 0; i < params.length; i++) {
+			types[i] = getClass(params[i]);
+		}
+		return types;
 	}
 
 	public static Method[] getMethodsWith(Object obj, Class<? extends Annotation> annotation) {

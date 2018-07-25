@@ -1,4 +1,4 @@
-# Osmium
+# Osmium API
 
 Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the *easiest most concise way to create Minecraft plugins period*. Everything in Osmium is done with only one method or one class. There is no registration of commands/listeners/configurations 
 
@@ -9,29 +9,17 @@ Although it will take a very long time to implement enough features to have a co
 
 Join our Discord channel stay updated with the project or help out: https://discord.gg/YSgde2Y 
 
-## Features
+# Features
 
- * Platform independent
- * More concise command API and automatic registration of commands
- * More concise listener API and automatic registration of listeners
- * Service API that allows hooking into common server events at any time
- * Super easy configuration handling
- * And much more...
+* Platform independent
+* More concise command API and automatic registration of commands
+* More concise listener API and automatic registration of listeners
+* Service API that allows hooking into common server events at any time
+* Super easy configuration handling
+* And much more...
  
-<hr>
-
-## Maven
-
-	<dependency>
-    	<groupId>com.kmecpp</groupId>
-    	<artifactId>osmium</artifactId>
-    	<version>1.0-SNAPSHOT</version>
-	</dependency>
-
-
-## Status
-
-### Implemented:
+ 
+#### Implemented:
 
 * Configs
 * Commands
@@ -39,7 +27,7 @@ Join our Discord channel stay updated with the project or help out: https://disc
 * Schedulers
 * Some events
 
-### TODO:
+#### TODO:
 * More events
 * More methods
 * Inventories
@@ -48,7 +36,18 @@ Join our Discord channel stay updated with the project or help out: https://disc
  
 <hr>
 
-## Examples
+# Maven
+
+	<dependency>
+    	<groupId>com.kmecpp</groupId>
+    	<artifactId>osmium</artifactId>
+    	<version>1.0-SNAPSHOT</version>
+	</dependency>
+
+ 
+<hr>
+
+# Examples
 
 
 ### Listeners
@@ -177,6 +176,7 @@ Then, to access or modify the config, all you need to do is modify the fields of
 
 To reload or save the config, use Osmium.reloadConfig(Config.class) or Osmium.saveConfig(Config.class).
 
+
 ### Databases
 
 TODO
@@ -197,10 +197,26 @@ if(Platform.isBukkit()){
 
 or
 
-```
-Osmum.on(Platform.BUKKIT, () -> {
-	Bukkit.getBannedPlayers().forEach(System.out::println);
-});
-```
+
+	Osmum.on(Platform.BUKKIT, () -> {
+		Bukkit.getBannedPlayers().forEach(System.out::println);
+	});
+
 
 To retrieve a value use Osmium.getValue(Callable bukkit, Callable sponge);
+
+<hr>
+
+# More Features
+
+### Metrics
+
+Osmium as a built in metrics feature for collecting statistics through <https://bstats.org>. To enable metrics for your plugin simply call the enableMetrics() method in your main plugin class.
+
+**Note:** Metrics in Osmium are disabled by default to comply with Sponge's plugin guidelines. However, server owners will receive a disableable message prompting them to enable metrics if they are disabled. Calling enableMetrics() will only send statistics if the server owners allow it.
+
+
+	@Override
+	public void onInit() {
+		enableMetrics();
+	}

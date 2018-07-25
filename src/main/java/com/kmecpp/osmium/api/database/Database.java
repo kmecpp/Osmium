@@ -48,14 +48,14 @@ public class Database {
 	public void start() {
 		try {
 			HikariConfig config = new HikariConfig();
-			if (CoreOsmiumConfiguration.enableMysql) {
+			if (CoreOsmiumConfiguration.Database.enableMysql) {
 				OsmiumLogger.info("Using MySQL for database storage");
 				usingMySql = true;
 
-				config.setJdbcUrl("jdbc:mysql://" + CoreOsmiumConfiguration.mysqlHost + ":" + CoreOsmiumConfiguration.mysqlPort + "/" + CoreOsmiumConfiguration.mysqlDatabase);
+				config.setJdbcUrl("jdbc:mysql://" + CoreOsmiumConfiguration.Database.host + ":" + CoreOsmiumConfiguration.Database.port + "/" + CoreOsmiumConfiguration.Database.database);
 				config.setDriverClassName("com.mysql.jdbc.Driver");
-				config.setUsername(CoreOsmiumConfiguration.mysqlUsername);
-				config.setPassword(CoreOsmiumConfiguration.mysqlPassword);
+				config.setUsername(CoreOsmiumConfiguration.Database.username);
+				config.setPassword(CoreOsmiumConfiguration.Database.password);
 
 				source = new HikariDataSource(config);
 			} else {

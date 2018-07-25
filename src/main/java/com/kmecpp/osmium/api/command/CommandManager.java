@@ -10,11 +10,12 @@ public final class CommandManager {
 
 	private HashMap<OsmiumPlugin, ArrayList<Command>> commands = new HashMap<>();
 
-	public void register(OsmiumPlugin plugin, Command command) {
+	public Command register(OsmiumPlugin plugin, Command command) {
 		ArrayList<Command> pluginCommands = getCommands(plugin);
 		pluginCommands.add(command);
 		commands.put(plugin, pluginCommands);
 		OsmiumLogger.debug("Registered Osmium command: /" + command.getPrimaryAlias());
+		return command;
 	}
 
 	public HashMap<OsmiumPlugin, ArrayList<Command>> getCommands() {
@@ -27,7 +28,25 @@ public final class CommandManager {
 
 	public static boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {
 		try {
-			command.execute(new CommandEvent(sender, commandLabel, args));
+			CommandEvent event = new CommandEvent(sender, commandLabel, args);
+			command.checkPermission(event);
+
+			//Simple commands
+			if (command.getArgs().isEmpty()) {
+				command.execute(event);
+			}
+
+			//Commands with registered arguments
+			else {
+				if (args.length == 0) {
+					command.sendHelp(event);
+				} else {
+					SimpleCommand arg = command.getArgumentMatching(args[0]);
+					arg.checkPermission(event);
+					event.consumeArgument();
+					arg.execute(event);
+				}
+			}
 			return true;
 		} catch (CommandException e) {
 			sender.sendMessage("&c" + e.getMessage());

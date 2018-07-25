@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
 import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
+import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerJoinEvent;
 import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerQuitEvent;
@@ -36,18 +37,29 @@ public class EventInfo {
 	}
 
 	public static void register(Class<? extends Event> event, Class<? extends Event> bukkitImplementation, Class<? extends Event> spongeImplementation) {
+		//Don't exact source unless needed
+		Class<? extends org.bukkit.event.Event> bukkitSource = Platform.isBukkit() ? extractSourceClass(bukkitImplementation) : null;
+		Class<? extends org.spongepowered.api.event.Event> spongeSource = Platform.isSponge() ? extractSourceClass(spongeImplementation) : null;
 
-		EVENTS.put(event, new EventInfo(bukkitImplementation, extractSourceClass(bukkitImplementation), spongeImplementation, extractSourceClass(bukkitImplementation)));
+		EVENTS.put(event, new EventInfo(bukkitImplementation, bukkitSource, spongeImplementation, spongeSource));
 	}
 
 	private static <T> Class<T> extractSourceClass(Class<?> osmiumClass) {
 		Field field = osmiumClass.getDeclaredFields()[0];
-		field.setAccessible(true);;
+		field.setAccessible(true);
 		return Reflection.cast(field.getType());
 	}
 
 	public static EventInfo get(Class<? extends Event> event) {
 		return EVENTS.get(event);
+	}
+
+	public <T> Class<T> getOsmiumImplementation() {
+		return null;
+	}
+
+	public <T> Class<T> getSourceClass() {
+		return null;
 	}
 
 	public Class<? extends org.bukkit.event.Event> getBukkitClass() {

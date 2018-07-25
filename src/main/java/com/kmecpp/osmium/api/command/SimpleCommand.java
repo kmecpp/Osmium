@@ -19,7 +19,10 @@ public class SimpleCommand {
 	//	}
 
 	public SimpleCommand(String name, String... aliases) {
-		if (Command.class.isAssignableFrom(this.getClass())) {
+		if (name == null) {
+			if (!Command.class.isAssignableFrom(this.getClass())) {
+				throw new NullPointerException("Cannot create command without a name!");
+			}
 			CommandProperties command = this.getClass().getAnnotation(CommandProperties.class);
 			if (command == null) {
 				throw new CommandException("Osmium commands must have an @" + CommandProperties.class.getSimpleName() + " annotation");
@@ -111,6 +114,16 @@ public class SimpleCommand {
 
 	public String getDescription() {
 		return description;
+	}
+
+	protected void checkPermission(CommandEvent event) {
+		if (isAllowed(event.getSender())) {
+			throw CommandException.LACKS_PERMISSION;
+		}
+	}
+
+	protected boolean isAllowed(CommandSender sender) {
+		return (this.admin && !sender.isOp()) || (this.hasPermission() && !sender.hasPermission(permission));
 	}
 
 	public boolean hasPermission() {

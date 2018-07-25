@@ -1,17 +1,14 @@
-import org.apache.tools.ant.filters.*
-
 plugins {
-    id 'java'
-
-    id 'eclipse'
-    id 'idea'
-
-    id 'maven'
-    id 'maven-publish'   
-    id 'signing'
+	id 'java'
+	
+	id 'eclipse'
+	id 'idea'
+	
+	id 'maven'
+	id 'maven-publish'
+	//id 'com.github.johnrengelman.shadow' version '1.2.3'
     //id 'org.spongepowered.plugin' version '0.8.1'
 }
-
 
 group = "com.kmecpp"
 version = project_version
@@ -116,23 +113,29 @@ compileJava.dependsOn mergeSources, compileAppInfo
  */
 
 repositories {
-    jcenter()
-    //maven { url "http://ci.kmecpp.com/plugin/repository/everything/" }
-    maven { url "http://repo.spongepowered.org/maven" }
-    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+	jcenter()
+	//maven { url "http://ci.kmecpp.com/plugin/repository/everything/" }
+	maven { url "http://repo.spongepowered.org/maven" }
+	maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+	//maven { url "http://repo.bstats.org/content/repositories/releases/" }
 }
 
 dependencies {
 	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648.jar")
 	//compile "org.spigotmc:spigot:$bukkit_version"
 	compile "org.spongepowered:spongeapi:$sponge_version"
+	compile "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75"
 	
 	//shade "com.kmecpp:jlib:+"
+	shade "com.eclipsesource.minimal-json:minimal-json:0.9.5"
+	shade "org.spongepowered:configurate-hocon:3.5"
 	shade "org.spongepowered:plugin-meta:0.4.1"
-	shade "org.spongepowered:configurate-hocon:3.6-SNAPSHOT"
-	shade "javassist:javassist:3.12.1.GA"
-	shade "com.zaxxer:HikariCP:+"
-
+	shade "org.javassist:javassist:3.23.1-GA"
+	//shade "org.yaml:snakeyaml:1.21"
+	//shade "org.bstats:bstats-bukkit:1.2"
+	//shade "org.bstats:bstats-sponge:1.2"
+	shade "com.zaxxer:HikariCP:3.1.0"
+	
     testCompile 'junit:junit:4.12'
 }
 /*
@@ -155,6 +158,7 @@ jar {
 		"Implementation-Version": project.version)
 						
     configurations.shade.each { dep ->
+    	print dep
         from(project.zipTree(dep)){
             exclude 'META-INF', 'META-INF/**'
         }
@@ -187,18 +191,17 @@ uploadArchives {
 
 task deployBukkit(type: Exec) {
 	if (project.hasProperty("bukkit_server")) {
-		println jar.archiveName
-		println project.getProperty("bukkit_server") + "\\plugins"
 		commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("bukkit_server") + "\\plugins", '/Y'
 		//from "build/libs/"
 		//into(project.getProperty("bukkit_server") + "/plugins")
 	}
 }
 
-task deploySponge(type: Copy) {
+task deploySponge(type: Exec) {
 	if (project.hasProperty("sponge_server")) {
-		from "build/libs/"
-		into(project.getProperty("sponge_server") + "/mods")
+		commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("sponge_server") + "\\mods", '/Y'
+		//from "build/libs/"
+		//into(project.getProperty("sponge_server") + "/mods")
 	}
 }
 

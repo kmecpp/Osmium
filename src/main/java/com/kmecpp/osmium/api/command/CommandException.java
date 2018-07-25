@@ -4,6 +4,7 @@ package com.kmecpp.osmium.api.command;
 public class CommandException extends RuntimeException {
 
 	public static final CommandException USAGE_ERROR = new CommandException("Usage error!");
+	public static final CommandException LACKS_PERMISSION = new CommandException("You do not have permission to perform this command!");
 	public static final CommandException PLAYER_NOT_FOUND = new CommandException("That player is not online!");
 
 	//	private CommandResult result;

@@ -139,6 +139,20 @@ public class IOUtil {
 	}
 
 	/**
+	 * Splits the contents of the data at the URL into an array of its lines,
+	 * which this method assumes are separated by '\n' characters.
+	 * 
+	 * @param inputStream
+	 *            the {@link InputStream} to read from
+	 * @return an array of lines read from the input stream
+	 * @throws IOException
+	 *             if an error occurs while reading from the url
+	 */
+	public static String[] readLines(InputStream inputStream) throws IOException {
+		return StringUtil.getLines(readString(inputStream));
+	}
+
+	/**
 	 * Splits the contents of the file into an array of its lines, which this
 	 * method assumes are separated by '\n' characters.
 	 * 

@@ -1,9 +1,9 @@
-package com.kmecpp.osmium;
+package com.kmecpp.osmium.api.logging;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kmecpp.osmium.api.logging.LogLevel;
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
 
