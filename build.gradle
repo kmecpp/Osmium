@@ -201,6 +201,7 @@ task deploy {
 			//from "build/libs/"
 			//into(project.getProperty("sponge_server") + "/mods")
 		}
+		commandLine 'echo', 'Finished deploying server jars'
 	}
 }
 
