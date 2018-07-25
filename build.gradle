@@ -189,21 +189,20 @@ uploadArchives {
 
 }
 
-task deployBukkit(type: Exec) {
-	if (project.hasProperty("bukkit_server")) {
-		commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("bukkit_server") + "\\plugins", '/Y'
-		//from "build/libs/"
-		//into(project.getProperty("bukkit_server") + "/plugins")
+task deploy {
+	exec {
+		if (project.hasProperty("bukkit_server")) {
+			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("bukkit_server") + "\\plugins", '/Y'
+			//from "build/libs/"
+			//into(project.getProperty("bukkit_server") + "/plugins")
+		}
+		if (project.hasProperty("sponge_server")) {
+			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("sponge_server") + "\\mods", '/Y'
+			//from "build/libs/"
+			//into(project.getProperty("sponge_server") + "/mods")
+		}
 	}
 }
 
-task deploySponge(type: Exec) {
-	if (project.hasProperty("sponge_server")) {
-		commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("sponge_server") + "\\mods", '/Y'
-		//from "build/libs/"
-		//into(project.getProperty("sponge_server") + "/mods")
-	}
-}
 
-build.finalizedBy deployBukkit
-build.finalizedBy deploySponge
+build.finalizedBy deploy

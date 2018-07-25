@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.plugin.metrics;
+package com.kmecpp.osmium.api.plugin;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -23,7 +23,6 @@ import com.eclipsesource.json.JsonObject;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
-import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
 
 public class OsmiumMetrics {
@@ -52,6 +51,8 @@ public class OsmiumMetrics {
 	/**
 	 * Adds a custom chart.
 	 *
+	 * @param plugin
+	 *            the plugin to add the chart to
 	 * @param chart
 	 *            The chart to add.
 	 */
