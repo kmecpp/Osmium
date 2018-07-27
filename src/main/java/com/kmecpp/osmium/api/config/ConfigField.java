@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.api.config;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class ConfigField {
 
@@ -8,8 +9,9 @@ public class ConfigField {
 	private final Field field;
 	private final Setting setting;
 
-	public ConfigField(String path, Field field, Setting setting) {
-		this.path = getFullPath(path, setting, field).split("\\.");
+	public ConfigField(String parent, Field field, Setting setting) {
+		this.path = getFullPath(parent, setting, field).split("\\.");
+		System.out.println(Arrays.toString(this.path));
 		this.field = field;
 		this.setting = setting;
 	}
@@ -26,8 +28,7 @@ public class ConfigField {
 		return setting;
 	}
 
-	private String getFullPath(String path, Setting setting, Field field) {
-		String parent = path.isEmpty() ? path : path + ".";
+	private String getFullPath(String parent, Setting setting, Field field) {
 
 		if (!setting.name().isEmpty()) {
 			return parent + "." + setting.name();
@@ -41,7 +42,7 @@ public class ConfigField {
 			}
 			sb.append(Character.toLowerCase(c));
 		}
-		return sb.toString();
+		return parent + sb.toString();
 	}
 
 }

@@ -16,7 +16,7 @@ import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
 public class OsmiumLogger {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppInfo.NAME);
-	private static final String PREFIX = Chat.DARK_AQUA + "[ " + Chat.AQUA + AppInfo.NAME + "%L" + Chat.DARK_AQUA + "] ";
+	private static final String PREFIX = Chat.DARK_AQUA + "[" + Chat.AQUA + AppInfo.NAME + "%L" + Chat.DARK_AQUA + "] ";
 
 	public static final void debug(String message) {
 		if (CoreOsmiumConfiguration.coloredConsole) {

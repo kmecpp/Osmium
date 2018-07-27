@@ -4,21 +4,36 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.UUID;
 
 import javax.inject.Singleton;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import com.google.common.reflect.TypeToken;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.typesafe.config.ConfigParseOptions;
+import com.typesafe.config.ConfigRenderOptions;
 
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 
 @Singleton
 public class ConfigManager {
 
 	private final HashMap<Class<?>, OsmiumConfig> configs = new HashMap<>();
+
+	public ConfigManager() {
+		registerDeseralizer(UUID.class, UUID::fromString);
+	}
 
 	public HashMap<Class<?>, OsmiumConfig> getConfigs() {
 		return configs;
@@ -28,18 +43,37 @@ public class ConfigManager {
 		return configs.containsKey(cls);
 	}
 
+	public <T> void registerDeseralizer(Class<T> cls, Deserializer<T> deserializer) {
+		registerSerialization(cls, (obj) -> String.valueOf(obj), deserializer);
+	}
+
+	public <T> void registerSerialization(Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
+		TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(cls), new TypeSerializer<T>() {
+
+			@Override
+			public T deserialize(@NonNull TypeToken<?> type, @NonNull ConfigurationNode node) throws ObjectMappingException {
+				return deserializer.deserialize(node.getString());
+			}
+
+			@Override
+			public void serialize(@NonNull TypeToken<?> type, T obj, @NonNull ConfigurationNode node) throws ObjectMappingException {
+				node.setValue(serializer.serialize(obj));
+			}
+
+		});
+	}
+
 	public void load(Class<?> configClass) throws IOException {
-		long start = System.currentTimeMillis();
 		Configuration properties = getProperties(configClass);
 
-		boolean firstSave = false;
+		boolean save = false;
 		File file = getPath(configClass).toFile();
 		if (!file.exists()) {
 			if (file.getParentFile() != null) {
 				file.getParentFile().mkdirs();
 			}
 			file.createNewFile();
-			firstSave = true;
+			save = true;
 		}
 
 		OsmiumConfig config = configs.get(configClass);
@@ -47,20 +81,26 @@ public class ConfigManager {
 			ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
 					.setDefaultOptions(ConfigurationOptions.defaults().setHeader(properties.header()))
 					.setPath(getPath(configClass))
+					.setRenderOptions(ConfigRenderOptions.concise())
+					.setParseOptions(ConfigParseOptions.defaults())
 					.build();
+			long start = System.currentTimeMillis();
+			CommentedConfigurationNode root = loader.load();
+			System.out.println("File Read: " + (System.currentTimeMillis() - start) + "ms");
+			config = new OsmiumConfig(configClass, loader, root);
 
-			long s = System.currentTimeMillis();
-			config = new OsmiumConfig(configClass, loader, loader.load());
-			System.out.println("File Read: " + (System.currentTimeMillis() - s) + "ms");
 		}
-		config.reload();
-
+		long start = System.currentTimeMillis();
+		boolean r = config.reload();
+		System.out.println(save + ", " + r);
+		save |= r;
+		System.out.println("Field Update: " + (System.currentTimeMillis() - start) + "ms");
 		//		updateClass(configClass, config, UpdateMethod.LOAD);
 
-		if (firstSave) {
+		if (save) {
+			OsmiumLogger.debug("Saving config after load");
 			config.save(true);
 		}
-		System.out.println("Load Time: " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	public void save(Class<?> configClass) throws IOException {

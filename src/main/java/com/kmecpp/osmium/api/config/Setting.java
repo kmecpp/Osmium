@@ -15,4 +15,6 @@ public @interface Setting {
 
 	String comment() default "";
 
+	boolean deletable() default false;
+
 }
