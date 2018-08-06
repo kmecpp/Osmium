@@ -14,6 +14,8 @@ import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandProperties;
 import com.kmecpp.osmium.api.config.Configuration;
+import com.kmecpp.osmium.api.database.DBTable;
+import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
@@ -89,9 +91,17 @@ public class ClassManager {
 		OsmiumLogger.debug("Loading class: " + cls.getName());
 
 		//CONFIGURATIONS
-		if (cls.isAnnotationPresent(Configuration.class)) {
+		Configuration configuration = cls.getAnnotation(Configuration.class);
+		if (configuration != null) {
 			Osmium.reloadConfig(cls);
-			OsmiumLogger.debug("Loading configuration file: " + cls.getAnnotation(Configuration.class).path());
+			OsmiumLogger.debug("Loading configuration file: " + configuration.path());
+		}
+
+		DBTable table = cls.getAnnotation(DBTable.class);
+		if (table != null) {
+			OsmiumLogger.debug("Initializing database table: " + table.name());
+			Osmium.getDatabase(plugin).createTable(cls);
+			Database.isSerializable(cls);
 		}
 	}
 

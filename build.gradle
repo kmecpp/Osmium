@@ -16,11 +16,19 @@ version = project_version
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
+eclipse {
+    classpath {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
 configurations {
     shade
     compile.extendsFrom shade
 }
 
+/*
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
     classifier = 'sources'
@@ -29,15 +37,15 @@ task sourcesJar(type: Jar) {
 task javadocJar(type: Jar) {
     from javadoc
     classifier = 'javadoc'
-}
+}*/
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId = project_id
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
+            //artifact sourcesJar
+            //artifact javadocJar
             pom {
                 name = project_name
                 description = project_description
@@ -124,18 +132,20 @@ dependencies {
 	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648.jar")
 	//compile "org.spigotmc:spigot:$bukkit_version"
 	compile "org.spongepowered:spongeapi:$sponge_version"
-	compile "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75"
+	//compile "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75"
 	
 	//shade "com.kmecpp:jlib:+"
 	shade "com.eclipsesource.minimal-json:minimal-json:0.9.5"
 	shade "org.spongepowered:configurate-hocon:3.5"
 	shade "org.spongepowered:plugin-meta:0.4.1"
-	shade "org.javassist:javassist:3.23.1-GA"
+	shade "org.javassist:javassist:3.22.0-CR1"
+	//shade "log4j:log4j:1.2.17"
 	//shade "org.yaml:snakeyaml:1.21"
 	//shade "org.bstats:bstats-bukkit:1.2"
 	//shade "org.bstats:bstats-sponge:1.2"
 	shade "com.zaxxer:HikariCP:3.1.0"
-	
+	shade "org.slf4j:log4j-over-slf4j:1.7.25"
+		
     testCompile 'junit:junit:4.12'
 }
 /*

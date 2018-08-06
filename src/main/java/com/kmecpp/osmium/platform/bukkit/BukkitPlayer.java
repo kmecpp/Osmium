@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.platform.bukkit;
 
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.inventory.Inventory;
 
 public class BukkitPlayer implements Player {
 
@@ -47,6 +48,11 @@ public class BukkitPlayer implements Player {
 	@Override
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
+	}
+
+	@Override
+	public Inventory getInventory() {
+		return new BukkitInventory(player.getInventory());
 	}
 
 }

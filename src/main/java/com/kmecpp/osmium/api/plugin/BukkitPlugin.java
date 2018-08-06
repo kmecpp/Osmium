@@ -16,16 +16,6 @@ public class BukkitPlugin extends JavaPlugin implements Listener {
 
 	private OsmiumPlugin plugin = Osmium.getPluginLoader().load(this); //OsmiumData.constructPlugin();
 
-	public BukkitPlugin() {
-		if (plugin == null) {
-			Bukkit.getPluginManager().disablePlugin(this);
-		}
-		//		if (bukkitInstance != null) {
-		//			throw new RuntimeException("Plugin already constructed!");
-		//		}
-		//		this.bukkitInstance = this;
-	}
-
 	public OsmiumPlugin execute(Callable<OsmiumPlugin> callable) {
 		try {
 			return callable.call();
@@ -37,20 +27,29 @@ public class BukkitPlugin extends JavaPlugin implements Listener {
 
 	@Override
 	public void onLoad() {
-		plugin.onLoad();
+		if (plugin == null) {
+			System.out.println("DISABLING PLUGIN! " + this.getName() + "_____________________________________________");
+			Bukkit.getPluginManager().disablePlugin(this);
+		} else {
+			plugin.onLoad();
+		}
 	}
 
 	@Override
 	public void onEnable() {
-		plugin.onPreInit();
-		plugin.getClassManager().initializeHooks();
-		plugin.onInit();
-		plugin.onPostInit();
+		if (plugin != null) {
+			plugin.onPreInit();
+			plugin.getClassManager().initializeHooks();
+			plugin.onInit();
+			plugin.onPostInit();
+		}
 	}
 
 	@Override
 	public void onDisable() {
-		plugin.onDisable();
+		if (plugin != null) {
+			plugin.onDisable();
+		}
 	}
 
 }

@@ -14,6 +14,8 @@ import com.google.common.reflect.TypeToken;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.serialization.Deserializer;
+import com.kmecpp.osmium.api.serialization.Serializer;
 import com.typesafe.config.ConfigParseOptions;
 import com.typesafe.config.ConfigRenderOptions;
 

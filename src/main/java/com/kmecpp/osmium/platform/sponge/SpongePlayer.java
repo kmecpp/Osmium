@@ -3,6 +3,7 @@ package com.kmecpp.osmium.platform.sponge;
 import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.inventory.Inventory;
 
 public class SpongePlayer implements Player {
 
@@ -45,6 +46,11 @@ public class SpongePlayer implements Player {
 	@Override
 	public boolean hasPermission(String permission) {
 		return player.hasPermission(permission);
+	}
+
+	@Override
+	public Inventory getInventory() {
+		return new SpongeInventory(player.getInventory());
 	}
 
 }

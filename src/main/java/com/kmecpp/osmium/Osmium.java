@@ -49,7 +49,7 @@ public final class Osmium {
 	 */
 
 	static {
-		OsmiumLogger.debug("Osmium API v" + AppInfo.VERSION + " initialized");
+		OsmiumLogger.info("Osmium API v" + AppInfo.VERSION + " initialized");
 	}
 
 	private Osmium() {
@@ -79,6 +79,7 @@ public final class Osmium {
 		Database database = databases.get(plugin.getClass());
 		if (database == null) {
 			database = new Database(plugin);
+			database.start();
 			databases.put(plugin.getClass(), database);
 		}
 		return database;
@@ -186,7 +187,7 @@ public final class Osmium {
 	}
 
 	public static SimpleCommand registerCommand(String name, String... aliases) {
-		return registerCommand(Osmium.getPlugin(Reflection.getInvokingClass()), name, aliases);
+		return registerCommand(getInvokingPlugin(), name, aliases);
 	}
 
 	public static SimpleCommand registerCommand(OsmiumPlugin plugin, String name, String... aliases) {
@@ -197,9 +198,9 @@ public final class Osmium {
 		return Osmium.getPlugin(Reflection.getInvokingClass(1));
 	}
 
-	public static String getPluginId(String name) {
-		return name.replace(' ', '-').toLowerCase();
-	}
+	//	public static String getPluginId(String name) {
+	//		return name.replace(' ', '-').toLowerCase();
+	//	}
 
 	//	public static Optional<Player> getPlayer(String name) {
 	//		if (Platform.isBukkit()) {

@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.database;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,15 +10,18 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-import org.bukkit.Bukkit;
-
+import com.kmecpp.osmium.SimpleDate;
+import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
+import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.serialization.Deserializer;
+import com.kmecpp.osmium.api.serialization.JavaSerializer;
 import com.kmecpp.osmium.api.util.IOUtil;
-import com.kmecpp.osmium.api.util.StringUtil;
 import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -36,6 +40,30 @@ public class Database {
 	private static final HashMap<String, Class<? extends CustomSerialization>> types = new HashMap<>();
 	private static final HashMap<Class<? extends CustomSerialization>, String> typeIds = new HashMap<>();
 
+	private static final HashMap<Class<?>, SerializableClass<?>> typeMap = new HashMap<>();
+
+	static {
+		registerDefaultType(DBType.INTEGER, int.class, Integer::parseInt);
+		registerDefaultType(DBType.INTEGER, Integer.class, Integer::parseInt);
+		registerDefaultType(DBType.LONG, long.class, Long::parseLong);
+		registerDefaultType(DBType.LONG, Long.class, Long::parseLong);
+		registerDefaultType(DBType.FLOAT, float.class, Float::parseFloat);
+		registerDefaultType(DBType.FLOAT, Float.class, Float::parseFloat);
+		registerDefaultType(DBType.DOUBLE, double.class, Double::parseDouble);
+		registerDefaultType(DBType.DOUBLE, Double.class, Double::parseDouble);
+		registerDefaultType(DBType.BOOLEAN, boolean.class, Boolean::parseBoolean);
+		registerDefaultType(DBType.BOOLEAN, Boolean.class, Boolean::parseBoolean);
+		registerDefaultType(DBType.STRING, String.class, (s) -> s);
+		registerDefaultType(DBType.SERIALIZABLE, UUID.class, UUID::fromString);
+		registerDefaultType(DBType.SERIALIZABLE, Location.class, Location::fromString);
+		registerDefaultType(DBType.SERIALIZABLE, SimpleDate.class, SimpleDate::fromString);
+		registerDefaultType(DBType.SERIALIZABLE, Inventory.class, JavaSerializer::deserialize);
+	}
+
+	private static final <T> void registerDefaultType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
+		typeMap.put(cls, new SerializableClass<>(type, cls, String::valueOf, deserializer));
+	}
+
 	//	static {
 	//		registerType("Day", SimpleDate.class);
 	//		registerType("List", DBList.class);
@@ -46,6 +74,12 @@ public class Database {
 	}
 
 	public void start() {
+		//TODO: Implement MySQL
+		if (CoreOsmiumConfiguration.Database.enableMysql) {
+			OsmiumLogger.error("MySQL is is not fully supported yet! Switching to SQLite");
+			CoreOsmiumConfiguration.Database.enableMysql = false;
+		}
+
 		try {
 			HikariConfig config = new HikariConfig();
 			if (CoreOsmiumConfiguration.Database.enableMysql) {
@@ -60,7 +94,7 @@ public class Database {
 				source = new HikariDataSource(config);
 			} else {
 				OsmiumLogger.info("Using SQLite for database storage");
-				config.setJdbcUrl("jdbc:sqlite:" + plugin.getPluginFolder().toFile().getPath() + File.separator + "data.db");
+				config.setJdbcUrl("jdbc:sqlite:" + plugin.getPluginFolder() + File.separator + "data.db");
 				config.setDriverClassName("org.sqlite.JDBC");
 			}
 			config.setMinimumIdle(3);
@@ -72,7 +106,6 @@ public class Database {
 		} catch (PoolInitializationException e) {
 			OsmiumLogger.error("Invalid database configuration!");
 			e.printStackTrace();
-			Bukkit.getServer().shutdown();
 		}
 		queue = new DatabaseQueue(this);
 		queue.start();
@@ -87,12 +120,17 @@ public class Database {
 		return typeIds.get(cls);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> SerializableClass<T> getSerializationData(Class<T> cls) {
+		return (SerializableClass<T>) typeMap.get(cls);
+	}
+
 	public static String serialize(Object obj) {
 		if (typeIds.containsKey(obj.getClass())) {
 			if (obj instanceof CustomSerialization) {
 				return ((CustomSerialization) obj).serialize();
 			} else if (obj instanceof java.io.Serializable) {
-				return StringUtil.serialize((java.io.Serializable) obj);
+				return JavaSerializer.serialize((java.io.Serializable) obj);
 			}
 		}
 		throw new RuntimeException("Object is not serializable: " + obj.getClass());
@@ -107,7 +145,7 @@ public class Database {
 				constructor.setAccessible(true);
 				return constructor.newInstance(value);
 			} else {
-				return StringUtil.deserialize(value);
+				return JavaSerializer.deserialize(value);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to deserialize string with key: '" + key + "', string: '" + value + "'");
@@ -137,13 +175,13 @@ public class Database {
 	//		throw new RuntimeException("No deserializer registered for ID: " + id);
 	//	}
 
-	public static boolean isSerializable(Class<?> cls) {
+	public static final boolean isSerializable(Class<?> cls) {
 		//		return typeKeys.containsKey(cls);
 		//		return cls ins
 		return false;
 	}
 
-	public static Collection<TableProperties> getTables() {
+	public static final Collection<TableProperties> getTables() {
 		return tables.values();
 	}
 
@@ -151,7 +189,7 @@ public class Database {
 		return tables.get(tableClass);
 	}
 
-	public static String getTableName(Class<?> tableClass) {
+	public static final String getTableName(Class<?> tableClass) {
 		return tables.get(tableClass).getName();
 	}
 
@@ -204,8 +242,10 @@ public class Database {
 	}
 
 	public <T> T getFirst(Class<T> tableClass, OrderBy orderBy, String columns, Object... values) {
-		DBResult result = query("SELECT * FROM " + tables.get(tableClass).getName() + " WHERE " + DBUtil.createWhere(columns.split(","), values) + " " + orderBy);
-		return result.isEmpty() ? null : result.first().as(tableClass);
+		//		TableProperties properties = tables.get(tableClass);
+		//		DBResult result = query("SELECT * FROM " + properties.getName() + " WHERE " + DBUtil.createWhere(columns.split(","), values) + " " + orderBy);
+		//		return result.isEmpty() ? null : result.first().as(tableClass);
+		return orderBy(tableClass, orderBy, 1).get(0);
 	}
 
 	public <T> T getFirst(Class<T> tableClass, OrderBy orderBy) {
@@ -213,24 +253,26 @@ public class Database {
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit) {
-		return query("SELECT * FROM " + tables.get(tableClass).getName() + " " + orderBy + " LIMIT " + limit).as(tableClass);
-	}
-
-	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int min, int max) {
-		return query("SELECT * FROM " + tables.get(tableClass).getName() + " " + orderBy + " LIMIT " + min + "," + max).as(tableClass);
+		TableProperties properties = tables.get(tableClass);
+		return query("SELECT * FROM " + properties.getName() + " " + orderBy + " LIMIT " + limit, properties);
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, String orderBy, int min, int max) {
 		return orderBy(tableClass, OrderBy.desc(orderBy), min, max);
 	}
 
+	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int min, int max) {
+		TableProperties properties = tables.get(tableClass);
+		return query("SELECT * FROM " + properties.getName() + " " + orderBy + " LIMIT " + min + "," + max, properties);
+	}
+
 	public <T> T get(Class<T> tableClass, Object... primaryKeys) {
 		return getOrDefault(tableClass, null, primaryKeys);
 	}
 
-	public <T> T getOrDefault(Class<T> tableClass, T def, Object... primaryKeys) {
+	public <T> T getOrDefault(Class<T> tableClass, T defaultValue, Object... primaryKeys) {
 		ArrayList<T> list = query(tableClass, primaryKeys);
-		return list.isEmpty() ? def : list.get(0);
+		return list.isEmpty() ? defaultValue : list.get(0);
 	}
 
 	public <T> ArrayList<T> query(Class<T> tableClass, Object... primaryKeys) {
@@ -247,12 +289,39 @@ public class Database {
 			columns = table.getPrimaryColumns();
 		}
 
-		ArrayList<T> list = new ArrayList<>();
-		DBResult result = query("SELECT * FROM " + table.getName() + " WHERE " + DBUtil.createWhere(columns, values));
-		for (int i = 0; i < result.size(); i++) {
-			list.add(result.get(i).as(tableClass));
-		}
-		return list;
+		String query = "SELECT * FROM " + table.getName() + " WHERE " + DBUtil.createWhere(columns, values);
+		return query(query, table);
+	}
+
+	//	private <T> T newInstance(Class<T> cls, ResultSet rs) throws InstantiationException, IllegalAccessException, IllegalArgumentException, SQLException {
+	//		TableProperties properties = getTable(cls);
+	//
+	//		T instance = cls.newInstance();
+	//		for (Field field : properties.getFields()) {
+	//			if (int.class.isAssignableFrom(cls) || Integer.class.isAssignableFrom(cls)) {
+	//				field.set(instance, rs.getInt(field.getName()));
+	//			} else if (long.class.isAssignableFrom(cls) || Long.class.isAssignableFrom(cls)) {
+	//				field.set(instance, rs.getLong(field.getName()));
+	//			} else if (float.class.isAssignableFrom(cls) || Float.class.isAssignableFrom(cls)) {
+	//				field.set(instance, rs.getFloat(field.getName()));
+	//			} else if (double.class.isAssignableFrom(cls) || Double.class.isAssignableFrom(cls)) {
+	//				field.set(instance, rs.getDouble(field.getName()));
+	//			} else if (boolean.class.isAssignableFrom(cls) || Boolean.class.isAssignableFrom(cls)) {
+	//				field.set(instance, rs.getBoolean(field.getName()));
+	//			} else if (String.class.isAssignableFrom(cls)) {
+	//				field.set(instance, rs.getString(field.getName()));
+	//			} else {
+	//				//				types.get
+	//				//				field.set(instance, rs.getInt(field.getName()));
+	//			}
+	//		}
+	//
+	//		T obj = cls.newInstance();
+	//		return obj;
+	//	}
+
+	public <T> ArrayList<T> query(String query, Class<?> tableClass) {
+		return query(query, tables.get(tableClass));
 	}
 
 	/**
@@ -262,17 +331,29 @@ public class Database {
 	 *            the query to execute
 	 * @return the result of the query
 	 */
-	public DBResult query(String query) {
+	public <T> ArrayList<T> query(String query, TableProperties properties) {
 		Connection connection = null;
 		Statement statement = null;
 		ResultSet resultSet = null;
 		try {
+			Field[] fields = properties.getFields();
+
+			ArrayList<T> list = new ArrayList<>();
+
 			OsmiumLogger.debug("Executing query: '" + query + "'");
 			connection = getConnection();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
-			return new DBResult(resultSet);
-		} catch (SQLException e) {
+			while (resultSet.next()) {
+				T obj = properties.<T> getTableClass().newInstance();
+
+				for (int i = 0; i < fields.length; i++) {
+					fields[i].set(obj, resultSet.getObject(i));
+				}
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException | IllegalArgumentException | IllegalAccessException | InstantiationException e) {
 			OsmiumLogger.error("Failed to execute database query: '" + query + "'");
 			e.printStackTrace();
 			return null;
@@ -282,29 +363,54 @@ public class Database {
 	}
 
 	/**
-	 * Executes an SQL query on the database that should return a single row
+	 * Executes an SQL query on the database and gets the result
 	 * 
 	 * @param query
 	 *            the query to execute
-	 * @return the row retrieved
+	 * @return the result of the query
 	 */
-	public DBRow queryRow(String query) {
-		return query(query).only();
+	public void query(String query, ResultSetProcessor processor) {
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			OsmiumLogger.debug("Executing query: '" + query + "'");
+			connection = getConnection();
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			processor.process(resultSet);
+		} catch (SQLException e) {
+			OsmiumLogger.error("Failed to execute database query: '" + query + "'");
+			e.printStackTrace();
+		} finally {
+			IOUtil.close(connection, statement, resultSet);
+		}
 	}
 
-	/**
-	 * Filters the rows of the specified table with the given filters. Filters
-	 * should be valid SQLite WHERE clauses.
-	 * 
-	 * @param table
-	 *            the table name to query
-	 * @param filters
-	 *            the filters to apply
-	 * @return the results matching the given filters
-	 */
-	public DBResult filter(String table, String... filters) {
-		return query("SELECT * FROM " + table + " WHERE " + StringUtil.join(filters, " AND "));
-	}
+	//	/**
+	//	 * Executes an SQL query on the database that should return a single row
+	//	 * 
+	//	 * @param query
+	//	 *            the query to execute
+	//	 * @return the row retrieved
+	//	 */
+	//	public DBRow queryRow(String query) {
+	//		return query(query).only();
+	//	}
+	//
+	//	/**
+	//	 * Filters the rows of the specified table with the given filters. Filters
+	//	 * should be valid SQLite WHERE clauses.
+	//	 * 
+	//	 * @param table
+	//	 *            the table name to query
+	//	 * @param filters
+	//	 *            the filters to apply
+	//	 * @return the results matching the given filters
+	//	 */
+	//	public DBResult filter(String table, String... filters) {
+	//		return query("SELECT * FROM " + table + " WHERE " + StringUtil.join(filters, " AND "));
+	//	}
 
 	/**
 	 * Gets whether or not the server is using MySQL for database storage or not
@@ -327,6 +433,10 @@ public class Database {
 	 *            the class containing the table data
 	 */
 	public void createTable(Class<?> cls) {
+		if (tables.containsKey(cls)) {
+			throw new IllegalStateException("Database table '" + cls.getName() + "' already exists!");
+		}
+
 		TableProperties data = new TableProperties(cls);
 		tables.put(cls, data);
 
@@ -360,6 +470,9 @@ public class Database {
 	 * @return a Connection to the data source or null
 	 */
 	public Connection getConnection() {
+		if (source == null) {
+			throw new IllegalStateException("Database has not been initialized!");
+		}
 		try {
 			try {
 				latch.await();

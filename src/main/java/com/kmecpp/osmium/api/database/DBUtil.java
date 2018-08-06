@@ -1,56 +1,12 @@
 package com.kmecpp.osmium.api.database;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 
 public class DBUtil {
-
-	public static Field[] getFields(Class<?> cls) {
-		ArrayList<Field> fields = new ArrayList<>();
-		for (Field field : cls.getDeclaredFields()) {
-			field.setAccessible(true);
-			if (isValidField(field)) {
-				fields.add(field);
-			}
-		}
-		return fields.toArray(new Field[0]);
-	}
-
-	public static Field[] getPrimaryFields(Class<?> cls) {
-		ArrayList<Field> fields = new ArrayList<>();
-		for (Field field : cls.getDeclaredFields()) {
-			field.setAccessible(true);
-			if (isValidField(field) && field.getAnnotation(DBColumn.class).primary()) {
-				fields.add(field);
-			}
-		}
-		return fields.toArray(new Field[0]);
-	}
-
-	public static String[] getColumns(Class<?> cls) {
-		ArrayList<String> columns = new ArrayList<>();
-		for (Field field : cls.getDeclaredFields()) {
-			field.setAccessible(true);
-			if (isValidField(field)) {
-				columns.add(getColumnName(field));
-			}
-		}
-		return columns.toArray(new String[0]);
-	}
-
-	public static String[] getPrimaryColumns(Class<?> cls) {
-		ArrayList<String> columns = new ArrayList<>();
-		for (Field field : Reflection.getFields(cls)) {
-			if (isValidField(field) && field.getAnnotation(DBColumn.class).primary()) {
-				columns.add(getColumnName(field));
-			}
-		}
-		return columns.toArray(new String[0]);
-	}
 
 	public String createWhere(Class<?> cls, Object... primaryKeys) {
 		String[] columns = Database.getTable(cls).getPrimaryColumns();
@@ -62,12 +18,16 @@ public class DBUtil {
 	}
 
 	public static final String createTable(TableProperties properties) {
+		if (properties.getColumnCount() == 0) {
+			throw new IllegalArgumentException("Invalid database table '" + properties.getName() + "' Must contain at least one column!");
+		}
+
 		StringBuilder schema = new StringBuilder("CREATE TABLE IF NOT EXISTS " + properties.getName() + " (");
 
 		for (Field field : properties.getFields()) {
 			DBColumn column = field.getAnnotation(DBColumn.class);
 			schema.append(getColumnName(field))
-					.append(" " + DBType.getTypeName(field.getType()))
+					.append(" " + Database.getSerializationData(field.getType()).getType().name())
 					.append(column.notNull() ? " NOT NULL" : "")
 					.append(column.autoIncrement() ? " AUTOINCREMENT" : "")
 					.append(column.unique() ? " UNIQUE" : "")
@@ -111,18 +71,15 @@ public class DBUtil {
 				+ "VALUES(" + StringUtil.join(values, ", ") + ");";
 	}
 
-	public static boolean isValidField(Field field) {
-		return !Modifier.isStatic(field.getModifiers()) && field.isAnnotationPresent(DBColumn.class);
-	}
-
 	public static String getColumnName(Field field) {
 		return getColumnName(field.getName());
+
 	}
 
-	public static String getColumnName(String name) {
+	public static String getColumnName(String str) {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < name.length(); i++) {
-			char c = name.charAt(i);
+		for (int i = 0; i < str.length(); i++) {
+			char c = str.charAt(i);
 			sb.append(Character.isUpperCase(c) ? "_" + Character.toLowerCase(c) : c);
 		}
 		return sb.toString();

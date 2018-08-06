@@ -1,6 +1,8 @@
 package com.kmecpp.osmium.api.database;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 
 import com.kmecpp.osmium.api.util.Reflection;
 
@@ -22,10 +24,29 @@ public class TableProperties {
 		for (Field field : Reflection.getFieldsWith(cls, DBColumn.class)) {
 			field.getName();
 		}
-		this.columns = DBUtil.getColumns(cls);
-		this.primaryColumns = DBUtil.getPrimaryColumns(cls);
-		this.fields = DBUtil.getFields(cls);
-		this.primaryFields = DBUtil.getPrimaryFields(cls);
+		ArrayList<Field> fields = new ArrayList<>();
+		ArrayList<Field> primaryFields = new ArrayList<>();
+		ArrayList<String> columns = new ArrayList<>();
+		ArrayList<String> primaryColumns = new ArrayList<>();
+
+		for (Field field : cls.getDeclaredFields()) {
+			field.setAccessible(true);
+			DBColumn annotation = field.getAnnotation(DBColumn.class);
+			if (annotation != null && !Modifier.isStatic(field.getModifiers())) {
+				String name = DBUtil.getColumnName(field);
+				fields.add(field);
+				columns.add(name);
+				if (annotation.primary()) {
+					primaryFields.add(field);
+					primaryColumns.add(name);
+				}
+			}
+		}
+		this.fields = fields.toArray(new Field[fields.size()]);
+		this.primaryFields = primaryFields.toArray(new Field[primaryFields.size()]);
+		this.columns = columns.toArray(new String[columns.size()]);
+		this.primaryColumns = primaryColumns.toArray(new String[primaryColumns.size()]);
+
 	}
 
 	public String getName() {
@@ -52,8 +73,9 @@ public class TableProperties {
 		return primaryFields;
 	}
 
-	public Class<?> getTableClass() {
-		return tableClass;
+	@SuppressWarnings("unchecked")
+	public <T> Class<T> getTableClass() {
+		return (Class<T>) tableClass;
 	}
 
 }

@@ -10,6 +10,10 @@ public interface Location extends Abstraction {
 
 	double getZ();
 
+	public static Location fromString(String str) {
+		return null;
+	}
+
 	//	private World world;
 	//	private double x;
 	//	private double y;

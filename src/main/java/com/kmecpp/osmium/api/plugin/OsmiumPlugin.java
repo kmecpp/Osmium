@@ -204,13 +204,20 @@ public abstract class OsmiumPlugin {
 		this.logger = logger;
 	}
 
-	public Path getPluginFolder() {
-		if (Platform.isSponge()) {
-			return Sponge.getGame().getConfigManager().getPluginConfig(pluginImplementation).getDirectory();
-		} else if (Platform.isBukkit()) {
-			return Paths.get(((JavaPlugin) pluginImplementation).getDataFolder().toURI());
+	public void disable() {
+		if (Platform.isBukkit()) {
+
 		}
-		return null;
+	}
+
+	public Path getPluginFolder() {
+		if (Platform.isBukkit()) {
+			return Paths.get(((JavaPlugin) pluginImplementation).getDataFolder().toURI());
+		} else if (Platform.isSponge()) {
+			return Sponge.getGame().getConfigManager().getPluginConfig(pluginImplementation).getDirectory();
+		} else {
+			return null;
+		}
 	}
 
 }
