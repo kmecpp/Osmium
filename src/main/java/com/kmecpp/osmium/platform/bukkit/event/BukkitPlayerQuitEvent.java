@@ -2,7 +2,7 @@ package com.kmecpp.osmium.platform.bukkit.event;
 
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
-import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
+import com.kmecpp.osmium.cache.PlayerList;
 
 public class BukkitPlayerQuitEvent implements PlayerQuitEvent {
 
@@ -15,7 +15,7 @@ public class BukkitPlayerQuitEvent implements PlayerQuitEvent {
 
 	@Override
 	public Player getPlayer() {
-		return new BukkitPlayer(event.getPlayer());
+		return PlayerList.getPlayer(event.getPlayer().getName());
 	}
 
 }

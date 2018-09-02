@@ -6,18 +6,14 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.UUID;
 
-import javax.inject.Singleton;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import com.google.common.reflect.TypeToken;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
-import com.kmecpp.osmium.api.serialization.Deserializer;
-import com.kmecpp.osmium.api.serialization.Serializer;
-import com.typesafe.config.ConfigParseOptions;
-import com.typesafe.config.ConfigRenderOptions;
+import com.kmecpp.osmium.api.persistence.Deserializer;
+import com.kmecpp.osmium.api.persistence.Serializer;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -28,7 +24,6 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 
-@Singleton
 public class ConfigManager {
 
 	private final HashMap<Class<?>, OsmiumConfig> configs = new HashMap<>();
@@ -83,8 +78,6 @@ public class ConfigManager {
 			ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
 					.setDefaultOptions(ConfigurationOptions.defaults().setHeader(properties.header()))
 					.setPath(getPath(configClass))
-					.setRenderOptions(ConfigRenderOptions.concise())
-					.setParseOptions(ConfigParseOptions.defaults())
 					.build();
 			long start = System.currentTimeMillis();
 			CommentedConfigurationNode root = loader.load();

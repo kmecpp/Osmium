@@ -203,7 +203,7 @@ build.doLast {
 	//BUKKIT
 	exec {
 		if (project.hasProperty("bukkit_server")) {
-			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("bukkit_server") + "\\plugins", '/Y'
+			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("bukkit_server").replaceAll("%20", " ") + "\\plugins", '/Y'
 		} else {
 			commandLine 'echo', 'Skipped deploying Bukkit jar'
 		}
@@ -211,9 +211,18 @@ build.doLast {
 	//SPONGE
 	exec {
 		if (project.hasProperty("sponge_server")) {
-			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("sponge_server") + "\\mods", '/Y'
+			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("sponge_server").replaceAll("%20", " ") + "\\mods", '/Y'
 		} else {
 			commandLine 'echo', 'Skipped deploying Sponge jar'
+		}	
+	}
+	
+	//SPONGE
+	exec {
+		if (project.hasProperty("test_server")) {
+			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("test_server").replaceAll("%20", " ") + "\\plugins", '/Y'
+		} else {
+			commandLine 'echo', 'Skipped deploying test jar'
 		}	
 	}
 }

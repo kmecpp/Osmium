@@ -22,12 +22,8 @@ public abstract class JsonAPI {
 		return url;
 	}
 
-	public void post(JsonValue json) {
-		try {
-			WebUtil.post(url, json);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public JsonValue post(JsonValue json) throws IOException {
+		return WebUtil.post(url, json);
 	}
 
 }

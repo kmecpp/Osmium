@@ -1,18 +1,18 @@
-package com.kmecpp.osmium.api.config;
+package com.kmecpp.osmium.api.tasks;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Configuration {
+public @interface Scheduled {
 
-	String path();
+	long interval();
 
-	String extension() default "";
+	long delay() default 0;
 
-	String header() default "";
+	boolean async() default false;
 
 }

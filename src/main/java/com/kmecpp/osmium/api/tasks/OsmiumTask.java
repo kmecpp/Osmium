@@ -8,7 +8,7 @@ import org.spongepowered.api.scheduler.Task.Builder;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-public class OsmiumTask extends Task<OsmiumTask> {
+public class OsmiumTask extends AbstractTask<OsmiumTask> {
 
 	public OsmiumTask(OsmiumPlugin plugin) {
 		super(plugin);

@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-public class CountdownTask extends Task<CountdownTask> {
+public class CountdownTask extends AbstractTask<CountdownTask> {
 
 	private final int count;
 

@@ -2,6 +2,7 @@ package com.kmecpp.osmium.platform.sponge;
 
 import org.spongepowered.api.text.Text;
 
+import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 
@@ -51,6 +52,26 @@ public class SpongePlayer implements Player {
 	@Override
 	public Inventory getInventory() {
 		return new SpongeInventory(player.getInventory());
+	}
+
+	@Override
+	public GameMode getGameMode() {
+		return GameMode.fromImplementation(player.gameMode().get());
+	}
+
+	@Override
+	public void setGameMode(GameMode mode) {
+		player.gameMode().set(mode.getGameModeImpl());
+	}
+
+	@Override
+	public double getHealth() {
+		return player.health().get();
+	}
+
+	@Override
+	public void setHealth(double health) {
+		player.health().set(health);
 	}
 
 }

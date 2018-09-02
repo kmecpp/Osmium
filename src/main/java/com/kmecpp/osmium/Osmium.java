@@ -75,6 +75,10 @@ public final class Osmium {
 		return pluginLoader.getPlugin(cls);
 	}
 
+	public static Database getDatabase() {
+		return getDatabase(getInvokingPlugin());
+	}
+
 	public static Database getDatabase(OsmiumPlugin plugin) {
 		Database database = databases.get(plugin.getClass());
 		if (database == null) {
@@ -101,11 +105,11 @@ public final class Osmium {
 		}
 	}
 
-	public static OsmiumTask schedule() {
-		return schedule(getInvokingPlugin());
+	public static OsmiumTask getTask() {
+		return getTask(getInvokingPlugin());
 	}
 
-	public static OsmiumTask schedule(OsmiumPlugin plugin) {
+	public static OsmiumTask getTask(OsmiumPlugin plugin) {
 		return new OsmiumTask(plugin);
 	}
 

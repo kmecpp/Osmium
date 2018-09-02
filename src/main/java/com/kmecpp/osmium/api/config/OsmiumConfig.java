@@ -114,8 +114,11 @@ public class OsmiumConfig {
 	@SuppressWarnings("unchecked")
 	private static void setValue(CommentedConfigurationNode node, Field field) throws IllegalArgumentException, IllegalAccessException, ObjectMappingException {
 		Object value = field.get(null);
-		System.out.println("SETTING NODE: " + node + " TO " + value);
-		node.setValue((TypeToken<Object>) TypeToken.of(field.getType()), value);
+
+		//Don't delete nodes if their values are null 
+		if (value != null) {
+			node.setValue((TypeToken<Object>) TypeToken.of(field.getType()), value);
+		}
 	}
 
 	//	private static String getConfigKey(Class<?> cls) {

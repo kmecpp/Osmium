@@ -5,7 +5,7 @@ import org.bukkit.scheduler.BukkitTask;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-public abstract class Task<T extends Task<T>> {
+public abstract class AbstractTask<T extends AbstractTask<T>> {
 
 	protected final OsmiumPlugin plugin;
 
@@ -17,7 +17,7 @@ public abstract class Task<T extends Task<T>> {
 	protected long interval;
 	protected TaskExecutor<T> executor;
 
-	public Task(OsmiumPlugin plugin) {
+	public AbstractTask(OsmiumPlugin plugin) {
 		this.plugin = plugin;
 	}
 
@@ -38,7 +38,7 @@ public abstract class Task<T extends Task<T>> {
 		return name;
 	}
 
-	public Task<T> setName(String name) {
+	public AbstractTask<T> setName(String name) {
 		this.name = name;
 		return getInstance();
 	}
@@ -90,7 +90,7 @@ public abstract class Task<T extends Task<T>> {
 		return async;
 	}
 
-	public Task<T> setAsync(boolean async) {
+	public AbstractTask<T> setAsync(boolean async) {
 		this.async = async;
 		return this;
 	}
@@ -99,12 +99,12 @@ public abstract class Task<T extends Task<T>> {
 		return executor;
 	}
 
-	public Task<T> setExecutor(TaskExecutor<T> executor) {
+	public AbstractTask<T> setExecutor(TaskExecutor<T> executor) {
 		this.executor = executor;
 		return this;
 	}
 
-	public abstract Task<T> start();
+	public abstract AbstractTask<T> start();
 
 	public void cancel() {
 		if (Platform.isBukkit()) {

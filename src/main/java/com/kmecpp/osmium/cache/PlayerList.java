@@ -17,6 +17,10 @@ public class PlayerList {
 		players.remove(name.toLowerCase());
 	}
 
+	public static boolean contains(String name) {
+		return players.containsKey(name);
+	}
+
 	public static Player getPlayer(String name) {
 		return players.get(name.toLowerCase());
 	}

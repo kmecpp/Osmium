@@ -1,7 +1,7 @@
 package com.kmecpp.osmium.api.database;
 
-import com.kmecpp.osmium.api.serialization.Deserializer;
-import com.kmecpp.osmium.api.serialization.Serializer;
+import com.kmecpp.osmium.api.persistence.Deserializer;
+import com.kmecpp.osmium.api.persistence.Serializer;
 
 public class SerializableClass<T> {
 

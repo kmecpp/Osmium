@@ -1,13 +1,18 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.cache.PlayerList;
 
 public class BukkitPlayer implements Player {
 
 	private org.bukkit.entity.Player player;
 
 	public BukkitPlayer(org.bukkit.entity.Player player) {
+		if (PlayerList.contains(player.getName())) {
+			throw new IllegalStateException("Osmium wrapper already exists for this player!");
+		}
 		this.player = player;
 	}
 
@@ -53,6 +58,26 @@ public class BukkitPlayer implements Player {
 	@Override
 	public Inventory getInventory() {
 		return new BukkitInventory(player.getInventory());
+	}
+
+	@Override
+	public GameMode getGameMode() {
+		return GameMode.fromImplementation(player.getGameMode());
+	}
+
+	@Override
+	public void setGameMode(GameMode mode) {
+		player.setGameMode(mode.getGameModeImpl());
+	}
+
+	@Override
+	public double getHealth() {
+		return getHealth();
+	}
+
+	@Override
+	public void setHealth(double health) {
+		player.setHealth(health);
 	}
 
 }

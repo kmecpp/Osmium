@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.serialization;
+package com.kmecpp.osmium.api.persistence;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

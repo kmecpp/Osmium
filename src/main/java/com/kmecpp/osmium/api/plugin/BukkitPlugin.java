@@ -28,7 +28,6 @@ public class BukkitPlugin extends JavaPlugin implements Listener {
 	@Override
 	public void onLoad() {
 		if (plugin == null) {
-			System.out.println("DISABLING PLUGIN! " + this.getName() + "_____________________________________________");
 			Bukkit.getPluginManager().disablePlugin(this);
 		} else {
 			plugin.onLoad();

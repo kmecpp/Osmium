@@ -14,6 +14,10 @@ public class CoreOsmiumConfiguration {
 	@Setting(comment = "Set to true to enable debug level logging")
 	public static boolean debug = false;
 
+	@Setting(comment = "Choose the config file format for Osmium plugins. The default is FHRC (https://github.com/kmecpp/FHRC) "
+			+ "\nValid formats: FHRC, YAML, HOCON")
+	public static String configFormat = "FHRC";
+
 	@Setting(comment = "Whether or not to display color in console messages")
 	public static boolean coloredConsole = true;
 

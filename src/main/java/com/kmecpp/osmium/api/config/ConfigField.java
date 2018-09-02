@@ -1,7 +1,6 @@
 package com.kmecpp.osmium.api.config;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 public class ConfigField {
 
@@ -11,7 +10,6 @@ public class ConfigField {
 
 	public ConfigField(String parent, Field field, Setting setting) {
 		this.path = getFullPath(parent, setting, field).split("\\.");
-		System.out.println(Arrays.toString(this.path));
 		this.field = field;
 		this.setting = setting;
 	}
