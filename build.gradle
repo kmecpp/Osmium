@@ -46,11 +46,11 @@ publishing {
             from components.java
             //artifact sourcesJar
             //artifact javadocJar
-            pom {
-                name = project_name
-                description = project_description
-                url = project_url
-            }
+            //pom {
+                //name = project_name
+                //description = project_description
+                //url = project_url
+            //}
         }
     }
     repositories {
@@ -129,9 +129,9 @@ repositories {
 }
 
 dependencies {
-	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648.jar")
+	compileOnly files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648.jar")
 	//compile "org.spigotmc:spigot:$bukkit_version"
-	compile "org.spongepowered:spongeapi:$sponge_version"
+	compileOnly "org.spongepowered:spongeapi:$sponge_version"
 	//compile "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75"
 	
 	//shade "com.kmecpp:jlib:+"
@@ -205,7 +205,7 @@ build.doLast {
 		if (project.hasProperty("bukkit_server")) {
 			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("bukkit_server").replaceAll("%20", " ") + "\\plugins", '/Y'
 		} else {
-			commandLine 'echo', 'Skipped deploying Bukkit jar'
+			commandLine 'cmd', 'echo', 'Skipped deploying Bukkit jar'
 		}
 	}
 	//SPONGE
@@ -213,16 +213,16 @@ build.doLast {
 		if (project.hasProperty("sponge_server")) {
 			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("sponge_server").replaceAll("%20", " ") + "\\mods", '/Y'
 		} else {
-			commandLine 'echo', 'Skipped deploying Sponge jar'
+			commandLine 'cmd', 'echo', 'Skipped deploying Sponge jar'
 		}	
 	}
 	
-	//SPONGE
+	//SERVER
 	exec {
-		if (project.hasProperty("test_server")) {
-			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("test_server").replaceAll("%20", " ") + "\\plugins", '/Y'
+		if (project.hasProperty("server_path")) {
+			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path").replaceAll("%20", " ") + "\\plugins", '/Y'
 		} else {
-			commandLine 'echo', 'Skipped deploying test jar'
+			commandLine 'cmd', 'echo', 'Skipped deploying test jar'
 		}	
 	}
 }

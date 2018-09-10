@@ -127,7 +127,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		for (String author : meta.getAuthors()) {
 			modinfo.addAuthor(author);
 		}
-		for (String dependency : meta.getDependencies()) {
+		for (String dependency : meta.getSpongeDependencies()) {
 			modinfo.addDependency(new PluginDependency(LoadOrder.BEFORE, dependency.toLowerCase(), "", false));
 		}
 		try {
@@ -156,7 +156,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 				.append("description: " + meta.getDescription() + "\n")
 				.append("website: " + meta.getUrl() + "\n")
 				.append("authors: " + Arrays.toString(meta.getAuthors()) + "\n")
-				.append("dependencies: " + Arrays.toString(meta.getDependencies()) + "\n");
+				.append("depend: " + Arrays.toString(meta.getBukkitDependencies()) + "\n");
 		writeRawFile(Platform.BUKKIT.getMetaFile(), pluginYml.toString());
 
 		StringBuilder osmiumYml = new StringBuilder().append("main: " + meta.getSourceClass() + "\n").append("name: " + meta.getName());
@@ -211,16 +211,16 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		return arrayMember;
 	}
 
-	public ArrayMemberValue getDependencies(OsmiumMetaContainer meta, ConstPool cpool) {
-		ArrayMemberValue arrayMember = new ArrayMemberValue(cpool);
-		String[] dependencies = meta.getDependencies();
-		MemberValue[] elements = new MemberValue[dependencies.length];
-		for (int i = 0; i < dependencies.length; i++) {
-			elements[i] = new StringMemberValue(dependencies[i], cpool);
-		}
-		arrayMember.setValue(elements);
-		return arrayMember;
-	}
+	//	public ArrayMemberValue getDependencies(OsmiumMetaContainer meta, ConstPool cpool) {
+	//		ArrayMemberValue arrayMember = new ArrayMemberValue(cpool);
+	//		String[] dependencies = meta.getDependencies();
+	//		MemberValue[] elements = new MemberValue[dependencies.length];
+	//		for (int i = 0; i < dependencies.length; i++) {
+	//			elements[i] = new StringMemberValue(dependencies[i], cpool);
+	//		}
+	//		arrayMember.setValue(elements);
+	//		return arrayMember;
+	//	}
 
 	public void writeMainClass(CtClass ctClass) throws CannotCompileException, IOException {
 		FileObject file = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "root");

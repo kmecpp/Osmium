@@ -7,7 +7,7 @@ In addition to being able to target multiple platforms, Osmium has many unique f
 Although it will take a very long time to implement enough features to have a complete Minecraft API, Osmium should be in a usable state fairly soon. Plugins requiring any part of a specific platform which Osmium has not yet implemented can easily write platform specific code as needed. Osmium even has many utility methods to help you do this.
 
 
-Join our Discord channel stay updated with the project or help out: https://discord.gg/YSgde2Y 
+Join our Discord channel stay updated with the project or help out: https://discord.gg/jBjYckt
 
 # Features
 
@@ -211,7 +211,7 @@ To retrieve a value use Osmium.getValue(Callable bukkit, Callable sponge);
 
 ### Metrics
 
-Osmium as a built in metrics feature for collecting statistics through <https://bstats.org>. To enable metrics for your plugin simply call the enableMetrics() method in your main plugin class.
+Osmium has a built in metrics feature for collecting statistics through <https://bstats.org>. To enable metrics for your plugin simply call the enableMetrics() method in your main plugin class.
 
 **Note:** Metrics in Osmium are disabled by default to comply with Sponge's plugin guidelines. However, server owners will receive a disableable message prompting them to enable metrics if they are disabled. Calling enableMetrics() will only send statistics if the server owners allow it.
 

@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api.plugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.api.tasks.Schedule;
 import com.kmecpp.osmium.api.util.Reflection;
 
 public class ClassManager {
@@ -137,10 +139,43 @@ public class ClassManager {
 			}
 		}
 
-		//LISTENERS
 		for (Method method : cls.getMethods()) {
-			Listener annotation = method.getAnnotation(Listener.class);
-			if (annotation != null) {
+			Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
+			Listener listenerAnnotation = method.getAnnotation(Listener.class);
+
+			if (scheduleAnnotation == null && listenerAnnotation == null) {
+				continue;
+			}
+
+			Object instance;
+			try {
+				boolean contains = listeners.containsKey(cls); //DONE THIS WAY BECAUSE LISTENER MUST BE FINAL
+				instance = contains ? listeners.get(cls) : cls.newInstance();
+				if (!contains) {
+					listeners.put(cls, instance);
+				}
+			} catch (Exception e) {
+				OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.enableEvents(listener)");
+				e.printStackTrace();
+				break;
+			}
+
+			//TASKS
+			if (scheduleAnnotation != null) {
+				Osmium.getTask(plugin)
+						.setAsync(scheduleAnnotation.async())
+						.setDelay(scheduleAnnotation.delay())
+						.setExecutor((t) -> {
+							try {
+								method.invoke(instance);
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								e.printStackTrace();
+							}
+						});
+			}
+
+			//LISTENERS
+			if (listenerAnnotation != null) {
 				if (method.getParameterCount() != 1) {
 					plugin.error("Invalid listener method with signature: '" + method + "'");
 				} else if (!Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
@@ -149,24 +184,11 @@ public class ClassManager {
 					Class<Event> eventClass = Reflection.cast(method.getParameterTypes()[0]);
 					EventInfo eventInfo = EventInfo.get(eventClass);
 
-					Object listenerInstance;
-					try {
-						boolean contains = listeners.containsKey(cls);
-						listenerInstance = contains ? listeners.get(cls) : cls.newInstance();
-						if (!contains) {
-							listeners.put(cls, listenerInstance);
-						}
-					} catch (Exception e) {
-						OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Listener classes without a default constructor must be enabled with: plugin.enableEvents(listener)");
-						e.printStackTrace();
-						break;
-					}
-
 					try {
 						if (Platform.isBukkit()) {
-							BukkitAccess.registerListener(plugin, eventInfo, annotation.order(), method, listenerInstance);
+							BukkitAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
 						} else if (Platform.isSponge()) {
-							SpongeAccess.registerListener(plugin, eventInfo, annotation.order(), method, listenerInstance);
+							SpongeAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();

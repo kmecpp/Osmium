@@ -12,7 +12,6 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.plugin.BukkitPlugin;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
-import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
 import com.kmecpp.osmium.platform.bukkit.BukkitWorld;
 
 public class OsmiumBukkitMain extends BukkitPlugin {
@@ -31,7 +30,7 @@ public class OsmiumBukkitMain extends BukkitPlugin {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerLogin(PlayerLoginEvent e) {
-		PlayerList.addPlayer(new BukkitPlayer(e.getPlayer()));
+		PlayerList.addPlayer(e.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

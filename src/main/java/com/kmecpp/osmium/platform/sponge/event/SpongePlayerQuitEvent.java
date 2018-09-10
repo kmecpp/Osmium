@@ -3,9 +3,9 @@ package com.kmecpp.osmium.platform.sponge.event;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 
+import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
-import com.kmecpp.osmium.platform.sponge.SpongePlayer;
 
 public class SpongePlayerQuitEvent implements PlayerQuitEvent {
 
@@ -22,7 +22,7 @@ public class SpongePlayerQuitEvent implements PlayerQuitEvent {
 
 	@Override
 	public Player getPlayer() {
-		return new SpongePlayer(event.getTargetEntity());
+		return SpongeAccess.getPlayer(event.getTargetEntity());
 	}
 
 }

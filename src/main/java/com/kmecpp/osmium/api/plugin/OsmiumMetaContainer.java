@@ -11,7 +11,8 @@ public class OsmiumMetaContainer {
 	private final String description;
 	private final String url;
 	private final String[] authors;
-	private final String[] dependencies;
+	private final String[] bukkitDependencies;
+	private final String[] spongeDependencies;
 
 	public OsmiumMetaContainer(String sourceClass, String name, String version, String description, String url, String[] authors, String[] dependencies) {
 		this.sourceClass = sourceClass;
@@ -21,11 +22,15 @@ public class OsmiumMetaContainer {
 		this.description = description;
 		this.url = url;
 		this.authors = authors;
-
-		this.dependencies = new String[dependencies.length + 2];
-		this.dependencies[0] = "spongeapi@" + AppInfo.SPONGE_VERSION;
-		this.dependencies[1] = "osmium";
-		System.arraycopy(dependencies, 0, this.dependencies, 2, dependencies.length);
+		
+		this.bukkitDependencies = new String[dependencies.length + 1];
+		this.bukkitDependencies[0] = "Osmium";
+		System.arraycopy(dependencies, 0, this.bukkitDependencies, 1, dependencies.length);
+		
+		this.spongeDependencies = new String[dependencies.length + 2];
+		this.spongeDependencies[0] = "spongeapi@" + AppInfo.SPONGE_VERSION;
+		this.spongeDependencies[1] = "osmium";
+		System.arraycopy(dependencies, 0, this.spongeDependencies, 2, dependencies.length);
 	}
 
 	public String getSourceClass() {
@@ -52,8 +57,12 @@ public class OsmiumMetaContainer {
 		return authors;
 	}
 
-	public String[] getDependencies() {
-		return dependencies;
+	public String[] getBukkitDependencies() {
+		return bukkitDependencies;
+	}
+
+	public String[] getSpongeDependencies() {
+		return spongeDependencies;
 	}
 
 }

@@ -11,7 +11,6 @@ import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.api.plugin.SpongePlugin;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
-import com.kmecpp.osmium.platform.sponge.SpongePlayer;
 import com.kmecpp.osmium.platform.sponge.SpongeWorld;
 
 @Plugin(name = AppInfo.NAME, id = AppInfo.ID, version = AppInfo.VERSION,
@@ -25,7 +24,7 @@ public class OsmiumSpongeMain extends SpongePlugin {
 
 	@Listener(order = Order.PRE)
 	public void onPlayerLogin(ClientConnectionEvent.Join e) {
-		PlayerList.addPlayer(new SpongePlayer(e.getTargetEntity()));
+		PlayerList.addPlayer(e.getTargetEntity());
 	}
 
 	@Listener(order = Order.PRE)

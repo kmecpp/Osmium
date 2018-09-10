@@ -1,11 +1,10 @@
 package com.kmecpp.osmium.api.util;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonValue;

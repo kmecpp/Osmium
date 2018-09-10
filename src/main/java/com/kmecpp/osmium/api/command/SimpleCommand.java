@@ -117,13 +117,15 @@ public class SimpleCommand {
 	}
 
 	protected void checkPermission(CommandEvent event) {
-		if (isAllowed(event.getSender())) {
+		if (!isAllowed(event.getSender())) {
 			throw CommandException.LACKS_PERMISSION;
 		}
 	}
 
 	protected boolean isAllowed(CommandSender sender) {
-		return (this.admin && !sender.isOp()) || (this.hasPermission() && !sender.hasPermission(permission));
+		return this.admin ? sender.isOp()
+				: this.hasPermission() ? sender.hasPermission(this.permission)
+						: true;
 	}
 
 	public boolean hasPermission() {

@@ -13,17 +13,22 @@ import org.bukkit.event.EventPriority;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
+import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
-import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
+
+	public static Player getPlayer(org.bukkit.entity.Player player) {
+		return PlayerList.getPlayer(player.getName());
+	}
 
 	public static void registerCommand(OsmiumPlugin plugin, Command command) {
 		try {
@@ -44,13 +49,20 @@ public class BukkitAccess {
 				}
 			}
 
-			commandMap.register(command.getPrimaryAlias(), new BukkitCommand(command.getPrimaryAlias(), command.getDescription(), command.getUsage(), aliases) { //Usage message cannot be null or else stuff will break
+			commandMap.register(command.getPrimaryAlias(), new BukkitCommand(command.getPrimaryAlias(),
+					command.getDescription(), command.getUsage(), aliases) { // Usage message cannot be null or else
+																																											// stuff will break
 
 				@Override
 				public boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args) {
-					CommandSender sender = bukkitSender instanceof org.bukkit.entity.Player ? new BukkitPlayer((org.bukkit.entity.Player) bukkitSender)
-							: bukkitSender instanceof org.bukkit.command.ConsoleCommandSender ? new BukkitConsoleCommandSender((org.bukkit.command.ConsoleCommandSender) bukkitSender)
-									: bukkitSender instanceof org.bukkit.command.BlockCommandSender ? new BukkitBlockCommandSender((org.bukkit.command.BlockCommandSender) bukkitSender)
+					CommandSender sender = bukkitSender instanceof org.bukkit.entity.Player
+							? getPlayer((org.bukkit.entity.Player) bukkitSender)
+							: bukkitSender instanceof org.bukkit.command.ConsoleCommandSender
+									? new BukkitConsoleCommandSender(
+											(org.bukkit.command.ConsoleCommandSender) bukkitSender)
+									: bukkitSender instanceof org.bukkit.command.BlockCommandSender
+											? new BukkitBlockCommandSender(
+													(org.bukkit.command.BlockCommandSender) bukkitSender)
 											: new GenericBukkitCommandSender(bukkitSender);
 					return CommandManager.invokeCommand(command, sender, label, args);
 				}
@@ -66,16 +78,17 @@ public class BukkitAccess {
 		Class<? extends org.bukkit.event.Event> bukkitEventClass = eventInfo.getBukkitClass();
 
 		Constructor<?> eventWrapper = eventInfo.getBukkitImplementation().getConstructor(bukkitEventClass);
-		Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getPluginImplementation(), (EventPriority) order.getSource(),
-				(bukkitListener, bukkitEvent) -> {
-					if (bukkitEventClass.isAssignableFrom(bukkitEvent.getClass())) {
-						try {
-							method.invoke(listenerInstance, eventWrapper.newInstance(bukkitEvent));
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-				}, plugin.getPluginImplementation(), true);
+		Bukkit.getPluginManager()
+				.registerEvent(bukkitEventClass, plugin.getPluginImplementation(),
+						(EventPriority) order.getSource(), (bukkitListener, bukkitEvent) -> {
+							if (bukkitEventClass.isAssignableFrom(bukkitEvent.getClass())) {
+								try {
+									method.invoke(listenerInstance, eventWrapper.newInstance(bukkitEvent));
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+							}
+						}, plugin.getPluginImplementation(), true);
 
 	}
 

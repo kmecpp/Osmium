@@ -4,13 +4,22 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
+import com.kmecpp.osmium.platform.sponge.SpongePlayer;
 
 public class PlayerList {
 
 	private static final HashMap<String, Player> players = new HashMap<>();
 
-	public static void addPlayer(Player player) {
-		players.put(player.getName().toLowerCase(), player);
+	public static void addPlayer(Object player) {
+		Player wrapper = player instanceof org.bukkit.entity.Player ? new BukkitPlayer((org.bukkit.entity.Player) player)
+				: player instanceof org.spongepowered.api.entity.living.player.Player ? new SpongePlayer((org.spongepowered.api.entity.living.player.Player) player)
+						: null;
+
+		if (wrapper == null) {
+			throw new IllegalArgumentException("Not a player!");
+		}
+		players.put(wrapper.getName().toLowerCase(), wrapper);
 	}
 
 	public static void removePlayer(String name) {

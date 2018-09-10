@@ -3,9 +3,9 @@ package com.kmecpp.osmium.platform.sponge.event;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 
+import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
-import com.kmecpp.osmium.platform.sponge.SpongePlayer;
 
 public class SpongePlayerJoinEvent implements PlayerJoinEvent {
 
@@ -22,7 +22,7 @@ public class SpongePlayerJoinEvent implements PlayerJoinEvent {
 
 	@Override
 	public Player getPlayer() {
-		return new SpongePlayer(event.getTargetEntity());
+		return SpongeAccess.getPlayer(event.getTargetEntity());
 	}
 
 }

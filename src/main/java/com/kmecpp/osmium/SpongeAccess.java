@@ -17,18 +17,23 @@ import org.spongepowered.api.text.Text;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
+import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.platform.sponge.GenericSpongeCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeBlockCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeConsoleCommandSender;
-import com.kmecpp.osmium.platform.sponge.SpongePlayer;
 
 public class SpongeAccess {
 
 	public static Text getText(String str) {
 		return Text.of(str);
+	}
+
+	public static Player getPlayer(org.spongepowered.api.entity.living.player.Player player) {
+		return PlayerList.getPlayer(player.getName());
 	}
 
 	public static void registerCommand(OsmiumPlugin plugin, Command command) {
@@ -37,7 +42,7 @@ public class SpongeAccess {
 				.permission(command.getPermission())
 				.arguments(GenericArguments.remainingRawJoinedStrings(SpongeAccess.getText("args")))
 				.executor((src, context) -> {
-					CommandSender sender = src instanceof org.spongepowered.api.entity.living.player.Player ? new SpongePlayer((org.spongepowered.api.entity.living.player.Player) src)
+					CommandSender sender = src instanceof org.spongepowered.api.entity.living.player.Player ? getPlayer((org.spongepowered.api.entity.living.player.Player) src)
 							: src instanceof ConsoleSource ? new SpongeConsoleCommandSender((ConsoleSource) src)
 									: src instanceof CommandBlockSource ? new SpongeBlockCommandSender((CommandBlockSource) src)
 											: new GenericSpongeCommandSender(src);
@@ -64,21 +69,22 @@ public class SpongeAccess {
 		Class<? extends org.spongepowered.api.event.Event> spongeEventClass = eventInfo.getSpongeClass();
 		Constructor<?> eventWrapper = eventInfo.getSpongeImplementation().getConstructor(spongeEventClass);
 
-		Sponge.getEventManager().registerListener(plugin.getPluginImplementation(), spongeEventClass, (org.spongepowered.api.event.Order) order.getSource(), false,
-				new EventListener<org.spongepowered.api.event.Event>() {
+		Sponge.getEventManager()
+				.registerListener(plugin.getPluginImplementation(), spongeEventClass, (org.spongepowered.api.event.Order) order.getSource(), false,
+						new EventListener<org.spongepowered.api.event.Event>() {
 
-					@Override
-					public void handle(org.spongepowered.api.event.Event spongeEvent) throws Exception {
-						if (spongeEventClass.isAssignableFrom(spongeEvent.getClass())) {
-							try {
-								method.invoke(listenerInstance, eventWrapper.newInstance(spongeEvent));
-							} catch (Exception ex) {
-								ex.printStackTrace();
+							@Override
+							public void handle(org.spongepowered.api.event.Event spongeEvent) throws Exception {
+								if (spongeEventClass.isAssignableFrom(spongeEvent.getClass())) {
+									try {
+										method.invoke(listenerInstance, eventWrapper.newInstance(spongeEvent));
+									} catch (Exception ex) {
+										ex.printStackTrace();
+									}
+								}
 							}
-						}
-					}
 
-				});
+						});
 	}
 
 }
