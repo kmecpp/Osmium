@@ -13,8 +13,9 @@ public abstract class FileUtil {
 	 * 
 	 * @param file
 	 *            the file
+	 * @return true if a file was created
 	 */
-	public static void createFile(File file) {
+	public static boolean createFile(File file) {
 		if (!file.exists()) {
 			try {
 				File parent = file.getParentFile();
@@ -22,10 +23,12 @@ public abstract class FileUtil {
 					parent.mkdirs();
 				}
 				file.createNewFile();
+				return true;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		return false;
 	}
 
 	/**

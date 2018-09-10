@@ -17,6 +17,8 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	protected long interval;
 	protected TaskExecutor<T> executor;
 
+	protected TimeUnit unit = TimeUnit.TICK;
+
 	public AbstractTask(OsmiumPlugin plugin) {
 		this.plugin = plugin;
 	}
@@ -44,7 +46,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	}
 
 	public long getDelay() {
-		return delay;
+		return unit.getTickValue() * delay;
 	}
 
 	public T setDelay(long delay) {
@@ -53,12 +55,14 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	}
 
 	public T setDelay(long delay, TimeUnit unit) {
-		this.delay = getTicks(delay, unit);
+		//		this.delay = getTicks(delay, unit);
+		this.delay = delay;
+		this.unit = unit;
 		return getInstance();
 	}
 
 	public long getInterval() {
-		return interval;
+		return unit.getTickValue() * interval;
 	}
 
 	public T setInterval(long interval) {
@@ -67,24 +71,26 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	}
 
 	public T setInterval(long interval, TimeUnit unit) {
-		this.interval = getTicks(interval, unit);
+		//		this.interval = getTicks(interval, unit);
+		this.interval = interval;
+		this.unit = unit;
 		return getInstance();
 	}
 
-	private static long getTicks(long time, TimeUnit unit) {
-		switch (unit) {
-		case SECOND:
-			return time * 20;
-		case MINUTE:
-			return time * 20 * 60;
-		case HOUR:
-			return time * 20 * 60 * 60;
-		case DAY:
-			return time * 20 * 60 * 60 * 24;
-		default:
-			throw new IllegalArgumentException("Unknown time unit: " + unit);
-		}
-	}
+	//	private static long getTicks(long time, TimeUnit unit) {
+	//		switch (unit) {
+	//		case SECOND:
+	//			return time * 20;
+	//		case MINUTE:
+	//			return time * 20 * 60;
+	//		case HOUR:
+	//			return time * 20 * 60 * 60;
+	//		case DAY:
+	//			return time * 20 * 60 * 60 * 24;
+	//		default:
+	//			throw new IllegalArgumentException("Unknown time unit: " + unit);
+	//		}
+	//	}
 
 	public boolean isAsync() {
 		return async;
@@ -92,6 +98,11 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 
 	public AbstractTask<T> setAsync(boolean async) {
 		this.async = async;
+		return this;
+	}
+
+	public AbstractTask<T> setUnit(TimeUnit unit) {
+		this.unit = unit;
 		return this;
 	}
 

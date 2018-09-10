@@ -51,6 +51,7 @@ public abstract class SpongePlugin {
 
 	@Listener
 	public void onGamePostInitialization(GameStoppingEvent e) {
+		plugin.saveData();
 		plugin.onDisable();
 	}
 

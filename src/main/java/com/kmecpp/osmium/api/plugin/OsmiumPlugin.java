@@ -12,6 +12,7 @@ import org.spongepowered.api.Sponge;
 import com.google.common.base.Preconditions;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.persistence.PersistentPluginData;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
 
@@ -27,11 +28,12 @@ public abstract class OsmiumPlugin {
 	//Effectively final variables
 	private Object pluginImplementation; //This field is set on instantiation using reflection
 	private Object metricsImplementation;
+	private PersistentPluginData persistentData;
 	private Logger logger = LoggerFactory.getLogger(properties.name());
 
 	private Class<?> config;
 
-	private ClassManager classManager;
+	private ClassProcessor classManager;
 
 	//	private HashSet<Class<?>> pluginClasses = new HashSet<>();
 
@@ -56,7 +58,8 @@ public abstract class OsmiumPlugin {
 	@SuppressWarnings("unused")
 	private void setupPlugin(Object pluginImpl) throws Exception {
 		this.pluginImplementation = pluginImpl;
-		this.classManager = new ClassManager(this, pluginImpl);
+		this.persistentData = new PersistentPluginData(this);
+		this.classManager = new ClassProcessor(this, pluginImpl);
 	}
 
 	//	public Class<? extends OsmiumPlugin> getMainClass() {
@@ -67,8 +70,12 @@ public abstract class OsmiumPlugin {
 	//		return pluginClasses;
 	//	}
 
-	public ClassManager getClassManager() {
+	public ClassProcessor getClassManager() {
 		return classManager;
+	}
+
+	public PersistentPluginData getPersistentData() {
+		return persistentData;
 	}
 
 	public void setDefaultConfig(Class<?> configClass) {
@@ -103,6 +110,10 @@ public abstract class OsmiumPlugin {
 
 	public boolean isMetricsEnabled() {
 		return Osmium.getMetrics().isEnabled(this);
+	}
+
+	public void saveData() {
+		persistentData.save();
 	}
 
 	//	public void enableMetrics() {
@@ -204,13 +215,13 @@ public abstract class OsmiumPlugin {
 		this.logger = logger;
 	}
 
-	public void disable() {
-		if (Platform.isBukkit()) {
+	//	public void disable() {
+	//		if (Platform.isBukkit()) {
+	//
+	//		}
+	//	}
 
-		}
-	}
-
-	public Path getPluginFolder() {
+	public Path getFolder() {
 		if (Platform.isBukkit()) {
 			return Paths.get(((JavaPlugin) pluginImplementation).getDataFolder().toURI());
 		} else if (Platform.isSponge()) {

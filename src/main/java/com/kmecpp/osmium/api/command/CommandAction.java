@@ -4,13 +4,13 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-public class CommandEvent implements Messageable {
+public class CommandAction implements Messageable {
 
 	private CommandSender sender;
 	private String command;
 	private String[] args;
 
-	public CommandEvent(CommandSender sender, String command, String[] args) {
+	public CommandAction(CommandSender sender, String command, String[] args) {
 		this.sender = sender;
 		this.command = command;
 		this.args = args;

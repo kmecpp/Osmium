@@ -55,7 +55,7 @@ public class SimpleCommand {
 		}
 	}
 
-	public void execute(CommandEvent e) {
+	public void execute(CommandAction e) {
 		executor.execute(e);
 	}
 
@@ -116,7 +116,7 @@ public class SimpleCommand {
 		return description;
 	}
 
-	protected void checkPermission(CommandEvent event) {
+	protected void checkPermission(CommandAction event) {
 		if (!isAllowed(event.getSender())) {
 			throw CommandException.LACKS_PERMISSION;
 		}

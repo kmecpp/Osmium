@@ -1,6 +1,5 @@
 package com.kmecpp.osmium.api.config;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -14,6 +13,7 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Deserializer;
 import com.kmecpp.osmium.api.persistence.Serializer;
+import com.kmecpp.osmium.api.util.FileUtil;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -62,27 +62,19 @@ public class ConfigManager {
 
 	public void load(Class<?> configClass) throws IOException {
 		Configuration properties = getProperties(configClass);
-
-		boolean save = false;
-		File file = getPath(configClass).toFile();
-		if (!file.exists()) {
-			if (file.getParentFile() != null) {
-				file.getParentFile().mkdirs();
-			}
-			file.createNewFile();
-			save = true;
-		}
+		boolean save = FileUtil.createFile(getPath(configClass).toFile());
 
 		OsmiumConfig config = configs.get(configClass);
+		Path path = getPath(configClass);
 		if (config == null) {
 			ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
 					.setDefaultOptions(ConfigurationOptions.defaults().setHeader(properties.header()))
-					.setPath(getPath(configClass))
+					.setPath(path)
 					.build();
 			long start = System.currentTimeMillis();
 			CommentedConfigurationNode root = loader.load();
 			System.out.println("File Read: " + (System.currentTimeMillis() - start) + "ms");
-			config = new OsmiumConfig(configClass, loader, root);
+			config = new OsmiumConfig(configClass, path, loader, root);
 
 		}
 		long start = System.currentTimeMillis();

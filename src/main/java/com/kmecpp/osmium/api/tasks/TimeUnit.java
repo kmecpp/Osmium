@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.tasks;
 
 public enum TimeUnit {
 
+	TICK(1),
 	SECOND(20),
 	MINUTE(20 * 60),
 	HOUR(20 * 60 * 60),

@@ -15,4 +15,6 @@ public @interface Schedule {
 
 	boolean async() default false;
 
+	TimeUnit unit() default TimeUnit.TICK;
+
 }

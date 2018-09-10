@@ -2,14 +2,14 @@ package com.kmecpp.osmium;
 
 import com.kmecpp.osmium.api.World;
 
-public class Location {
+public class OsmiumLocation {
 
 	private final World world;
 	private final double x;
 	private final double y;
 	private final double z;
 
-	public Location(World world, double x, double y, double z) {
+	public OsmiumLocation(World world, double x, double y, double z) {
 		this.world = world;
 		this.x = x;
 		this.y = y;

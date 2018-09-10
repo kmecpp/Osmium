@@ -14,7 +14,7 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 public class Directory {
 
 	public static Path pluginFolder(OsmiumPlugin plugin) {
-		return plugin.getPluginFolder();
+		return plugin.getFolder();
 		//		return plugins(plugin.getName());
 	}
 

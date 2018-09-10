@@ -94,7 +94,7 @@ public class Database {
 				source = new HikariDataSource(config);
 			} else {
 				OsmiumLogger.info("Using SQLite for database storage");
-				config.setJdbcUrl("jdbc:sqlite:" + plugin.getPluginFolder() + File.separator + "data.db");
+				config.setJdbcUrl("jdbc:sqlite:" + plugin.getFolder() + File.separator + "data.db");
 				config.setDriverClassName("org.sqlite.JDBC");
 			}
 			config.setMinimumIdle(3);

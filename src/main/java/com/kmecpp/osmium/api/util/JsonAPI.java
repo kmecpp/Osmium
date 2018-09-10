@@ -10,16 +10,26 @@ public abstract class JsonAPI {
 
 	private final URL url;
 
-	public JsonAPI(String url) {
+	public JsonAPI() {
 		try {
-			this.url = new URL(url);
+			//			this.url = new URL(url);
+			this.url = new URL(getTarget());
 		} catch (MalformedURLException e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
 
-	public URL getUrl() {
+	public abstract String getTarget();
+
+	public URL getURL() {
 		return url;
+	}
+	//	public URL getUrl() {
+	//		return url;
+	//	}
+
+	public JsonValue get() throws IOException {
+		return WebUtil.get(url);
 	}
 
 	public JsonValue post(JsonValue json) throws IOException {

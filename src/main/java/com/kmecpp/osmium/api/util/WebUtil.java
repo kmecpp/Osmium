@@ -4,12 +4,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonValue;
 
 public class WebUtil {
+
+	public static JsonValue get(URL url) throws IOException {
+		HttpURLConnection connection = getConnection(url);
+		return Json.parse(new InputStreamReader(connection.getInputStream()));
+	}
 
 	public static JsonValue post(URL url, JsonValue json) throws IOException {
 		HttpURLConnection connection = getConnection(url);
@@ -60,6 +66,14 @@ public class WebUtil {
 		connection.setConnectTimeout(connectTimeout);
 		connection.setReadTimeout(readTimeout);
 		return connection;
+	}
+
+	public static URL parseURL(String url) {
+		try {
+			return new URL(url);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

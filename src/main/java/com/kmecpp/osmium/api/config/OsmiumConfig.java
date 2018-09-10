@@ -3,6 +3,7 @@ package com.kmecpp.osmium.api.config;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import com.google.common.reflect.TypeToken;
@@ -12,15 +13,15 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
-public class OsmiumConfig {
+public class OsmiumConfig extends DataFile {
 
 	private final Class<?> configClass;
 	//	private final HashMap<String, Field> fields; //TODO: Test whether or not it's worth it to store field data in memory
 	private final ConfigField[] fields;
-	private final ConfigurationLoader<CommentedConfigurationNode> loader;
-	private final CommentedConfigurationNode root;
 
-	public OsmiumConfig(Class<?> cls, ConfigurationLoader<CommentedConfigurationNode> loader, CommentedConfigurationNode root) {
+	public OsmiumConfig(Class<?> cls, Path path, ConfigurationLoader<CommentedConfigurationNode> loader, CommentedConfigurationNode root) {
+		super(path, loader, root);
+
 		this.configClass = cls;
 
 		long start = System.currentTimeMillis();
@@ -28,8 +29,6 @@ public class OsmiumConfig {
 		this.fields = fields.toArray(new ConfigField[fields.size()]);
 		System.out.println("Field Search: " + (System.currentTimeMillis() - start) + "ms");
 
-		this.loader = loader;
-		this.root = root;
 	}
 
 	public Class<?> getConfigClass() {
@@ -40,22 +39,12 @@ public class OsmiumConfig {
 		return fields;
 	}
 
-	public ConfigurationLoader<CommentedConfigurationNode> getLoader() {
-		return loader;
-	}
-
-	public CommentedConfigurationNode getRoot() {
-		return root;
-	}
-
-	public CommentedConfigurationNode getNode(String path) {
-		return root.getNode((Object[]) path.split("\\."));
-	}
-
-	public CommentedConfigurationNode getNode(String[] path) {
-		return root.getNode((Object[]) path);
-	}
-
+	/**
+	 * Reloads the configuration file
+	 * 
+	 * @return true if not all fields exist in the file and a save should be
+	 *         performed
+	 */
 	public boolean reload() {
 		boolean save = false;
 		for (ConfigField field : fields) {
@@ -90,7 +79,7 @@ public class OsmiumConfig {
 			}
 		}
 
-		loader.save(root);
+		super.save();
 	}
 
 	private ArrayList<ConfigField> findFields(ArrayList<ConfigField> fields, String path, Class<?> cls) {

@@ -30,6 +30,14 @@ public class BukkitAccess {
 		return PlayerList.getPlayer(player.getName());
 	}
 
+	public static void processConsoleCommand(String command) {
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+	}
+
+	public static void processCommand(org.bukkit.command.CommandSender sender, String command) {
+		Bukkit.dispatchCommand(sender, command);
+	}
+
 	public static void registerCommand(OsmiumPlugin plugin, Command command) {
 		try {
 			SimpleCommandMap commandMap = (SimpleCommandMap) Reflection.getFieldValue(Bukkit.getServer(), "commandMap");

@@ -38,6 +38,8 @@ Join our Discord channel stay updated with the project or help out: https://disc
 
 # Maven
 
+Osmium can be downloaded from Mavne Central.
+
 	<dependency>
     	<groupId>com.kmecpp</groupId>
     	<artifactId>osmium</artifactId>
@@ -70,7 +72,7 @@ There are a few ways to create commands.
 The first way is the shortest and is useful when you only have a few very simple commands
 
 ```
-Osmium.registerCommand("spawn", "home")
+Osmium.registerCommand("spawn", "sp")
 	.setDescription("Teleport to the spawn point of your current world")
 	.setPermission("myplugin.spawn");
 	.setPlayersOnly();
@@ -84,13 +86,11 @@ Osmium.registerCommand("spawn", "home")
 Alternatively you can move the command into its own class. The same command would look like this
 
 ```
-@Command(
-	aliases = { "spawn", "home"},
-	description = "Teleport to the spawn point of your current world",
-	permission = "myplugin.spawn",
-	playersOnly = true
-)
-public class EnjinNewsCommand extends OsmiumCommand {
+@CommandProperties(aliases = { "spawn", "sp"}, 
+	description = "Teleport to the spawn point of your current world", 
+	permission = "myplugin.spawn", 
+	playersOnly = true)
+public class EnjinNewsCommand extends Command {
 
 	@Override
 	public void execute(CommandEvent e) {
@@ -114,12 +114,10 @@ Ex:
 - /spawn delete - Sets the spawn point of the current world to (0,0,0)
 
 ```
-@Command(
-	aliases = { "spawn", "home"},
+@Command(aliases = { "spawn", "sp"},
 	description = "Teleport to the spawn point of your current world",
 	permission = "myplugin.spawn",
-	playersOnly = true
-)
+	playersOnly = true)
 public class EnjinNewsCommand extends OsmiumCommand {
 
 	@Override
@@ -128,19 +126,20 @@ public class EnjinNewsCommand extends OsmiumCommand {
 		player.teleport(player.getWorld().getSpawn());
 		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
 	}
-	
-	@Command(aliases = "set", admin = true) //The subcommand is already playersOnly from its parent settings
-	public void onSet(CommandEvent e){
-		Player player = e.getPlayer();
-		player.getWorld().setSpawn(player.getLocation());
-		player.sendMessage(C.GREEN + "New spawn point set successfully!");
-	}
-	
-	@Command(aliases = "delete", admin = true)
-	public void onDelete(CommandEvent e){
-		Player player = e.getPlayer();
-		player.getWorld().setSpawn(new Location(0, 0, 0));
-		player.sendMessage(C.GREEN + "World spawn set to (0,0,0)");
+
+	@Override
+	public void configure(){
+		add("set").setAdmin(true).setExecutor(e) -> {
+			Player player = e.getPlayer();
+			player.getWorld().setSpawn(player.getLocation());
+			player.sendMessage(C.GREEN + "New spawn point set successfully!");
+		});
+		
+		add("delete").setAdmin(true).setExecutor(e) -> {
+			Player player = e.getPlayer();
+			player.getWorld().setSpawn(new Location(0, 0, 0));
+			player.sendMessage(C.GREEN + "World spawn set to (0,0,0)");
+		});
 	}
 
 }
@@ -175,6 +174,19 @@ Thats it. There's no need to get involved with files or nodes or anything. Osmiu
 Then, to access or modify the config, all you need to do is modify the fields of the config class.
 
 To reload or save the config, use Osmium.reloadConfig(Config.class) or Osmium.saveConfig(Config.class).
+
+### Persistent Data
+
+Osmium has an extremely easy way to store simple persistent data. Just add @Persistent to a field and it will automatically store its value in the plugin's data file.
+
+The value the field is initialized with will be the default value. It is overwritten once the plugin is loaded.
+
+Things get a little hairy if you change the field name or move it to another class, so it is recommended that you only use this for data that can be deleted on plugin updates.
+
+Example:
+
+	@Persistent
+    public static int blocksBroken = -1;
 
 
 ### Databases

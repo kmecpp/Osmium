@@ -1,7 +1,9 @@
 package com.kmecpp.osmium.api.plugin;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,11 +23,12 @@ import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.persistence.Persistent;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.tasks.Schedule;
 import com.kmecpp.osmium.api.util.Reflection;
 
-public class ClassManager {
+public class ClassProcessor {
 
 	private final OsmiumPlugin plugin;
 	private final Class<?> mainClass;
@@ -35,7 +38,7 @@ public class ClassManager {
 	private final HashMap<Class<?>, Object> listeners = new HashMap<>();
 	private final HashMap<Class<?>, Command> commands = new HashMap<>();
 
-	protected ClassManager(OsmiumPlugin plugin, Object pluginImpl) throws Exception {
+	protected ClassProcessor(OsmiumPlugin plugin, Object pluginImpl) throws Exception {
 		this.plugin = plugin;
 		this.mainClass = plugin.getClass();
 		this.mainClassImpl = pluginImpl.getClass();
@@ -57,7 +60,7 @@ public class ClassManager {
 					pluginClasses.add(cls);
 				} catch (ClassNotFoundException | NoClassDefFoundError e) {
 					OsmiumLogger.debug("SKIPPING: " + className);
-					//Ignore classes depending on different platforms (TODO: COULD EASILY BREAK STUFF)
+					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF)
 				}
 			}
 		}
@@ -99,11 +102,26 @@ public class ClassManager {
 			OsmiumLogger.debug("Loading configuration file: " + configuration.path());
 		}
 
+		//DATABASE TABLES
 		DBTable table = cls.getAnnotation(DBTable.class);
 		if (table != null) {
 			OsmiumLogger.debug("Initializing database table: " + table.name());
 			Osmium.getDatabase(plugin).createTable(cls);
 			Database.isSerializable(cls);
+		}
+
+		//PERSISTENT FIELDS
+		for (Field field : cls.getDeclaredFields()) {
+			Persistent persistentAnnotation = field.getAnnotation(Persistent.class);
+			if (persistentAnnotation != null) {
+				if (!Modifier.isStatic(field.getModifiers())) {
+					OsmiumLogger.error("Fields annotated with @" + Persistent.class.getSimpleName() + " must be static! Incorrect: " + field);
+					continue;
+				}
+
+				field.setAccessible(true);
+				plugin.getPersistentData().addField(field);
+			}
 		}
 	}
 
@@ -165,13 +183,15 @@ public class ClassManager {
 				Osmium.getTask(plugin)
 						.setAsync(scheduleAnnotation.async())
 						.setDelay(scheduleAnnotation.delay())
+						.setUnit(scheduleAnnotation.unit())
 						.setExecutor((t) -> {
 							try {
 								method.invoke(instance);
 							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 								e.printStackTrace();
 							}
-						});
+						})
+						.start();
 			}
 
 			//LISTENERS

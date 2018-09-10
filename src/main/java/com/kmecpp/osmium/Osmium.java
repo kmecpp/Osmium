@@ -75,6 +75,10 @@ public final class Osmium {
 		return pluginLoader.getPlugin(cls);
 	}
 
+	public static void execute(String command) {
+		commandManager.processCommand(command);
+	}
+
 	public static Database getDatabase() {
 		return getDatabase(getInvokingPlugin());
 	}

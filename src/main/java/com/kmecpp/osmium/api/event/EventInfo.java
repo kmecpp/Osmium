@@ -4,13 +4,19 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
+import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
+import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerJoinEvent;
+import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerMoveEvent;
 import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerQuitEvent;
+import com.kmecpp.osmium.platform.bukkit.event.BukkitServerListPingEvent;
 import com.kmecpp.osmium.platform.sponge.event.SpongePlayerJoinEvent;
+import com.kmecpp.osmium.platform.sponge.event.SpongePlayerMoveEvent;
 import com.kmecpp.osmium.platform.sponge.event.SpongePlayerQuitEvent;
+import com.kmecpp.osmium.platform.sponge.event.SpongeServerListPingEvent;
 
 public class EventInfo {
 
@@ -32,8 +38,10 @@ public class EventInfo {
 	 * EVENT REGISTRATION
 	 */
 	static {
+		register(PlayerMoveEvent.class, BukkitPlayerMoveEvent.class, SpongePlayerMoveEvent.class);
 		register(PlayerJoinEvent.class, BukkitPlayerJoinEvent.class, SpongePlayerJoinEvent.class);
 		register(PlayerQuitEvent.class, BukkitPlayerQuitEvent.class, SpongePlayerQuitEvent.class);
+		register(ServerListPingEvent.class, BukkitServerListPingEvent.class, SpongeServerListPingEvent.class);
 	}
 
 	public static void register(Class<? extends Event> event, Class<? extends Event> bukkitImplementation, Class<? extends Event> spongeImplementation) {

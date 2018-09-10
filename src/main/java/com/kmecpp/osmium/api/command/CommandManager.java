@@ -3,7 +3,10 @@ package com.kmecpp.osmium.api.command;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public final class CommandManager {
@@ -26,9 +29,25 @@ public final class CommandManager {
 		return commands.getOrDefault(plugin, new ArrayList<>());
 	}
 
+	public void processCommand(String command) {
+		if (Platform.isBukkit()) {
+			BukkitAccess.processConsoleCommand(command);
+		} else if (Platform.isSponge()) {
+			SpongeAccess.processConsoleCommand(command);
+		}
+	}
+
+	public void processCommand(CommandSender sender, String command) {
+		if (Platform.isBukkit()) {
+			BukkitAccess.processCommand((org.bukkit.command.CommandSender) sender.getSource(), command);
+		} else if (Platform.isSponge()) {
+			SpongeAccess.processCommand((org.spongepowered.api.command.CommandSource) sender, command);
+		}
+	}
+
 	public static boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {
 		try {
-			CommandEvent event = new CommandEvent(sender, commandLabel, args);
+			CommandAction event = new CommandAction(sender, commandLabel, args);
 			command.checkPermission(event);
 
 			//Simple commands
