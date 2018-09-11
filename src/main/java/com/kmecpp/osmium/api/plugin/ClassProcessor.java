@@ -182,8 +182,8 @@ public class ClassProcessor {
 			if (scheduleAnnotation != null) {
 				Osmium.getTask(plugin)
 						.setAsync(scheduleAnnotation.async())
-						.setDelay(scheduleAnnotation.delay())
-						.setUnit(scheduleAnnotation.unit())
+						.setDelay(scheduleAnnotation.delay() * scheduleAnnotation.unit().getTickValue())
+						.setInterval(scheduleAnnotation.interval() * scheduleAnnotation.unit().getTickValue())
 						.setExecutor((t) -> {
 							try {
 								method.invoke(instance);

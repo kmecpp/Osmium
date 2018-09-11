@@ -41,17 +41,23 @@ public class PersistentPluginData {
 
 	public void addField(Field field) {
 		this.fields.add(field);
-	}
 
-	public void reload() {
-		for (Field field : fields) {
-			try {
-				field.set(null, file.getNode(getId(field)).getValue());
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				e.printStackTrace();
-			}
+		try {
+			field.set(null, file.getNode(getId(field)).getValue());
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
+
+	//	public void reload() {
+	//		for (Field field : fields) {
+	//			try {
+	//				field.set(null, file.getNode(getId(field)).getValue());
+	//			} catch (IllegalArgumentException | IllegalAccessException e) {
+	//				e.printStackTrace();
+	//			}
+	//		}
+	//	}
 
 	public void save() {
 		System.out.println("SAVING: " + fields);
