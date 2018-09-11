@@ -14,9 +14,8 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.World;
 
-import com.kmecpp.osmium.api.Location;
+import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
@@ -25,10 +24,10 @@ import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.cache.PlayerList;
+import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.platform.sponge.GenericSpongeCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeBlockCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeConsoleCommandSender;
-import com.kmecpp.osmium.platform.sponge.SpongeLocation;
 
 public class SpongeAccess {
 
@@ -40,8 +39,12 @@ public class SpongeAccess {
 		return PlayerList.getPlayer(player.getName());
 	}
 
-	public static Location getLocation(org.spongepowered.api.world.Location<World> location) {
-		return new SpongeLocation(location);
+	public static World getWorld(org.spongepowered.api.world.World world) {
+		return WorldList.getWorld(world.getName());
+	}
+
+	public static Location getLocation(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> location) {
+		return new Location(getWorld(location.getExtent()), location.getX(), location.getY(), location.getZ());
 	}
 
 	public static void processConsoleCommand(String command) {

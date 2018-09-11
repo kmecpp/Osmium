@@ -1,6 +1,6 @@
 package com.kmecpp.osmium.api.event.events;
 
-import com.kmecpp.osmium.api.Location;
+import com.kmecpp.osmium.Location;
 import com.kmecpp.osmium.api.event.Cancellable;
 import com.kmecpp.osmium.api.event.PlayerEvent;
 

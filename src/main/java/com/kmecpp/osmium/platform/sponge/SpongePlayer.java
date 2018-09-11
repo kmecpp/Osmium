@@ -2,6 +2,8 @@ package com.kmecpp.osmium.platform.sponge;
 
 import org.spongepowered.api.text.Text;
 
+import com.kmecpp.osmium.Location;
+import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
@@ -72,6 +74,16 @@ public class SpongePlayer implements Player {
 	@Override
 	public void setHealth(double health) {
 		player.health().set(health);
+	}
+
+	@Override
+	public Location getLocation() {
+		return SpongeAccess.getLocation(player.getLocation());
+	}
+
+	@Override
+	public void teleport(Location location) {
+		player.setLocation(location.getImplementation());
 	}
 
 }

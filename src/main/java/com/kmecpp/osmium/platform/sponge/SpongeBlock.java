@@ -2,8 +2,9 @@ package com.kmecpp.osmium.platform.sponge;
 
 import org.spongepowered.api.world.World;
 
+import com.kmecpp.osmium.Location;
+import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
-import com.kmecpp.osmium.api.Location;
 
 public class SpongeBlock implements Block {
 
@@ -20,7 +21,7 @@ public class SpongeBlock implements Block {
 
 	@Override
 	public Location getLocation() {
-		return new SpongeLocation(block);
+		return SpongeAccess.getLocation(block.getLocatableBlock().get().getLocation());
 	}
 
 	@Override

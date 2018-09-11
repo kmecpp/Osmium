@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api.entity;
 
+import com.kmecpp.osmium.Location;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.WorldManager;
@@ -19,5 +20,9 @@ public interface Player extends EntityLiving, CommandSender {
 	GameMode getGameMode();
 
 	void setGameMode(GameMode mode);
+
+	Location getLocation();
+
+	void teleport(Location location);
 
 }

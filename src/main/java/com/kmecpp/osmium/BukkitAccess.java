@@ -10,6 +10,7 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.event.EventPriority;
 
+import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
@@ -20,6 +21,7 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.cache.PlayerList;
+import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
@@ -36,6 +38,14 @@ public class BukkitAccess {
 
 	public static void processCommand(org.bukkit.command.CommandSender sender, String command) {
 		Bukkit.dispatchCommand(sender, command);
+	}
+
+	public static World getWorld(org.bukkit.World world) {
+		return WorldList.getWorld(world.getName());
+	}
+
+	public static Location getLocation(org.bukkit.Location location) {
+		return new Location(getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ());
 	}
 
 	public static void registerCommand(OsmiumPlugin plugin, Command command) {

@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.Location;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
@@ -78,6 +80,16 @@ public class BukkitPlayer implements Player {
 	@Override
 	public void setHealth(double health) {
 		player.setHealth(health);
+	}
+
+	@Override
+	public Location getLocation() {
+		return BukkitAccess.getLocation(player.getLocation());
+	}
+
+	@Override
+	public void teleport(Location location) {
+		player.teleport((org.bukkit.Location) location.getImplementation());
 	}
 
 }

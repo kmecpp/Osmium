@@ -1,7 +1,8 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.Location;
 import com.kmecpp.osmium.api.Block;
-import com.kmecpp.osmium.api.Location;
 
 public class BukkitBlock implements Block {
 
@@ -17,7 +18,7 @@ public class BukkitBlock implements Block {
 	}
 
 	public Location getLocation() {
-		return new BukkitLocation(block.getLocation());
+		return BukkitAccess.getLocation(block.getLocation());
 	}
 
 	@Override
