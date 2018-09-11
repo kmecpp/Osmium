@@ -13,7 +13,7 @@ public class SpongePlayerMoveEvent implements PlayerMoveEvent {
 
 	@Override
 	public Player getPlayer() {
-		return (Player) event.getTargetEntity();
+		return SpongeAccess.getPlayer((org.spongepowered.api.entity.living.player.Player) event.getTargetEntity());
 	}
 
 	@Override
@@ -39,6 +39,11 @@ public class SpongePlayerMoveEvent implements PlayerMoveEvent {
 	@Override
 	public Location getTo() {
 		return SpongeAccess.getLocation(event.getToTransform().getLocation());
+	}
+
+	@Override
+	public boolean shouldFire() {
+		return event.getTargetEntity() instanceof org.spongepowered.api.entity.living.player.Player;
 	}
 
 }

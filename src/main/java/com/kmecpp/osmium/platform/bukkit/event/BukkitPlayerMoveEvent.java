@@ -2,7 +2,6 @@ package com.kmecpp.osmium.platform.bukkit.event;
 
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Location;
-import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 
@@ -12,7 +11,7 @@ public class BukkitPlayerMoveEvent implements PlayerMoveEvent {
 
 	@Override
 	public Player getPlayer() {
-		return Osmium.getPlayer(e.getPlayer().getName()).get();
+		return BukkitAccess.getPlayer(e.getPlayer());
 	}
 
 	@Override

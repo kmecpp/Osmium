@@ -24,14 +24,18 @@ public class EventInfo {
 
 	private final Class<? extends Event> bukkitImplementation;
 	private final Class<? extends org.bukkit.event.Event> bukkitClass;
+	//	private final Predicate<? extends org.bukkit.event.Event> bukkitCondition;
 	private final Class<? extends Event> spongeImplementation;
 	private final Class<? extends org.spongepowered.api.event.Event> spongeClass;
+	//	private final Predicate<? extends org.spongepowered.api.event.Event> spongeCondition;
 
 	public EventInfo(Class<? extends Event> bukkitImplementation, Class<? extends org.bukkit.event.Event> bukkitClass, Class<? extends Event> spongeImplementation, Class<? extends org.spongepowered.api.event.Event> spongeClass) {
 		this.bukkitImplementation = bukkitImplementation;
 		this.bukkitClass = bukkitClass;
+		//		this.bukkitCondition = bukkitCondition;
 		this.spongeImplementation = spongeImplementation;
 		this.spongeClass = spongeClass;
+		//		this.spongeCondition = spongeCondition;
 	}
 
 	/*

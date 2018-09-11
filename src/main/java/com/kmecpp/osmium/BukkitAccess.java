@@ -1,6 +1,7 @@
 package com.kmecpp.osmium;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
@@ -95,19 +97,25 @@ public class BukkitAccess {
 	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) throws Exception {
 		Class<? extends org.bukkit.event.Event> bukkitEventClass = eventInfo.getBukkitClass();
 
-		Constructor<?> eventWrapper = eventInfo.getBukkitImplementation().getConstructor(bukkitEventClass);
-		Bukkit.getPluginManager()
-				.registerEvent(bukkitEventClass, plugin.getPluginImplementation(),
-						(EventPriority) order.getSource(), (bukkitListener, bukkitEvent) -> {
-							if (bukkitEventClass.isAssignableFrom(bukkitEvent.getClass())) {
-								try {
-									method.invoke(listenerInstance, eventWrapper.newInstance(bukkitEvent));
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
-							}
-						}, plugin.getPluginImplementation(), true);
+		Constructor<? extends Event> eventWrapper = eventInfo.getBukkitImplementation().getConstructor(bukkitEventClass);
+		Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getPluginImplementation(), (EventPriority) order.getSource(), (bukkitListener, bukkitEvent) -> {
+			if (bukkitEventClass.isAssignableFrom(bukkitEvent.getClass())) {
+				try {
+					Event event = eventWrapper.newInstance(bukkitEvent);
+					if (!event.shouldFire()) {
+						return;
+					}
 
+					try {
+						method.invoke(listenerInstance, event);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
+			}
+		}, plugin.getPluginImplementation(), true);
 	}
 
 }

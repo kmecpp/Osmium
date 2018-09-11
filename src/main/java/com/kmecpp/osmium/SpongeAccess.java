@@ -1,6 +1,7 @@
 package com.kmecpp.osmium;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -11,8 +12,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.event.EventListener;
-import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.api.World;
@@ -20,6 +19,7 @@ import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -86,28 +86,26 @@ public class SpongeAccess {
 
 	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) throws Exception {
 		Class<? extends org.spongepowered.api.event.Event> spongeEventClass = eventInfo.getSpongeClass();
-		Constructor<?> eventWrapper = eventInfo.getSpongeImplementation().getConstructor(spongeEventClass);
+		Constructor<? extends Event> eventWrapper = eventInfo.getSpongeImplementation().getConstructor(spongeEventClass);
 
-		Sponge.getEventManager()
-				.registerListener(plugin.getPluginImplementation(), spongeEventClass, (org.spongepowered.api.event.Order) order.getSource(), false,
-						new EventListener<org.spongepowered.api.event.Event>() {
+		Sponge.getEventManager().registerListener(plugin.getPluginImplementation(), spongeEventClass, (org.spongepowered.api.event.Order) order.getSource(), false, (spongeEvent) -> {
+			if (spongeEventClass.isAssignableFrom(spongeEvent.getClass())) {
+				try {
+					Event event = eventWrapper.newInstance(spongeEvent);
+					if (!event.shouldFire()) {
+						return;
+					}
 
-							@Override
-							public void handle(org.spongepowered.api.event.Event spongeEvent) throws Exception {
-								if (spongeEventClass.isAssignableFrom(spongeEvent.getClass())) {
-									if (spongeEvent instanceof MoveEntityEvent && !(((MoveEntityEvent) spongeEvent).getTargetEntity() instanceof Player)) {
-										return; //Only run MoveEntityEvent if it's a player
-									}
+					try {
+						method.invoke(listenerInstance, event);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
+			}
 
-									try {
-										method.invoke(listenerInstance, eventWrapper.newInstance(spongeEvent));
-									} catch (Exception ex) {
-										ex.printStackTrace();
-									}
-								}
-							}
-
-						});
+		});
 	}
-
 }
