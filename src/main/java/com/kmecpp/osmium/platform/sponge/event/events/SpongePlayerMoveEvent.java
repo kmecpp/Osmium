@@ -1,15 +1,19 @@
-package com.kmecpp.osmium.platform.sponge.event;
+package com.kmecpp.osmium.platform.sponge.event.events;
 
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 
-import com.kmecpp.osmium.Location;
 import com.kmecpp.osmium.SpongeAccess;
+import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 
 public class SpongePlayerMoveEvent implements PlayerMoveEvent {
 
 	private MoveEntityEvent event;
+
+	public SpongePlayerMoveEvent(MoveEntityEvent event) {
+		this.event = event;
+	}
 
 	@Override
 	public Player getPlayer() {

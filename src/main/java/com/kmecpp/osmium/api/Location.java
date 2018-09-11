@@ -1,10 +1,9 @@
-package com.kmecpp.osmium;
+package com.kmecpp.osmium.api;
 
 import org.bukkit.Bukkit;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.extent.Extent;
 
-import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.cache.WorldList;
 

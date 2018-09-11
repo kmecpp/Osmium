@@ -1,10 +1,13 @@
-package com.kmecpp.osmium.platform.bukkit.event;
+package com.kmecpp.osmium.platform.bukkit.event.events;
 
 import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
+import com.kmecpp.osmium.platform.bukkit.event.BukkitEvent;
 
-public class BukkitServerListPingEvent implements ServerListPingEvent {
+public class BukkitServerListPingEvent extends BukkitEvent<org.bukkit.event.server.ServerListPingEvent> implements ServerListPingEvent {
 
-	private org.bukkit.event.server.ServerListPingEvent event;
+	public BukkitServerListPingEvent(org.bukkit.event.server.ServerListPingEvent event) {
+		super(event);
+	}
 
 	@Override
 	public String getDescription() {
@@ -29,11 +32,6 @@ public class BukkitServerListPingEvent implements ServerListPingEvent {
 	@Override
 	public void setMaxPlayers(int maxPlayers) {
 		event.setMaxPlayers(maxPlayers);
-	}
-
-	@Override
-	public org.bukkit.event.server.ServerListPingEvent getSource() {
-		return event;
 	}
 
 }

@@ -132,7 +132,7 @@ dependencies {
 	compileOnly files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648.jar")
 	//compile "org.spigotmc:spigot:$bukkit_version"
 	compileOnly "org.spongepowered:spongeapi:$sponge_version"
-	//compile "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75"
+	compileOnly "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75"
 	
 	//shade "com.kmecpp:jlib:+"
 	shade "com.eclipsesource.minimal-json:minimal-json:0.9.5"

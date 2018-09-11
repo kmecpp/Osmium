@@ -9,14 +9,14 @@ import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
 import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
-import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerJoinEvent;
-import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerMoveEvent;
-import com.kmecpp.osmium.platform.bukkit.event.BukkitPlayerQuitEvent;
-import com.kmecpp.osmium.platform.bukkit.event.BukkitServerListPingEvent;
-import com.kmecpp.osmium.platform.sponge.event.SpongePlayerJoinEvent;
-import com.kmecpp.osmium.platform.sponge.event.SpongePlayerMoveEvent;
-import com.kmecpp.osmium.platform.sponge.event.SpongePlayerQuitEvent;
-import com.kmecpp.osmium.platform.sponge.event.SpongeServerListPingEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerJoinEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerMoveEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerQuitEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerJoinEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerMoveEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerQuitEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongeServerListPingEvent;
 
 public class EventInfo {
 

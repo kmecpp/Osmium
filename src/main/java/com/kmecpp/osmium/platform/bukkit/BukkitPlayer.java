@@ -1,8 +1,8 @@
 package com.kmecpp.osmium.platform.bukkit;
 
 import com.kmecpp.osmium.BukkitAccess;
-import com.kmecpp.osmium.Location;
 import com.kmecpp.osmium.api.GameMode;
+import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.cache.PlayerList;

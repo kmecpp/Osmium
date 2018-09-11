@@ -1,15 +1,19 @@
 package com.kmecpp.osmium.api;
 
-import com.kmecpp.osmium.Location;
+import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.world.World;
 
-public interface Block extends Abstraction {
+public class Block {
 
-	Location getLocation();
+	private Location location;
 
-	int getX();
-
-	int getY();
-
-	int getZ();
+	public Location getLocation() {
+		org.bukkit.block.Block b;
+		BlockState s;
+		org.spongepowered.api.world.Location<World> l;
+		
+		//		l.getBlock
+		return location;
+	}
 
 }

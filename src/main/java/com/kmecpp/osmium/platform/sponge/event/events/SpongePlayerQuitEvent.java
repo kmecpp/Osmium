@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.platform.sponge.event;
+package com.kmecpp.osmium.platform.sponge.event.events;
 
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;

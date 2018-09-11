@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-import com.kmecpp.osmium.Location;
 import com.kmecpp.osmium.SimpleDate;
+import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;

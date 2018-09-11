@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.platform.sponge.event;
+package com.kmecpp.osmium.platform.sponge.event.events;
 
 import org.spongepowered.api.event.server.ClientPingServerEvent;
 
@@ -8,6 +8,10 @@ import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
 public class SpongeServerListPingEvent implements ServerListPingEvent {
 
 	private ClientPingServerEvent event;
+
+	public SpongeServerListPingEvent(ClientPingServerEvent event) {
+		this.event = event;
+	}
 
 	@Override
 	public String getDescription() {

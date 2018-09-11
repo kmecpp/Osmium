@@ -2,9 +2,9 @@ package com.kmecpp.osmium.platform.sponge;
 
 import org.spongepowered.api.text.Text;
 
-import com.kmecpp.osmium.Location;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.GameMode;
+import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 

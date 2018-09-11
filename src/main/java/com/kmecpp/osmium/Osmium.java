@@ -46,6 +46,9 @@ public final class Osmium {
 	 * 
 	 * - More events
 	 * 
+	 * - Don't register listeners separately. Register one time for each event
+	 * type and then have osmium call the individual methods
+	 * 
 	 */
 
 	static {

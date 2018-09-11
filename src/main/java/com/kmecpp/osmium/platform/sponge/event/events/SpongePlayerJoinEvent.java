@@ -1,23 +1,16 @@
-package com.kmecpp.osmium.platform.sponge.event;
+package com.kmecpp.osmium.platform.sponge.event.events;
 
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
-import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
+import com.kmecpp.osmium.platform.sponge.event.SpongePlayerEvent;
 
-public class SpongePlayerJoinEvent implements PlayerJoinEvent {
-
-	private ClientConnectionEvent.Join event;
+public class SpongePlayerJoinEvent extends SpongePlayerEvent<ClientConnectionEvent.Join> {
 
 	public SpongePlayerJoinEvent(Join event) {
-		this.event = event;
-	}
-
-	@Override
-	public ClientConnectionEvent.Join getSource() {
-		return event;
+		super(event);
 	}
 
 	@Override
