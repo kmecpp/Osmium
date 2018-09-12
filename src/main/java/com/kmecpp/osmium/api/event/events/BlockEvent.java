@@ -13,7 +13,7 @@ public interface BlockEvent {
 	public interface Place extends BlockEvent, PlayerEvent {
 	}
 
-	public interface Modify extends BlockEvent, PlayerEvent {
+	public interface Modify extends BlockEvent {
 	}
 
 	public interface Explode extends BlockEvent {

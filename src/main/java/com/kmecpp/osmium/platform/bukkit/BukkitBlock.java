@@ -21,19 +21,4 @@ public class BukkitBlock implements Block {
 		return BukkitAccess.getLocation(block.getLocation());
 	}
 
-	@Override
-	public int getX() {
-		return block.getX();
-	}
-
-	@Override
-	public int getY() {
-		return block.getY();
-	}
-
-	@Override
-	public int getZ() {
-		return block.getZ();
-	}
-
 }

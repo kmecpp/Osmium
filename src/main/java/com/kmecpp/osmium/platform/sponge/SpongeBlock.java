@@ -24,19 +24,4 @@ public class SpongeBlock implements Block {
 		return SpongeAccess.getLocation(block.getLocatableBlock().get().getLocation());
 	}
 
-	@Override
-	public int getX() {
-		return block.getBlockX();
-	}
-
-	@Override
-	public int getY() {
-		return block.getBlockY();
-	}
-
-	@Override
-	public int getZ() {
-		return block.getBlockZ();
-	}
-
 }

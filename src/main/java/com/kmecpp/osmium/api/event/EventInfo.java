@@ -3,6 +3,7 @@ package com.kmecpp.osmium.api.event;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import com.kmecpp.osmium.api.event.events.BlockEvent;
 import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
@@ -13,6 +14,8 @@ import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerJoinEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerMoveEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerQuitEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockBreakEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockBreakEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerJoinEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerMoveEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerQuitEvent;
@@ -46,6 +49,7 @@ public class EventInfo {
 		register(PlayerJoinEvent.class, BukkitPlayerJoinEvent.class, SpongePlayerJoinEvent.class);
 		register(PlayerQuitEvent.class, BukkitPlayerQuitEvent.class, SpongePlayerQuitEvent.class);
 		register(ServerListPingEvent.class, BukkitServerListPingEvent.class, SpongeServerListPingEvent.class);
+		register(BlockEvent.Break.class, BukkitBlockBreakEvent.class, SpongeBlockBreakEvent.class);
 	}
 
 	public static void register(Class<? extends Event> event, Class<? extends Event> bukkitImplementation, Class<? extends Event> spongeImplementation) {
