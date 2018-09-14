@@ -70,6 +70,10 @@ publishing {
 /*
  * COMPILIATION
  */
+compileJava {
+    options.compilerArgs += ["-proc:none"]
+}
+ 
 processResources {
 	expand(project.properties)
 }
@@ -80,42 +84,52 @@ task processAppInfo(type: Copy) {
     expand(project.properties)
 }
 
-task compileAppInfo(type: JavaCompile, dependsOn: processAppInfo) {
+
+task compileAppInfo(type: JavaCompile, dependsOn: compileJava) {
     source = "build/generated"
     classpath = sourceSets.main.compileClasspath
     destinationDir = file('build/classes/java/main')
+        	println("COMPILE!!");
+    
+    
+    copy {
+    	println("COPYYY!");
+		from 'build/generated/com/kmecpp/osmium/AppInfo.class'
+		into 'build/AppInfo.class'
+	}
 }
 
+compileAppInfo.dependsOn compileJava
+
+/*
 task mergeSources(type: Copy) {
    from 'build/generated'
    from 'src/main/java'
    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
    into "build/finalSources"
 }
-
-sourceSets {
-    generated {
-        java.srcDir "build/finalSources"
-    }
-}
-
-/*
-sourceSets.main.java {
-	srcDirs = ["build/finalSources"]
-}
-
-compileJava {
-	exclude "com/kmecpp/osmium/AppInfo.java"
-	classpath += files("build/generated")
-}
 */
 
-compileJava {
-    //sourceSets.main.java { srcDir "build/finalSources" }
-   	source = sourceSets.generated.java
+sourceSets {
+
+   
+   //generated {
+   //   java.srcDir "build/finalSources"
+   // }
 }
 
-compileJava.dependsOn mergeSources, compileAppInfo
+//compileJava {
+//  	source = sourceSets.generated.java
+//}
+
+
+
+//compileJava.dependsOn compileAppInfo
+
+compileJava << {
+println("APP INFO");
+	compileAppInfo
+}
 /*
  * END COMPILIATION
  */
@@ -132,6 +146,7 @@ dependencies {
 	compileOnly files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648.jar")
 	//compile "org.spigotmc:spigot:$bukkit_version"
 	compileOnly "org.spongepowered:spongeapi:$sponge_version"
+	compile files("build/generated/com/kmecpp/osmium/AppInfo.class")
 	//compileOnly "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75" //Breaking builds. Find alternative for this
 	
 	//shade "com.kmecpp:jlib:+"
