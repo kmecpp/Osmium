@@ -85,51 +85,31 @@ task processAppInfo(type: Copy) {
 }
 
 
-task compileAppInfo(type: JavaCompile, dependsOn: compileJava) {
+task compileAppInfo(type: JavaCompile) {
     source = "build/generated"
     classpath = sourceSets.main.compileClasspath
-    destinationDir = file('build/classes/java/main')
-        	println("COMPILE!!");
-    
-    
-    copy {
-    	println("COPYYY!");
-		from 'build/generated/com/kmecpp/osmium/AppInfo.class'
-		into 'build/AppInfo.class'
-	}
+    destinationDir = file('build/generated')
 }
 
-compileAppInfo.dependsOn compileJava
-
-/*
-task mergeSources(type: Copy) {
-   from 'build/generated'
-   from 'src/main/java'
-   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-   into "build/finalSources"
-}
-*/
+compileAppInfo.dependsOn processAppInfo
+compileJava.dependsOn compileAppInfo
 
 sourceSets {
-
-   
-   //generated {
-   //   java.srcDir "build/finalSources"
-   // }
+	generated {
+		java {
+			srcDir "build/generated"
+		}
+	}
+	main {
+		java {
+            srcDir 'src/main/java'
+            exclude 'com/kmecpp/osmium/AppInfo.java'
+       }
+   }
 }
 
-//compileJava {
-//  	source = sourceSets.generated.java
-//}
+compileJava.source sourceSets.generated.java, sourceSets.main.java
 
-
-
-//compileJava.dependsOn compileAppInfo
-
-compileJava << {
-println("APP INFO");
-	compileAppInfo
-}
 /*
  * END COMPILIATION
  */
