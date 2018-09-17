@@ -17,6 +17,7 @@ import com.kmecpp.osmium.api.command.SimpleCommand;
 import com.kmecpp.osmium.api.config.ConfigManager;
 import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.event.EventManager;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMetrics;
@@ -35,6 +36,7 @@ public final class Osmium {
 	private static final PluginLoader pluginLoader = new PluginLoader();
 	private static final ConfigManager configManager = new ConfigManager();
 	private static final CommandManager commandManager = new CommandManager();
+	private static final EventManager eventManager = new EventManager();
 	private static final OsmiumMetrics metrics = new OsmiumMetrics();
 	protected static boolean shuttingDown;
 
@@ -191,6 +193,10 @@ public final class Osmium {
 		} else {
 			return false;
 		}
+	}
+
+	public static EventManager getEventManager() {
+		return eventManager;
 	}
 
 	public static CommandManager getCommandManager() {
