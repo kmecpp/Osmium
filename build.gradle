@@ -196,28 +196,22 @@ uploadArchives {
 
 build.doLast {
 	//BUKKIT
-	exec {
-		if (project.hasProperty("bukkit_server")) {
+	if (project.hasProperty("bukkit_server")) {
+		exec {
 			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("bukkit_server").replaceAll("%20", " ") + "\\plugins", '/Y'
-		} else {
-			commandLine 'cmd', 'echo', 'Skipped deploying Bukkit jar'
 		}
 	}
 	//SPONGE
-	exec {
-		if (project.hasProperty("sponge_server")) {
+	if (project.hasProperty("sponge_server")) {
+		exec {
 			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("sponge_server").replaceAll("%20", " ") + "\\mods", '/Y'
-		} else {
-			commandLine 'cmd', 'echo', 'Skipped deploying Sponge jar'
-		}	
+		}
 	}
 	
 	//SERVER
-	exec {
-		if (project.hasProperty("server_path")) {
+	if (project.hasProperty("server_path")) {
+		exec {
 			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path").replaceAll("%20", " ") + "\\plugins", '/Y'
-		} else {
-			commandLine 'cmd', 'echo', 'Skipped deploying test jar'
-		}	
+		}
 	}
 }
