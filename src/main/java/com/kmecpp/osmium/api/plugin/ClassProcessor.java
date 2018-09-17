@@ -35,7 +35,7 @@ public class ClassProcessor {
 	private final Class<?> mainClassImpl;
 	private final HashSet<Class<?>> pluginClasses = new HashSet<Class<?>>();
 
-	private final HashMap<Class<?>, Object> listeners = new HashMap<>();
+	private final HashMap<Class<?>, Object> classInstances = new HashMap<>();
 	private final HashMap<Class<?>, Command> commands = new HashMap<>();
 
 	protected ClassProcessor(OsmiumPlugin plugin, Object pluginImpl) throws Exception {
@@ -80,7 +80,7 @@ public class ClassProcessor {
 	}
 
 	public void enableEvents(Object listener) {
-		listeners.put(listener.getClass(), listener);
+		classInstances.put(listener.getClass(), listener);
 	}
 
 	protected void initializeHooks() {
@@ -167,10 +167,10 @@ public class ClassProcessor {
 
 			Object instance;
 			try {
-				boolean contains = listeners.containsKey(cls); //DONE THIS WAY BECAUSE LISTENER MUST BE FINAL
-				instance = contains ? listeners.get(cls) : cls.newInstance();
+				boolean contains = classInstances.containsKey(cls); //DONE THIS WAY BECAUSE LISTENER MUST BE FINAL
+				instance = contains ? classInstances.get(cls) : cls.newInstance();
 				if (!contains) {
-					listeners.put(cls, instance);
+					classInstances.put(cls, instance);
 				}
 			} catch (Exception e) {
 				OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.enableEvents(listener)");
@@ -204,15 +204,19 @@ public class ClassProcessor {
 					Class<Event> eventClass = Reflection.cast(method.getParameterTypes()[0]);
 					EventInfo eventInfo = EventInfo.get(eventClass);
 
-					try {
-						if (Platform.isBukkit()) {
-							BukkitAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
-						} else if (Platform.isSponge()) {
-							SpongeAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
+					if (eventInfo.isOsmiumEvent()) {
+						Osmium.getEventManager().registerListener(eventClass, instance, method);
+					} else {
+						try {
+							if (Platform.isBukkit()) {
+								BukkitAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
+							} else if (Platform.isSponge()) {
+								SpongeAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+							break;
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
-						break;
 					}
 				}
 			}
