@@ -4,12 +4,18 @@ import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerTeleportEvent;
-import com.kmecpp.osmium.platform.bukkit.event.BukkitEvent;
 
-public class BukkitPlayerTeleportEvent extends BukkitEvent<org.bukkit.event.player.PlayerTeleportEvent> implements PlayerTeleportEvent {
+public class BukkitPlayerTeleportEvent implements PlayerTeleportEvent {
+
+	private org.bukkit.event.player.PlayerTeleportEvent event;
 
 	public BukkitPlayerTeleportEvent(org.bukkit.event.player.PlayerTeleportEvent event) {
-		super(event);
+		this.event = event;
+	}
+
+	@Override
+	public org.bukkit.event.player.PlayerTeleportEvent getSource() {
+		return event;
 	}
 
 	@Override

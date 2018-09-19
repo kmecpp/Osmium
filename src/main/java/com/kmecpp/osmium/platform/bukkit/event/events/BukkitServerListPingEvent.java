@@ -1,12 +1,18 @@
 package com.kmecpp.osmium.platform.bukkit.event.events;
 
 import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
-import com.kmecpp.osmium.platform.bukkit.event.BukkitEvent;
 
-public class BukkitServerListPingEvent extends BukkitEvent<org.bukkit.event.server.ServerListPingEvent> implements ServerListPingEvent {
+public class BukkitServerListPingEvent implements ServerListPingEvent {
+
+	private org.bukkit.event.server.ServerListPingEvent event;
 
 	public BukkitServerListPingEvent(org.bukkit.event.server.ServerListPingEvent event) {
-		super(event);
+		this.event = event;
+	}
+
+	@Override
+	public org.bukkit.event.server.ServerListPingEvent getSource() {
+		return event;
 	}
 
 	@Override

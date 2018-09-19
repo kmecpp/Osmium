@@ -77,8 +77,7 @@ public class BukkitAccess {
 			}
 
 			commandMap.register(command.getPrimaryAlias(), new BukkitCommand(command.getPrimaryAlias(),
-					command.getDescription(), command.getUsage(), aliases) { // Usage message cannot be null or else
-																																											// stuff will break
+					command.getDescription(), command.getUsage(), aliases) { // Usage message cannot be null or else stuff will break
 
 				@Override
 				public boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args) {
@@ -104,6 +103,7 @@ public class BukkitAccess {
 	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) throws Exception {
 		Class<? extends org.bukkit.event.Event> bukkitEventClass = eventInfo.getBukkitClass();
 
+		System.out.println("EV: " + eventInfo.getBukkitClass());
 		Constructor<? extends Event> eventWrapper = eventInfo.getBukkitImplementation().getConstructor(bukkitEventClass);
 		Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getPluginImplementation(), (EventPriority) order.getSource(), (bukkitListener, bukkitEvent) -> {
 			if (bukkitEventClass.isAssignableFrom(bukkitEvent.getClass())) {

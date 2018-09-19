@@ -4,12 +4,18 @@ import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
-import com.kmecpp.osmium.platform.bukkit.event.BukkitEvent;
 
-public class BukkitPlayerMoveEvent extends BukkitEvent<org.bukkit.event.player.PlayerMoveEvent> implements PlayerMoveEvent {
+public class BukkitPlayerMoveEvent implements PlayerMoveEvent {
+
+	private org.bukkit.event.player.PlayerMoveEvent event;
 
 	public BukkitPlayerMoveEvent(org.bukkit.event.player.PlayerMoveEvent event) {
-		super(event);
+		this.event = event;
+	}
+
+	@Override
+	public org.bukkit.event.player.PlayerMoveEvent getSource() {
+		return event;
 	}
 
 	@Override

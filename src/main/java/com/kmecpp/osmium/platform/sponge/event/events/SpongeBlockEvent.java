@@ -6,14 +6,20 @@ import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.BlockEvent;
-import com.kmecpp.osmium.platform.sponge.event.SpongeEvent;
 
 public class SpongeBlockEvent {
 
-	public static class SpongeBlockBreakEvent extends SpongeEvent<ChangeBlockEvent.Break> implements BlockEvent.Break {
+	public static class SpongeBlockBreakEvent implements BlockEvent.Break {
+
+		private ChangeBlockEvent.Break event;
 
 		public SpongeBlockBreakEvent(org.spongepowered.api.event.block.ChangeBlockEvent.Break event) {
-			super(event);
+			this.event = event;
+		}
+
+		@Override
+		public Object getSource() {
+			return event;
 		}
 
 		@Override
@@ -33,10 +39,17 @@ public class SpongeBlockEvent {
 
 	}
 
-	public static class SpongeBlockPlaceEvent extends SpongeEvent<ChangeBlockEvent.Place> implements BlockEvent.Place {
+	public static class SpongeBlockPlaceEvent implements BlockEvent.Place {
+
+		private ChangeBlockEvent.Place event;
 
 		public SpongeBlockPlaceEvent(org.spongepowered.api.event.block.ChangeBlockEvent.Place event) {
-			super(event);
+			this.event = event;
+		}
+
+		@Override
+		public ChangeBlockEvent.Place getSource() {
+			return event;
 		}
 
 		@Override

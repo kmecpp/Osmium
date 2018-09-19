@@ -12,7 +12,6 @@ import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockBreakEvent;
-import com.kmecpp.osmium.platform.bukkit.event.BukkitEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerJoinEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerMoveEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerQuitEvent;
@@ -29,11 +28,9 @@ public class EventInfo {
 
 	private final Class<? extends Event> bukkitImplementation;
 	private final Class<? extends org.bukkit.event.Event> bukkitClass;
-	//	private final Predicate<? extends org.bukkit.event.Event> bukkitCondition;
 	private final Class<? extends Event> spongeImplementation;
 	private final Class<? extends org.spongepowered.api.event.Event> spongeClass;
 	private final boolean osmiumEvent;
-	//	private final Predicate<? extends org.spongepowered.api.event.Event> spongeCondition;
 
 	public EventInfo(Class<? extends Event> implementation) {
 		this(null, null, null, null, true);
@@ -73,12 +70,13 @@ public class EventInfo {
 	}
 
 	private static <T> Class<T> extractSourceClass(Class<?> osmiumClass) {
-		Field field;
-		if (BukkitEvent.class.isAssignableFrom(osmiumClass)) {
-			field = osmiumClass.getSuperclass().getDeclaredFields()[0];
-		} else {
-			field = osmiumClass.getDeclaredFields()[0];
-		}
+		//		Field field;
+		//		if (BukkitEvent.class.isAssignableFrom(osmiumClass)) {
+		//			field = osmiumClass.getSuperclass().getDeclaredFields()[0];
+		//		} else {
+		//			field = osmiumClass.getDeclaredFields()[0];
+		//		}
+		Field field = osmiumClass.getDeclaredFields()[0];
 		field.setAccessible(true);
 		return Reflection.cast(field.getType());
 	}

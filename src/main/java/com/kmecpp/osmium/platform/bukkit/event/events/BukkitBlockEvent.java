@@ -1,17 +1,25 @@
 package com.kmecpp.osmium.platform.bukkit.event.events;
 
+import org.bukkit.event.block.BlockBreakEvent;
+
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.BlockEvent;
-import com.kmecpp.osmium.platform.bukkit.event.BukkitEvent;
 
 public class BukkitBlockEvent {
 
-	public static class BukkitBlockBreakEvent extends BukkitEvent<org.bukkit.event.block.BlockBreakEvent> implements BlockEvent.Break {
+	public static class BukkitBlockBreakEvent implements BlockEvent.Break {
 
-		public BukkitBlockBreakEvent(org.bukkit.event.block.BlockBreakEvent event) {
-			super(event);
+		private BlockBreakEvent event;
+
+		public BukkitBlockBreakEvent(BlockBreakEvent event) {
+			this.event = event;
+		}
+
+		@Override
+		public BlockBreakEvent getSource() {
+			return event;
 		}
 
 		@Override
