@@ -1,6 +1,6 @@
 package com.kmecpp.osmium.api.entity;
 
-public interface EntityLiving {
+public interface EntityLiving extends Entity {
 
 	double getHealth();
 

@@ -12,11 +12,13 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.event.EventPriority;
 
 import com.kmecpp.osmium.api.Block;
+import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
+import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
@@ -28,10 +30,20 @@ import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.platform.bukkit.BukkitBlock;
 import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
+import com.kmecpp.osmium.platform.bukkit.BukkitChunk;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
+import com.kmecpp.osmium.platform.bukkit.BukkitEntity;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
+
+	public static Chunk getChunk(org.bukkit.Chunk chunk) {
+		return new BukkitChunk(chunk);
+	}
+
+	public static Entity getEntity(org.bukkit.entity.Entity entity) {
+		return new BukkitEntity(entity);
+	}
 
 	public static Player getPlayer(org.bukkit.entity.Player player) {
 		return PlayerList.getPlayer(player.getName());

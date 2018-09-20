@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import java.util.UUID;
+
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.Location;
@@ -16,6 +18,11 @@ public class BukkitPlayer implements Player {
 			throw new IllegalStateException("Osmium wrapper already exists for this player!");
 		}
 		this.player = player;
+	}
+
+	@Override
+	public UUID getUniqueId() {
+		return player.getUniqueId();
 	}
 
 	@Override
@@ -90,6 +97,16 @@ public class BukkitPlayer implements Player {
 	@Override
 	public void teleport(Location location) {
 		player.teleport((org.bukkit.Location) location.getImplementation());
+	}
+
+	@Override
+	public String getDisplayName() {
+		return player.getDisplayName();
+	}
+
+	@Override
+	public void setDisplayName(String name) {
+		player.setDisplayName(name);
 	}
 
 }

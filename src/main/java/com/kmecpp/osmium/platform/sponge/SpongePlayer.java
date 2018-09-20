@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import java.util.UUID;
+
 import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.SpongeAccess;
@@ -19,6 +21,11 @@ public class SpongePlayer implements Player {
 	@Override
 	public org.spongepowered.api.entity.living.player.Player getSource() {
 		return player;
+	}
+
+	@Override
+	public UUID getUniqueId() {
+		return player.getUniqueId();
 	}
 
 	@Override
@@ -84,6 +91,16 @@ public class SpongePlayer implements Player {
 	@Override
 	public void teleport(Location location) {
 		player.setLocation(location.getImplementation());
+	}
+
+	@Override
+	public String getDisplayName() {
+		return player.getDisplayNameData().displayName().get().toString();
+	}
+
+	@Override
+	public void setDisplayName(String name) {
+		player.getDisplayNameData().displayName().set(SpongeAccess.getText(name));
 	}
 
 }

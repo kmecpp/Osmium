@@ -15,11 +15,13 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.api.Block;
+import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
+import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
@@ -30,12 +32,22 @@ import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.platform.sponge.GenericSpongeCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeBlock;
 import com.kmecpp.osmium.platform.sponge.SpongeBlockCommandSender;
+import com.kmecpp.osmium.platform.sponge.SpongeChunk;
 import com.kmecpp.osmium.platform.sponge.SpongeConsoleCommandSender;
+import com.kmecpp.osmium.platform.sponge.SpongeEntity;
 
 public class SpongeAccess {
 
 	public static Text getText(String str) {
 		return Text.of(str);
+	}
+
+	public static Chunk getChunk(org.spongepowered.api.world.Chunk chunk) {
+		return new SpongeChunk(chunk);
+	}
+
+	public static Entity getEntity(org.spongepowered.api.entity.Entity entity) {
+		return new SpongeEntity(entity);
 	}
 
 	public static Player getPlayer(org.spongepowered.api.entity.living.player.Player player) {
