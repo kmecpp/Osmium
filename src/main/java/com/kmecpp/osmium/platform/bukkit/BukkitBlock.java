@@ -2,7 +2,7 @@ package com.kmecpp.osmium.platform.bukkit;
 
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.Block;
-import com.kmecpp.osmium.api.Location;
+import com.kmecpp.osmium.api.location.Location;
 
 public class BukkitBlock implements Block {
 

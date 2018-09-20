@@ -6,9 +6,9 @@ import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.GameMode;
-import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.api.location.Location;
 
 public class SpongePlayer implements Player {
 
@@ -21,6 +21,11 @@ public class SpongePlayer implements Player {
 	@Override
 	public org.spongepowered.api.entity.living.player.Player getSource() {
 		return player;
+	}
+
+	@Override
+	public String getWorldName() {
+		return player.getWorld().getName();
 	}
 
 	@Override

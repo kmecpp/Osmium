@@ -3,9 +3,9 @@ package com.kmecpp.osmium.platform.sponge.event.events;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 
 import com.kmecpp.osmium.SpongeAccess;
-import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
+import com.kmecpp.osmium.api.location.Location;
 
 public class SpongePlayerMoveEvent implements PlayerMoveEvent {
 

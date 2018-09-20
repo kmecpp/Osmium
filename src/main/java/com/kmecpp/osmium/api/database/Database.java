@@ -14,9 +14,9 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import com.kmecpp.osmium.SimpleDate;
-import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Deserializer;
 import com.kmecpp.osmium.api.persistence.JavaSerializer;

@@ -4,7 +4,7 @@ import org.spongepowered.api.world.World;
 
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
-import com.kmecpp.osmium.api.Location;
+import com.kmecpp.osmium.api.location.Location;
 
 public class SpongeBlock implements Block {
 

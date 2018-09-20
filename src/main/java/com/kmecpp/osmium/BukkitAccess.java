@@ -13,7 +13,6 @@ import org.bukkit.event.EventPriority;
 
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
-import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
@@ -23,6 +22,7 @@ import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
+import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;

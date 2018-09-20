@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.api;
 
+import com.kmecpp.osmium.api.location.Location;
+
 public interface Block extends Abstraction {
 
 	//	private Location location;

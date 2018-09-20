@@ -5,9 +5,9 @@ import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.world.World;
 
 import com.kmecpp.osmium.SpongeAccess;
-import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerTeleportEvent;
+import com.kmecpp.osmium.api.location.Location;
 
 public class SpongePlayerTeleportEvent implements PlayerTeleportEvent {
 

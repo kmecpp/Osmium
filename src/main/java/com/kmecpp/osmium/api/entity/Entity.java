@@ -3,8 +3,8 @@ package com.kmecpp.osmium.api.entity;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.Abstraction;
-import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.World;
+import com.kmecpp.osmium.api.location.Location;
 
 public interface Entity extends Abstraction {
 

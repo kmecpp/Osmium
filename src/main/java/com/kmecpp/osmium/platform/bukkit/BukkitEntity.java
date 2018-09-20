@@ -3,9 +3,9 @@ package com.kmecpp.osmium.platform.bukkit;
 import java.util.UUID;
 
 import com.kmecpp.osmium.BukkitAccess;
-import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Entity;
+import com.kmecpp.osmium.api.location.Location;
 
 public class BukkitEntity implements Entity {
 

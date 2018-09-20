@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.GameMode;
-import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.cache.PlayerList;
 
 public class BukkitPlayer implements Player {
@@ -18,6 +18,11 @@ public class BukkitPlayer implements Player {
 			throw new IllegalStateException("Osmium wrapper already exists for this player!");
 		}
 		this.player = player;
+	}
+
+	@Override
+	public String getWorldName() {
+		return player.getWorld().getName();
 	}
 
 	@Override

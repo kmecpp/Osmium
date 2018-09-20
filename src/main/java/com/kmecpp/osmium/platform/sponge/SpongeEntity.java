@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.spongepowered.api.data.manipulator.mutable.DisplayNameData;
 
 import com.kmecpp.osmium.SpongeAccess;
-import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Entity;
+import com.kmecpp.osmium.api.location.Location;
 
 public class SpongeEntity implements Entity {
 

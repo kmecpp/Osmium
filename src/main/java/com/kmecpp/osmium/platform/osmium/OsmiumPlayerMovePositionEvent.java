@@ -1,9 +1,9 @@
 package com.kmecpp.osmium.platform.osmium;
 
-import com.kmecpp.osmium.api.Location;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 import com.kmecpp.osmium.api.event.events.PlayerMovePositionEvent;
+import com.kmecpp.osmium.api.location.Location;
 
 public class OsmiumPlayerMovePositionEvent implements PlayerMovePositionEvent {
 
