@@ -30,7 +30,12 @@ public class EventManager {
 	}
 
 	public void callEvent(Event event) {
-		for (RegisteredListener listener : events.get(event.getClass())) {
+		ArrayList<RegisteredListener> listeners = events.get(event.getClass());
+		if (listeners == null) {
+			return;
+		}
+
+		for (RegisteredListener listener : listeners) {
 			listener.call(event);
 		}
 	}

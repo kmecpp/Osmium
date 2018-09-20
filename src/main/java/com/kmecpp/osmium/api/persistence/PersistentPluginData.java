@@ -60,7 +60,7 @@ public class PersistentPluginData {
 	//	}
 
 	public void save() {
-		System.out.println("SAVING: " + fields);
+		OsmiumLogger.debug("Saving persistent data for " + plugin.getName());
 		if (fields.isEmpty()) {
 			return;
 		}

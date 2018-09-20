@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import com.kmecpp.osmium.api.event.events.BlockEvent;
-import com.kmecpp.osmium.api.event.events.PlayerJoinEvent;
+import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 import com.kmecpp.osmium.api.event.events.PlayerMovePositionEvent;
 import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
@@ -12,12 +12,14 @@ import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockBreakEvent;
-import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerJoinEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectEvent.BukkitPlayerJoinEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectEvent.BukkitPlayerLoginEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerMoveEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerQuitEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockBreakEvent;
-import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerJoinEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerJoinEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerLoginEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerMoveEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerQuitEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeServerListPingEvent;
@@ -51,7 +53,8 @@ public class EventInfo {
 		register(PlayerMovePositionEvent.class);
 
 		register(PlayerMoveEvent.class, BukkitPlayerMoveEvent.class, SpongePlayerMoveEvent.class);
-		register(PlayerJoinEvent.class, BukkitPlayerJoinEvent.class, SpongePlayerJoinEvent.class);
+		register(PlayerConnectionEvent.Join.class, BukkitPlayerJoinEvent.class, SpongePlayerJoinEvent.class);
+		register(PlayerConnectionEvent.Login.class, BukkitPlayerLoginEvent.class, SpongePlayerLoginEvent.class);
 		register(PlayerQuitEvent.class, BukkitPlayerQuitEvent.class, SpongePlayerQuitEvent.class);
 		register(ServerListPingEvent.class, BukkitServerListPingEvent.class, SpongeServerListPingEvent.class);
 		register(BlockEvent.Break.class, BukkitBlockBreakEvent.class, SpongeBlockBreakEvent.class);

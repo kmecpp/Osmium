@@ -92,8 +92,10 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	public abstract AbstractTask<T> start();
 
 	public void cancel() {
+		System.out.println("Cancelling!");
 		if (Platform.isBukkit()) {
 			this.<BukkitTask> getTaskImplementation().cancel();
+			System.out.println((Object) getTaskImplementation());
 		} else if (Platform.isSponge()) {
 			this.<org.spongepowered.api.scheduler.Task> getTaskImplementation().cancel();
 		}
