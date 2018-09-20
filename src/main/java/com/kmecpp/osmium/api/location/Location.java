@@ -16,6 +16,9 @@ public class Location {
 	private final double z;
 
 	public Location(World world, double x, double y, double z) {
+		if (world == null) {
+			throw new IllegalArgumentException("Invalid world: " + world);
+		}
 		this.world = world;
 		this.x = x;
 		this.y = y;
@@ -48,6 +51,10 @@ public class Location {
 
 	public int getBlockZ() {
 		return (int) z;
+	}
+
+	public Location getBlockCenter() {
+		return new Location(world, ((int) x) + 0.5, y, ((int) z) + 0.5);
 	}
 
 	public static Location fromString(String str) {

@@ -9,6 +9,7 @@ public class OsmiumEvents {
 
 	@Listener
 	public void on(PlayerMoveEvent e) {
+		System.out.println("Player move!");
 		if (e.isNewPosition()) {
 			Osmium.getEventManager().callEvent(new OsmiumPlayerMovePositionEvent(e));
 		}

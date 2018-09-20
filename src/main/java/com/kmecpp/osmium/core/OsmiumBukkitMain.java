@@ -1,11 +1,10 @@
 package com.kmecpp.osmium.core;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
 import com.kmecpp.osmium.Osmium;
@@ -15,12 +14,6 @@ import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.platform.bukkit.BukkitWorld;
 
 public class OsmiumBukkitMain extends BukkitPlugin {
-
-	@Override
-	public void onEnable() {
-		super.onEnable();
-		Bukkit.getPluginManager().registerEvents(this, this);
-	}
 
 	@Override
 	public void onDisable() {
@@ -39,7 +32,7 @@ public class OsmiumBukkitMain extends BukkitPlugin {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onWorldLoad(WorldLoadEvent e) {
+	public void onWorldLoad(WorldInitEvent e) {
 		WorldList.addWorld(new BukkitWorld(e.getWorld()));
 	}
 

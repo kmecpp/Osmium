@@ -31,6 +31,7 @@ public class BukkitPlugin extends JavaPlugin implements Listener {
 			Bukkit.getPluginManager().disablePlugin(this);
 		} else {
 			plugin.onLoad();
+
 		}
 	}
 
@@ -38,6 +39,7 @@ public class BukkitPlugin extends JavaPlugin implements Listener {
 	public void onEnable() {
 		if (plugin != null) {
 			plugin.onPreInit();
+			Bukkit.getPluginManager().registerEvents(this, this);
 			plugin.getClassManager().initializeHooks();
 			plugin.onInit();
 			plugin.onPostInit();

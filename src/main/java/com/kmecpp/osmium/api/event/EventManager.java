@@ -23,8 +23,7 @@ public class EventManager {
 
 		ArrayList<RegisteredListener> listeners = events.get(eventClass);
 		if (listeners == null) {
-			listeners = new ArrayList<>();
-			events.put(eventClass, listeners);
+			events.put(eventClass, (listeners = new ArrayList<>()));
 		}
 		listeners.add(new RegisteredListener(listenerInstance, listener));
 	}
