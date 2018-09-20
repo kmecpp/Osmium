@@ -64,7 +64,7 @@ public class SpongeChunkEvent {
 		}
 
 		@Override
-		public UnloadChunkEvent getSource() {
+		public UnloadChunkEvent getSource() { //setSave(false)? event.getTargetChunk().getWorld().getProperties().setSerializationBehavior(SerializationBehaviors.NONE);
 			return event;
 		}
 

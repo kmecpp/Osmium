@@ -7,40 +7,40 @@ import com.kmecpp.osmium.api.location.Location;
 
 public class OsmiumPlayerMovePositionEvent implements PlayerMovePositionEvent {
 
-	private PlayerMoveEvent e;
+	private PlayerMoveEvent event;
 
 	public OsmiumPlayerMovePositionEvent(PlayerMoveEvent e) {
-		this.e = e;
+		this.event = e;
 	}
 
 	@Override
 	public Location getFrom() {
-		return e.getFrom();
+		return event.getFrom();
 	}
 
 	@Override
 	public Location getTo() {
-		return e.getTo();
+		return event.getTo();
 	}
 
 	@Override
 	public Player getPlayer() {
-		return e.getPlayer();
+		return event.getPlayer();
 	}
 
 	@Override
 	public Object getSource() {
-		return e;
+		return event;
 	}
 
 	@Override
 	public boolean isCancelled() {
-		return e.isCancelled();
+		return event.isCancelled();
 	}
 
 	@Override
 	public void setCancelled(boolean cancel) {
-		e.setCancelled(true);
+		event.setCancelled(true);
 	}
 
 	@Override

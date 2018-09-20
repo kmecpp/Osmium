@@ -8,13 +8,15 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
 public class EventManager {
 
-	//Only for Osmium events
+	//Only for Osmium events. The key is the event implementation
 	private final HashMap<Class<? extends Event>, ArrayList<RegisteredListener>> events = new HashMap<>();
 
 	public void registerListener(Class<? extends Event> eventClass, Object listenerInstance, Method listener) {
 		listener.setAccessible(true);
-		if (listener.getParameterTypes().length != 1 || !eventClass.isAssignableFrom(listener.getParameterTypes()[0])) {
-			OsmiumLogger.warn("Failed to register listener: " + listener.toString() + " in class: " + listener.getDeclaringClass());
+		if (listener.getParameterTypes().length != 1 || !listener.getParameterTypes()[0].isAssignableFrom(eventClass)) {
+			OsmiumLogger.warn("Failed to register listener!");
+			OsmiumLogger.warn("Listener: " + listener);
+			OsmiumLogger.warn("Class: " + listener.getDeclaringClass());
 			return;
 		} else if (listenerInstance == null || listenerInstance.getClass().isAssignableFrom(listener.getParameterTypes()[0])) {
 			OsmiumLogger.warn("Invalid listener instance: " + listenerInstance);

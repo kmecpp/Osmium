@@ -201,11 +201,11 @@ public class ClassProcessor {
 				} else if (!Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
 					plugin.error("Invalid listener method with signature: '" + method + "'");
 				} else {
-					Class<Event> eventClass = Reflection.cast(method.getParameterTypes()[0]);
+					Class<? extends Event> eventClass = Reflection.cast(method.getParameterTypes()[0]);
 					EventInfo eventInfo = EventInfo.get(eventClass);
 
 					if (eventInfo.isOsmiumEvent()) {
-						Osmium.getEventManager().registerListener(eventClass, instance, method);
+						Osmium.getEventManager().registerListener(eventInfo.getImplementation(), instance, method); //Register implementation class for Osmium
 					} else {
 						try {
 							if (Platform.isBukkit()) {

@@ -113,9 +113,9 @@ public class BukkitAccess {
 	}
 
 	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) throws Exception {
-		Class<? extends org.bukkit.event.Event> bukkitEventClass = eventInfo.getBukkitClass();
+		Class<? extends org.bukkit.event.Event> bukkitEventClass = eventInfo.getSource();
 
-		Constructor<? extends Event> eventWrapper = eventInfo.getBukkitImplementation().getConstructor(bukkitEventClass);
+		Constructor<? extends Event> eventWrapper = eventInfo.getImplementation().getConstructor(bukkitEventClass);
 		Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getPluginImplementation(), (EventPriority) order.getSource(), (bukkitListener, bukkitEvent) -> {
 			if (bukkitEventClass.isAssignableFrom(bukkitEvent.getClass())) {
 				try {
