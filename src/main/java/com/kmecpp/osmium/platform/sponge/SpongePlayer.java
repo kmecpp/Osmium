@@ -8,6 +8,7 @@ import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 
 public class SpongePlayer implements Player {
@@ -91,6 +92,11 @@ public class SpongePlayer implements Player {
 	@Override
 	public Location getLocation() {
 		return SpongeAccess.getLocation(player.getLocation());
+	}
+
+	@Override
+	public Direction getDirection() {
+		return new Direction((float) (player.getRotation().getY() + 90) % 360, (float) player.getRotation().getX() * -1);
 	}
 
 	@Override

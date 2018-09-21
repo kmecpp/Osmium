@@ -6,6 +6,7 @@ import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.cache.PlayerList;
 
@@ -100,8 +101,15 @@ public class BukkitPlayer implements Player {
 	}
 
 	@Override
+	public Direction getDirection() {
+		return new Direction(player.getLocation().getPitch(), player.getLocation().getYaw());
+	}
+
+	@Override
 	public void teleport(Location location) {
-		player.teleport((org.bukkit.Location) location.getImplementation());
+		org.bukkit.Location l = (org.bukkit.Location) location.getImplementation();
+		l.setDirection(player.getLocation().getDirection());
+		player.teleport(l);
 	}
 
 	@Override

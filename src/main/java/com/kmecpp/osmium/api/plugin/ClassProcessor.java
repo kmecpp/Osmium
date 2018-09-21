@@ -204,6 +204,11 @@ public class ClassProcessor {
 					Class<? extends Event> eventClass = Reflection.cast(method.getParameterTypes()[0]);
 					EventInfo eventInfo = EventInfo.get(eventClass);
 
+					if (eventInfo == null) {
+						OsmiumLogger.error("Osmium event class has no registration: " + eventClass);
+						continue;
+					}
+
 					if (eventInfo.isOsmiumEvent()) {
 						Osmium.getEventManager().registerListener(eventInfo.getImplementation(), instance, method); //Register implementation class for Osmium
 					} else {

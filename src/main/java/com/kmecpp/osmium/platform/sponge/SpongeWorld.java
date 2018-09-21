@@ -27,4 +27,9 @@ public class SpongeWorld implements World {
 		return world.getName();
 	}
 
+	@Override
+	public int getHighestYAt(int x, int z) {
+		return world.getHighestYAt(x, z);
+	}
+
 }

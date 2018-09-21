@@ -7,23 +7,27 @@ import com.kmecpp.osmium.api.event.events.BlockEvent;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 import com.kmecpp.osmium.api.event.events.PlayerMovePositionEvent;
-import com.kmecpp.osmium.api.event.events.PlayerQuitEvent;
+import com.kmecpp.osmium.api.event.events.PlayerTeleportEvent;
 import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockBreakEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectEvent.BukkitPlayerAuthEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectEvent.BukkitPlayerJoinEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectEvent.BukkitPlayerLoginEvent;
-import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectEvent.BukkitPlayerQuitEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerMoveEvent;
-import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerQuitEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerTeleportEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
+import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockBreakEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerAuthEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerJoinEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerLoginEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerQuitEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerMoveEvent;
-import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerQuitEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerTeleportEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeServerListPingEvent;
 
 public class EventInfo {
@@ -63,14 +67,18 @@ public class EventInfo {
 	 * EVENT REGISTRATION
 	 */
 	static {
-		register(PlayerMovePositionEvent.class, OsmiumPlayerMovePositionEvent.class);
+		//@formatter:off
+		register(PlayerMovePositionEvent.class,     OsmiumPlayerMovePositionEvent.class);
 
-		register(PlayerMoveEvent.class, BukkitPlayerMoveEvent.class, SpongePlayerMoveEvent.class);
-		register(PlayerConnectionEvent.Join.class, BukkitPlayerJoinEvent.class, SpongePlayerJoinEvent.class);
-		register(PlayerConnectionEvent.Login.class, BukkitPlayerLoginEvent.class, SpongePlayerLoginEvent.class);
-		register(PlayerQuitEvent.class, BukkitPlayerQuitEvent.class, SpongePlayerQuitEvent.class);
-		register(ServerListPingEvent.class, BukkitServerListPingEvent.class, SpongeServerListPingEvent.class);
-		register(BlockEvent.Break.class, BukkitBlockBreakEvent.class, SpongeBlockBreakEvent.class);
+		register(PlayerMoveEvent.class,             BukkitPlayerMoveEvent.class,     SpongePlayerMoveEvent.class);
+		register(PlayerTeleportEvent.class,         BukkitPlayerTeleportEvent.class, SpongePlayerTeleportEvent.class);
+		register(PlayerConnectionEvent.Auth.class,  BukkitPlayerAuthEvent.class,     SpongePlayerAuthEvent.class);
+		register(PlayerConnectionEvent.Login.class, BukkitPlayerLoginEvent.class,    SpongePlayerLoginEvent.class);
+		register(PlayerConnectionEvent.Join.class,  BukkitPlayerJoinEvent.class,     SpongePlayerJoinEvent.class);
+		register(PlayerConnectionEvent.Quit.class,  BukkitPlayerQuitEvent.class,     SpongePlayerQuitEvent.class);
+		register(ServerListPingEvent.class,         BukkitServerListPingEvent.class, SpongeServerListPingEvent.class);
+		register(BlockEvent.Break.class,            BukkitBlockBreakEvent.class,     SpongeBlockBreakEvent.class);
+		//@formatter:on
 	}
 
 	public static void register(Class<? extends Event> event, Class<? extends Event> osmiumImplementation) {

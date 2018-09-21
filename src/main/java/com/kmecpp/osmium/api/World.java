@@ -8,4 +8,6 @@ public interface World extends Abstraction {
 
 	String getName();
 
+	int getHighestYAt(int x, int z);
+
 }
