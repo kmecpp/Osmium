@@ -21,6 +21,11 @@ public class SpongePlayerConnectEvent {
 			return event;
 		}
 
+		@Override
+		public String getPlayerName() {
+			return event.getProfile().getName().orElseGet(String::new);
+		}
+
 	}
 
 	public static class SpongePlayerLoginEvent implements PlayerConnectionEvent.Login {
@@ -34,6 +39,11 @@ public class SpongePlayerConnectEvent {
 		@Override
 		public ClientConnectionEvent.Login getSource() {
 			return event;
+		}
+
+		@Override
+		public String getPlayerName() {
+			return event.getTargetUser().getName();
 		}
 
 	}
@@ -56,6 +66,11 @@ public class SpongePlayerConnectEvent {
 			return SpongeAccess.getPlayer(event.getTargetEntity());
 		}
 
+		@Override
+		public String getPlayerName() {
+			return event.getTargetEntity().getName();
+		}
+
 	}
 
 	public static class SpongePlayerQuitEvent implements PlayerConnectionEvent.Quit {
@@ -74,6 +89,11 @@ public class SpongePlayerConnectEvent {
 		@Override
 		public Player getPlayer() {
 			return SpongeAccess.getPlayer(event.getTargetEntity());
+		}
+
+		@Override
+		public String getPlayerName() {
+			return event.getTargetEntity().getName();
 		}
 
 	}

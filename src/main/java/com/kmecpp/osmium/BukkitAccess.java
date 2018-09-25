@@ -33,6 +33,7 @@ import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitChunk;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitEntity;
+import com.kmecpp.osmium.platform.bukkit.BukkitWorld;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
@@ -57,8 +58,13 @@ public class BukkitAccess {
 		Bukkit.dispatchCommand(sender, command);
 	}
 
-	public static World getWorld(org.bukkit.World world) {
-		return WorldList.getWorld(world.getName());
+	public static World getWorld(org.bukkit.World bukkitWorld) {
+		World world = WorldList.getWorld(bukkitWorld.getName());
+		if (world == null) { //This can happen with Bukkit
+			world = new BukkitWorld(bukkitWorld);
+			WorldList.addWorld(world);
+		}
+		return world;
 	}
 
 	public static Location getLocation(org.bukkit.Location location) {

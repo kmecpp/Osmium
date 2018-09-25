@@ -19,6 +19,11 @@ public class BukkitPlayerConnectEvent {
 			return event;
 		}
 
+		@Override
+		public String getPlayerName() {
+			return event.getName();
+		}
+
 	}
 
 	public static class BukkitPlayerLoginEvent implements PlayerConnectionEvent.Login {
@@ -32,6 +37,11 @@ public class BukkitPlayerConnectEvent {
 		@Override
 		public org.bukkit.event.player.PlayerLoginEvent getSource() {
 			return event;
+		}
+
+		@Override
+		public String getPlayerName() {
+			return event.getPlayer().getName();
 		}
 
 	}
@@ -54,6 +64,11 @@ public class BukkitPlayerConnectEvent {
 			return BukkitAccess.getPlayer(event.getPlayer());
 		}
 
+		@Override
+		public String getPlayerName() {
+			return event.getPlayer().getName();
+		}
+
 	}
 
 	public static class BukkitPlayerQuitEvent implements PlayerConnectionEvent.Quit {
@@ -72,6 +87,11 @@ public class BukkitPlayerConnectEvent {
 		@Override
 		public Player getPlayer() {
 			return BukkitAccess.getPlayer(event.getPlayer());
+		}
+
+		@Override
+		public String getPlayerName() {
+			return event.getPlayer().getName();
 		}
 
 	}
