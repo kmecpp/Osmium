@@ -21,6 +21,6 @@ public @interface CommandProperties {
 
 	boolean admin() default false;
 
-	boolean playersOnly() default false;
+	boolean console() default false;
 
 }

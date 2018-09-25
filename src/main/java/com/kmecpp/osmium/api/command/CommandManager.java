@@ -47,6 +47,10 @@ public final class CommandManager {
 
 	public static boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {
 		try {
+			if (sender instanceof ConsoleCommandSender && !command.isConsole()) {
+				throw CommandException.PLAYERS_ONLY;
+			}
+
 			CommandAction event = new CommandAction(sender, commandLabel, args);
 			command.checkPermission(event);
 

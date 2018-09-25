@@ -8,7 +8,7 @@ public class SimpleCommand {
 	private String permission = "";
 	private String usage = "";
 	private boolean admin;
-	private boolean playersOnly;
+	private boolean console;
 	private CommandExecutor executor;
 
 	private String primaryAlias;
@@ -33,7 +33,7 @@ public class SimpleCommand {
 			this.permission = command.permission();
 			this.usage = command.usage();
 			this.admin = command.admin();
-			this.playersOnly = command.playersOnly();
+			this.console = command.console();
 		} else {
 			this.aliases = new String[aliases.length + 1];
 			this.aliases[0] = name;
@@ -95,8 +95,8 @@ public class SimpleCommand {
 		return this;
 	}
 
-	public SimpleCommand setPlayersOnly() {
-		this.playersOnly = true;
+	public SimpleCommand setConsole(boolean console) {
+		this.console = console;
 		return this;
 	}
 
@@ -148,8 +148,8 @@ public class SimpleCommand {
 		return admin;
 	}
 
-	public boolean isPlayersOnly() {
-		return playersOnly;
+	public boolean isConsole() {
+		return console;
 	}
 
 }
