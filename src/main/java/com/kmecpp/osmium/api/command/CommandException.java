@@ -9,7 +9,7 @@ public class CommandException extends RuntimeException {
 	public static final CommandException LACKS_PERMISSION = new CommandException("You do not have permission to perform this command!");
 
 	//	private CommandResult result;
-	private String message;
+	private final String message;
 
 	//	public CommandException(CommandResult result) {
 	//		this(result, "");

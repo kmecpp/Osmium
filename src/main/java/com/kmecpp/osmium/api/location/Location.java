@@ -57,6 +57,10 @@ public class Location {
 		return new Location(world, ((int) x) + 0.5, y, ((int) z) + 0.5);
 	}
 
+	public double distance(Location location) {
+		return Math.sqrt(Math.pow(x - location.x, 2) + Math.pow(y - location.y, 2) + Math.pow(z - location.z, 2));
+	}
+
 	public static Location fromString(String str) {
 		String[] parts = str.split(",");
 		return new Location(WorldList.getWorld(parts[0]), Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));

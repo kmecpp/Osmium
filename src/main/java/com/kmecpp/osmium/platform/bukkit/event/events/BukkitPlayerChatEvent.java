@@ -45,8 +45,12 @@ public class BukkitPlayerChatEvent implements PlayerChatEvent {
 	@Override
 	public Set<Player> getRecipients() {
 		HashSet<Player> set = new HashSet<>();
-		for (org.bukkit.entity.Player player : event.getRecipients()) {
-			set.add(BukkitAccess.getPlayer(player));
+		for (org.bukkit.entity.Player bukkitPlayer : event.getRecipients()) {
+			Player player = BukkitAccess.getPlayer(bukkitPlayer);
+			//			if (filter != null && !filter.test(player)) {
+			//				continue;
+			//			}
+			set.add(player);
 		}
 		return set;
 	}
