@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
 import org.spongepowered.api.Sponge;
@@ -111,6 +112,14 @@ public final class Osmium {
 			Bukkit.broadcastMessage(Chat.style(message));
 		} else if (Platform.isSponge()) {
 			Sponge.getServer().getBroadcastChannel().send(SpongeAccess.getText(Chat.style(message)));
+		}
+	}
+
+	public static void broadcast(Predicate<Player> filter, String message) {
+		for (Player player : Osmium.getPlayers()) {
+			if (filter.test(player)) {
+				player.sendMessage(message);
+			}
 		}
 	}
 

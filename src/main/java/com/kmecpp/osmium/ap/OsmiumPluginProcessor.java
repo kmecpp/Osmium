@@ -131,7 +131,6 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 			modinfo.addDependency(new PluginDependency(LoadOrder.BEFORE, dependency.toLowerCase(), "", false));
 		}
 		try {
-
 			McModInfo.builder().build().write(getWriter(Platform.SPONGE.getMetaFile()), modinfo);
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to write mcmod.info file into jar!", e);
@@ -156,7 +155,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 				.append("description: " + meta.getDescription() + "\n")
 				.append("website: " + meta.getUrl() + "\n")
 				.append("authors: " + Arrays.toString(meta.getAuthors()) + "\n")
-				.append("depend: " + Arrays.toString(meta.getBukkitDependencies()) + "\n");
+				.append("softdepend: " + Arrays.toString(meta.getBukkitDependencies()) + "\n");
 		writeRawFile(Platform.BUKKIT.getMetaFile(), pluginYml.toString());
 
 		StringBuilder osmiumYml = new StringBuilder().append("main: " + meta.getSourceClass() + "\n").append("name: " + meta.getName());

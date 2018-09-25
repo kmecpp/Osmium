@@ -89,12 +89,12 @@ public class Command extends SimpleCommand {
 		return args;
 	}
 
-	public final CommandException usageError() {
-		return CommandException.USAGE_ERROR;
+	public final void usageError() {
+		throw CommandException.USAGE_ERROR;
 	}
 
-	public final CommandException lacksPermission() {
-		return CommandException.LACKS_PERMISSION;
+	public final void lacksPermission() {
+		throw CommandException.LACKS_PERMISSION;
 	}
 
 }

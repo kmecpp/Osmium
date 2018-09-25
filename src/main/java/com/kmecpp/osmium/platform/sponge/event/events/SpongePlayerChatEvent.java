@@ -57,9 +57,18 @@ public class SpongePlayerChatEvent implements PlayerChatEvent {
 	public Set<Player> getRecipients() {
 		HashSet<Player> recipients = new HashSet<>();
 		for (MessageReceiver r : event.getChannel().get().getMembers()) {
-			recipients.add(SpongeAccess.getPlayer((org.spongepowered.api.entity.living.player.Player) r));
+			Player player = SpongeAccess.getPlayer((org.spongepowered.api.entity.living.player.Player) r);
+			//			if (filter != null && !filter.test(player)) {
+			//				continue;
+			//			}
+			recipients.add(player);
 		}
 		return recipients;
 	}
+
+	//	@Override
+	//	public void setFilter(Predicate<Player> filter) {
+	//		this.filter = filter;
+	//	}
 
 }

@@ -72,7 +72,11 @@ public final class CommandManager {
 			}
 			return true;
 		} catch (CommandException e) {
-			sender.sendMessage("&c" + e.getMessage());
+			if (e == CommandException.USAGE_ERROR) {
+				sender.sendMessage("&cUsage: " + command.getUsage());
+			} else {
+				sender.sendMessage("&c" + e.getMessage());
+			}
 			return false;
 		}
 	}

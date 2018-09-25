@@ -59,7 +59,11 @@ public class ClassProcessor {
 					onLoad(cls);
 					pluginClasses.add(cls);
 				} catch (ClassNotFoundException | NoClassDefFoundError e) {
-					OsmiumLogger.debug("SKIPPING: " + className);
+					if (e.getMessage().contains("org/spongepowered") || e.getMessage().contains("org/bukkit")) {
+						OsmiumLogger.debug("SKIPPING: " + className);
+					} else {
+						e.printStackTrace();
+					}
 					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF)
 				}
 			}
@@ -160,7 +164,6 @@ public class ClassProcessor {
 		for (Method method : cls.getMethods()) {
 			Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
 			Listener listenerAnnotation = method.getAnnotation(Listener.class);
-
 			if (scheduleAnnotation == null && listenerAnnotation == null) {
 				continue;
 			}
@@ -208,6 +211,12 @@ public class ClassProcessor {
 						OsmiumLogger.error("Osmium event class has no registration: " + eventClass);
 						continue;
 					}
+
+					System.out.println("FUCKING REGISTEING FUCKIHNG LISTERNER: " + instance.getClass());
+					System.out.println("FUCKING REGISTEING FUCKIHNG LISTERNER: " + instance.getClass());
+					System.out.println("FUCKING REGISTEING FUCKIHNG LISTERNER: " + instance.getClass());
+					System.out.println("FUCKING REGISTEING FUCKIHNG LISTERNER: " + instance.getClass());
+					System.out.println("FUCKING REGISTEING FUCKIHNG LISTERNER: " + instance.getClass());
 
 					if (eventInfo.isOsmiumEvent()) {
 						Osmium.getEventManager().registerListener(eventInfo.getImplementation(), instance, method); //Register implementation class for Osmium

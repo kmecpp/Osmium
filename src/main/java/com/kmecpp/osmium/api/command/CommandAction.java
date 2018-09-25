@@ -62,6 +62,15 @@ public class CommandAction implements Messageable {
 		this.args = temp;
 	}
 
+	public boolean matches(int index, String... labels) {
+		for (String label : labels) {
+			if (args[index].equalsIgnoreCase(label)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public String getArg(int index) {
 		return args[index];
 	}
