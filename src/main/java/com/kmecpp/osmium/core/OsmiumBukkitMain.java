@@ -26,7 +26,7 @@ public class OsmiumBukkitMain extends BukkitPlugin {
 		PlayerList.addPlayer(e.getPlayer());
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		PlayerList.removePlayer(e.getPlayer().getName());
 	}
@@ -36,7 +36,7 @@ public class OsmiumBukkitMain extends BukkitPlugin {
 		WorldList.addWorld(new BukkitWorld(e.getWorld()));
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onWorldUnload(WorldUnloadEvent e) {
 		WorldList.removeWorld(e.getWorld().getName());
 	}

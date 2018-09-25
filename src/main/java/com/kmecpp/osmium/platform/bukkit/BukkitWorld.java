@@ -3,6 +3,8 @@ package com.kmecpp.osmium.platform.bukkit;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.World;
+import com.kmecpp.osmium.api.entity.EntityType;
+import com.kmecpp.osmium.api.location.Location;
 
 public class BukkitWorld implements World {
 
@@ -30,6 +32,11 @@ public class BukkitWorld implements World {
 	@Override
 	public int getHighestYAt(int x, int z) {
 		return world.getHighestBlockYAt(x, z);
+	}
+
+	@Override
+	public void spawnEntity(Location location, EntityType type) {
+		world.spawnEntity(location.getImplementation(), type.getImplementation());
 	}
 
 }

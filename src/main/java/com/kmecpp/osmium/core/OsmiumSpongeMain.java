@@ -27,7 +27,7 @@ public class OsmiumSpongeMain extends SpongePlugin {
 		PlayerList.addPlayer(e.getTargetEntity());
 	}
 
-	@Listener(order = Order.PRE)
+	@Listener(order = Order.POST)
 	public void onPlayerQuit(ClientConnectionEvent.Disconnect e) {
 		PlayerList.removePlayer(e.getTargetEntity().getName());
 	}
@@ -37,7 +37,7 @@ public class OsmiumSpongeMain extends SpongePlugin {
 		WorldList.addWorld(new SpongeWorld(e.getTargetWorld()));
 	}
 
-	@Listener(order = Order.PRE)
+	@Listener(order = Order.POST)
 	public void onWorldUnload(UnloadWorldEvent e) {
 		WorldList.removeWorld(e.getTargetWorld().getName());
 	}
