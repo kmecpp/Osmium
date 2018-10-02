@@ -96,6 +96,11 @@ public class CommandAction implements Messageable {
 		return args.length > 0;
 	}
 
+	public void handleError(Throwable t) {
+		t.printStackTrace();
+		sendMessage("&cError: " + t.getMessage());
+	}
+
 	public CommandException notFound(String name, String input) {
 		return new CommandException("Could not find " + name + ": " + "'" + input + "'");
 	}

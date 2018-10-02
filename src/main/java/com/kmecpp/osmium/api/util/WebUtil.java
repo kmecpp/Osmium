@@ -80,7 +80,7 @@ public class WebUtil {
 
 	public static final Pattern UUID_PATTERN = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
 
-	public static UUID getPlayerUUID(String name) throws MalformedURLException, IOException {
+	public static UUID getPlayerUUID(String name) throws IOException {
 		return UUID.fromString(UUID_PATTERN
 				.matcher(get(new URL("https://api.mojang.com/users/profiles/minecraft/" + name)).asObject().get("id").asString())
 				.replaceAll("$1-$2-$3-$4-$5"));
