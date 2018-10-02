@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonValue;
@@ -74,6 +76,14 @@ public class WebUtil {
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static final Pattern UUID_PATTERN = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
+
+	public static UUID getPlayerUUID(String name) throws MalformedURLException, IOException {
+		return UUID.fromString(UUID_PATTERN
+				.matcher(get(new URL("https://api.mojang.com/users/profiles/minecraft/" + name)).asObject().get("id").asString())
+				.replaceAll("$1-$2-$3-$4-$5"));
 	}
 
 }

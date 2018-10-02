@@ -99,6 +99,11 @@ public final class Osmium {
 		return database;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> T getInstance(Class<T> cls) {
+		return (T) getInvokingPlugin().getClassManager().getClassInstances().get(cls);
+	}
+
 	public static void shutdown() {
 		if (Platform.isBukkit()) {
 			Bukkit.shutdown();

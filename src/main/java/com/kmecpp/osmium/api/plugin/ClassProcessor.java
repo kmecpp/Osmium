@@ -83,6 +83,10 @@ public class ClassProcessor {
 		return pluginClasses;
 	}
 
+	public HashMap<Class<?>, Object> getClassInstances() {
+		return classInstances;
+	}
+
 	public void enableEvents(Object listener) {
 		classInstances.put(listener.getClass(), listener);
 	}
@@ -211,12 +215,6 @@ public class ClassProcessor {
 						OsmiumLogger.error("Osmium event class has no registration: " + eventClass);
 						continue;
 					}
-
-					System.out.println("FUCKING REGISTEING FUCKIHNG LISTERNER: " + instance.getClass());
-					System.out.println("FUCKING REGISTEING FUCKIHNG LISTERNER: " + instance.getClass());
-					System.out.println("FUCKING REGISTEING FUCKIHNG LISTERNER: " + instance.getClass());
-					System.out.println("FUCKING REGISTEING FUCKIHNG LISTERNER: " + instance.getClass());
-					System.out.println("FUCKING REGISTEING FUCKIHNG LISTERNER: " + instance.getClass());
 
 					if (eventInfo.isOsmiumEvent()) {
 						Osmium.getEventManager().registerListener(eventInfo.getImplementation(), instance, method); //Register implementation class for Osmium

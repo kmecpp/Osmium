@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import com.kmecpp.osmium.api.event.events.BlockEvent;
+import com.kmecpp.osmium.api.event.events.PlayerChatEvent;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 import com.kmecpp.osmium.api.event.events.PlayerMovePositionEvent;
@@ -17,6 +18,7 @@ import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectEvent.B
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectEvent.BukkitPlayerJoinEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectEvent.BukkitPlayerLoginEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectEvent.BukkitPlayerQuitEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerChatEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerMoveEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerTeleportEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
@@ -26,6 +28,7 @@ import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.S
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerJoinEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerLoginEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerQuitEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerChatEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerMoveEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerTeleportEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeServerListPingEvent;
@@ -70,6 +73,7 @@ public class EventInfo {
 		//@formatter:off
 		register(PlayerMovePositionEvent.class,     OsmiumPlayerMovePositionEvent.class);
 
+		register(PlayerChatEvent.class,             BukkitPlayerChatEvent.class,     SpongePlayerChatEvent.class);
 		register(PlayerMoveEvent.class,             BukkitPlayerMoveEvent.class,     SpongePlayerMoveEvent.class);
 		register(PlayerTeleportEvent.class,         BukkitPlayerTeleportEvent.class, SpongePlayerTeleportEvent.class);
 		register(PlayerConnectionEvent.Auth.class,  BukkitPlayerAuthEvent.class,     SpongePlayerAuthEvent.class);
