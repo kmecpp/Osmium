@@ -8,16 +8,15 @@ import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
-import com.kmecpp.osmium.cache.PlayerList;
 
 public class BukkitPlayer implements Player {
 
 	private org.bukkit.entity.Player player;
 
 	public BukkitPlayer(org.bukkit.entity.Player player) {
-		if (PlayerList.contains(player.getName())) {
-			throw new IllegalStateException("Osmium wrapper already exists for this player!");
-		}
+		//		if (PlayerList.contains(player.getName())) {
+		//			throw new IllegalStateException("Osmium wrapper already exists for this player!");
+		//		}
 		this.player = player;
 	}
 

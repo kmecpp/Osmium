@@ -8,6 +8,9 @@ import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.spongepowered.api.Sponge;
 
 import com.kmecpp.osmium.api.World;
@@ -87,6 +90,11 @@ public final class Osmium {
 
 	public static Database getDatabase() {
 		return getDatabase(getInvokingPlugin());
+	}
+
+	public static SessionFactory getSessionFactory() {
+		Configuration configuration = new Configuration().configure();
+		return configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build());
 	}
 
 	public static Database getDatabase(OsmiumPlugin plugin) {

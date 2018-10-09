@@ -38,7 +38,7 @@ Join our Discord channel stay updated with the project or help out: https://disc
 
 # Maven
 
-Osmium can be downloaded from Mavne Central.
+Osmium can be downloaded from Maven Central.
 
 	<dependency>
     	<groupId>com.kmecpp</groupId>

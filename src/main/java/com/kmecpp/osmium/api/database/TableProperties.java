@@ -19,11 +19,17 @@ public class TableProperties {
 
 	public TableProperties(Class<?> cls) {
 		this.tableClass = cls;
-		this.name = cls.getAnnotation(DBTable.class).name();
+
+		DBTable annotation = cls.getAnnotation(DBTable.class);
+		if (annotation == null) {
+			throw new IllegalArgumentException("Database table '" + cls.getName() + "' must be annotated with @" + DBTable.class.getSimpleName());
+		}
+		this.name = annotation.name();
 
 		for (Field field : Reflection.getFieldsWith(cls, DBColumn.class)) {
 			field.getName();
 		}
+
 		ArrayList<Field> fields = new ArrayList<>();
 		ArrayList<Field> primaryFields = new ArrayList<>();
 		ArrayList<String> columns = new ArrayList<>();
@@ -31,12 +37,12 @@ public class TableProperties {
 
 		for (Field field : cls.getDeclaredFields()) {
 			field.setAccessible(true);
-			DBColumn annotation = field.getAnnotation(DBColumn.class);
-			if (annotation != null && !Modifier.isStatic(field.getModifiers())) {
+			DBColumn columnAnnotation = field.getAnnotation(DBColumn.class);
+			if (columnAnnotation != null && !Modifier.isStatic(field.getModifiers())) {
 				String name = DBUtil.getColumnName(field);
 				fields.add(field);
 				columns.add(name);
-				if (annotation.primary()) {
+				if (columnAnnotation.primary()) {
 					primaryFields.add(field);
 					primaryColumns.add(name);
 				}

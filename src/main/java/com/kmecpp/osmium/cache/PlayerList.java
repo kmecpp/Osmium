@@ -11,9 +11,9 @@ public class PlayerList {
 
 	private static final HashMap<String, Player> players = new HashMap<>();
 
-	public static void addPlayer(Object player) {
-		Player wrapper = player instanceof org.bukkit.entity.Player ? new BukkitPlayer((org.bukkit.entity.Player) player)
-				: player instanceof org.spongepowered.api.entity.living.player.Player ? new SpongePlayer((org.spongepowered.api.entity.living.player.Player) player)
+	public static void addPlayer(Object sourcePlayer) {
+		Player wrapper = sourcePlayer instanceof org.bukkit.entity.Player ? new BukkitPlayer((org.bukkit.entity.Player) sourcePlayer)
+				: sourcePlayer instanceof org.spongepowered.api.entity.living.player.Player ? new SpongePlayer((org.spongepowered.api.entity.living.player.Player) sourcePlayer)
 						: null;
 
 		if (wrapper == null) {
