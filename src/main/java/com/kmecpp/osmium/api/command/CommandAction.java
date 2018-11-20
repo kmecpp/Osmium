@@ -36,6 +36,10 @@ public class CommandAction implements Messageable {
 		return Boolean.parseBoolean(args[index]);
 	}
 
+	public String getString(int index) {
+		return args[index];
+	}
+
 	public Player getPlayer(int index) {
 		return Osmium.getPlayer(args[index]).orElseThrow(() -> notFound("player", args[index]));
 	}
@@ -71,9 +75,9 @@ public class CommandAction implements Messageable {
 		return false;
 	}
 
-	public String getArg(int index) {
-		return args[index];
-	}
+	//	public String getArg(int index) {
+	//		return args[index];
+	//	}
 
 	public String[] getArgs() {
 		return args;
