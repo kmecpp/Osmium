@@ -129,7 +129,7 @@ public final class Osmium {
 	}
 
 	public static void broadcast(Predicate<Player> filter, String message) {
-		for (Player player : Osmium.getPlayers()) {
+		for (Player player : Osmium.getOnlinePlayers()) {
 			if (filter.test(player)) {
 				player.sendMessage(message);
 			}
@@ -191,13 +191,30 @@ public final class Osmium {
 		}
 	}
 
-	public static Collection<Player> getPlayers() {
+	public static Collection<Player> getOnlinePlayers() {
 		return PlayerList.getPlayers();
 	}
 
 	public static Optional<Player> getPlayer(String name) {
 		return Optional.of(PlayerList.getPlayer(name));
 	}
+
+	//	public static Optional<User> getUser(String lastKnownName) {
+	//		if (Platform.isBukkit()) {
+	//			OfflinePlayer player = Bukkit.getOfflinePlayer(lastKnownName);
+	//			//			player.last
+	//			if(player.hasPlayedBefore()) {
+	//				return new User
+	//			}
+	//		} else if (Platform.isSponge()) {
+	//			Optional<UserStorageService> userStorage = Sponge.getServiceManager().provide(UserStorageService.class);
+	//			Optional<org.spongepowered.api.entity.living.player.User> optionalUser = userStorage.get().get(lastKnownName);
+	//			optionalUser.ifPresent((user) -> {
+	//				user.getProfile().
+	//			});
+	//		}
+	//		return Optional.empty();
+	//	}
 
 	public static Collection<World> getWorlds() {
 		return WorldList.getWorlds();

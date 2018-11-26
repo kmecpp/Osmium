@@ -6,6 +6,7 @@ import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 
@@ -72,6 +73,16 @@ public class BukkitPlayer implements Player {
 	@Override
 	public Inventory getInventory() {
 		return new BukkitInventory(player.getInventory());
+	}
+
+	@Override
+	public ItemStack getItemInMainHand() {
+		return new BukkitItemStack(player.getInventory().getItemInMainHand());
+	}
+
+	@Override
+	public ItemStack getItemInOffHand() {
+		return new BukkitItemStack(player.getInventory().getItemInMainHand());
 	}
 
 	@Override

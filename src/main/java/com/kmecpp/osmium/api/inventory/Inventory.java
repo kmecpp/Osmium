@@ -10,4 +10,6 @@ public interface Inventory extends Abstraction, Serializable {
 
 	int getSize();
 
+	//	ItemStack[] getItems();
+
 }

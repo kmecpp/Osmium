@@ -2,12 +2,14 @@ package com.kmecpp.osmium.platform.sponge;
 
 import java.util.UUID;
 
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 
@@ -67,6 +69,16 @@ public class SpongePlayer implements Player {
 	@Override
 	public Inventory getInventory() {
 		return new SpongeInventory(player.getInventory());
+	}
+
+	@Override
+	public ItemStack getItemInMainHand() {
+		return new SpongeItemStack(player.getItemInHand(HandTypes.MAIN_HAND).orElse(null));
+	}
+
+	@Override
+	public ItemStack getItemInOffHand() {
+		return new SpongeItemStack(player.getItemInHand(HandTypes.MAIN_HAND).orElse(null));
 	}
 
 	@Override

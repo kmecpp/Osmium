@@ -3,9 +3,9 @@ package com.kmecpp.osmium.platform.bukkit;
 import com.kmecpp.osmium.api.inventory.Inventory;
 
 public class BukkitInventory implements Inventory {
-	
+
 	private static final long serialVersionUID = 6821956138573778155L;
-	
+
 	private org.bukkit.inventory.Inventory inventory;
 
 	public BukkitInventory(org.bukkit.inventory.Inventory inventory) {

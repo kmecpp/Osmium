@@ -112,7 +112,7 @@ public class OsmiumMetrics {
 
 		json.set("serverUUID", CoreOsmiumConfiguration.Metrics.serverId.toString());
 
-		json.set("playerAmount", Osmium.getPlayers().size());
+		json.set("playerAmount", Osmium.getOnlinePlayers().size());
 		json.set("onlineMode", Osmium.getOnlineMode() ? 1 : 0);
 		if (Platform.isBukkit()) {
 			String bukkitVersion = org.bukkit.Bukkit.getVersion();
