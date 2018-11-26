@@ -92,7 +92,7 @@ public class BukkitPlayer implements Player {
 
 	@Override
 	public void setGameMode(GameMode mode) {
-		player.setGameMode(mode.getGameModeImpl());
+		player.setGameMode(mode.getSource());
 	}
 
 	@Override

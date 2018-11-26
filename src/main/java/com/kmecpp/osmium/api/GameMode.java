@@ -11,30 +11,30 @@ public enum GameMode {
 	ADVENTURE,
 	SPECTATOR;
 
-	private Object gameModeImpl;
+	private Object source;
 
 	static {
 		if (Platform.isBukkit()) {
-			SURVIVAL.gameModeImpl = org.bukkit.GameMode.SURVIVAL;
-			CREATIVE.gameModeImpl = org.bukkit.GameMode.CREATIVE;
-			ADVENTURE.gameModeImpl = org.bukkit.GameMode.ADVENTURE;
-			SPECTATOR.gameModeImpl = org.bukkit.GameMode.SPECTATOR;
+			SURVIVAL.source = org.bukkit.GameMode.SURVIVAL;
+			CREATIVE.source = org.bukkit.GameMode.CREATIVE;
+			ADVENTURE.source = org.bukkit.GameMode.ADVENTURE;
+			SPECTATOR.source = org.bukkit.GameMode.SPECTATOR;
 		} else if (Platform.isSponge()) {
-			SURVIVAL.gameModeImpl = GameModes.SURVIVAL;
-			CREATIVE.gameModeImpl = GameModes.CREATIVE;
-			ADVENTURE.gameModeImpl = GameModes.ADVENTURE;
-			SPECTATOR.gameModeImpl = GameModes.SPECTATOR;
+			SURVIVAL.source = GameModes.SURVIVAL;
+			CREATIVE.source = GameModes.CREATIVE;
+			ADVENTURE.source = GameModes.ADVENTURE;
+			SPECTATOR.source = GameModes.SPECTATOR;
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getGameModeImpl() {
-		return (T) gameModeImpl;
+	public <T> T getSource() {
+		return (T) source;
 	}
 
 	public static GameMode fromImplementation(Object obj) {
 		for (GameMode gameMode : values()) {
-			if (gameMode.gameModeImpl == obj) {
+			if (gameMode.source == obj) {
 				return gameMode;
 			}
 		}

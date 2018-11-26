@@ -14,5 +14,7 @@ public interface World extends Abstraction {
 	int getHighestYAt(int x, int z);
 
 	void spawnEntity(Location location, EntityType type);
+	
+	WorldType getType();
 
 }

@@ -88,7 +88,7 @@ public class SpongePlayer implements Player {
 
 	@Override
 	public void setGameMode(GameMode mode) {
-		player.gameMode().set(mode.getGameModeImpl());
+		player.gameMode().set(mode.getSource());
 	}
 
 	@Override
