@@ -1,7 +1,5 @@
 package com.kmecpp.osmium.api.location;
 
-import org.bukkit.Bukkit;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.extent.Extent;
 
 import com.kmecpp.osmium.api.World;
@@ -74,9 +72,9 @@ public class Location {
 	@SuppressWarnings("unchecked")
 	public <T> T getImplementation() {
 		if (Platform.isBukkit()) {
-			return (T) new org.bukkit.Location(Bukkit.getWorld(world.getName()), x, y, z);
+			return (T) new org.bukkit.Location((org.bukkit.World) world.getSource(), x, y, z);
 		} else if (Platform.isSponge()) {
-			return (T) new org.spongepowered.api.world.Location<Extent>(Sponge.getServer().getWorld(world.getName()).get(), x, y, z);
+			return (T) new org.spongepowered.api.world.Location<Extent>((Extent) world.getSource(), x, y, z);
 		} else {
 			return null;
 		}

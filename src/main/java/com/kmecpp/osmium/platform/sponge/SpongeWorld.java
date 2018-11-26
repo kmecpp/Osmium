@@ -3,6 +3,7 @@ package com.kmecpp.osmium.platform.sponge;
 import java.util.UUID;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.WorldType;
 import com.kmecpp.osmium.api.entity.EntityType;
@@ -44,6 +45,18 @@ public class SpongeWorld implements World {
 	@Override
 	public WorldType getType() {
 		return WorldType.fromImplementation(world.getProperties().getDimensionType());
+	}
+
+	@Override
+	public Location getSpawnLocation() {
+		org.spongepowered.api.world.Location<org.spongepowered.api.world.World> spawn = world.getSpawnLocation();
+		return new Location(this, spawn.getX(), spawn.getY(), spawn.getZ());
+	}
+
+	@Override
+	public boolean setSpawnLocation(Location location) {
+		world.getProperties().setSpawnPosition(new Vector3i(location.getX(), location.getY(), location.getZ()));
+		return true;
 	}
 
 }

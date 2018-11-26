@@ -41,6 +41,17 @@ public class BukkitWorld implements World {
 	}
 
 	@Override
+	public Location getSpawnLocation() {
+		org.bukkit.Location spawn = world.getSpawnLocation();
+		return new Location(this, spawn.getX(), spawn.getY(), spawn.getZ());
+	}
+
+	@Override
+	public boolean setSpawnLocation(Location location) {
+		return world.setSpawnLocation(new org.bukkit.Location(world, location.getX(), location.getY(), location.getZ()));
+	}
+
+	@Override
 	public WorldType getType() {
 		return WorldType.fromImplementation(world.getEnvironment());
 	}
