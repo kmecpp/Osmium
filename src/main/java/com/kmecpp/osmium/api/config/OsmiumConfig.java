@@ -83,6 +83,7 @@ public class OsmiumConfig extends DataFile {
 	}
 
 	private ArrayList<ConfigField> findFields(ArrayList<ConfigField> fields, String path, Class<?> cls) {
+		boolean first = true;
 		for (Field field : cls.getFields()) {
 			Setting setting = field.getAnnotation(Setting.class);
 			if (setting == null) {
@@ -92,7 +93,8 @@ public class OsmiumConfig extends DataFile {
 				OsmiumLogger.warn("Invalid configuration setting! Must be declared static: " + field);
 				continue;
 			}
-			fields.add(new ConfigField(path, field, setting));
+			fields.add(new ConfigField(path, field, setting, first));
+			first = false;
 		}
 		for (Class<?> nested : cls.getClasses()) {
 			findFields(fields, path + nested.getSimpleName().toLowerCase() + ".", nested);

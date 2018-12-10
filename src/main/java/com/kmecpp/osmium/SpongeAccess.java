@@ -51,11 +51,11 @@ public class SpongeAccess {
 	}
 
 	public static Player getPlayer(org.spongepowered.api.entity.living.player.Player player) {
-		return PlayerList.getPlayer(player.getName());
+		return PlayerList.getPlayer(player);
 	}
 
 	public static World getWorld(org.spongepowered.api.world.World world) {
-		return WorldList.getWorld(world.getName());
+		return WorldList.getWorld(world);
 	}
 
 	public static Location getLocation(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> location) {

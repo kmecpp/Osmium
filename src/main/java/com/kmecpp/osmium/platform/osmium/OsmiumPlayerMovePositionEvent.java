@@ -29,7 +29,7 @@ public class OsmiumPlayerMovePositionEvent implements PlayerMovePositionEvent {
 	}
 
 	@Override
-	public Object getSource() {
+	public PlayerMoveEvent getSource() {
 		return event;
 	}
 

@@ -40,7 +40,7 @@ public class Database {
 	private static final HashMap<String, Class<? extends CustomSerialization>> types = new HashMap<>();
 	private static final HashMap<Class<? extends CustomSerialization>, String> typeIds = new HashMap<>();
 
-	private static final HashMap<Class<?>, SerializableClass<?>> typeMap = new HashMap<>();
+	private static final HashMap<Class<?>, SerializationData<?>> typeMap = new HashMap<>();
 
 	static {
 		registerDefaultType(DBType.INTEGER, int.class, Integer::parseInt);
@@ -61,7 +61,7 @@ public class Database {
 	}
 
 	private static final <T> void registerDefaultType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
-		typeMap.put(cls, new SerializableClass<>(type, cls, String::valueOf, deserializer));
+		typeMap.put(cls, new SerializationData<>(type, cls, String::valueOf, deserializer));
 	}
 
 	//	static {
@@ -121,8 +121,8 @@ public class Database {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> SerializableClass<T> getSerializationData(Class<T> cls) {
-		return (SerializableClass<T>) typeMap.get(cls);
+	public static <T> SerializationData<T> getSerializationData(Class<T> cls) {
+		return (SerializationData<T>) typeMap.get(cls);
 	}
 
 	public static String serialize(Object obj) {

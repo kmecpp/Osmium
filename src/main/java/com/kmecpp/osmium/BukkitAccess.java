@@ -33,10 +33,13 @@ import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitChunk;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitEntity;
-import com.kmecpp.osmium.platform.bukkit.BukkitWorld;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
+
+	public static Location getLocation(org.bukkit.Location location) {
+		return new Location(getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ());
+	}
 
 	public static Chunk getChunk(org.bukkit.Chunk chunk) {
 		return new BukkitChunk(chunk);
@@ -47,7 +50,17 @@ public class BukkitAccess {
 	}
 
 	public static Player getPlayer(org.bukkit.entity.Player player) {
-		return PlayerList.getPlayer(player.getName());
+		return PlayerList.getPlayer(player);
+	}
+
+	public static World getWorld(org.bukkit.World bukkitWorld) {
+		return WorldList.getWorld(bukkitWorld);
+		//		World world = WorldList.getWorld(bukkitWorld.getName());
+		//		if (world == null) { //This can happen with Bukkit
+		//			world = new BukkitWorld(bukkitWorld);
+		//			WorldList.addWorld(world);
+		//		}
+		//		return world;
 	}
 
 	public static void processConsoleCommand(String command) {
@@ -56,19 +69,6 @@ public class BukkitAccess {
 
 	public static void processCommand(org.bukkit.command.CommandSender sender, String command) {
 		Bukkit.dispatchCommand(sender, command);
-	}
-
-	public static World getWorld(org.bukkit.World bukkitWorld) {
-		World world = WorldList.getWorld(bukkitWorld.getName());
-		if (world == null) { //This can happen with Bukkit
-			world = new BukkitWorld(bukkitWorld);
-			WorldList.addWorld(world);
-		}
-		return world;
-	}
-
-	public static Location getLocation(org.bukkit.Location location) {
-		return new Location(getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ());
 	}
 
 	public static Block getBlock(org.bukkit.block.Block block) {

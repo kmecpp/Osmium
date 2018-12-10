@@ -65,6 +65,9 @@ public class ClassProcessor {
 						e.printStackTrace();
 					}
 					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF)
+				} catch (Exception e) {
+					OsmiumLogger.error("Failed to load plugin class: " + className);
+					e.printStackTrace();
 				}
 			}
 		}
@@ -96,7 +99,12 @@ public class ClassProcessor {
 			if (!Reflection.isConcrete(cls)) {
 				continue;
 			}
-			onEnable(cls);
+			try {
+				onEnable(cls);
+			} catch (Exception e) {
+				OsmiumLogger.error("Failed to enable class: " + cls.getName());
+				e.printStackTrace();
+			}
 		}
 	}
 
