@@ -175,6 +175,12 @@ Then, to access or modify the config, all you need to do is modify the fields of
 
 To reload or save the config, use Osmium.reloadConfig(Config.class) or Osmium.saveConfig(Config.class).
 
+**Performance Comparison**
+
+![alt text](https://imgur.com/2lESMb6.png)
+
+These results are based off of a very primitive benchmark. If anyone is interested in making these results more accurate please feel free to submit a issue.
+
 ### Persistent Data
 
 Osmium has an extremely easy way to store simple persistent data. Just add @Persistent to a field and it will automatically store its value in the plugin's data file.
