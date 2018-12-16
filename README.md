@@ -2,12 +2,11 @@
 
 Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the *easiest most concise way to create Minecraft plugins period*. Everything in Osmium is done with only one method or one class. There is no registration of commands/listeners/configurations 
 
-In addition to being able to target multiple platforms, Osmium has many unique features which drastically reduce the amount of code necessary to complete many common tasks. Everything from listener/command registration, to config file handling, to database storage is handled completely automatically. Write code to describe functionality, not its implementation.
+In addition to being able to target multiple platforms, Osmium has many unique features which drastically reduce the amount of code necessary to complete many common tasks. Everything from listener/command registration, to config file handling, to database storage is handled completely automatically.
 
-Although it will take a very long time to implement enough features to have a complete Minecraft API, Osmium should be in a usable state fairly soon. Plugins requiring any part of a specific platform which Osmium has not yet implemented can easily write platform specific code as needed. Osmium even has many utility methods to help you do this.
+In order to achieve maximum compatibility between platforms, only functionality that can be safely implemented across both platforms will be implemented. Osmium is not intended to be a replacement for Bukkit or Sponge. Osmium is currently in ALPHA so the API is far from complete. However, plugins requiring any functionality that has not yet been implemented can easily write platform specific code as needed. Osmium even has many utility methods to help you do this.
 
-
-Join our Discord channel stay updated with the project or help out: https://discord.gg/jBjYckt
+Please join the Discord server if you have questions, would like to stay updated with the project or want to help out: https://discord.gg/jBjYckt
 
 # Features
 
@@ -154,22 +153,29 @@ Also, if the command class contains subcommands, execute() will ONLY be called i
 Creating a configuration file is as easy as defining a class with the settings that you need. 
 
 ```
-@Configuration(path = "plugin.conf")
+@ConfigProperties(path = "plugin.conf", header="Awsome plugin by kmecpp")
 public class Config {
 
-	@Setting
+	@Setting(comment = "Enable debug logging")
 	public static boolean debug = false; //These are default values
 
-	@Setting
-	public static String apiKey;
-
-	@Setting
-	public static int radius;
-
+	@Setting(type = Integer.class)
+	public static HashSet<Integer> bannedItems;
+	
+	public static class WebApp {
+	
+		@Setting
+		public static String apiKey;
+		
+		@Setting
+		public static int timeout;
+		
+	}
+	
 }
 ```
 
-Thats it. There's no need to get involved with files or nodes or anything. Osmium will automatically detect a configuration from the annotation and update the fields accordingly.
+Thats it. There's no need to get involved with file handling, config loading or anything. Osmium will automatically detect a configuration from the annotation and update the fields accordingly.
 
 Then, to access or modify the config, all you need to do is modify the fields of the config class.
 
