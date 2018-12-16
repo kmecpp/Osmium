@@ -175,11 +175,11 @@ Then, to access or modify the config, all you need to do is modify the fields of
 
 To reload or save the config, use Osmium.reloadConfig(Config.class) or Osmium.saveConfig(Config.class).
 
-**Performance Comparison**
+**Performance Comparison (Lower is Better)**
 
-![alt text](https://imgur.com/2lESMb6.png)
+![alt text](https://i.imgur.com/u6qQ4zZ.png)
 
-These results are based off of a very primitive benchmark. If anyone is interested in making these results more accurate please feel free to submit a issue.
+These results are based off of a very primitive benchmark. If anyone is interested in making these results more accurate please feel free to submit a PR.
 
 ### Persistent Data
 
