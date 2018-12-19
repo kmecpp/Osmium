@@ -16,7 +16,7 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandProperties;
-import com.kmecpp.osmium.api.config.Configuration;
+import com.kmecpp.osmium.api.config.ConfigProperties;
 import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.event.Event;
@@ -112,7 +112,7 @@ public class ClassProcessor {
 		OsmiumLogger.debug("Loading class: " + cls.getName());
 
 		//CONFIGURATIONS
-		Configuration configuration = cls.getAnnotation(Configuration.class);
+		ConfigProperties configuration = cls.getAnnotation(ConfigProperties.class);
 		if (configuration != null) {
 			Osmium.reloadConfig(cls);
 			OsmiumLogger.debug("Loading configuration file: " + configuration.path());

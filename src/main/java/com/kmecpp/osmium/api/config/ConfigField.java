@@ -1,59 +1,62 @@
 package com.kmecpp.osmium.api.config;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Map;
 
 public class ConfigField {
 
-	private final String[] path;
 	private final Field field;
 	private final Setting setting;
-	private final boolean sectionFirst;
 
-	public ConfigField(String parent, Field field, Setting setting, boolean sectionFirst) {
-		this.path = getFullPath(parent, setting, field).split("\\.");
+	public ConfigField(Field field, Setting setting) {
 		this.field = field;
 		this.setting = setting;
-		this.sectionFirst = sectionFirst;
-	}
-
-	public String[] getPath() {
-		return path;
-	}
-
-	public Field getField() {
-		return field;
-	}
-
-	public String getName() {
-		return field.getName();
 	}
 
 	public Setting getSetting() {
 		return setting;
 	}
 
-	public boolean isSectionFirst() {
-		return sectionFirst;
+	public String getName() {
+		return setting.name().isEmpty() ? field.getName() : setting.name();
 	}
 
-	public int getDepth() {
-		return path.length;
+	public boolean isPrimitive() {
+		return field.getType().isPrimitive();
 	}
 
-	private String getFullPath(String parent, Setting setting, Field field) {
-		if (!setting.name().isEmpty()) {
-			return parent + "." + setting.name();
-		}
+	public boolean isArray() {
+		return field.getType().isArray();
+	}
 
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < field.getName().length(); i++) {
-			char c = field.getName().charAt(i);
-			if (i > 0 && Character.isUpperCase(c)) {
-				sb.append("-");
-			}
-			sb.append(Character.toLowerCase(c));
+	public Class<?> getType() {
+		return field.getType();
+	}
+
+	public Class<?> getComponentType() {
+		if (field.getType().isArray()) {
+			return field.getType().getComponentType();
+		} else if (Collection.class.isAssignableFrom(field.getType()) || Map.class.isAssignableFrom(field.getType())) {
+			return setting.type();
 		}
-		return parent + sb.toString();
+		return field.getType();
+	}
+
+	public void setValue(Object value) {
+		try {
+			field.set(null, value);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Object getValue() {
+		try {
+			return field.get(null);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

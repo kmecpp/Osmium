@@ -3,22 +3,22 @@ package com.kmecpp.osmium.api.database;
 import com.kmecpp.osmium.api.persistence.Deserializer;
 import com.kmecpp.osmium.api.persistence.Serializer;
 
-public class SerializationData<T> {
+public class DBSerializationData<T> {
 
 	private final DBType type;
 	private final Class<T> serializableClass;
 	private final Serializer<T> serializer;
 	private final Deserializer<T> deserializer;
 
-	public SerializationData(Class<T> cls, Deserializer<T> deserializer) {
+	public DBSerializationData(Class<T> cls, Deserializer<T> deserializer) {
 		this(DBType.SERIALIZABLE, cls, null, deserializer);
 	}
 
-	public SerializationData(Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
+	public DBSerializationData(Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
 		this(DBType.SERIALIZABLE, cls, serializer, deserializer);
 	}
 
-	public SerializationData(DBType type, Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
+	public DBSerializationData(DBType type, Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
 		this.type = type;
 		this.serializableClass = cls;
 		this.serializer = serializer;

@@ -17,4 +17,6 @@ public @interface Setting {
 
 	boolean deletable() default false;
 
+	Class<?> type() default Void.class;
+
 }

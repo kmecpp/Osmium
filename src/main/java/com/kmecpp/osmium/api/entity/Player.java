@@ -7,15 +7,12 @@ import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
-import com.kmecpp.osmium.cache.WorldList;
 
 public interface Player extends EntityLiving, CommandSender {
 
 	boolean respawn();
 
-	default World getWorld() {
-		return WorldList.getWorld(getWorldName());
-	}
+	World getWorld();
 
 	String getWorldName();
 

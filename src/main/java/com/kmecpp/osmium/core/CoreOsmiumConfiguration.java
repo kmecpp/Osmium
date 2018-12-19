@@ -2,10 +2,10 @@ package com.kmecpp.osmium.core;
 
 import java.util.UUID;
 
-import com.kmecpp.osmium.api.config.Configuration;
+import com.kmecpp.osmium.api.config.ConfigProperties;
 import com.kmecpp.osmium.api.config.Setting;
 
-@Configuration(path = "osmium.conf", header = "Osmium configuration file, author: kmecpp, website: https://github.com/kmecpp/Osmium")
+@ConfigProperties(path = "osmium.conf", header = "Osmium configuration file, author: kmecpp, website: https://github.com/kmecpp/Osmium")
 public class CoreOsmiumConfiguration {
 
 	/*
@@ -14,7 +14,7 @@ public class CoreOsmiumConfiguration {
 	@Setting(comment = "Set to true to enable debug level logging")
 	public static boolean debug = false;
 
-	@Setting(comment = "Choose the config file format for Osmium plugins. The default is FHRC (https://github.com/kmecpp/FHRC) "
+	@Setting(comment = "Choose the config file format for Osmium plugins. This is not yet implemented"
 			+ "\nValid formats: FHRC, YAML, HOCON")
 	public static String configFormat = "FHRC";
 

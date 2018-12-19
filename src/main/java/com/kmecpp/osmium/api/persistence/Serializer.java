@@ -2,7 +2,8 @@ package com.kmecpp.osmium.api.persistence;
 
 public interface Serializer<T> {
 
-	public static final Serializer<?> DEFAULT = String::valueOf;
+	@SuppressWarnings("rawtypes")
+	public static final Serializer DEFAULT = String::valueOf;
 
 	String serialize(T obj);
 
