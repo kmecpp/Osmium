@@ -59,6 +59,10 @@ public class ConfigTypes {
 
 	@SuppressWarnings("unchecked")
 	public static <T> String serialize(T obj) {
+		if (obj == null) {
+			return "null";
+		}
+
 		SerializationData<T> data = (SerializationData<T>) types.get(obj.getClass());
 		if (data != null) {
 			return data.isCustomType() ? "\"" + data.serialize(obj) + "\"" : data.serialize(obj);
@@ -68,6 +72,10 @@ public class ConfigTypes {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T deserialize(Class<T> type, String str) {
+		if (str.equals("null")) {
+			return null;
+		}
+
 		SerializationData<T> data = (SerializationData<T>) types.get(type);
 		if (data != null) {
 			return data.deserialize(data.isCustomType() ? str.substring(1, str.length() - 1) : str);

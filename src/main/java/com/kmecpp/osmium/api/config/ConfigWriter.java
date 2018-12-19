@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -23,43 +24,50 @@ public class ConfigWriter {
 	}
 
 	public void write() throws IOException {
+		//Build text
 		writeBlock(data.getRoot());
+
+		//Write to file
+		IOUtil.createFile(file);
 		IOUtil.write(file, sb.toString());
 	}
 
 	private void writeBlock(Block block) {
 		if (!block.isRoot()) {
 			sb.append('\n');
+			ConfigManager.writeKey(sb, block.getName());
+			sb.append(" {\n");
 		}
-		//		final char[] tab = new char[block.getDepth()];
-		//		Arrays.fill(tab, '\t');
 
-		if (!block.isRoot()) {
-			sb.append(block.getName().toLowerCase() + " {\n");
-		}
 		boolean first = true;
 		for (ConfigField field : block.getFields()) {
 			//Line spacing
-			if (!first) {
-				sb.append('\n');
-			}
-			first = false;
+			//			if (!first) {
+			//				sb.append('\n');
+			//			}
 
 			//Add comment
 			if (!field.getSetting().comment().isEmpty()) {
-				sb.append("#" + field.getSetting().comment() + "\n");
+				if (!first) {
+					sb.append('\n');
+				}
+				for (String line : field.getSetting().comment().split("\n")) {
+					sb.append(tab);
+					sb.append("# " + line + "\n");
+				}
 			}
 
-			//Write key
+			//Write key value pair
 			sb.append(tab);
-			sb.append(field.getName() + ": ");
-			if (field.getType().isPrimitive() || field.getType() == String.class) {
-				sb.append(String.valueOf(field.getValue()) + "\n");
+			ConfigManager.writeKey(sb, field.getName());
+			sb.append(": ");
+			if (field.getType().isPrimitive()) {
+				sb.append(String.valueOf(field.getValue()));
 			} else {
 				writeValue(field.getType(), field.getValue());
-				sb.append('\n');
 			}
-
+			sb.append('\n');
+			first = false;
 		}
 		for (Block nestedBlock : block.getBlocks()) {
 			tab.append('\t');
@@ -72,17 +80,17 @@ public class ConfigWriter {
 			if (tab.length() > 0) {
 				sb.setLength(sb.length() - 1);
 			}
-			sb.append("}");
+			sb.append("}\n");
 		}
 	}
-
-	//	private void writeSetting(char[] tab, Class<?> type, String key, Object value) {
-	//
-	//	}
 
 	private void writeValue(Class<?> type, Object value) {
 		//Write value
 		if (type.isArray()) {
+			if (value == null) {
+				value = Array.newInstance(type, 0);
+			}
+
 			//Write primitive arrays using Arrays.toString()
 			if (type.getComponentType().isPrimitive()) {
 				if (type == byte[].class) {
@@ -105,13 +113,13 @@ public class ConfigWriter {
 			} else {
 				//Write general array
 				Object[] arr = (Object[]) value;
-				writeList(arr, null);
+				writeList(arr, null, arr == null || arr.length == 0);
 			}
 		}
 
 		else if (Collection.class.isAssignableFrom(type)) {
 			Collection<?> collection = (Collection<?>) value;
-			writeList(null, collection);
+			writeList(null, collection, collection == null || collection.size() == 0);
 		}
 
 		else if (Map.class.isAssignableFrom(type)) {
@@ -142,9 +150,13 @@ public class ConfigWriter {
 		}
 	}
 
-	private void writeList(Object[] arr, Collection<?> collection) {
-		sb.append("[\n");
-		tab.append('\t');
+	private void writeList(Object[] arr, Collection<?> collection, boolean condensed) {
+		sb.append('[');
+		if (!condensed) {
+			tab.append("\n\t");
+		}
+
+		//Write elements
 		if (arr != null) {
 			for (int i = 0; i < arr.length; i++) {
 				writeElement(arr[i], i == arr.length - 1);
@@ -156,8 +168,12 @@ public class ConfigWriter {
 				i++;
 			}
 		}
-		tab.setLength(Math.max(0, tab.length() - 1));
-		sb.append(tab);
+
+		//Write end
+		if (!condensed) {
+			tab.setLength(Math.max(0, tab.length() - 1));
+			sb.append(tab);
+		}
 		sb.append(']');
 	}
 

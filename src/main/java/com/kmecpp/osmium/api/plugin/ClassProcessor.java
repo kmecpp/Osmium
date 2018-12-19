@@ -62,6 +62,7 @@ public class ClassProcessor {
 					if (e.getMessage().contains("org/spongepowered") || e.getMessage().contains("org/bukkit")) {
 						OsmiumLogger.debug("SKIPPING: " + className);
 					} else {
+						OsmiumLogger.error("Could not load class: " + className);
 						e.printStackTrace();
 					}
 					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF)

@@ -61,6 +61,16 @@ public final class Osmium {
 		OsmiumLogger.info("Osmium API v" + AppInfo.VERSION + " initialized");
 	}
 
+	//	public static void main(String[] args) throws IOException {
+	//		long start = System.currentTimeMillis();
+	//		ConfigManager m = new ConfigManager();
+	//		ConfigData data = m.getConfigData(Config.class);
+	//		new ConfigParser(data, new File("test.txt")).load();
+	//		new ConfigWriter(data, new File("test.txt")).write();
+	//		System.out.println("TIME: " + (System.currentTimeMillis() - start));
+	//		//		com.kmecpp.osmium.api.config.ConfigManager.load(Test.class, new File("test.txt"));
+	//	}
+
 	private Osmium() {
 	}
 

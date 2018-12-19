@@ -7,6 +7,7 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.HashMap;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -27,17 +28,22 @@ public class ConfigManager {
 
 	public void load(Class<?> config) throws IOException {
 		ConfigData data = getConfigData(config);
-		File file = new File(data.getProperties().path());
-		new ConfigParser(data, file).load();
+		File file = Osmium.getPlugin(config).getFolder().resolve(data.getProperties().path()).toFile();
+		if (!new ConfigParser(data, file).load()) {
+			//If the file is missing settings
+			if (!data.getProperties().allowKeyRemoval()) {
+				new ConfigWriter(data, file).write();
+			}
+		}
 	}
 
 	public void save(Class<?> config) throws IOException {
 		ConfigData data = getConfigData(config);
-		File file = new File(data.getProperties().path());
-		new ConfigWriter(data, file).write();
+		File file = Osmium.getPlugin(config).getFolder().resolve(data.getProperties().path()).toFile();
+		new ConfigWriter(data, file).write(); //File handling is done by the writer
 	}
 
-	private ConfigData getConfigData(Class<?> config) {
+	public ConfigData getConfigData(Class<?> config) {
 		ConfigData data = configs.get(config);
 		if (data == null) {
 			ConfigProperties properties = config.getAnnotation(ConfigProperties.class);
@@ -51,6 +57,7 @@ public class ConfigManager {
 	}
 
 	private void loadFields(Class<?> cls, HashMap<String, ConfigField> fields, Block block) {
+		StringBuilder sb = new StringBuilder();
 		for (Field field : cls.getDeclaredFields()) {
 			field.setAccessible(true);
 			Setting setting = field.getAnnotation(Setting.class);
@@ -63,13 +70,32 @@ public class ConfigManager {
 			}
 
 			ConfigField configField = new ConfigField(field, setting);
-			String key = block.getPath().isEmpty() ? configField.getName() : block.getPath() + "." + configField.getName();
-			fields.put(key, configField);
+			String rawKey = block.getPath().isEmpty() ? configField.getName() : block.getPath() + "." + configField.getName();
+
+			sb.setLength(0);
+			writeKey(sb, rawKey);
+			fields.put(sb.toString(), configField);
 			block.addField(configField);
 		}
 
 		for (Class<?> nested : cls.getDeclaredClasses()) {
-			loadFields(nested, fields, block.createChild(nested.getSimpleName()));
+			sb.setLength(0);
+			writeKey(sb, nested.getSimpleName());
+			loadFields(nested, fields, block.createChild(sb.toString()));
+		}
+	}
+
+	public static void writeKey(StringBuilder sb, String key) {
+		for (int i = 0; i < key.length(); i++) {
+			char c = key.charAt(i);
+			if (Character.isUpperCase(c)) {
+				if (i > 0) {
+					sb.append('-');
+				}
+				sb.append(Character.toLowerCase(c));
+			} else {
+				sb.append(c);
+			}
 		}
 	}
 

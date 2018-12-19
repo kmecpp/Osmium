@@ -15,4 +15,6 @@ public @interface ConfigProperties {
 
 	String header() default "";
 
+	boolean allowKeyRemoval() default false;
+
 }

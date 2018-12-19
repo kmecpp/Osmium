@@ -53,7 +53,15 @@ public class ConfigField {
 
 	public Object getValue() {
 		try {
+			Object value = field.get(null);
+			if (value == null) {
+				value = field.getType().newInstance();
+				field.set(null, value);
+				return value;
+			}
 			return field.get(null);
+		} catch (InstantiationException e) {
+			return null;
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}

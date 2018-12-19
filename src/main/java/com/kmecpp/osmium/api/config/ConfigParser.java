@@ -25,6 +25,7 @@ public class ConfigParser {
 
 	private int line = 1;
 	private int column = 1;
+	private int fieldUpdateCount = 0;
 
 	/**
 	 * Creates a new config parser to load the {@link File} contents into the
@@ -42,7 +43,10 @@ public class ConfigParser {
 		this.file = file;
 	}
 
-	public void load() throws IOException {
+	public boolean load() throws IOException {
+		if (!file.exists()) {
+			new ConfigWriter(data, file).write();
+		}
 		try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file))) {
 			int totalRead = 0, bufferRead = 0;
 			while ((bufferRead = reader.read(chars, totalRead, chars.length - totalRead)) != -1) {
@@ -54,7 +58,13 @@ public class ConfigParser {
 			length = totalRead;
 		}
 
+		if (chars.length == 0) {
+			return data.getFields().size() == 0;
+		}
+
+		current = chars[0];
 		readBlock(0, null);
+		return data.getFields().size() == fieldUpdateCount;
 	}
 
 	private void readBlock(int blockNameLength, ConfigField map) {
@@ -115,6 +125,7 @@ public class ConfigParser {
 
 			//Read list
 			if (current == '[') {
+
 				read();
 				skipToNextSignificantChar();
 
@@ -164,12 +175,14 @@ public class ConfigParser {
 				value = parseValue(componentType);
 			}
 
+			//			System.out.println("VALUE: " + value);
 			//Write the value to the field
 			if (field == mapField) {
 				HashMap<String, Object> map = (HashMap<String, Object>) mapField.getValue();
 				map.put(key, value);
 			} else {
 				field.setValue(value);
+				fieldUpdateCount++;
 			}
 
 		} else {
@@ -195,21 +208,19 @@ public class ConfigParser {
 				read();
 			}
 			read();
-		} else if (current == 'n') {
-			if (chars[index + 1] == 'u' && chars[index + 2] == 'l' && chars[index + 2] == 'l') {
-				read();
-				read();
-				read();
-				read();
-				return null;
-			}
+			return substring(start + 1, index - 1);
+		} else if (current == 'n' && chars[index + 1] == 'u' && chars[index + 2] == 'l' && chars[index + 2] == 'l') {
+			read();
+			read();
+			read();
+			read();
+			return null;
 		} else {
 			while (!Character.isWhitespace(current) && current != ',' && current != ']') {
 				read();
 			}
+			return substring(start, index);
 		}
-		//		System.out.println("VALUE: " + substring(start, index));
-		return substring(start, index);
 	}
 
 	private void skipToNextSignificantChar() {
@@ -267,7 +278,8 @@ public class ConfigParser {
 	}
 
 	private ConfigParseException getError(String message, Throwable t) {
-		message += " on line " + line + " column " + column;
+		//		OsmiumLogger.error("Failed to load config: " + Osmium.getPlugin(data.getConfigClass()).getName() + File.separator + data.getProperties().path() + "'");
+		message = message + " on line " + line + " column " + column;
 		return t == null ? new ConfigParseException(message) : new ConfigParseException(message, t);
 	}
 

@@ -78,7 +78,12 @@ public class OsmiumLogger {
 					(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColorImplementation(), level) : Text.EMPTY),
 					TextColors.DARK_AQUA, "] ", level.getColorImplementation(), message));
 		} else {
-			LOGGER.info(message);
+			System.out.println(message);
+			//			if (LOGGER instanceof NOPLogger) {
+			//				System.out.println(message);
+			//			} else {
+			//				LOGGER.info(message);
+			//			}
 		}
 	}
 
