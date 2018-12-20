@@ -34,7 +34,7 @@ public class CoreOsmiumCommands extends Command {
 				.setAdmin()
 				.setUsage("{plugin}")
 				.setExecutor((e) -> {
-					if (e.isEmpty()) {
+					if (e.isBaseCommand()) {
 						e.sendTitle("Osmium Plugins");
 						for (OsmiumPlugin plugin : Osmium.getPlugins()) {
 							e.sendMessage("&e - &a" + plugin.getName() + " &ev&b" + plugin.getVersion());

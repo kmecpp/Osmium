@@ -92,7 +92,7 @@ public class CommandAction implements Messageable {
 		return args.length;
 	}
 
-	public boolean isEmpty() {
+	public boolean isBaseCommand() {
 		return args.length == 0;
 	}
 
