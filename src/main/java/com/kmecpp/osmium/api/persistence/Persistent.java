@@ -9,6 +9,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Persistent {
 
-	String[] ids() default {};
+	//	String[] ids() default {};
+
+	String id();
+
+	String[] previousIds() default {};
 
 }

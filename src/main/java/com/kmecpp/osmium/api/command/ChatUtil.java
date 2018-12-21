@@ -3,7 +3,6 @@ package com.kmecpp.osmium.api.command;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 public class ChatUtil {
 
@@ -34,7 +33,8 @@ public class ChatUtil {
 	}
 
 	/**
-	 * Colors the String using the Essentials color code: '&amp;'. Equivalent to<br>
+	 * Colors the String using the Essentials color code: '&amp;'. Equivalent
+	 * to<br>
 	 * <br>
 	 * <code>
 	 * ChatColor.translateAlternateColorCodes('&amp;', str);
