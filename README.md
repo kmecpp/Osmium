@@ -8,6 +8,9 @@ In order to achieve maximum compatibility between platforms, only functionality 
 
 Please join the Discord server if you have questions, would like to stay updated with the project or want to help out: https://discord.gg/jBjYckt
 
+Some servers already using Osmium:
+* https://www.voidflame.com
+
 # Features
 
 * Platform independent
