@@ -174,7 +174,7 @@ public class ClassProcessor {
 			}
 		}
 
-		for (Method method : cls.getMethods()) {
+		for (Method method : cls.getDeclaredMethods()) {
 			Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
 			Listener listenerAnnotation = method.getAnnotation(Listener.class);
 			if (scheduleAnnotation == null && listenerAnnotation == null) {

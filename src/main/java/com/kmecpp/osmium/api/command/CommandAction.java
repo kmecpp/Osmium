@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.api.command;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
@@ -42,6 +43,10 @@ public class CommandAction implements Messageable {
 
 	public Player getPlayer(int index) {
 		return Osmium.getPlayer(args[index]).orElseThrow(() -> notFound("player", args[index]));
+	}
+
+	public World getWorld(int index) {
+		return Osmium.getWorld(args[index]).orElseThrow(() -> notFound("world", args[index]));
 	}
 
 	public OsmiumPlugin getPlugin(int index) {

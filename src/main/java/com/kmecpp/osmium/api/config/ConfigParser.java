@@ -278,7 +278,7 @@ public class ConfigParser {
 	}
 
 	private ConfigParseException getError(String message, Throwable t) {
-		OsmiumLogger.error("Failed to load config: " + data.getProperties().path());
+		OsmiumLogger.error("Failed to load config: " + file.getPath());
 		message = message + " on line " + line + " column " + column;
 		return t == null ? new ConfigParseException(message) : new ConfigParseException(message, t);
 	}

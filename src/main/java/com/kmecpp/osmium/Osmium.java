@@ -52,6 +52,8 @@ public final class Osmium {
 	 * 
 	 * - More events
 	 * 
+	 * COMMAND REMAPPER (in Osmium config)
+	 * 
 	 * - Don't register listeners separately. Register one time for each event
 	 * type and then have osmium call the individual methods
 	 * 
