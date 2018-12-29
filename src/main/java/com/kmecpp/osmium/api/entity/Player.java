@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.api.entity;
 
 import com.kmecpp.osmium.api.GameMode;
+import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.inventory.Inventory;
@@ -8,7 +9,7 @@ import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 
-public interface Player extends EntityLiving, CommandSender {
+public interface Player extends User, EntityLiving, CommandSender {
 
 	boolean respawn();
 

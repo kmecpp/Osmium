@@ -4,15 +4,19 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.service.user.UserStorageService;
 
+import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.command.Command;
@@ -32,6 +36,8 @@ import com.kmecpp.osmium.api.tasks.OsmiumTask;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
+import com.kmecpp.osmium.platform.bukkit.BukkitUser;
+import com.kmecpp.osmium.platform.sponge.SpongeUser;
 
 public final class Osmium {
 
@@ -211,21 +217,43 @@ public final class Osmium {
 		return Optional.of(PlayerList.getPlayer(name));
 	}
 
-	//	public static Optional<User> getUser(String lastKnownName) {
+	public static Optional<User> getUser(UUID uuid) {
+		if (Platform.isBukkit()) {
+			OfflinePlayer user = Bukkit.getOfflinePlayer(uuid);
+			if (user.hasPlayedBefore()) {
+				return Optional.of(new BukkitUser(user));
+			}
+		} else if (Platform.isSponge()) {
+			Optional<org.spongepowered.api.entity.living.player.User> user = Sponge.getServiceManager().provide(UserStorageService.class).get().get(uuid);
+			if (user.isPresent()) {
+				return Optional.of(new SpongeUser(user.get()));
+			}
+		}
+		return Optional.empty();
+	}
+
+	public static Optional<User> getUser(String name) {
+		if (Platform.isBukkit()) {
+			@SuppressWarnings("deprecation")
+			OfflinePlayer user = Bukkit.getOfflinePlayer(name);
+			if (user.hasPlayedBefore()) {
+				return Optional.of(new BukkitUser(user));
+			}
+		} else if (Platform.isSponge()) {
+			Optional<org.spongepowered.api.entity.living.player.User> user = Sponge.getServiceManager().provide(UserStorageService.class).get().get(name);
+			if (user.isPresent()) {
+				return Optional.of(new SpongeUser(user.get()));
+			}
+		}
+		return Optional.empty();
+	}
+
+	//	public static void getOperators() {
 	//		if (Platform.isBukkit()) {
-	//			OfflinePlayer player = Bukkit.getOfflinePlayer(lastKnownName);
-	//			//			player.last
-	//			if(player.hasPlayedBefore()) {
-	//				return new User
-	//			}
+	//			Bukkit.getOperators();
 	//		} else if (Platform.isSponge()) {
-	//			Optional<UserStorageService> userStorage = Sponge.getServiceManager().provide(UserStorageService.class);
-	//			Optional<org.spongepowered.api.entity.living.player.User> optionalUser = userStorage.get().get(lastKnownName);
-	//			optionalUser.ifPresent((user) -> {
-	//				user.getProfile().
-	//			});
+	//			//TODO
 	//		}
-	//		return Optional.empty();
 	//	}
 
 	public static Collection<World> getWorlds() {

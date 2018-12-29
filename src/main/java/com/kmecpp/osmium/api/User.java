@@ -2,40 +2,18 @@ package com.kmecpp.osmium.api;
 
 import java.util.UUID;
 
-import com.kmecpp.osmium.Osmium;
+public interface User extends Abstraction {
 
-public class User {
+	UUID getUniqueId();
 
-	private UUID uniqueId;
+	String getName();
 
-	private String name;
+	boolean isOp();
 
-	private long lastPlayed;
+	long getLastPlayed();
 
-	public User(UUID uniqueId, String name, long lastPlayed) {
-		this.uniqueId = uniqueId;
-		this.name = name;
-		this.lastPlayed = lastPlayed;
-	}
+	long getFirstPlayed();
 
-	public UUID getUniqueId() {
-		return uniqueId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public long getLastPlayed() {
-		return lastPlayed;
-	}
-
-	public boolean isOnline() {
-		return Osmium.getPlayer(name) != null;
-	}
-
-	//	UUID getUniqueId();
-	//
-	//	String getLastKnownName();
+	boolean isOnline();
 
 }

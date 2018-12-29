@@ -1,7 +1,5 @@
 package com.kmecpp.osmium.platform.bukkit;
 
-import java.util.UUID;
-
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.World;
@@ -12,15 +10,18 @@ import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.cache.WorldList;
 
-public class BukkitPlayer implements Player {
+public class BukkitPlayer extends BukkitUser implements Player {
 
 	private org.bukkit.entity.Player player;
 
 	public BukkitPlayer(org.bukkit.entity.Player player) {
-		//		if (PlayerList.contains(player.getName())) {
-		//			throw new IllegalStateException("Osmium wrapper already exists for this player!");
-		//		}
+		super(player);
 		this.player = player;
+	}
+
+	@Override
+	public org.bukkit.entity.Player getSource() {
+		return player;
 	}
 
 	@Override
@@ -31,21 +32,6 @@ public class BukkitPlayer implements Player {
 	@Override
 	public String getWorldName() {
 		return player.getWorld().getName();
-	}
-
-	@Override
-	public UUID getUniqueId() {
-		return player.getUniqueId();
-	}
-
-	@Override
-	public org.bukkit.entity.Player getSource() {
-		return player;
-	}
-
-	@Override
-	public String getName() {
-		return player.getName();
 	}
 
 	@Override
@@ -60,11 +46,6 @@ public class BukkitPlayer implements Player {
 	@Override
 	public void sendRawMessage(String message) {
 		player.sendMessage(message);
-	}
-
-	@Override
-	public boolean isOp() {
-		return player.isOp();
 	}
 
 	@Override

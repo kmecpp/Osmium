@@ -1,7 +1,5 @@
 package com.kmecpp.osmium.platform.sponge;
 
-import java.util.UUID;
-
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.text.Text;
 
@@ -15,11 +13,12 @@ import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.cache.WorldList;
 
-public class SpongePlayer implements Player {
+public class SpongePlayer extends SpongeUser implements Player {
 
 	private org.spongepowered.api.entity.living.player.Player player;
 
 	public SpongePlayer(org.spongepowered.api.entity.living.player.Player player) {
+		super(player);
 		this.player = player;
 	}
 
@@ -39,16 +38,6 @@ public class SpongePlayer implements Player {
 	}
 
 	@Override
-	public UUID getUniqueId() {
-		return player.getUniqueId();
-	}
-
-	@Override
-	public String getName() {
-		return player.getName();
-	}
-
-	@Override
 	public void sendRawMessage(String message) {
 		player.sendMessage(Text.of(message));
 	}
@@ -56,11 +45,6 @@ public class SpongePlayer implements Player {
 	@Override
 	public boolean respawn() {
 		return player.respawnPlayer();
-	}
-
-	@Override
-	public boolean isOp() {
-		return player.hasPermission("*");
 	}
 
 	@Override
