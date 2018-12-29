@@ -6,12 +6,12 @@ import java.util.Iterator;
 import com.google.common.base.Function;
 import com.kmecpp.osmium.api.Abstraction;
 
-public class AbstractCollection<S, A extends Abstraction> implements Collection<A> {
+public class WrappedCollection<S, A extends Abstraction> implements Collection<A> {
 
 	private Collection<S> source;
 	private Function<S, A> wrapper;
 
-	public AbstractCollection(Collection<S> source, Function<S, A> wrapper) {
+	public WrappedCollection(Collection<S> source, Function<S, A> wrapper) {
 		this.source = source;
 		this.wrapper = wrapper;
 	}
@@ -27,8 +27,13 @@ public class AbstractCollection<S, A extends Abstraction> implements Collection<
 	}
 
 	@Override
+	public void clear() {
+		source.clear();
+	}
+
+	@Override
 	public boolean contains(Object obj) {
-		return obj instanceof Abstraction ? source.contains((Abstraction) obj) : source.contains(obj);
+		return obj instanceof Abstraction ? source.contains(((Abstraction) obj).getSource()) : source.contains(obj);
 	}
 
 	@Override
@@ -52,13 +57,12 @@ public class AbstractCollection<S, A extends Abstraction> implements Collection<
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public A[] toArray() {
-		A[] arr = (A[]) new Abstraction[source.size()];
+	public Object[] toArray() {
+		Object[] arr = new Object[source.size()];
 		int i = 0;
-		for (S s : source) {
-			arr[i] = wrapper.apply(s);
+		for (S sourceElement : source) {
+			arr[i] = wrapper.apply(sourceElement);
 			i++;
 		}
 		return arr;
@@ -75,9 +79,8 @@ public class AbstractCollection<S, A extends Abstraction> implements Collection<
 			a[i] = (T) wrapper.apply(s);
 			i++;
 		}
-
-		if (a.length > source.size()) {
-			a[source.size()] = null;
+		for (i = source.size(); i < a.length; i++) {
+			a[i] = null;
 		}
 		return a;
 	}
@@ -89,33 +92,51 @@ public class AbstractCollection<S, A extends Abstraction> implements Collection<
 	}
 
 	@Override
-	public boolean remove(Object o) {
-		return o instanceof Abstraction ? source.remove((Abstraction) o) : source.remove(o);
+	public boolean remove(Object obj) {
+		return obj instanceof Abstraction ? source.remove(((Abstraction) obj).getSource()) : source.remove(obj);
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return false;
+		for (Object obj : c) {
+			if (!contains(obj)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends A> c) {
-		return false;
+	public boolean addAll(Collection<? extends A> collection) {
+		for (A abstraction : collection) {
+			add(abstraction);
+		}
+		return !collection.isEmpty();
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		return false;
+		boolean modified = false;
+		for (Object obj : c) {
+			if (remove(obj)) {
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		return false;
-	}
-
-	@Override
-	public void clear() {
-		source.clear();
+		boolean modified = false;
+		Iterator<A> iterator = this.iterator();
+		while (iterator.hasNext()) {
+			A obj = iterator.next();
+			if (!c.contains(obj) && !c.contains(obj.getSource())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 }

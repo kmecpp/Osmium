@@ -1,8 +1,12 @@
 package com.kmecpp.osmium.api;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.entity.EntityType;
+import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.location.Location;
 
 public interface World extends Abstraction {
@@ -20,5 +24,15 @@ public interface World extends Abstraction {
 	Location getSpawnLocation();
 
 	boolean setSpawnLocation(Location location);
+
+	default Collection<Player> getPlayers() {
+		ArrayList<Player> players = new ArrayList<>();
+		for (Player player : Osmium.getOnlinePlayers()) {
+			if (player.getWorld() == this) {
+				players.add(player);
+			}
+		}
+		return players;
+	}
 
 }
