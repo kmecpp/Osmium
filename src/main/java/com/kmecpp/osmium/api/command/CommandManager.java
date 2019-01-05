@@ -11,6 +11,7 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public final class CommandManager {
 
+	private HashMap<OsmiumPlugin, Boolean> defaultAllowConsole = new HashMap<>();
 	private HashMap<OsmiumPlugin, ArrayList<Command>> commands = new HashMap<>();
 
 	public Command register(OsmiumPlugin plugin, Command command) {
@@ -19,6 +20,14 @@ public final class CommandManager {
 		commands.put(plugin, pluginCommands);
 		OsmiumLogger.debug("Registered Osmium command: /" + command.getPrimaryAlias());
 		return command;
+	}
+
+	public void setAllowConsoleByDefault(OsmiumPlugin plugin, boolean allow) {
+		defaultAllowConsole.put(plugin, allow);
+	}
+
+	public boolean isConsoleAllowedByDefault(OsmiumPlugin plugin) {
+		return defaultAllowConsole.getOrDefault(plugin, true);
 	}
 
 	public HashMap<OsmiumPlugin, ArrayList<Command>> getCommands() {

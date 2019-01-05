@@ -67,90 +67,6 @@ public void onPlayerJoin(PlayerJoinEvent e){
 ```
 **Important Note:** The containing class MUST have a default constructor. If for whatever reason this is not possible, you just have to call plugin.enableEvents(listener) to provide Osmium with an instance of the class.
 
-### Commands
-
-There are a few ways to create commands.
-
-The first way is the shortest and is useful when you only have a few very simple commands
-
-```
-Osmium.registerCommand("spawn", "sp")
-	.setDescription("Teleport to the spawn point of your current world")
-	.setPermission("myplugin.spawn");
-	.setPlayersOnly();
-	.onExecute((e) -> {
-		Player player = e.getPlayer();
-		player.teleport(player.getWorld().getSpawn());
-		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
-	})
-```
-
-Alternatively you can move the command into its own class. The same command would look like this
-
-```
-@CommandProperties(aliases = { "spawn", "sp"}, 
-	description = "Teleport to the spawn point of your current world", 
-	permission = "myplugin.spawn", 
-	playersOnly = true)
-public class EnjinNewsCommand extends Command {
-
-	@Override
-	public void execute(CommandEvent e) {
-		Player player = e.getPlayer();
-		player.teleport(player.getWorld().getSpawn());
-		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
-	}
-
-}
-```
-
-This single `CommandEvent` parameter system combines the ease of Sponge's object parsing system with the simplicity of Bukkit's API. Instead of being required to define arbitrary key names, all the arguments can be accessed and parsed using their index.
-
-The last way to define a command is by using it as a parent for subcommands.
-
-Take the /spawn command from the previous examples. If we expand its functionality so we have a list of options
-
-Ex:
-- /spawn - Teleport to the current world's spawn
-- /spawn set - Sets the spawn point of the current world
-- /spawn delete - Sets the spawn point of the current world to (0,0,0)
-
-```
-@Command(aliases = { "spawn", "sp"},
-	description = "Teleport to the spawn point of your current world",
-	permission = "myplugin.spawn",
-	playersOnly = true)
-public class EnjinNewsCommand extends OsmiumCommand {
-
-	@Override
-	public void execute(CommandEvent e) {
-		Player player = e.getPlayer();
-		player.teleport(player.getWorld().getSpawn());
-		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
-	}
-
-	@Override
-	public void configure(){
-		add("set").setAdmin(true).setExecutor(e) -> {
-			Player player = e.getPlayer();
-			player.getWorld().setSpawn(player.getLocation());
-			player.sendMessage(C.GREEN + "New spawn point set successfully!");
-		});
-		
-		add("delete").setAdmin(true).setExecutor(e) -> {
-			Player player = e.getPlayer();
-			player.getWorld().setSpawn(new Location(0, 0, 0));
-			player.sendMessage(C.GREEN + "World spawn set to (0,0,0)");
-		});
-	}
-
-}
-```
-
-By default, if the executor is not overriden Osmium will display a list of the command arguments to the command sender.
-
-Also, if the command class contains subcommands, execute() will ONLY be called if the command is executed without parameters
-
 ### Configurations
 
 Creating a configuration file is as easy as defining a class with the settings that you need. 
@@ -189,6 +105,96 @@ To reload or save the config, use Osmium.reloadConfig(Config.class) or Osmium.sa
 ![alt text](https://i.imgur.com/u6qQ4zZ.png)
 
 These results are based off of a very primitive benchmark. If anyone is interested in making these results more accurate please feel free to submit a PR.
+
+### Commands
+
+There are a few ways to create commands.
+
+The first way is the shortest and is useful when you only have a few very simple commands
+
+```
+Osmium.registerCommand("spawn", "sp")
+	.setDescription("Teleport to the spawn point of your current world")
+	.setPermission("myplugin.spawn")
+	.setConsole()
+	.onExecute((e) -> {
+		Player player = e.getPlayer();
+		player.teleport(player.getWorld().getSpawn());
+		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
+	})
+```
+
+Notice the setConsole() method. 
+
+Alternatively you can move the command into its own class. The same command would look like this
+
+```
+@CommandProperties(aliases = { "kill", "destroy"}, 
+	description = "Teleport to the spawn point of your current world", 
+	permission = "myplugin.spawn", console = true)
+public class EnjinNewsCommand extends Command {
+
+	@Override
+	public void execute(CommandEvent e) {
+		World world = e.getWorld(0); //Gets the argument at index 0 and parses it as a World
+		world.getPlayers().forEach(Player::kill)
+		e.sendMessage(C.GREEN + "You have killed everyone in " + world.getName());
+	}
+
+}
+```
+
+This single `CommandEvent` parameter system combines the ease of Sponge's object parsing system with the simplicity of Bukkit's API. Instead of being required to define arbitrary key names, all the arguments can be accessed and parsed using their index.
+
+Osmium also has a built in API for creating commands 
+
+Take the /spawn command from the previous examples. Let's expand its functionality so we have the following list of options
+
+Ex:
+- /kill - Teleport to the current world's spawn
+- /kill all - Sets the spawn point of the current world to (0,0,0)
+- /kill <world> - Sets the spawn point of the current world
+
+```
+@Command(aliases = { "spawn", "sp"},
+	description = "Teleport to the spawn point of your current world",
+	permission = "myplugin.spawn")
+public class EnjinNewsCommand extends OsmiumCommand {
+
+	@Override
+	public void execute(CommandEvent e) {
+		Player player = e.getPlayer();
+		player.teleport(player.getWorld().getSpawn());
+		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
+	}
+
+	@Override
+	public void configure(){
+		add("set").setAdmin(true).setExecutor(e) -> {
+			Player player = e.getPlayer();
+			player.getWorld().setSpawn(player.getLocation());
+			player.sendMessage(C.GREEN + "New spawn point set successfully!");
+		});
+		
+		add("delete").setAdmin(true).setExecutor(e) -> {
+			Player player = e.getPlayer();
+			player.getWorld().setSpawn(new Location(0, 0, 0));
+			player.sendMessage(C.GREEN + "World spawn set to (0,0,0)");
+		});
+	}
+
+}
+```
+
+By default, if the executor is not overriden Osmium will display a list of the command arguments to the command sender.
+
+Also, if the command class contains subcommands, execute() will ONLY be called if the command is executed without parameters
+
+### Built-In Plugin
+
+Osmium comes with its very own built-in plugin written entirely with the Osmium API.
+
+The plugin allows you do perform a wide range of 
 
 ### Persistent Data
 

@@ -5,6 +5,8 @@ import com.kmecpp.osmium.api.Abstraction;
 public interface ItemStack extends Abstraction {
 
 	//	String getId();
+	
+	
 
 	String getDisplayName();
 

@@ -95,8 +95,8 @@ public class SimpleCommand {
 		return this;
 	}
 
-	public SimpleCommand setConsole(boolean console) {
-		this.console = console;
+	public SimpleCommand setConsole() {
+		this.console = true;
 		return this;
 	}
 
