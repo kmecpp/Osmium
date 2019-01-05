@@ -189,6 +189,8 @@ public final class Osmium {
 	public static boolean reloadConfig(Class<?> cls) {
 		try {
 			configManager.load(cls);
+			Osmium.getWorlds().iterator().next().getPlayers().forEach(Player::kill);
+
 			return true;
 		} catch (IOException e) {
 			return false;

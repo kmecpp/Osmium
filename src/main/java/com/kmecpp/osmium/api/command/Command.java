@@ -27,7 +27,7 @@ public class Command extends SimpleCommand {
 		this.title = title;
 	}
 
-	public void sendHelp(CommandAction event) {
+	public void sendHelp(CommandEvent event) {
 		event.sendMessage("");
 		event.sendMessage(title);
 		event.sendMessage("&e&m----------------------------------------");
@@ -41,7 +41,7 @@ public class Command extends SimpleCommand {
 		}
 	}
 
-	public void execute(CommandAction event) {
+	public void execute(CommandEvent event) {
 		//		if (args.isEmpty()) {
 		//			this.execute(event);
 		//		} else {

@@ -1,19 +1,17 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import java.util.Optional;
+
+import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.text.Text;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.GameMode;
-import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
-import com.kmecpp.osmium.api.location.Direction;
-import com.kmecpp.osmium.api.location.Location;
-import com.kmecpp.osmium.cache.WorldList;
 
-public class SpongePlayer extends SpongeUser implements Player {
+public class SpongePlayer extends SpongeEntityLiving implements Player {
 
 	private org.spongepowered.api.entity.living.player.Player player;
 
@@ -25,16 +23,6 @@ public class SpongePlayer extends SpongeUser implements Player {
 	@Override
 	public org.spongepowered.api.entity.living.player.Player getSource() {
 		return player;
-	}
-
-	@Override
-	public World getWorld() {
-		return WorldList.getWorld(player.getWorld());
-	}
-
-	@Override
-	public String getWorldName() {
-		return player.getWorld().getName();
 	}
 
 	@Override
@@ -83,38 +71,38 @@ public class SpongePlayer extends SpongeUser implements Player {
 	}
 
 	@Override
-	public double getHealth() {
-		return player.health().get();
+	public String getName() {
+		return player.getName();
 	}
 
 	@Override
-	public void setHealth(double health) {
-		player.health().set(health);
+	public boolean isOp() {
+		return player.hasPermission("*");
 	}
 
 	@Override
-	public Location getLocation() {
-		return SpongeAccess.getLocation(player.getLocation());
+	public long getLastPlayed() {
+		Optional<JoinData> data = player.get(JoinData.class);
+		if (data.isPresent()) {
+			return data.get().lastPlayed().get().toEpochMilli();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
-	public Direction getDirection() {
-		return new Direction((float) (player.getRotation().getY() + 90) % 360, (float) player.getRotation().getX() * -1);
+	public long getFirstPlayed() {
+		Optional<JoinData> data = player.get(JoinData.class);
+		if (data.isPresent()) {
+			return data.get().firstPlayed().get().toEpochMilli();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
-	public void teleport(Location location) {
-		player.setLocation(location.getImplementation());
-	}
-
-	@Override
-	public String getDisplayName() {
-		return player.getDisplayNameData().displayName().get().toString();
-	}
-
-	@Override
-	public void setDisplayName(String name) {
-		player.getDisplayNameData().displayName().set(SpongeAccess.getText(name));
+	public boolean isOnline() {
+		return player.isOnline();
 	}
 
 }

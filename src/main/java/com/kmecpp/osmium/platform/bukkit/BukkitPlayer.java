@@ -1,16 +1,11 @@
 package com.kmecpp.osmium.platform.bukkit;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.GameMode;
-import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
-import com.kmecpp.osmium.api.location.Direction;
-import com.kmecpp.osmium.api.location.Location;
-import com.kmecpp.osmium.cache.WorldList;
 
-public class BukkitPlayer extends BukkitUser implements Player {
+public class BukkitPlayer extends BukkitEntityLiving implements Player {
 
 	private org.bukkit.entity.Player player;
 
@@ -22,16 +17,6 @@ public class BukkitPlayer extends BukkitUser implements Player {
 	@Override
 	public org.bukkit.entity.Player getSource() {
 		return player;
-	}
-
-	@Override
-	public World getWorld() {
-		return WorldList.getWorld(player.getWorld());
-	}
-
-	@Override
-	public String getWorldName() {
-		return player.getWorld().getName();
 	}
 
 	@Override
@@ -84,40 +69,28 @@ public class BukkitPlayer extends BukkitUser implements Player {
 	}
 
 	@Override
-	public double getHealth() {
-		return getHealth();
+	public String getName() {
+		return player.getName();
 	}
 
 	@Override
-	public void setHealth(double health) {
-		player.setHealth(health);
+	public boolean isOp() {
+		return player.isOp();
 	}
 
 	@Override
-	public Location getLocation() {
-		return BukkitAccess.getLocation(player.getLocation());
+	public long getLastPlayed() {
+		return player.getLastPlayed();
 	}
 
 	@Override
-	public Direction getDirection() {
-		return new Direction(player.getLocation().getPitch(), player.getLocation().getYaw());
+	public long getFirstPlayed() {
+		return player.getFirstPlayed();
 	}
 
 	@Override
-	public void teleport(Location location) {
-		org.bukkit.Location l = (org.bukkit.Location) location.getImplementation();
-		l.setDirection(player.getLocation().getDirection());
-		player.teleport(l);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return player.getDisplayName();
-	}
-
-	@Override
-	public void setDisplayName(String name) {
-		player.setDisplayName(name);
+	public boolean isOnline() {
+		return player.isOnline();
 	}
 
 }

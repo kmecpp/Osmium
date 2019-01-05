@@ -6,4 +6,14 @@ public interface EntityLiving extends Entity {
 
 	void setHealth(double health);
 
+	double getMaxHealth();
+
+	default void kill() {
+		setHealth(0);
+	}
+
+	default void heal() {
+		setHealth(getMaxHealth());
+	}
+
 }

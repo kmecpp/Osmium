@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform.sponge.entities;
 
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.Villager;
 
 import com.kmecpp.osmium.api.entity.entities.EntityVillager;
@@ -21,6 +22,11 @@ public class SpongeVillager extends SpongeEntity implements EntityVillager {
 	@Override
 	public void setHealth(double health) {
 		villager.health().set(health);
+	}
+
+	@Override
+	public double getMaxHealth() {
+		return villager.get(Keys.MAX_HEALTH).get();
 	}
 
 }

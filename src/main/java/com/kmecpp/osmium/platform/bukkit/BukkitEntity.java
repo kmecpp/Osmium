@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Entity;
+import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 
 public class BukkitEntity implements Entity {
@@ -31,6 +32,11 @@ public class BukkitEntity implements Entity {
 	}
 
 	@Override
+	public String getWorldName() {
+		return entity.getWorld().getName();
+	}
+
+	@Override
 	public String getDisplayName() {
 		return entity.getCustomName();
 	}
@@ -43,6 +49,18 @@ public class BukkitEntity implements Entity {
 	@Override
 	public Location getLocation() {
 		return BukkitAccess.getLocation(entity.getLocation());
+	}
+
+	@Override
+	public Direction getDirection() {
+		return new Direction(entity.getLocation().getPitch(), entity.getLocation().getYaw());
+	}
+
+	@Override
+	public void setLocation(Location location) {
+		org.bukkit.Location l = (org.bukkit.Location) location.getImplementation();
+		l.setDirection(entity.getLocation().getDirection());
+		entity.teleport(l);
 	}
 
 }

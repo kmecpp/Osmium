@@ -7,6 +7,7 @@ import org.spongepowered.api.data.manipulator.mutable.DisplayNameData;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Entity;
+import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 
 public class SpongeEntity implements Entity {
@@ -33,6 +34,11 @@ public class SpongeEntity implements Entity {
 	}
 
 	@Override
+	public String getWorldName() {
+		return entity.getWorld().getName();
+	}
+
+	@Override
 	public String getDisplayName() {
 		return entity.get(DisplayNameData.class).get().displayName().get().toString();
 	}
@@ -45,6 +51,16 @@ public class SpongeEntity implements Entity {
 	@Override
 	public Location getLocation() {
 		return SpongeAccess.getLocation(entity.getLocation());
+	}
+
+	@Override
+	public void setLocation(Location location) {
+		entity.setLocation(location.getImplementation());
+	}
+
+	@Override
+	public Direction getDirection() {
+		return new Direction((float) (entity.getRotation().getY() + 90) % 360, (float) entity.getRotation().getX() * -1);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.kmecpp.osmium.api.Abstraction;
 import com.kmecpp.osmium.api.World;
+import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 
 public interface Entity extends Abstraction {
@@ -12,10 +13,16 @@ public interface Entity extends Abstraction {
 
 	World getWorld();
 
+	String getWorldName();
+
 	String getDisplayName();
 
 	void setDisplayName(String name);
 
 	Location getLocation();
+
+	void setLocation(Location location);
+
+	Direction getDirection();
 
 }
