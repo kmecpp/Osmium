@@ -1,6 +1,8 @@
 package com.kmecpp.osmium;
 
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
@@ -16,6 +18,8 @@ import org.hibernate.cfg.Configuration;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.user.UserStorageService;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonValue;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Chat;
@@ -265,13 +269,21 @@ public final class Osmium {
 		return Optional.empty();
 	}
 
-	//	public static void getOperators() {
-	//		if (Platform.isBukkit()) {
-	//			Bukkit.getOperators();
-	//		} else if (Platform.isSponge()) {
-	//			//TODO
-	//		}
-	//	}
+	public static Collection<User> getOperators() {
+		ArrayList<User> users = new ArrayList<>();
+		try {
+			for (JsonValue value : Json.parse(new FileReader("ops.json")).asArray()) {
+				try {
+					users.add(getUser(value.asObject().get("uuid").asString()).get());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return users;
+	}
 
 	public static Collection<World> getWorlds() {
 		return WorldList.getWorlds();

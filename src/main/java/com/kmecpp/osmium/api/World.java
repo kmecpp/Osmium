@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
@@ -25,6 +26,8 @@ public interface World extends Abstraction {
 	Location getSpawnLocation();
 
 	boolean setSpawnLocation(Location location);
+
+	Path getFolder();
 
 	Collection<Entity> getEntities();
 

@@ -54,10 +54,10 @@ Osmium can be downloaded from Maven Central.
 # Examples
 
 
-### Listeners
+## Listeners
 
 
-Registering listeners is as easy as adding an @Listener annotation to a valid method. There's no need to register the listener or implement any interfaces.
+Registering listeners is as easy as adding an `@Listener` annotation to a valid method. **There is no need to register the listener or implement any interfaces.**
 
 ```
 @Listener
@@ -65,9 +65,9 @@ public void onPlayerJoin(PlayerJoinEvent e){
 	//Listener will work without any additional code needed
 }
 ```
-**Important Note:** The containing class MUST have a default constructor. If for whatever reason this is not possible, you just have to call plugin.enableEvents(listener) to provide Osmium with an instance of the class.
+**Important Note:** The containing class MUST have a default constructor. If for whatever reason you'd prefer not to follow this convention, you just have to call plugin.enableEvents(listener) to provide Osmium with an instance of the class.
 
-### Configurations
+## Configurations
 
 Creating a configuration file is as easy as defining a class with the settings that you need. 
 
@@ -76,10 +76,13 @@ Creating a configuration file is as easy as defining a class with the settings t
 public class Config {
 
 	@Setting(comment = "Enable debug logging")
-	public static boolean debug = false; //These are default values
+	public static boolean debug;
 
-	@Setting(type = Integer.class)
+	@Setting(type = Integer.class) //When using a generic class you must specify the type
 	public static HashSet<Integer> bannedItems;
+	
+	@Setting(type = Integer.class) //For maps, use string as the key and specify the value type. Nested types are not supported yet
+	public static HashMap<String, Integer> worldBorders;
 	
 	public static class WebApp {
 	
@@ -87,7 +90,7 @@ public class Config {
 		public static String apiKey;
 		
 		@Setting
-		public static int timeout;
+		public static int timeout = 3000; //Three thousand is the default value
 		
 	}
 	
@@ -106,7 +109,7 @@ To reload or save the config, use Osmium.reloadConfig(Config.class) or Osmium.sa
 
 These results are based off of a very primitive benchmark. If anyone is interested in making these results more accurate please feel free to submit a PR.
 
-### Commands
+## Commands
 
 There are a few ways to create commands.
 
@@ -132,7 +135,7 @@ Alternatively you can move the command into its own class. The same command woul
 @CommandProperties(aliases = { "kill", "destroy"}, 
 	description = "Teleport to the spawn point of your current world", 
 	permission = "myplugin.spawn", console = true)
-public class EnjinNewsCommand extends Command {
+public class KillCommand extends Command {
 
 	@Override
 	public void execute(CommandEvent e) {
@@ -151,35 +154,35 @@ Osmium also has a built in API for creating commands
 Take the /spawn command from the previous examples. Let's expand its functionality so we have the following list of options
 
 Ex:
-- /kill - Teleport to the current world's spawn
-- /kill all - Sets the spawn point of the current world to (0,0,0)
-- /kill <world> - Sets the spawn point of the current world
+- /kill - Displays a list of all kill commands
+- /kill all - Kills all non-operator players
+- /kill world <world> - Kills all players in a specific world
+- /kill player <player> - Kills all players in a specific world
 
 ```
-@Command(aliases = { "spawn", "sp"},
+@Command(aliases = { "kill", "sp"},
 	description = "Teleport to the spawn point of your current world",
-	permission = "myplugin.spawn")
-public class EnjinNewsCommand extends OsmiumCommand {
-
-	@Override
-	public void execute(CommandEvent e) {
-		Player player = e.getPlayer();
-		player.teleport(player.getWorld().getSpawn());
-		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
-	}
+	permission = "myplugin.spawn",
+	admin = true)
+public class KillCommands extends OsmiumCommand {
 
 	@Override
 	public void configure(){
-		add("set").setAdmin(true).setExecutor(e) -> {
-			Player player = e.getPlayer();
-			player.getWorld().setSpawn(player.getLocation());
-			player.sendMessage(C.GREEN + "New spawn point set successfully!");
+		add("all").setExecutor(e) -> {
+			Osmium.getOnlinePlayers().stream().filter(p -> !p.isOp()).forEach(Player::kill);
+			e.sendMessage(C.GREEN + "You have killed everyone!");
 		});
 		
-		add("delete").setAdmin(true).setExecutor(e) -> {
-			Player player = e.getPlayer();
-			player.getWorld().setSpawn(new Location(0, 0, 0));
-			player.sendMessage(C.GREEN + "World spawn set to (0,0,0)");
+		add("world").setExecutor(e) -> {
+			World world = e.getWorld(0); //Gets the argument at index 0 and parses it as a World
+			world.getPlayers().filter(p -> !p.isOp()).forEach(Player::kill)
+			e.sendMessage(C.GREEN + "You have killed everyone in " + world.getName());
+		});
+		
+		add("player").setExecutor(e) -> {
+			Player player = e.getPlayer(0); //Gets the argument at index 0 and parses it as a Player
+			if(player.getName().equals(
+			e.sendMessage(C.GREEN + "You have killed everyone in " + world.getName());
 		});
 	}
 
@@ -190,13 +193,17 @@ By default, if the executor is not overriden Osmium will display a list of the c
 
 Also, if the command class contains subcommands, execute() will ONLY be called if the command is executed without parameters
 
-### Built-In Plugin
+## Built-In Plugin
 
 Osmium comes with its very own built-in plugin written entirely with the Osmium API.
 
-The plugin allows you do perform a wide range of 
+The plugin allows you do perform a wide range of management tasks for any plugin using Osmium as well as Osmium itself. This includes
 
-### Persistent Data
+	- Viewing important plugin information such as name, version, author, website and dependencies
+	- Viewing a list of commands for each plugin and information on each
+	- Reloading plugins and their configurations
+
+## Persistent Data
 
 Osmium has an extremely easy way to store simple persistent data. Just add @Persistent to a field and it will automatically store its value in the plugin's data file.
 
@@ -210,11 +217,11 @@ Example:
     public static int blocksBroken = -1;
 
 
-### Databases
+## Databases
 
 TODO
 
-### Platform Specific Code
+## Platform Specific Code
 
 Osmium has many features in place to allow you to use platform specific code, for situations where corresponding functionality hasn't yet been implemented.
 
@@ -242,7 +249,7 @@ To retrieve a value use Osmium.getValue(Callable bukkit, Callable sponge);
 
 # More Features
 
-### Metrics
+## Metrics
 
 Osmium has a built in metrics feature for collecting statistics through <https://bstats.org>. To enable metrics for your plugin simply call the enableMetrics() method in your main plugin class.
 

@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -34,6 +35,11 @@ public class SpongeWorld implements World {
 	@Override
 	public String getName() {
 		return world.getName();
+	}
+
+	@Override
+	public Path getFolder() {
+		return world.getDirectory();
 	}
 
 	@Override
