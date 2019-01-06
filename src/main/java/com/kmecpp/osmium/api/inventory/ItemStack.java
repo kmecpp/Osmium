@@ -21,8 +21,8 @@ public interface ItemStack extends Abstraction {
 
 	//	String getId();
 	//
-	//	ItemType getType();
-	//
+	ItemType getType();
+
 	String getDisplayName();
 
 	int getAmount();

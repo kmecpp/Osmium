@@ -2,17 +2,23 @@ package com.kmecpp.osmium.platform.bukkit;
 
 import org.bukkit.Material;
 
+import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.inventory.ItemStack;
+import com.kmecpp.osmium.api.inventory.ItemType;
 
 public class BukkitItemStack implements ItemStack {
 
+	private ItemType type;
 	private org.bukkit.inventory.ItemStack itemStack;
 
 	public BukkitItemStack(org.bukkit.inventory.ItemStack itemStack) {
-		this.itemStack = itemStack;
-		if (itemStack == null) {
-			this.itemStack = new org.bukkit.inventory.ItemStack(Material.AIR);
-		}
+		this.itemStack = itemStack != null ? itemStack : new org.bukkit.inventory.ItemStack(Material.AIR);
+		this.type = BukkitAccess.getItemType(itemStack);
+	}
+
+	@Override
+	public ItemType getType() {
+		return type;
 	}
 
 	@Override

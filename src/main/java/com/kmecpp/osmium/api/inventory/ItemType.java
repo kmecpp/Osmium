@@ -1,11 +1,8 @@
 package com.kmecpp.osmium.api.inventory;
 
-import org.bukkit.Material;
+import com.kmecpp.osmium.Osmium;
 
-import com.kmecpp.osmium.api.Abstraction;
-import com.kmecpp.osmium.api.platform.Platform;
-
-public enum ItemType implements Abstraction {
+public enum ItemType implements MaterialType {
 
 	ACACIA_BOAT,
 	ACACIA_DOOR,
@@ -432,40 +429,10 @@ public enum ItemType implements Abstraction {
 	YELLOW_GLAZED_TERRACOTTA,
 	YELLOW_SHULKER_BOX;
 
-	private Object source;
+	Object source;
 
 	static {
-		if (Platform.isBukkit()) {
-
-		} else if (Platform.isSponge()) {
-
-		}
-	}
-
-	public static void main(String[] args) {
-		int i = 0;
-		int blocks = 0;
-		for (Material material : Material.values()) {
-			if (material.isBlock()) {
-				blocks++;
-			}
-		}
-		loop: for (ItemType type : values()) {
-			for (Material material : Material.values()) {
-				System.out.println(material.name());
-				if (material.name().equals(type.name())) {
-					i++;
-					continue loop;
-				}
-			}
-			System.out.println("NOT FOUND: " + type);
-			break;
-			//			for (org.spongepowered.api.item.ItemType type : ItemTypes.) {
-			//
-			//			}
-		}
-		System.out.println(blocks);
-		System.out.println(i);
+		Osmium.getItemManager().register(values(), false);
 	}
 
 	@Override

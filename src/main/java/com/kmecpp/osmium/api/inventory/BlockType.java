@@ -1,6 +1,8 @@
 package com.kmecpp.osmium.api.inventory;
 
-public enum BlockType {
+import com.kmecpp.osmium.Osmium;
+
+public enum BlockType implements MaterialType {
 
 	ACACIA_DOOR,
 	ACACIA_FENCE,
@@ -255,5 +257,16 @@ public enum BlockType {
 	YELLOW_FLOWER,
 	YELLOW_GLAZED_TERRACOTTA,
 	YELLOW_SHULKER_BOX;
+
+	Object source;
+
+	static {
+		Osmium.getItemManager().register(values(), true);
+	}
+
+	@Override
+	public Object getSource() {
+		return source;
+	}
 
 }

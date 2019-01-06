@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.event.EventPriority;
+import org.bukkit.inventory.ItemStack;
 
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
@@ -22,6 +23,7 @@ import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
+import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -36,6 +38,10 @@ import com.kmecpp.osmium.platform.bukkit.BukkitEntity;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
+
+	public static ItemType getItemType(ItemStack itemStack) {
+		return Osmium.getItemManager().getItemType(itemStack.getType().toString());
+	}
 
 	public static Location getLocation(org.bukkit.Location location) {
 		return new Location(getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ());
