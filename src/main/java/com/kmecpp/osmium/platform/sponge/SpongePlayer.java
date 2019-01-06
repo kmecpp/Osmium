@@ -52,12 +52,12 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 
 	@Override
 	public ItemStack getItemInMainHand() {
-		return new SpongeItemStack(player.getItemInHand(HandTypes.MAIN_HAND).orElse(null));
+		return new SpongeItemStack(player.getItemInHand(HandTypes.MAIN_HAND));
 	}
 
 	@Override
 	public ItemStack getItemInOffHand() {
-		return new SpongeItemStack(player.getItemInHand(HandTypes.MAIN_HAND).orElse(null));
+		return new SpongeItemStack(player.getItemInHand(HandTypes.MAIN_HAND));
 	}
 
 	@Override

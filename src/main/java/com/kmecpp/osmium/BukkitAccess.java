@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.event.EventPriority;
-import org.bukkit.inventory.ItemStack;
 
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
@@ -23,6 +22,7 @@ import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
+import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
@@ -35,11 +35,16 @@ import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitChunk;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitEntity;
+import com.kmecpp.osmium.platform.bukkit.BukkitItemStack;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
 
-	public static ItemType getItemType(ItemStack itemStack) {
+	public static ItemStack getItemStack(org.bukkit.inventory.ItemStack itemStack) {
+		return new BukkitItemStack(itemStack);
+	}
+
+	public static ItemType getItemType(org.bukkit.inventory.ItemStack itemStack) {
 		return Osmium.getItemManager().getItemType(itemStack.getType().toString());
 	}
 

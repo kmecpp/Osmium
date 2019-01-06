@@ -6,16 +6,28 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class ConfigManager {
 
+	private final HashMap<OsmiumPlugin, HashSet<Class<?>>> plugins = new HashMap<>();
 	private final HashMap<Class<?>, ConfigData> configs = new HashMap<>();
+
+	public void registerConfig(OsmiumPlugin plugin, Class<?> config) {
+		plugins.putIfAbsent(plugin, new HashSet<>());
+		plugins.get(plugin).add(config);
+	}
+
+	public HashSet<Class<?>> getPluginConfigs(OsmiumPlugin plugin) {
+		return plugins.getOrDefault(plugin, new HashSet<>());
+	}
 
 	public VirtualConfig load(Path path) throws IOException {
 		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
@@ -28,7 +40,9 @@ public class ConfigManager {
 
 	public void load(Class<?> config) throws IOException {
 		ConfigData data = getConfigData(config);
-		File file = Osmium.getPlugin(config).getFolder().resolve(data.getProperties().path()).toFile();
+		OsmiumPlugin plugin = Osmium.getPlugin(config);
+		registerConfig(plugin, config);
+		File file = plugin.getFolder().resolve(data.getProperties().path()).toFile();
 		if (!new ConfigParser(data, file).load()) {
 			//If the file is missing settings
 			if (!data.getProperties().allowKeyRemoval()) {

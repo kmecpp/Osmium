@@ -123,9 +123,10 @@ repositories {
 }
 
 dependencies {
-	compileOnly files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648.jar")
+	//compileOnly files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648.jar")
+	compile files("lib/spigot-1.13.2.jar")
 	//compile "org.spigotmc:spigot:$bukkit_version"
-	compileOnly "org.spongepowered:spongeapi:$sponge_version"
+	compile "org.spongepowered:spongeapi:$sponge_version"
 	compile files("build/generated/com/kmecpp/osmium/AppInfo.class")
 	//compileOnly "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75" //Breaking builds. Find alternative for this
 	

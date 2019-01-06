@@ -48,7 +48,7 @@ public class ItemManager {
 							try {
 								CatalogType spongeCatalogedItem = (CatalogType) field.get(null);
 								sourceField.set(type, spongeCatalogedItem);
-								itemTypes.put(spongeCatalogedItem.getId(), type);
+								itemTypes.put(spongeCatalogedItem.getKey().getValue(), type);
 								break;
 							} catch (IllegalArgumentException | IllegalAccessException e) {
 								e.printStackTrace();

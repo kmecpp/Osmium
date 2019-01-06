@@ -1,6 +1,13 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import java.util.Collection;
+
+import org.spongepowered.api.item.inventory.property.SlotIndex;
+
+import com.kmecpp.osmium.SpongeAccess;
+import com.kmecpp.osmium.Wrappers;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.api.inventory.ItemStack;
 
 public class SpongeInventory implements Inventory {
 
@@ -25,6 +32,21 @@ public class SpongeInventory implements Inventory {
 	@Override
 	public int getSize() {
 		return inventory.size();
+	}
+
+	@Override
+	public int getItemCount() {
+		return inventory.totalItems();
+	}
+
+	@Override
+	public ItemStack getItem(int index) {
+		return SpongeAccess.getItemStack(inventory.getSlot(SlotIndex.of(index)).orElseThrow(IndexOutOfBoundsException::new).peek());
+	}
+
+	@Override
+	public Collection<ItemStack> getItems() {
+		return Wrappers.convert(inventory.slots(), slot -> SpongeAccess.getItemStack(slot.peek()));
 	}
 
 }

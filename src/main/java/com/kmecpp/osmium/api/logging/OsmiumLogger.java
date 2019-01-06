@@ -75,7 +75,7 @@ public class OsmiumLogger {
 			}
 		} else if (Platform.isSponge()) {
 			Sponge.getServer().getConsole().sendMessage(Text.of(TextColors.DARK_AQUA, "[", TextColors.AQUA, prefix,
-					(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColorImplementation(), level) : Text.EMPTY),
+					(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColorImplementation(), level) : Text.empty()),
 					TextColors.DARK_AQUA, "] ", level.getColorImplementation(), message));
 		} else {
 			if (level == LogLevel.ERROR) {

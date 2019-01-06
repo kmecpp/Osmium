@@ -1,11 +1,15 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
+import com.kmecpp.osmium.SpongeAccess;
+import com.kmecpp.osmium.WrappedCollection;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.WorldType;
+import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.EntityType;
 import com.kmecpp.osmium.api.location.Location;
 
@@ -57,6 +61,11 @@ public class SpongeWorld implements World {
 	public boolean setSpawnLocation(Location location) {
 		world.getProperties().setSpawnPosition(new Vector3i(location.getX(), location.getY(), location.getZ()));
 		return true;
+	}
+
+	@Override
+	public Collection<Entity> getEntities() {
+		return new WrappedCollection<>(world.getEntities(), SpongeAccess::getEntity);
 	}
 
 }

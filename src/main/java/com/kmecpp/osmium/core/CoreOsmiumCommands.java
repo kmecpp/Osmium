@@ -25,8 +25,9 @@ public class CoreOsmiumCommands extends Command {
 		add("reload")
 				.setAdmin()
 				.setExecutor((e) -> {
-					//			org.bukkit.event.server.pl
-					//			org.spongepowered.common.event.tracking.phase.plugin.
+					for (OsmiumPlugin plugin : Osmium.getPlugins()) {
+						plugin.onReload();
+					}
 					e.sendMessage("&aOsmium plugins reloaded successfully!");
 				});
 
@@ -51,7 +52,7 @@ public class CoreOsmiumCommands extends Command {
 							e.sendMessage("&aWebsite: " + "&b" + plugin.getWebsite());
 						}
 						if (plugin.hasDependencies()) {
-							e.sendMessage("&bDependencies: " + "&b" + String.join(", ", plugin.getDependencies()));
+							e.sendMessage("&aDependencies: " + "&b" + String.join(", ", plugin.getDependencies()));
 						}
 					} else {
 						usageError();

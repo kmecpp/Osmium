@@ -189,11 +189,23 @@ public final class Osmium {
 		return configManager;
 	}
 
+	public static boolean reloadPlugin(OsmiumPlugin plugin) {
+		for (Class<?> config : configManager.getPluginConfigs(plugin)) {
+			try {
+				configManager.load(config);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		plugin.onReload();
+		return true;
+	}
+
 	public static boolean reloadConfig(Class<?> cls) {
 		try {
 			configManager.load(cls);
 			Osmium.getWorlds().iterator().next().getPlayers().forEach(Player::kill);
-
 			return true;
 		} catch (IOException e) {
 			return false;

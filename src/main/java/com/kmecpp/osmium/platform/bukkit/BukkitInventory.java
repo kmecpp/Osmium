@@ -1,6 +1,11 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import java.util.Collection;
+
+import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.Wrappers;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.api.inventory.ItemStack;
 
 public class BukkitInventory implements Inventory {
 
@@ -10,6 +15,11 @@ public class BukkitInventory implements Inventory {
 
 	public BukkitInventory(org.bukkit.inventory.Inventory inventory) {
 		this.inventory = inventory;
+	}
+
+	@Override
+	public org.bukkit.inventory.Inventory getSource() {
+		return inventory;
 	}
 
 	@Override
@@ -23,8 +33,18 @@ public class BukkitInventory implements Inventory {
 	}
 
 	@Override
-	public org.bukkit.inventory.Inventory getSource() {
-		return inventory;
+	public int getItemCount() {
+		return inventory.getContents().length;
+	}
+
+	@Override
+	public ItemStack getItem(int index) {
+		return BukkitAccess.getItemStack(inventory.getItem(index));
+	}
+
+	@Override
+	public Collection<ItemStack> getItems() {
+		return Wrappers.convert(inventory.getContents(), BukkitAccess::getItemStack);
 	}
 
 }

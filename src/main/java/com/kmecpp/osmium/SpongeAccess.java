@@ -12,7 +12,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.api.Block;
@@ -26,6 +25,7 @@ import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
+import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -37,6 +37,7 @@ import com.kmecpp.osmium.platform.sponge.SpongeBlockCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeChunk;
 import com.kmecpp.osmium.platform.sponge.SpongeConsoleCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeEntity;
+import com.kmecpp.osmium.platform.sponge.SpongeItemStack;
 
 public class SpongeAccess {
 
@@ -44,8 +45,12 @@ public class SpongeAccess {
 		return Text.of(str);
 	}
 
-	public static ItemType getItemType(ItemStack itemStack) {
-		return Osmium.getItemManager().getItemType(itemStack.getType().getId());
+	public static ItemStack getItemStack(org.spongepowered.api.item.inventory.ItemStack itemStack) {
+		return new SpongeItemStack(itemStack);
+	}
+
+	public static ItemType getItemType(org.spongepowered.api.item.inventory.ItemStack itemStack) {
+		return Osmium.getItemManager().getItemType(itemStack.getType().getKey().getValue());
 	}
 
 	public static Chunk getChunk(org.spongepowered.api.world.Chunk chunk) {
