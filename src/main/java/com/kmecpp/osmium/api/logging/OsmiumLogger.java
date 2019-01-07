@@ -18,6 +18,12 @@ public class OsmiumLogger {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppInfo.NAME);
 	private static final String PREFIX = Chat.DARK_AQUA + "[" + Chat.AQUA + AppInfo.NAME + "%L" + Chat.DARK_AQUA + "] ";
 
+	private static boolean stdout;
+
+	public static void setStandardOutput(boolean stdout) {
+		OsmiumLogger.stdout = stdout;
+	}
+
 	public static final void debug(String message) {
 		if (CoreOsmiumConfiguration.coloredConsole) {
 			log(LogLevel.DEBUG, AppInfo.NAME, message);
@@ -65,6 +71,11 @@ public class OsmiumLogger {
 			return;
 		}
 
+		if (stdout) {
+			printDefault(level, message);
+			return;
+		}
+
 		boolean displayLevel = level != LogLevel.DEBUG && level != LogLevel.INFO;
 		if (Platform.isBukkit()) {
 			if (Bukkit.getConsoleSender() != null) { //This seems to only be an issue on legacy servers during startup
@@ -74,20 +85,21 @@ public class OsmiumLogger {
 				Bukkit.getLogger().log(level.getLevel(), "[" + prefix + "] " + message);
 			}
 		} else if (Platform.isSponge()) {
-			Sponge.getServer().getConsole().sendMessage(Text.of(TextColors.DARK_AQUA, "[", TextColors.AQUA, prefix,
-					(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColorImplementation(), level) : Text.empty()),
-					TextColors.DARK_AQUA, "] ", level.getColorImplementation(), message));
+			Sponge.getServer()
+					.getConsole()
+					.sendMessage(Text.of(TextColors.DARK_AQUA, "[", TextColors.AQUA, prefix,
+							(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColorImplementation(), level) : Text.empty()),
+							TextColors.DARK_AQUA, "] ", level.getColorImplementation(), message));
 		} else {
-			if (level == LogLevel.ERROR) {
-				System.err.println(message);
-			} else {
-				System.out.println(message);
-			}
-			//			if (LOGGER instanceof NOPLogger) {
-			//				System.out.println(message);
-			//			} else {
-			//				LOGGER.info(message);
-			//			}
+			printDefault(level, message);
+		}
+	}
+
+	private static void printDefault(LogLevel level, String message) {
+		if (level == LogLevel.ERROR) {
+			System.err.println(message);
+		} else {
+			System.out.println(message);
 		}
 	}
 

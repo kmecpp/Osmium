@@ -1,10 +1,9 @@
 package com.kmecpp.osmium;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
@@ -19,7 +18,6 @@ import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.Player;
-import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.inventory.ItemStack;
@@ -129,27 +127,34 @@ public class BukkitAccess {
 		}
 	}
 
-	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) throws Exception {
+	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> consumer) {
 		Class<? extends org.bukkit.event.Event> bukkitEventClass = eventInfo.getSource();
 
-		Constructor<? extends Event> eventWrapper = eventInfo.getImplementation().getConstructor(bukkitEventClass);
+		//		Constructor<? extends Event> eventWrapper;
+		//		try {
+		//			eventWrapper = eventInfo.getImplementation().getConstructor(bukkitEventClass);
+		//		} catch (NoSuchMethodException | SecurityException e) {
+		//			e.printStackTrace();
+		//			return;
+		//		}
 		Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getPluginImplementation(), (EventPriority) order.getSource(), (bukkitListener, bukkitEvent) -> {
-			if (bukkitEventClass.isAssignableFrom(bukkitEvent.getClass())) {
-				try {
-					Event event = eventWrapper.newInstance(bukkitEvent);
-					if (!event.shouldFire()) {
-						return;
-					}
-
-					try {
-						method.invoke(listenerInstance, event);
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
-				}
-			}
+			consumer.accept(bukkitEvent);
+			//			if (bukkitEventClass.isAssignableFrom(bukkitEvent.getClass())) {
+			//				try {
+			//					Event event = eventWrapper.newInstance(bukkitEvent);
+			//					if (!event.shouldFire()) {
+			//						return;
+			//					}
+			//
+			//					try {
+			//						method.invoke(listenerInstance, event);
+			//					} catch (Exception ex) {
+			//						ex.printStackTrace();
+			//					}
+			//				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			//					e.printStackTrace();
+			//				}
+			//			}
 		}, plugin.getPluginImplementation(), true);
 	}
 

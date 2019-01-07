@@ -31,7 +31,7 @@ public class ItemManager {
 
 		for (T type : types) {
 			try {
-				if (!Platform.isBukkit()) {
+				if (Platform.isBukkit()) {
 					for (Material material : Material.values()) {
 						if (material.name().equals(type.name())) {
 							sourceField.set(type, material);

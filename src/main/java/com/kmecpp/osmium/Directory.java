@@ -33,7 +33,7 @@ public class Directory {
 	public static JarFile getJarFile(Class<?> cls) {
 		//Weird Sponge hack. Not sure why this is necessary
 		try {
-			return Platform.isSponge()
+			return Platform.isSponge() && !Platform.isBukkit()
 					? ((JarURLConnection) cls.getProtectionDomain().getCodeSource().getLocation().toURI().toURL().openConnection()).getJarFile()
 					: new JarFile(new File(cls.getProtectionDomain().getCodeSource().getLocation().toURI()));
 		} catch (IOException | URISyntaxException e) {

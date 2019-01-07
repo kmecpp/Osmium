@@ -26,6 +26,7 @@ eclipse {
 configurations {
     shade
     compile.extendsFrom shade
+    testCompile.extendsFrom compile
 }
 
 /*

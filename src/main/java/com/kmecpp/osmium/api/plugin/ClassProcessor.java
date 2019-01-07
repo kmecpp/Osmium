@@ -228,16 +228,17 @@ public class ClassProcessor {
 					if (eventInfo.isOsmiumEvent()) {
 						Osmium.getEventManager().registerListener(eventInfo.getImplementation(), instance, method); //Register implementation class for Osmium
 					} else {
-						try {
-							if (Platform.isBukkit()) {
-								BukkitAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
-							} else if (Platform.isSponge()) {
-								SpongeAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-							break;
-						}
+						Osmium.getEventManager().registerSourceListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
+						//						try {
+						//							if (Platform.isBukkit()) {
+						//								BukkitAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
+						//							} else if (Platform.isSponge()) {
+						//								SpongeAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
+						//							}
+						//						} catch (Exception e) {
+						//							e.printStackTrace();
+						//							break;
+						//						}
 					}
 				}
 			}
