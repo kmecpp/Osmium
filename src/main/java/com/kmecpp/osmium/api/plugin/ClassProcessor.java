@@ -97,7 +97,7 @@ public class ClassProcessor {
 		classInstances.put(listener.getClass(), listener);
 	}
 
-	protected void initializeHooks() {
+	protected void initializeClasses() {
 		for (Class<?> cls : pluginClasses) {
 			if (!Reflection.isConcrete(cls)) {
 				continue;
@@ -111,7 +111,7 @@ public class ClassProcessor {
 		}
 	}
 
-	private void onLoad(Class<?> cls) {
+	public void onLoad(Class<?> cls) {
 		OsmiumLogger.debug("Loading class: " + cls.getName());
 
 		//CONFIGURATIONS
@@ -144,7 +144,7 @@ public class ClassProcessor {
 		}
 	}
 
-	private void onEnable(Class<?> cls) {
+	public void onEnable(Class<?> cls) {
 		OsmiumLogger.debug("Initializing class: " + cls.getName());
 
 		//COMMANDS

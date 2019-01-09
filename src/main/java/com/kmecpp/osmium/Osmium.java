@@ -134,7 +134,7 @@ public final class Osmium {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T getInstance(Class<T> cls) {
-		return (T) getInvokingPlugin().getClassManager().getClassInstances().get(cls);
+		return (T) getInvokingPlugin().getClassProcessor().getClassInstances().get(cls);
 	}
 
 	public static void shutdown() {
@@ -156,7 +156,7 @@ public final class Osmium {
 	public static void broadcast(Predicate<Player> filter, String message) {
 		for (Player player : Osmium.getOnlinePlayers()) {
 			if (filter.test(player)) {
-				player.sendStyledMessage(message);
+				player.send(message);
 			}
 		}
 	}

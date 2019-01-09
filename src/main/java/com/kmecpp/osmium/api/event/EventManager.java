@@ -60,17 +60,22 @@ public class EventManager {
 	}
 
 	public void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {
-		Class<?> osmiumImplementation = eventInfo.getOsmiumImplementation();
-		Class<?>[] nestedClasses = osmiumImplementation.getClass().getDeclaredClasses();
+		Class<? extends Event> osmiumEventInterface = eventInfo.getEvent(); //getOsmiumImplementation();
+		Class<?>[] nestedClasses = osmiumEventInterface.getClass().getDeclaredClasses();
 
+		//Register event class with children
+		boolean registered = false;
 		for (Class<?> nestedClass : nestedClasses) {
-			if (Event.class.isAssignableFrom(nestedClass)) {
+			if (Event.class.isAssignableFrom(nestedClass) && nestedClass.isInterface()) {
 				registerSourceListener(plugin, EventInfo.get(Reflection.cast(nestedClass)), order, method, listenerInstance);
-				return;
+				registered = true;
 			}
 		}
 
-		registerSourceListener(plugin, eventInfo, order, method, listenerInstance);
+		//Register single event class
+		if (!registered) {
+			registerSourceListener(plugin, eventInfo, order, method, listenerInstance);
+		}
 	}
 
 	private void registerSourceListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {

@@ -82,9 +82,9 @@ public final class CommandManager {
 			return true;
 		} catch (CommandException e) {
 			if (e == CommandException.USAGE_ERROR) {
-				sender.sendStyledMessage("&cUsage: " + command.getUsage());
+				sender.send("&cUsage: " + command.getUsage());
 			} else {
-				sender.sendStyledMessage("&c" + e.getMessage());
+				sender.send("&c" + e.getMessage());
 			}
 			return false;
 		}

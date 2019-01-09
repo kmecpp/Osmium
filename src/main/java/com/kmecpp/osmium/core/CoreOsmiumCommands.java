@@ -16,10 +16,10 @@ public class CoreOsmiumCommands extends Command {
 		add("info")
 				.setDescription("Displays information about the Osmium API")
 				.setExecutor((e) -> {
-					e.sendStyledMessage("&aPlugin: " + "&b" + AppInfo.NAME);
-					e.sendStyledMessage("&aVersion: " + "&b" + AppInfo.VERSION);
-					e.sendStyledMessage("&aAuthor: " + "&b" + "kmecpp");
-					e.sendStyledMessage("&aWebsite: " + "&b" + "https://github.com/kmecpp/Osmium");
+					e.send("&aPlugin: " + "&b" + AppInfo.NAME);
+					e.send("&aVersion: " + "&b" + AppInfo.VERSION);
+					e.send("&aAuthor: " + "&b" + "kmecpp");
+					e.send("&aWebsite: " + "&b" + "https://github.com/kmecpp/Osmium");
 				});
 
 		add("reload")
@@ -28,7 +28,7 @@ public class CoreOsmiumCommands extends Command {
 					for (OsmiumPlugin plugin : Osmium.getPlugins()) {
 						plugin.onReload();
 					}
-					e.sendStyledMessage("&aOsmium plugins reloaded successfully!");
+					e.send("&aOsmium plugins reloaded successfully!");
 				});
 
 		add("plugins")
@@ -38,21 +38,21 @@ public class CoreOsmiumCommands extends Command {
 					if (e.isBaseCommand()) {
 						e.sendTitle("Osmium Plugins");
 						for (OsmiumPlugin plugin : Osmium.getPlugins()) {
-							e.sendStyledMessage("&e - &a" + plugin.getName() + " &ev&b" + plugin.getVersion());
+							e.send("&e - &a" + plugin.getName() + " &ev&b" + plugin.getVersion());
 						}
 					} else if (e.getArgs().length == 1) {
 						OsmiumPlugin plugin = e.getPlugin(0);
 						e.sendTitle("Osmium Plugin Info");
-						e.sendStyledMessage("&aName: &b" + plugin.getName());
-						e.sendStyledMessage("&aVersion: " + "&b" + plugin.getVersion());
+						e.send("&aName: &b" + plugin.getName());
+						e.send("&aVersion: " + "&b" + plugin.getVersion());
 						if (plugin.hasAuthors()) {
-							e.sendStyledMessage("&aAuthor" + (plugin.getAuthors().length >= 2 ? "s" : "") + ": " + "&b" + String.join(", ", plugin.getAuthors()));
+							e.send("&aAuthor" + (plugin.getAuthors().length >= 2 ? "s" : "") + ": " + "&b" + String.join(", ", plugin.getAuthors()));
 						}
 						if (plugin.hasWebsite()) {
-							e.sendStyledMessage("&aWebsite: " + "&b" + plugin.getWebsite());
+							e.send("&aWebsite: " + "&b" + plugin.getWebsite());
 						}
 						if (plugin.hasDependencies()) {
-							e.sendStyledMessage("&aDependencies: " + "&b" + String.join(", ", plugin.getDependencies()));
+							e.send("&aDependencies: " + "&b" + String.join(", ", plugin.getDependencies()));
 						}
 					} else {
 						usageError();
@@ -66,10 +66,10 @@ public class CoreOsmiumCommands extends Command {
 					OsmiumPlugin plugin = e.getPlugin(0);
 					e.sendTitle(plugin.getName() + " Commands");
 					for (Command command : Osmium.getCommandManager().getCommands(plugin)) {
-						e.sendStyledMessage("&b/" + command.getPrimaryAlias() + (command.hasDescription() ? "&e - &a" + command.getDescription() : ""));
-						e.sendStyledMessage("    &bAliases: " + Arrays.toString(command.getAliases()));
+						e.send("&b/" + command.getPrimaryAlias() + (command.hasDescription() ? "&e - &a" + command.getDescription() : ""));
+						e.send("    &bAliases: " + Arrays.toString(command.getAliases()));
 						if (command.hasPermission()) {
-							e.sendStyledMessage("    &bPermission: " + command.getPermission());
+							e.send("    &bPermission: " + command.getPermission());
 						}
 					}
 				});

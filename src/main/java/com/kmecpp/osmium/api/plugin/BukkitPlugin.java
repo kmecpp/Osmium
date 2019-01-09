@@ -40,7 +40,7 @@ public class BukkitPlugin extends JavaPlugin implements Listener {
 		if (plugin != null) {
 			plugin.onPreInit();
 			Bukkit.getPluginManager().registerEvents(this, this);
-			plugin.getClassManager().initializeHooks();
+			plugin.getClassProcessor().initializeClasses();
 			plugin.onInit();
 			plugin.onPostInit();
 		}

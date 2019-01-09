@@ -1,11 +1,13 @@
 package com.kmecpp.osmium.platform.sponge;
 
-import org.spongepowered.api.data.manipulator.mutable.DisplayNameData;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
+import com.kmecpp.osmium.api.util.Reflection;
 
 public class SpongeItemStack implements ItemStack {
 
@@ -18,18 +20,40 @@ public class SpongeItemStack implements ItemStack {
 	}
 
 	@Override
-	public ItemType getType() {
-		return type;
-	}
-
-	@Override
 	public org.spongepowered.api.item.inventory.ItemStack getSource() {
 		return itemStack;
 	}
 
 	@Override
+	public ItemType getType() {
+		return type;
+	}
+
+	@Override
+	public void setType(ItemType type) {
+		itemStack = org.spongepowered.api.item.inventory.ItemStack.builder().from(itemStack).itemType(Reflection.cast(type.getSource())).build();
+		//		itemStack.ty(Reflection.cast(type.getSource()));
+	}
+
+	@Override
+	public int getDamage() {
+		return itemStack.get(Keys.ITEM_DURABILITY).orElse(0);
+	}
+
+	@Override
+	public void setDamage(int damage) {
+		itemStack.offer(Keys.ITEM_DURABILITY, damage);
+	}
+
+	@Override
 	public String getDisplayName() {
-		return itemStack.get(DisplayNameData.class).get().displayName().get().toString();
+		return itemStack.get(Keys.DISPLAY_NAME).get().toString();
+		//		return itemStack.get(DisplayNameData.class).get().displayName().get().toString();
+	}
+
+	@Override
+	public void setDisplayName(String name) {
+		itemStack.offer(Keys.DISPLAY_NAME, Text.of(name));
 	}
 
 	@Override
@@ -38,8 +62,8 @@ public class SpongeItemStack implements ItemStack {
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return itemStack.getType() == ItemTypes.AIR;
+	public void setAmount(int amount) {
+		itemStack.setQuantity(amount);
 	}
 
 }

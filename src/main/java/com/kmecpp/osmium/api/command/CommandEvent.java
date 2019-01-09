@@ -133,7 +133,7 @@ public class CommandEvent implements Messageable {
 
 	public void handleError(Throwable t) {
 		t.printStackTrace();
-		sendStyledMessage("&cError: " + t.getMessage());
+		send("&cError: " + t.getMessage());
 	}
 
 	public CommandException notFound(String expectedLabel, String input) {

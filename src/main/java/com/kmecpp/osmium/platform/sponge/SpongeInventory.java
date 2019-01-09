@@ -8,6 +8,7 @@ import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.Wrappers;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
+import com.kmecpp.osmium.api.util.Reflection;
 
 public class SpongeInventory implements Inventory {
 
@@ -42,6 +43,11 @@ public class SpongeInventory implements Inventory {
 	@Override
 	public ItemStack getItem(int index) {
 		return SpongeAccess.getItemStack(inventory.getSlot(SlotIndex.of(index)).orElseThrow(IndexOutOfBoundsException::new).peek());
+	}
+
+	@Override
+	public void setItem(int index, ItemStack itemStack) {
+		inventory.getSlot(SlotIndex.of(index)).get().set(Reflection.cast(itemStack.getSource()));
 	}
 
 	@Override

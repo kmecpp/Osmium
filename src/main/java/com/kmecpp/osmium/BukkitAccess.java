@@ -122,11 +122,9 @@ public class BukkitAccess {
 					CommandSender sender = bukkitSender instanceof org.bukkit.entity.Player
 							? getPlayer((org.bukkit.entity.Player) bukkitSender)
 							: bukkitSender instanceof org.bukkit.command.ConsoleCommandSender
-									? new BukkitConsoleCommandSender(
-											(org.bukkit.command.ConsoleCommandSender) bukkitSender)
+									? new BukkitConsoleCommandSender((org.bukkit.command.ConsoleCommandSender) bukkitSender)
 									: bukkitSender instanceof org.bukkit.command.BlockCommandSender
-											? new BukkitBlockCommandSender(
-													(org.bukkit.command.BlockCommandSender) bukkitSender)
+											? new BukkitBlockCommandSender((org.bukkit.command.BlockCommandSender) bukkitSender)
 											: new GenericBukkitCommandSender(bukkitSender);
 					return CommandManager.invokeCommand(command, sender, label, args);
 				}

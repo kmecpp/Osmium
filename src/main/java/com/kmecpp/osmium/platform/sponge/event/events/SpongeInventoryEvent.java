@@ -1,5 +1,8 @@
 package com.kmecpp.osmium.platform.sponge.event.events;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
@@ -80,32 +83,18 @@ public class SpongeInventoryEvent implements InventoryEvent {
 
 	}
 
-	public static class SpongeInventoryClickEvent implements InventoryEvent.Click {
+	public static class SpongeInventoryClickEvent extends SpongeInventoryEvent implements InventoryEvent.Click {
 
 		private ClickInventoryEvent event;
 
 		public SpongeInventoryClickEvent(ClickInventoryEvent event) {
+			super(event);
 			this.event = event;
 		}
 
 		@Override
 		public ClickInventoryEvent getSource() {
 			return event;
-		}
-
-		@Override
-		public Inventory getInventory() {
-			return SpongeAccess.getInventory(event.getTargetInventory());
-		}
-
-		@Override
-		public boolean isCancelled() {
-			return event.isCancelled();
-		}
-
-		@Override
-		public void setCancelled(boolean cancel) {
-			event.setCancelled(cancel);
 		}
 
 		@Override
@@ -129,14 +118,47 @@ public class SpongeInventoryEvent implements InventoryEvent {
 		}
 
 		@Override
-		public Player getPlayer() {
-			return SpongeAccess.getPlayer((org.spongepowered.api.entity.living.player.Player) event.getSource());
+		public boolean shouldFire() {
+			return event.getSource() instanceof org.spongepowered.api.entity.living.player.Player && !(event instanceof ClickInventoryEvent.Drag);
+		}
+
+	}
+
+	public static class SpongeInventoryDragEvent extends SpongeInventoryEvent implements InventoryEvent.Drag {
+
+		private ClickInventoryEvent.Drag event;
+
+		public SpongeInventoryDragEvent(ClickInventoryEvent.Drag event) {
+			super(event);
+			this.event = event;
+		}
+
+		@Override
+		public ClickInventoryEvent.Drag getSource() {
+			return event;
+		}
+
+		@Override
+		public boolean isEvenDrag() {
+			return event instanceof ClickInventoryEvent.Drag.Primary;
+		}
+
+		@Override
+		public boolean isSingleDrag() {
+			return event instanceof ClickInventoryEvent.Drag.Secondary;
+		}
+
+		@Override
+		public Set<Integer> getSlots() {
+			return event.getTransactions().stream()
+					.map(t -> t.getSlot().getProperty(SlotIndex.class).get().getValue())
+					.collect(Collectors.toSet());
 		}
 
 		@Override
 		public boolean shouldFire() {
 			return event.getSource() instanceof org.spongepowered.api.entity.living.player.Player
-					&& event.getTransactions().size() == 1;
+					&& event instanceof ClickInventoryEvent.Drag;
 		}
 
 	}

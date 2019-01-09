@@ -70,7 +70,7 @@ public abstract class OsmiumPlugin {
 	//		return pluginClasses;
 	//	}
 
-	public ClassProcessor getClassManager() {
+	public ClassProcessor getClassProcessor() {
 		return classProcessor;
 	}
 

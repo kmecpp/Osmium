@@ -1,10 +1,12 @@
 package com.kmecpp.osmium.platform.bukkit;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
+import com.kmecpp.osmium.api.util.Reflection;
 
 public class BukkitItemStack implements ItemStack {
 
@@ -17,13 +19,35 @@ public class BukkitItemStack implements ItemStack {
 	}
 
 	@Override
+	public org.bukkit.inventory.ItemStack getSource() {
+		return itemStack;
+	}
+
+	@Override
 	public ItemType getType() {
 		return type;
 	}
 
 	@Override
-	public org.bukkit.inventory.ItemStack getSource() {
-		return itemStack;
+	public void setType(ItemType type) {
+		itemStack.setType(Reflection.cast(type.getSource()));
+	}
+
+	@Override
+	public int getDamage() {
+		if (itemStack.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable) {
+			return ((org.bukkit.inventory.meta.Damageable) itemStack.getItemMeta()).getDamage();
+		}
+		return 0;
+	}
+
+	@Override
+	public void setDamage(int damage) {
+		if (itemStack.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable) {
+			ItemMeta meta = itemStack.getItemMeta();
+			((org.bukkit.inventory.meta.Damageable) meta).setDamage(damage);
+			itemStack.setItemMeta(meta);
+		}
 	}
 
 	@Override
@@ -32,13 +56,20 @@ public class BukkitItemStack implements ItemStack {
 	}
 
 	@Override
+	public void setDisplayName(String name) {
+		ItemMeta meta = itemStack.getItemMeta();
+		meta.setDisplayName(name);
+		itemStack.setItemMeta(meta);
+	}
+
+	@Override
 	public int getAmount() {
 		return itemStack.getAmount();
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return itemStack.getType() == Material.AIR;
+	public void setAmount(int amount) {
+		itemStack.setAmount(amount);
 	}
 
 }

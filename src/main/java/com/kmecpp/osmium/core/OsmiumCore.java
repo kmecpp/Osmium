@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.core;
 
 import com.kmecpp.osmium.AppInfo;
+import com.kmecpp.osmium.api.inventory.InventoryMenu;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
 
@@ -20,6 +21,8 @@ public class OsmiumCore extends OsmiumPlugin {
 	@Override
 	public void onInit() {
 		enableMetrics();
+
+		this.getClassProcessor().onEnable(InventoryMenu.class);
 		//		if (Platform.isBukkit()) {
 		//			this.metricsImplementation = new OsmiumMetrics(getPluginImplementation());
 		//		} else if (Platform.isSponge()) {

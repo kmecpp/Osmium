@@ -6,6 +6,7 @@ import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Wrappers;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
+import com.kmecpp.osmium.api.util.Reflection;
 
 public class BukkitInventory implements Inventory {
 
@@ -40,6 +41,11 @@ public class BukkitInventory implements Inventory {
 	@Override
 	public ItemStack getItem(int index) {
 		return BukkitAccess.getItemStack(inventory.getItem(index));
+	}
+
+	@Override
+	public void setItem(int index, ItemStack itemStack) {
+		inventory.setItem(index, Reflection.cast(itemStack.getSource()));
 	}
 
 	@Override

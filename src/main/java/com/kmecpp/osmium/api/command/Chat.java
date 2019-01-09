@@ -87,6 +87,9 @@ public enum Chat {
 		//		if (!message.contains("&")) {
 		//			return message;
 		//		}
+		if (message == null) {
+			return "";
+		}
 
 		boolean styled = false;
 		char[] chars = message.toCharArray();

@@ -18,13 +18,16 @@ import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockBreakEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryClickEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryCloseEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryDragEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryOpenEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerChatEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectionEvent.BukkitPlayerAuthEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectionEvent.BukkitPlayerJoinEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectionEvent.BukkitPlayerLoginEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectionEvent.BukkitPlayerQuitEvent;
-import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerInteractEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerInteractEvent.BukkitPlayerInteractBlockEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerInteractEvent.BukkitPlayerInteractEntityEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerInteractEvent.BukkitPlayerInteractItemEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerMoveEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerTeleportEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
@@ -32,13 +35,16 @@ import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockBreakEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryClickEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryCloseEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryDragEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryOpenEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerChatEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerAuthEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerJoinEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerLoginEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerQuitEvent;
-import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerInteractEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerInteractEvent.SpongePlayerInteractBlockEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerInteractEvent.SpongePlayerInteractEntityEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerInteractEvent.SpongePlayerInteractItemEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerMoveEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerTeleportEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeServerListPingEvent;
@@ -83,23 +89,27 @@ public class EventInfo {
 		//@formatter:off
 		register(PlayerMovePositionEvent.class,     OsmiumPlayerMovePositionEvent.class);
 
-		
-		register(InventoryEvent.Open.class,          BukkitInventoryOpenEvent.class,   SpongeInventoryOpenEvent.class);
-		register(InventoryEvent.Close.class,         BukkitInventoryCloseEvent.class,  SpongeInventoryCloseEvent.class);
-		register(InventoryEvent.Click.class,         BukkitInventoryClickEvent.class,  SpongeInventoryClickEvent.class);
+		register(InventoryEvent.Open.class,           BukkitInventoryOpenEvent.class,          SpongeInventoryOpenEvent.class);
+		register(InventoryEvent.Close.class,          BukkitInventoryCloseEvent.class,         SpongeInventoryCloseEvent.class);
+		register(InventoryEvent.Click.class,          BukkitInventoryClickEvent.class,         SpongeInventoryClickEvent.class);
+		register(InventoryEvent.Drag.class,           BukkitInventoryDragEvent.class,          SpongeInventoryDragEvent.class);
+		                                                                                       
+		register(PlayerInteractEvent.Item.class,      BukkitPlayerInteractItemEvent.class,     SpongePlayerInteractItemEvent.class);
+		register(PlayerInteractEvent.Block.class,     BukkitPlayerInteractBlockEvent.class,    SpongePlayerInteractBlockEvent.class);
+		register(PlayerInteractEvent.Entity.class,    BukkitPlayerInteractEntityEvent.class,   SpongePlayerInteractEntityEvent.class);
+//		register(PlayerInteractEvent.Physical.class,  BukkitPlayerInteractPhysicalEvent.class, SpongePlayerInteractPhysicalEvent.class);
                                                                                        
-		register(PlayerChatEvent.class,              BukkitPlayerChatEvent.class,      SpongePlayerChatEvent.class);
-		register(PlayerInteractEvent.class,          BukkitPlayerInteractEvent.class,  SpongePlayerInteractEvent.class);
-		register(PlayerMoveEvent.class,              BukkitPlayerMoveEvent.class,      SpongePlayerMoveEvent.class);
-		register(PlayerTeleportEvent.class,          BukkitPlayerTeleportEvent.class,  SpongePlayerTeleportEvent.class);
-		                                
-		register(PlayerConnectionEvent.Auth.class,   BukkitPlayerAuthEvent.class,      SpongePlayerAuthEvent.class);
-		register(PlayerConnectionEvent.Login.class,  BukkitPlayerLoginEvent.class,     SpongePlayerLoginEvent.class);
-		register(PlayerConnectionEvent.Join.class,   BukkitPlayerJoinEvent.class,      SpongePlayerJoinEvent.class);
-		register(PlayerConnectionEvent.Quit.class,   BukkitPlayerQuitEvent.class,      SpongePlayerQuitEvent.class);
-		                                                                               
-		register(ServerListPingEvent.class,          BukkitServerListPingEvent.class,  SpongeServerListPingEvent.class);
-		register(BlockEvent.Break.class,             BukkitBlockBreakEvent.class,      SpongeBlockBreakEvent.class);
+		register(PlayerChatEvent.class,               BukkitPlayerChatEvent.class,             SpongePlayerChatEvent.class);
+		register(PlayerMoveEvent.class,               BukkitPlayerMoveEvent.class,             SpongePlayerMoveEvent.class);
+		register(PlayerTeleportEvent.class,           BukkitPlayerTeleportEvent.class,         SpongePlayerTeleportEvent.class);
+		                                                                                       
+		register(PlayerConnectionEvent.Auth.class,    BukkitPlayerAuthEvent.class,             SpongePlayerAuthEvent.class);
+		register(PlayerConnectionEvent.Login.class,   BukkitPlayerLoginEvent.class,            SpongePlayerLoginEvent.class);
+		register(PlayerConnectionEvent.Join.class,    BukkitPlayerJoinEvent.class,             SpongePlayerJoinEvent.class);
+		register(PlayerConnectionEvent.Quit.class,    BukkitPlayerQuitEvent.class,             SpongePlayerQuitEvent.class);
+		                                                                                       
+		register(ServerListPingEvent.class,           BukkitServerListPingEvent.class,         SpongeServerListPingEvent.class);
+		register(BlockEvent.Break.class,              BukkitBlockBreakEvent.class,             SpongeBlockBreakEvent.class);
 		//@formatter:on
 	}
 

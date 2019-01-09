@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerInteractEvent;
+import com.kmecpp.osmium.api.inventory.ItemStack;
 
 public class BukkitPlayerInteractEvent implements PlayerInteractEvent {
 
@@ -47,6 +48,11 @@ public class BukkitPlayerInteractEvent implements PlayerInteractEvent {
 			return event.hasItem();
 		}
 
+		@Override
+		public ItemStack getItemStack() {
+			return BukkitAccess.getItemStack(event.getItem());
+		}
+
 	}
 
 	public static class BukkitPlayerInteractBlockEvent extends BukkitPlayerInteractEvent implements PlayerInteractEvent.Block {
@@ -58,6 +64,11 @@ public class BukkitPlayerInteractEvent implements PlayerInteractEvent {
 		@Override
 		public boolean shouldFire() {
 			return event.hasBlock();
+		}
+
+		@Override
+		public com.kmecpp.osmium.api.Block getBlock() {
+			return BukkitAccess.getBlock(event.getClickedBlock());
 		}
 
 	}
@@ -106,6 +117,11 @@ public class BukkitPlayerInteractEvent implements PlayerInteractEvent {
 			return leftClickEvent != null
 					? leftClickEvent.getDamager() instanceof org.bukkit.entity.Player
 					: true;
+		}
+
+		@Override
+		public com.kmecpp.osmium.api.entity.Entity getEntity() {
+			return BukkitAccess.getEntity(leftClickEvent != null ? leftClickEvent.getEntity() : rightClickEvent.getRightClicked());
 		}
 
 	}

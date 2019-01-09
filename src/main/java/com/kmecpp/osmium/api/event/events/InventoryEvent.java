@@ -17,7 +17,25 @@ public interface InventoryEvent extends PlayerEvent, Cancellable {
 	public interface Close extends InventoryEvent {
 	}
 
-	public interface Click extends InventoryEvent {
+	public interface Interact extends InventoryEvent {
+
+		boolean isClick();
+
+		boolean isDrag();
+
+	}
+
+	public interface Click extends Interact {
+
+		@Override
+		default boolean isClick() {
+			return true;
+		}
+
+		@Override
+		default boolean isDrag() {
+			return false;
+		}
 
 		int getSlot();
 
@@ -29,7 +47,17 @@ public interface InventoryEvent extends PlayerEvent, Cancellable {
 
 	}
 
-	public interface Drag extends InventoryEvent {
+	public interface Drag extends Interact {
+
+		@Override
+		default boolean isClick() {
+			return false;
+		}
+
+		@Override
+		default boolean isDrag() {
+			return true;
+		}
 
 		boolean isEvenDrag();
 

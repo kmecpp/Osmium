@@ -1,5 +1,7 @@
 package com.kmecpp.osmium;
 
+import java.util.concurrent.Callable;
+
 import org.bukkit.Bukkit;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -8,18 +10,18 @@ import com.kmecpp.osmium.api.platform.Platform;
 
 public class Hook<T> {
 
-	private T plugin;
+	private T hook;
 
-	public Hook(T plugin) {
-		this.plugin = plugin;
+	private Hook(T hook) {
+		this.hook = hook;
 	}
 
 	public boolean isLoaded() {
-		return plugin != null;
+		return hook != null;
 	}
 
-	public T getPlugin() {
-		return plugin;
+	public T get() {
+		return hook;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -35,6 +37,15 @@ public class Hook<T> {
 			}
 		}
 		return (T) new Hook<T>((T) result);
+	}
+
+	public static <T> Hook<T> get(Callable<T> callable) {
+		try {
+			return new Hook<T>(callable.call());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Hook<T>(null);
+		}
 	}
 
 }

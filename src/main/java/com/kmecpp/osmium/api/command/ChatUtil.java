@@ -86,7 +86,7 @@ public class ChatUtil {
 	public static void sendNumberedList(CommandSender sender, String title, CS colors, List<?> list) {
 		sendTitle(sender, colors, title);
 		for (int i = 0; i < list.size(); i++) {
-			sender.sendStyledMessage(colors.getTertiary() + " " + (i + 1) + ") " + colors.getSecondary() + list.get(i));
+			sender.send(colors.getTertiary() + " " + (i + 1) + ") " + colors.getSecondary() + list.get(i));
 		}
 	}
 
@@ -95,15 +95,15 @@ public class ChatUtil {
 	}
 
 	public static void sendItem(CommandSender out, String key, Object value) {
-		out.sendStyledMessage(ChatColor.AQUA + ChatColor.BOLD.toString() + key + ": " + ChatColor.GREEN + ChatColor.BOLD + String.valueOf(value));
+		out.send(ChatColor.AQUA + ChatColor.BOLD.toString() + key + ": " + ChatColor.GREEN + ChatColor.BOLD + String.valueOf(value));
 
 	}
 
 	public static void sendTitle(CommandSender out, CS colors, String title) {
-		out.sendStyledMessage("");
-		out.sendStyledMessage(colors.getPrimary() + ChatColor.BOLD.toString() + title);
-		out.sendStyledMessage(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
-		out.sendStyledMessage("");
+		out.send("");
+		out.send(colors.getPrimary() + ChatColor.BOLD.toString() + title);
+		out.send(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
+		out.send("");
 	}
 
 }

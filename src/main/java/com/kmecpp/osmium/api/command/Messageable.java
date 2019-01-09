@@ -6,7 +6,7 @@ public interface Messageable {
 
 	void sendMessage(String message);
 
-	default void sendStyledMessage(String message) {
+	default void send(String message) {
 		sendMessage(Chat.style(message));
 	}
 
@@ -15,10 +15,10 @@ public interface Messageable {
 	}
 
 	default void sendTitle(CS colors, String title) {
-		sendStyledMessage("");
-		sendStyledMessage(colors.getPrimary() + ChatColor.BOLD.toString() + title);
-		sendStyledMessage(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
-		sendStyledMessage("");
+		send("");
+		send(colors.getPrimary() + ChatColor.BOLD.toString() + title);
+		send(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
+		send("");
 	}
 
 }

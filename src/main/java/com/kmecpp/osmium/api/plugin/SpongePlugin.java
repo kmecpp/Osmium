@@ -40,7 +40,7 @@ public abstract class SpongePlugin {
 
 	@Listener
 	public void onGameInitialization(GameInitializationEvent e) {
-		plugin.getClassManager().initializeHooks();
+		plugin.getClassProcessor().initializeClasses();
 		plugin.onInit();
 	}
 
