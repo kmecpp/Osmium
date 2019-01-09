@@ -40,7 +40,7 @@ public class SpongeBlockCommandSender implements BlockCommandSender {
 	}
 
 	@Override
-	public void sendRawMessage(String message) {
+	public void sendMessage(String message) {
 		sender.sendMessage(Text.of(message));
 	}
 

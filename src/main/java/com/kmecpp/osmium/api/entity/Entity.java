@@ -25,4 +25,6 @@ public interface Entity extends Abstraction {
 
 	Direction getDirection();
 
+	EntityType getType();
+
 }

@@ -1,9 +1,14 @@
 package com.kmecpp.osmium.api.command;
 
+import java.util.Arrays;
+
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.util.StringUtil;
 
 public class CommandEvent implements Messageable {
 
@@ -18,23 +23,34 @@ public class CommandEvent implements Messageable {
 	}
 
 	public int getInt(int index) {
-		return Integer.parseInt(args[index]);
-	}
-
-	public long getLong(int index) {
-		return Long.parseLong(args[index]);
-	}
-
-	public float getFloat(int index) {
-		return Float.parseFloat(args[index]);
+		String input = args[index];
+		try {
+			return Integer.parseInt(input);
+		} catch (NumberFormatException e) {
+			throw new CommandException(StringUtil.isMathematicalInteger(input)
+					? "Expected an integer but given value was too large: '" + input + "'"
+					: "Expected an integer recieved: '" + input + "'");
+		}
 	}
 
 	public double getDouble(int index) {
-		return Double.parseDouble(args[index]);
+		String input = args[index];
+		try {
+			return Double.parseDouble(input);
+		} catch (NumberFormatException e) {
+			throw new CommandException("Expected a decimal but got: '" + input + "'");
+		}
 	}
 
 	public boolean getBoolean(int index) {
-		return Boolean.parseBoolean(args[index]);
+		String input = args[index];
+		if (StringUtil.startsWithIgnoreCase(input, "true", "1", "yes")) {
+			return true;
+		} else if (StringUtil.startsWithIgnoreCase(input, "false", "0", "no")) {
+			return false;
+		} else {
+			throw new CommandException("Expected a boolean but got: '" + input + "'");
+		}
 	}
 
 	public String getString(int index) {
@@ -51,6 +67,20 @@ public class CommandEvent implements Messageable {
 
 	public OsmiumPlugin getPlugin(int index) {
 		return Osmium.getPlugin(args[index]).orElseThrow(() -> notFound("plugin", args[index]));
+	}
+
+	public Location getLocation(int index) {
+		return sender instanceof Player
+				? new Location(((Player) sender).getWorld(), getDouble(index), getDouble(index + 1), getDouble(index + 2))
+				: new Location(getWorld(index), getDouble(index + 1), getDouble(index + 2), getDouble(index + 3));
+	}
+
+	public String getRemainingJoined(int index) {
+		return String.join(" ", Arrays.copyOfRange(args, index, args.length));
+	}
+
+	public User getUser(int index) {
+		return Osmium.getUser(args[index]).orElseThrow(() -> notFound("user", args[index]));
 	}
 
 	public Player getPlayer() {
@@ -80,20 +110,16 @@ public class CommandEvent implements Messageable {
 		return false;
 	}
 
-	//	public String getArg(int index) {
-	//		return args[index];
-	//	}
-
 	public String[] getArgs() {
 		return args;
 	}
 
 	@Override
-	public void sendRawMessage(String message) {
+	public void sendMessage(String message) {
 		sender.sendMessage(message);
 	}
 
-	public int args() {
+	public int size() {
 		return args.length;
 	}
 
@@ -107,11 +133,11 @@ public class CommandEvent implements Messageable {
 
 	public void handleError(Throwable t) {
 		t.printStackTrace();
-		sendMessage("&cError: " + t.getMessage());
+		sendStyledMessage("&cError: " + t.getMessage());
 	}
 
-	public CommandException notFound(String name, String input) {
-		return new CommandException("Could not find " + name + ": " + "'" + input + "'");
+	public CommandException notFound(String expectedLabel, String input) {
+		return new CommandException("Could find " + expectedLabel + ": '" + input + "'");
 	}
 
 	//	public void sendRawMessage(String style, String message) {

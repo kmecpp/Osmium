@@ -17,9 +17,11 @@ import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.entity.Entity;
+import com.kmecpp.osmium.api.entity.EntityType;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
+import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.location.Location;
@@ -33,10 +35,15 @@ import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitChunk;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitEntity;
+import com.kmecpp.osmium.platform.bukkit.BukkitInventory;
 import com.kmecpp.osmium.platform.bukkit.BukkitItemStack;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
+
+	public static EntityType getEntityType(org.bukkit.entity.EntityType type) {
+		return OsmiumRegistry.fromSource(EntityType.class, type);
+	}
 
 	public static ItemStack getItemStack(org.bukkit.inventory.ItemStack itemStack) {
 		return new BukkitItemStack(itemStack);
@@ -44,6 +51,10 @@ public class BukkitAccess {
 
 	public static ItemType getItemType(org.bukkit.inventory.ItemStack itemStack) {
 		return Osmium.getItemManager().getItemType(itemStack.getType().toString());
+	}
+
+	public static Inventory getInventory(org.bukkit.inventory.Inventory inventory) {
+		return new BukkitInventory(inventory);
 	}
 
 	public static Location getLocation(org.bukkit.Location location) {

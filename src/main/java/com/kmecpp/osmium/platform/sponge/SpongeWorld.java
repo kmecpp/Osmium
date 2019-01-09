@@ -49,7 +49,8 @@ public class SpongeWorld implements World {
 
 	@Override
 	public void spawnEntity(Location location, EntityType type) {
-		world.spawnEntity(world.createEntity((org.spongepowered.api.entity.EntityType) type.getImplementation(), new Vector3d(location.getX(), location.getY(), location.getZ())));
+		world.spawnEntity(world.createEntity((org.spongepowered.api.entity.EntityType) type.getSource(),
+				new Vector3d(location.getX(), location.getY(), location.getZ())));
 	}
 
 	@Override

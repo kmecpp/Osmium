@@ -10,8 +10,6 @@ public interface Player extends User, EntityLiving, CommandSender {
 
 	boolean respawn();
 
-	Inventory getInventory();
-
 	ItemStack getItemInMainHand();
 
 	ItemStack getItemInOffHand();
@@ -19,5 +17,11 @@ public interface Player extends User, EntityLiving, CommandSender {
 	GameMode getGameMode();
 
 	void setGameMode(GameMode mode);
+
+	Inventory getInventory();
+
+	void openInventory(Inventory inventory);
+
+	void closeInventory();
 
 }

@@ -50,9 +50,11 @@ public class ClassProcessor {
 
 		Enumeration<JarEntry> entry = jarFile.entries();
 		while (entry.hasMoreElements()) {
-			String name = entry.nextElement().getName().replace("/", ".");
-			if (name.startsWith(packageName) && name.endsWith(".class")) {
-				String className = name.substring(0, name.length() - 6);
+			String elementName = entry.nextElement().getName().replace("/", ".");
+
+			//Only search for elements below the parent package
+			if (elementName.startsWith(packageName) && elementName.endsWith(".class")) {
+				String className = elementName.substring(0, elementName.length() - 6);
 				try {
 					Class<?> cls = classLoader.loadClass(className);
 					cls.getDeclaredMethods(); //Verify that return types exist
@@ -65,7 +67,7 @@ public class ClassProcessor {
 						OsmiumLogger.error("Could not load class: " + className);
 						e.printStackTrace();
 					}
-					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF)
+					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF??)
 				} catch (Exception e) {
 					OsmiumLogger.error("Failed to load plugin class: " + className);
 					e.printStackTrace();
@@ -91,7 +93,7 @@ public class ClassProcessor {
 		return classInstances;
 	}
 
-	public void enableEvents(Object listener) {
+	public void provideInstance(Object listener) {
 		classInstances.put(listener.getClass(), listener);
 	}
 
@@ -181,6 +183,7 @@ public class ClassProcessor {
 				continue;
 			}
 
+			//Retrieve instance or create one if possible
 			Object instance;
 			try {
 				boolean contains = classInstances.containsKey(cls); //DONE THIS WAY BECAUSE LISTENER MUST BE FINAL
@@ -189,7 +192,7 @@ public class ClassProcessor {
 					classInstances.put(cls, instance);
 				}
 			} catch (Exception e) {
-				OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.enableEvents(listener)");
+				OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.provideInstance(obj)");
 				e.printStackTrace();
 				break;
 			}
@@ -226,19 +229,12 @@ public class ClassProcessor {
 					}
 
 					if (eventInfo.isOsmiumEvent()) {
-						Osmium.getEventManager().registerListener(eventInfo.getImplementation(), instance, method); //Register implementation class for Osmium
+						//Register implementation class for Osmium
+						Osmium.getEventManager()
+								.registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
+
 					} else {
-						Osmium.getEventManager().registerSourceListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
-						//						try {
-						//							if (Platform.isBukkit()) {
-						//								BukkitAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
-						//							} else if (Platform.isSponge()) {
-						//								SpongeAccess.registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
-						//							}
-						//						} catch (Exception e) {
-						//							e.printStackTrace();
-						//							break;
-						//						}
+						Osmium.getEventManager().registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
 					}
 				}
 			}

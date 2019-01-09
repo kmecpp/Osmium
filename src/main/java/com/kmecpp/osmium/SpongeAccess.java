@@ -20,9 +20,11 @@ import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.entity.Entity;
+import com.kmecpp.osmium.api.entity.EntityType;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
+import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.location.Location;
@@ -35,6 +37,7 @@ import com.kmecpp.osmium.platform.sponge.SpongeBlockCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeChunk;
 import com.kmecpp.osmium.platform.sponge.SpongeConsoleCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeEntity;
+import com.kmecpp.osmium.platform.sponge.SpongeInventory;
 import com.kmecpp.osmium.platform.sponge.SpongeItemStack;
 
 public class SpongeAccess {
@@ -43,12 +46,20 @@ public class SpongeAccess {
 		return Text.of(str);
 	}
 
+	public static EntityType getEntityType(org.spongepowered.api.entity.EntityType type) {
+		return OsmiumRegistry.fromSource(EntityType.class, type);
+	}
+
 	public static ItemStack getItemStack(org.spongepowered.api.item.inventory.ItemStack itemStack) {
 		return new SpongeItemStack(itemStack);
 	}
 
 	public static ItemType getItemType(org.spongepowered.api.item.inventory.ItemStack itemStack) {
 		return Osmium.getItemManager().getItemType(itemStack.getType().getKey().getValue());
+	}
+
+	public static Inventory getInventory(org.spongepowered.api.item.inventory.Inventory inventory) {
+		return new SpongeInventory(inventory);
 	}
 
 	public static Chunk getChunk(org.spongepowered.api.world.Chunk chunk) {

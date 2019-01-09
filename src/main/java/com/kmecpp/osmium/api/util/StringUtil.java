@@ -33,6 +33,20 @@ public class StringUtil {
 		//@formatter:on
 	}
 
+	public static boolean isMathematicalInteger(String str) {
+		if (str.isEmpty()) {
+			return false;
+		}
+
+		for (int i = (str.charAt(0) == '-' ? 1 : 0); i < str.length(); i++) {
+			char c = str.charAt(i);
+			if (c < '0' || c > '9') {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/**
 	 * Constructs a new {@link URL} from the String. This method is intended to
 	 * be used with hardcoded String URL's and as result rethrows

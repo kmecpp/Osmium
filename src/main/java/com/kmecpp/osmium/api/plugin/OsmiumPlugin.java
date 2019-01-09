@@ -33,7 +33,7 @@ public abstract class OsmiumPlugin {
 
 	private Class<?> config;
 
-	private ClassProcessor classManager;
+	private ClassProcessor classProcessor;
 
 	//	private HashSet<Class<?>> pluginClasses = new HashSet<>();
 
@@ -59,7 +59,7 @@ public abstract class OsmiumPlugin {
 	private void setupPlugin(Object pluginImpl) throws Exception {
 		this.pluginImplementation = pluginImpl;
 		this.persistentData = new PersistentPluginData(this);
-		this.classManager = new ClassProcessor(this, pluginImpl);
+		this.classProcessor = new ClassProcessor(this, pluginImpl);
 	}
 
 	//	public Class<? extends OsmiumPlugin> getMainClass() {
@@ -71,7 +71,7 @@ public abstract class OsmiumPlugin {
 	//	}
 
 	public ClassProcessor getClassManager() {
-		return classManager;
+		return classProcessor;
 	}
 
 	public PersistentPluginData getPersistentData() {
@@ -102,6 +102,10 @@ public abstract class OsmiumPlugin {
 	}
 
 	public void onDisable() {
+	}
+
+	public void provideInstance(Object instance) {
+		classProcessor.provideInstance(instance);
 	}
 
 	public void enableMetrics() {

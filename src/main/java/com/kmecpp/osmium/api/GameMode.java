@@ -32,7 +32,7 @@ public enum GameMode {
 		return (T) source;
 	}
 
-	public static GameMode fromImplementation(Object obj) {
+	public static GameMode fromSource(Object obj) {
 		for (GameMode gameMode : values()) {
 			if (gameMode.source == obj) {
 				return gameMode;

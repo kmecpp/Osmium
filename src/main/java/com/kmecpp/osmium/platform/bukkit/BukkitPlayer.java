@@ -29,7 +29,7 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 	}
 
 	@Override
-	public void sendRawMessage(String message) {
+	public void sendMessage(String message) {
 		player.sendMessage(message);
 	}
 
@@ -60,7 +60,7 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 
 	@Override
 	public GameMode getGameMode() {
-		return GameMode.fromImplementation(player.getGameMode());
+		return GameMode.fromSource(player.getGameMode());
 	}
 
 	@Override
@@ -91,6 +91,16 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 	@Override
 	public boolean isOnline() {
 		return player.isOnline();
+	}
+
+	@Override
+	public void openInventory(Inventory inventory) {
+		player.openInventory((org.bukkit.inventory.Inventory) inventory.getSource());
+	}
+
+	@Override
+	public void closeInventory() {
+		player.closeInventory();
 	}
 
 }

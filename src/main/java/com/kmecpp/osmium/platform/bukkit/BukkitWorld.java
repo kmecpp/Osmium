@@ -47,7 +47,7 @@ public class BukkitWorld implements World {
 
 	@Override
 	public void spawnEntity(Location location, EntityType type) {
-		world.spawnEntity(location.getImplementation(), type.getImplementation());
+		world.spawnEntity(location.getImplementation(), (org.bukkit.entity.EntityType) type.getSource());
 	}
 
 	@Override

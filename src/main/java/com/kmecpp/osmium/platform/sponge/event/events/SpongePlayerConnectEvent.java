@@ -1,12 +1,37 @@
 package com.kmecpp.osmium.platform.sponge.event.events;
 
+import java.net.InetAddress;
+import java.util.UUID;
+
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 
-public class SpongePlayerConnectEvent {
+public class SpongePlayerConnectEvent implements PlayerConnectionEvent {
+
+	private ClientConnectionEvent event;
+
+	@Override
+	public ClientConnectionEvent getSource() {
+		return event;
+	}
+
+	@Override
+	public String getPlayerName() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public UUID getUniqueId() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public InetAddress getAddress() {
+		throw new UnsupportedOperationException();
+	}
 
 	public static class SpongePlayerAuthEvent implements PlayerConnectionEvent.Auth {
 
@@ -23,7 +48,17 @@ public class SpongePlayerConnectEvent {
 
 		@Override
 		public String getPlayerName() {
-			return event.getProfile().getName().orElseGet(String::new);
+			return event.getProfile().getName().orElse("");
+		}
+
+		@Override
+		public UUID getUniqueId() {
+			return event.getProfile().getUniqueId();
+		}
+
+		@Override
+		public InetAddress getAddress() {
+			return event.getConnection().getAddress().getAddress();
 		}
 
 	}
@@ -44,6 +79,16 @@ public class SpongePlayerConnectEvent {
 		@Override
 		public String getPlayerName() {
 			return event.getTargetUser().getName();
+		}
+
+		@Override
+		public UUID getUniqueId() {
+			return event.getTargetUser().getUniqueId();
+		}
+
+		@Override
+		public InetAddress getAddress() {
+			return event.getConnection().getAddress().getAddress();
 		}
 
 	}
@@ -71,6 +116,16 @@ public class SpongePlayerConnectEvent {
 			return event.getTargetEntity().getName();
 		}
 
+		@Override
+		public UUID getUniqueId() {
+			return event.getTargetEntity().getUniqueId();
+		}
+
+		@Override
+		public InetAddress getAddress() {
+			return event.getTargetEntity().getConnection().getAddress().getAddress();
+		}
+
 	}
 
 	public static class SpongePlayerQuitEvent implements PlayerConnectionEvent.Quit {
@@ -94,6 +149,16 @@ public class SpongePlayerConnectEvent {
 		@Override
 		public String getPlayerName() {
 			return event.getTargetEntity().getName();
+		}
+
+		@Override
+		public UUID getUniqueId() {
+			return event.getTargetEntity().getUniqueId();
+		}
+
+		@Override
+		public InetAddress getAddress() {
+			return event.getTargetEntity().getConnection().getAddress().getAddress();
 		}
 
 	}

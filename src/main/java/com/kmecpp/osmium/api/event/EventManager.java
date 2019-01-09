@@ -13,6 +13,7 @@ import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.util.Reflection;
 
 public class EventManager {
 
@@ -22,14 +23,10 @@ public class EventManager {
 	//Only for Osmium events
 	private final HashMap<Class<? extends Event>, ArrayList<RegisteredListener>> events = new HashMap<>();
 
-	public void registerListener(Class<? extends Event> eventClass, Object listenerInstance, Method listener) {
+	public void registerListener(Class<? extends Event> eventClass, Order order, Object listenerInstance, Method listener) {
 		listener.setAccessible(true);
 
-		Listener annotation = listener.getAnnotation(Listener.class);
-		if (annotation == null) {
-			fail(eventClass, listener, "Listener does not have an @" + Listener.class.getSimpleName() + " annotation!");
-			return;
-		} else if (listener.getParameterTypes().length != 1 || !listener.getParameterTypes()[0].isAssignableFrom(eventClass)) {
+		if (listener.getParameterTypes().length != 1 || !listener.getParameterTypes()[0].isAssignableFrom(eventClass)) {
 			fail(eventClass, listener, "Invalid listener parameters!");
 			return;
 		} else if (listenerInstance == null) { // || listenerInstance.getClass().isAssignableFrom(listener.getParameterTypes()[0])) {
@@ -41,8 +38,7 @@ public class EventManager {
 		if (listeners == null) {
 			events.put(eventClass, (listeners = new ArrayList<>()));
 		}
-		//		listener.getAnnotation(Listener)
-		listeners.add(new RegisteredListener(listenerInstance, listener, annotation.order()));
+		listeners.add(new RegisteredListener(listenerInstance, listener, order));
 	}
 
 	private static void fail(Class<? extends Event> eventClass, Method listener, String message) {
@@ -63,7 +59,21 @@ public class EventManager {
 		}
 	}
 
-	public void registerSourceListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {
+	public void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {
+		Class<?> osmiumImplementation = eventInfo.getOsmiumImplementation();
+		Class<?>[] nestedClasses = osmiumImplementation.getClass().getDeclaredClasses();
+
+		for (Class<?> nestedClass : nestedClasses) {
+			if (Event.class.isAssignableFrom(nestedClass)) {
+				registerSourceListener(plugin, EventInfo.get(Reflection.cast(nestedClass)), order, method, listenerInstance);
+				return;
+			}
+		}
+
+		registerSourceListener(plugin, eventInfo, order, method, listenerInstance);
+	}
+
+	private void registerSourceListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {
 		Class<?> sourceEventClass = eventInfo.getSource();
 		EventKey key = new EventKey(sourceEventClass, order);
 
@@ -76,9 +86,10 @@ public class EventManager {
 		listeners.add(method);
 
 		if (!alreadyRegistered) {
-			Constructor<? extends Event> eventWrapper;
+			//Register source event once for each sourceEventClass/order combination 
+			final Constructor<? extends Event> eventWrapper;
 			try {
-				eventWrapper = eventInfo.getImplementation().getConstructor(sourceEventClass);
+				eventWrapper = eventInfo.getOsmiumImplementation().getConstructor(sourceEventClass);
 			} catch (NoSuchMethodException | SecurityException e) {
 				e.printStackTrace();
 				return;

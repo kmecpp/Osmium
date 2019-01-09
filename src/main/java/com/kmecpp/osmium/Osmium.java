@@ -156,7 +156,7 @@ public final class Osmium {
 	public static void broadcast(Predicate<Player> filter, String message) {
 		for (Player player : Osmium.getOnlinePlayers()) {
 			if (filter.test(player)) {
-				player.sendMessage(message);
+				player.sendStyledMessage(message);
 			}
 		}
 	}

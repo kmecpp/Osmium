@@ -39,7 +39,7 @@ public class SpongeConsoleCommandSender implements ConsoleCommandSender {
 	}
 
 	@Override
-	public void sendRawMessage(String message) {
+	public void sendMessage(String message) {
 		sender.sendMessage(Text.of(message));
 	}
 

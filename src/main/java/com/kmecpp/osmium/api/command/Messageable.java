@@ -4,10 +4,10 @@ import org.bukkit.ChatColor;
 
 public interface Messageable {
 
-	void sendRawMessage(String message);
+	void sendMessage(String message);
 
-	default void sendMessage(String message) {
-		sendRawMessage(Chat.style(message));
+	default void sendStyledMessage(String message) {
+		sendMessage(Chat.style(message));
 	}
 
 	default void sendTitle(String title) {
@@ -15,10 +15,10 @@ public interface Messageable {
 	}
 
 	default void sendTitle(CS colors, String title) {
-		sendMessage("");
-		sendMessage(colors.getPrimary() + ChatColor.BOLD.toString() + title);
-		sendMessage(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
-		sendMessage("");
+		sendStyledMessage("");
+		sendStyledMessage(colors.getPrimary() + ChatColor.BOLD.toString() + title);
+		sendStyledMessage(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
+		sendStyledMessage("");
 	}
 
 }

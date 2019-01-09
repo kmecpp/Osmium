@@ -1,10 +1,6 @@
 package com.kmecpp.osmium.api.command;
 
-import static org.bukkit.ChatColor.WHITE;
-
 import java.lang.reflect.Field;
-
-import org.bukkit.ChatColor;
 
 /**
  * <pre>
@@ -28,9 +24,10 @@ import org.bukkit.ChatColor;
  */
 public class CS {
 
-	private ChatColor primary = WHITE;
-	private ChatColor secondary = WHITE;
-	private ChatColor tertiary = WHITE;
+	/**
+	 * WHITE
+	 */
+	public static final CS XF = create();
 
 	/**
 	 * GOLD GREEN
@@ -77,8 +74,44 @@ public class CS {
 	 */
 	public static final CS XEAB = create();
 
+	private Chat primary = Chat.WHITE;
+	private Chat secondary = Chat.WHITE;
+	private Chat tertiary = Chat.WHITE;
+
+	public CS(Chat primary, Chat secondary) {
+		this(primary, secondary, Chat.WHITE);
+	}
+
+	public CS(Chat primary, Chat secondary, Chat tertiary) {
+		this.primary = primary;
+		this.secondary = secondary;
+		this.tertiary = tertiary;
+	}
+
+	public Chat getPrimary() {
+		return primary;
+	}
+
+	public Chat getSecondary() {
+		return secondary;
+	}
+
+	public Chat getTertiary() {
+		return tertiary;
+	}
+
 	private static CS create() {
-		return new CS(WHITE, WHITE, WHITE);
+		return new CS(Chat.WHITE, Chat.WHITE, Chat.WHITE);
+	}
+
+	public static CS from(String str) {
+		if (str.isEmpty()) {
+			return CS.XF;
+		}
+		return new CS(
+				Chat.fromCodeElseWhite(str.charAt(0)),
+				Chat.fromCodeElseWhite(str.charAt(0)),
+				Chat.fromCodeElseWhite(str.charAt(0)));
 	}
 
 	static {
@@ -87,38 +120,16 @@ public class CS {
 				try {
 					String[] parts = field.getName().substring(1).split("");
 					CS colors = ((CS) field.get(null));
-					colors.primary = ChatColor.getByChar(parts[0].toLowerCase());
-					colors.secondary = ChatColor.getByChar(parts[1].toLowerCase());
+					colors.primary = Chat.fromCode(parts[0].charAt(0));
+					colors.secondary = Chat.fromCode(parts[1].charAt(0));
 					if (parts.length == 3) {
-						colors.tertiary = ChatColor.getByChar(parts[2].toLowerCase());
+						colors.tertiary = Chat.fromCode(parts[2].charAt(0));
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
-	}
-
-	public CS(ChatColor primary, ChatColor secondary) {
-		this(primary, secondary, WHITE);
-	}
-
-	public CS(ChatColor primary, ChatColor secondary, ChatColor tertiary) {
-		this.primary = primary;
-		this.secondary = secondary;
-		this.tertiary = tertiary;
-	}
-
-	public ChatColor getPrimary() {
-		return primary;
-	}
-
-	public ChatColor getSecondary() {
-		return secondary;
-	}
-
-	public ChatColor getTertiary() {
-		return tertiary;
 	}
 
 }

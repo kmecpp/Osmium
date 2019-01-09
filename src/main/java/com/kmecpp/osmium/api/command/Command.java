@@ -28,13 +28,13 @@ public class Command extends SimpleCommand {
 	}
 
 	public void sendHelp(CommandEvent event) {
-		event.sendMessage("");
-		event.sendMessage(title);
-		event.sendMessage("&e&m----------------------------------------");
-		event.sendMessage("");
+		event.sendStyledMessage("");
+		event.sendStyledMessage(title);
+		event.sendStyledMessage("&e&m----------------------------------------");
+		event.sendStyledMessage("");
 		for (SimpleCommand arg : args) {
 			if (arg.isAllowed(event.getSender())) {
-				event.sendMessage("&b/" + this.getShortestAlias() + " " + arg.getShortestAlias()
+				event.sendStyledMessage("&b/" + this.getShortestAlias() + " " + arg.getShortestAlias()
 						+ (arg.hasUsage() ? " " + arg.getUsage() : "")
 						+ (arg.hasDescription() ? "&e - &b" + arg.getDescription() : ""));
 			}

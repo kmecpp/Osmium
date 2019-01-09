@@ -43,7 +43,7 @@ public class GenericBukkitCommandSender implements CommandSender {
 	}
 
 	@Override
-	public void sendRawMessage(String message) {
+	public void sendMessage(String message) {
 		sender.sendMessage(message);
 	}
 

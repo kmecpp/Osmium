@@ -26,7 +26,7 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 	}
 
 	@Override
-	public void sendRawMessage(String message) {
+	public void sendMessage(String message) {
 		player.sendMessage(Text.of(message));
 	}
 
@@ -62,7 +62,7 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 
 	@Override
 	public GameMode getGameMode() {
-		return GameMode.fromImplementation(player.gameMode().get());
+		return GameMode.fromSource(player.gameMode().get());
 	}
 
 	@Override
@@ -103,6 +103,16 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 	@Override
 	public boolean isOnline() {
 		return player.isOnline();
+	}
+
+	@Override
+	public void openInventory(Inventory inventory) {
+		player.openInventory((org.spongepowered.api.item.inventory.Inventory) inventory.getSource());
+	}
+
+	@Override
+	public void closeInventory() {
+		player.closeInventory();
 	}
 
 }

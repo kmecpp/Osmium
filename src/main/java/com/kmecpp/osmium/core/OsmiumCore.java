@@ -5,11 +5,11 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
 
 @Plugin(name = AppInfo.NAME, version = AppInfo.VERSION, authors = { AppInfo.AUTHOR }, url = AppInfo.URL)
-public class CoreOsmiumPlugin extends OsmiumPlugin {
+public class OsmiumCore extends OsmiumPlugin {
 
-	private static CoreOsmiumPlugin instance;
+	private static OsmiumCore instance;
 
-	public CoreOsmiumPlugin() {
+	public OsmiumCore() {
 		if (instance == null) {
 			instance = this;
 		} else {
@@ -30,7 +30,7 @@ public class CoreOsmiumPlugin extends OsmiumPlugin {
 		//		}
 	}
 
-	public static CoreOsmiumPlugin getInstance() {
+	public static OsmiumCore getPlugin() {
 		return instance;
 	}
 

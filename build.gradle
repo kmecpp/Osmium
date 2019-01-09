@@ -103,10 +103,14 @@ sourceSets {
 	}
 	main {
 		java {
-            srcDir 'src/main/java'
-            exclude 'com/kmecpp/osmium/AppInfo.java'
-       }
-   }
+			srcDir 'src/main/java'
+			exclude 'com/kmecpp/osmium/AppInfo.java'
+		}
+	}
+	test {
+		java.srcDirs = ["src/test/java"]
+		resources.srcDirs = ["src/test/resources"]
+	}
 }
 
 compileJava.source sourceSets.generated.java, sourceSets.main.java

@@ -69,6 +69,11 @@ public enum Chat {
 		return chars.get(Character.toLowerCase(c));
 	}
 
+	public static Chat fromCodeElseWhite(char c) {
+		Chat result = chars.get(Character.toLowerCase(c));
+		return result != null ? result : WHITE;
+	}
+
 	//	public static void main(String[] args) {
 	//		long start = System.nanoTime();
 	//		for (int i = 0; i < 10000; i++) {
@@ -87,7 +92,7 @@ public enum Chat {
 		char[] chars = message.toCharArray();
 		for (int i = 0; i < chars.length - 1; i++) {
 			if (chars[i] == '&' && Chat.fromCode(chars[i + 1]) != null) {
-				chars[i] = '\u00A7';
+				chars[i] = COLOR_CHAR;
 				styled = true;
 			}
 		}
