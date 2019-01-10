@@ -1,3 +1,4 @@
+
 package com.kmecpp.osmium;
 
 import java.io.FileReader;
@@ -5,16 +6,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+import org.hibernate.dialect.SQLiteDialect;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.user.UserStorageService;
 
@@ -56,6 +68,62 @@ public final class Osmium {
 	private static final OsmiumMetrics metrics = new OsmiumMetrics();
 
 	protected static boolean shuttingDown;
+
+	@Table(name = "players")
+	@Entity(name = "player_data")
+	public static class PlayerData {
+
+		@Id
+		private UUID uuid;
+
+		private String name;
+
+		public PlayerData(UUID uuid, String name) {
+			this.uuid = uuid;
+			this.name = name;
+		}
+
+	}
+
+	public static void main(String[] args) {
+		Session session = getSessionFactory().openSession();
+		session.beginTransaction();
+		session.save(new PlayerData(UUID.randomUUID(), "kmecpp"));
+		session.getTransaction().commit();
+		session.close();
+		System.out.println("Successfully created object!");
+	}
+
+	public static SessionFactory getSessionFactory() {
+		// Create registry builder
+		StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
+
+		// Hibernate settings equivalent to hibernate.cfg.xml's properties
+		Map<String, String> settings = new HashMap<>();
+		settings.put(Environment.DRIVER, "org.sqlite.JDBC");
+		settings.put(Environment.URL, "jdbc:sqlite:test.db");
+		settings.put(Environment.DIALECT, "org.hibernate.dialect.SQLiteDialect");//OsmiumSQLiteDialect.class.getName());//
+		settings.put(Environment.HBM2DDL_AUTO, "update");
+
+		// Apply settings
+		registryBuilder.applySettings(settings);
+
+		// Create registry
+		StandardServiceRegistry registry = registryBuilder.build();
+
+		// Create MetadataSources
+		MetadataSources sources = new MetadataSources(registry);
+		sources.addAnnotatedClass(PlayerData.class);
+
+		// Create Metadata
+		Metadata metadata = sources.getMetadataBuilder().build();
+
+		// Create SessionFactory
+		SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
+		return sessionFactory;
+		//		Configuration configuration = new Configuration().configure();
+		//		return configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build());
+	}
 
 	/*
 	 * TODO:
@@ -115,11 +183,6 @@ public final class Osmium {
 
 	public static Database getDatabase() {
 		return getDatabase(getInvokingPlugin());
-	}
-
-	public static SessionFactory getSessionFactory() {
-		Configuration configuration = new Configuration().configure();
-		return configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build());
 	}
 
 	public static Database getDatabase(OsmiumPlugin plugin) {

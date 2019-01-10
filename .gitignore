@@ -3,8 +3,13 @@
 /.settings
 /.classpath
 /.project
+
 /Sponge Server/
 /Bukkit Server/
+
 /.gradle/
 /.codepro
 /build/
+
+logs/
+*.db

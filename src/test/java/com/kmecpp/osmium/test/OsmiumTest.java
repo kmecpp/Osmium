@@ -17,10 +17,6 @@ import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
 
 public class OsmiumTest {
 
-	static {
-		OsmiumLogger.setStandardOutput(true);
-	}
-
 	@Test
 	public void testOsmium() {
 		assertEquals("osmium", AppInfo.ID);

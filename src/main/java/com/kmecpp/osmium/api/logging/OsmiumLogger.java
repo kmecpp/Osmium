@@ -18,12 +18,6 @@ public class OsmiumLogger {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppInfo.NAME);
 	private static final String PREFIX = Chat.DARK_AQUA + "[" + Chat.AQUA + AppInfo.NAME + "%L" + Chat.DARK_AQUA + "] ";
 
-	private static boolean stdout;
-
-	public static void setStandardOutput(boolean stdout) {
-		OsmiumLogger.stdout = stdout;
-	}
-
 	public static final void debug(String message) {
 		if (CoreOsmiumConfiguration.coloredConsole) {
 			log(LogLevel.DEBUG, AppInfo.NAME, message);
@@ -71,18 +65,17 @@ public class OsmiumLogger {
 			return;
 		}
 
-		if (stdout) {
-			printDefault(level, message);
-			return;
-		}
-
 		boolean displayLevel = level != LogLevel.DEBUG && level != LogLevel.INFO;
 		if (Platform.isBukkit()) {
-			if (Bukkit.getConsoleSender() != null) { //This seems to only be an issue on legacy servers during startup
-				String start = PREFIX.replace("%L", (displayLevel ? ChatColor.DARK_AQUA + "|" + level.getColorImplementation() + level : ""));
-				Bukkit.getConsoleSender().sendMessage(start + level.getColorImplementation() + message);
+			if (Bukkit.getServer() == null) {
+				printDefault(level, message);
 			} else {
-				Bukkit.getLogger().log(level.getLevel(), "[" + prefix + "] " + message);
+				if (Bukkit.getConsoleSender() != null) { //This seems to only be an issue on legacy servers during startup
+					String start = PREFIX.replace("%L", (displayLevel ? ChatColor.DARK_AQUA + "|" + level.getColorImplementation() + level : ""));
+					Bukkit.getConsoleSender().sendMessage(start + level.getColorImplementation() + message);
+				} else {
+					Bukkit.getLogger().log(level.getLevel(), "[" + prefix + "] " + message);
+				}
 			}
 		} else if (Platform.isSponge()) {
 			Sponge.getServer()
