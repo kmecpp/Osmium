@@ -10,10 +10,15 @@ import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Sponge;
 
 import com.google.common.base.Preconditions;
+import com.kmecpp.osmium.Database;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.command.Command;
+import com.kmecpp.osmium.api.command.SimpleCommand;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.PersistentPluginData;
 import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.api.tasks.CountdownTask;
+import com.kmecpp.osmium.api.tasks.OsmiumTask;
 import com.kmecpp.osmium.api.util.Reflection;
 
 /**
@@ -24,6 +29,7 @@ public abstract class OsmiumPlugin {
 	//	private final Class<? extends OsmiumPlugin> main = OsmiumProperties.getMainClass();
 	//	private final OsmiumProperties osmiumProperties = new OsmiumProperties(this);
 	private final Plugin properties = this.getClass().getAnnotation(Plugin.class);
+	private Database database;
 
 	//Effectively final variables
 	private Object pluginImplementation; //This field is set on instantiation using reflection
@@ -219,6 +225,13 @@ public abstract class OsmiumPlugin {
 		this.logger = logger;
 	}
 
+	public Database getDatabase() {
+		if (database == null) {
+			database = new Database(this);
+		}
+		return database;
+	}
+
 	//	public void disable() {
 	//		if (Platform.isBukkit()) {
 	//
@@ -233,6 +246,22 @@ public abstract class OsmiumPlugin {
 		} else {
 			return null;
 		}
+	}
+
+	public OsmiumTask getTask() {
+		return new OsmiumTask(this);
+	}
+
+	public CountdownTask countdown(int count) {
+		return new CountdownTask(this, count);
+	}
+
+	public void reload() {
+		Osmium.reloadPlugin(this);
+	}
+
+	public SimpleCommand registerCommand(String name, String... aliases) {
+		return Osmium.getCommandManager().register(this, new Command(name, aliases));
 	}
 
 }

@@ -12,7 +12,7 @@ import com.kmecpp.osmium.Osmium;
  * Plugin's main Bukkit class. Osmium plugins will automatically subclass this
  * class as their entry point for Bukkit
  */
-public class BukkitPlugin extends JavaPlugin implements Listener {
+public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 
 	private OsmiumPlugin plugin = Osmium.getPluginLoader().load(this); //OsmiumData.constructPlugin();
 

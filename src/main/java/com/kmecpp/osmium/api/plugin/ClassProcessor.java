@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.persistence.Entity;
+
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
@@ -17,8 +19,6 @@ import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandProperties;
 import com.kmecpp.osmium.api.config.ConfigProperties;
-import com.kmecpp.osmium.api.database.DBTable;
-import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
@@ -122,11 +122,15 @@ public class ClassProcessor {
 		}
 
 		//DATABASE TABLES
-		DBTable table = cls.getAnnotation(DBTable.class);
-		if (table != null) {
-			OsmiumLogger.debug("Initializing database table: " + table.name());
-			Osmium.getDatabase(plugin).createTable(cls);
-			Database.isSerializable(cls);
+		//		DBTable table = cls.getAnnotation(DBTable.class);
+		//		if (table != null) {
+		//			OsmiumLogger.debug("Initializing database table: " + table.name());
+		//			Osmium.getDatabase(plugin).createTable(cls);
+		//			Database.isSerializable(cls);
+		//		}
+		Entity entity = cls.getAnnotation(Entity.class);
+		if (entity != null) {
+			plugin.getDatabase().addTable(cls);
 		}
 
 		//PERSISTENT FIELDS
@@ -199,7 +203,7 @@ public class ClassProcessor {
 
 			//TASKS
 			if (scheduleAnnotation != null) {
-				Osmium.getTask(plugin)
+				plugin.getTask()
 						.setAsync(scheduleAnnotation.async())
 						.setDelay(scheduleAnnotation.delay() * scheduleAnnotation.unit().getTickValue())
 						.setInterval(scheduleAnnotation.interval() * scheduleAnnotation.unit().getTickValue())

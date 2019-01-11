@@ -120,9 +120,13 @@ public class CS {
 				try {
 					String[] parts = field.getName().substring(1).split("");
 					CS colors = ((CS) field.get(null));
-					colors.primary = Chat.fromCode(parts[0].charAt(0));
-					colors.secondary = Chat.fromCode(parts[1].charAt(0));
-					if (parts.length == 3) {
+					if (parts.length > 0) {
+						colors.primary = Chat.fromCode(parts[0].charAt(0));
+					}
+					if (parts.length > 1) {
+						colors.secondary = Chat.fromCode(parts[1].charAt(0));
+					}
+					if (parts.length > 2) {
 						colors.tertiary = Chat.fromCode(parts[2].charAt(0));
 					}
 				} catch (Exception e) {

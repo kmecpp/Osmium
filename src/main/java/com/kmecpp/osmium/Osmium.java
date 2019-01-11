@@ -5,28 +5,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Environment;
-import org.hibernate.dialect.SQLiteDialect;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.user.UserStorageService;
 
@@ -35,11 +20,8 @@ import com.eclipsesource.json.JsonValue;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Chat;
-import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
-import com.kmecpp.osmium.api.command.SimpleCommand;
 import com.kmecpp.osmium.api.config.ConfigManager;
-import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.EventManager;
 import com.kmecpp.osmium.api.inventory.ItemManager;
@@ -48,8 +30,6 @@ import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMetrics;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.PluginLoader;
-import com.kmecpp.osmium.api.tasks.CountdownTask;
-import com.kmecpp.osmium.api.tasks.OsmiumTask;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
@@ -58,7 +38,7 @@ import com.kmecpp.osmium.platform.sponge.SpongeUser;
 
 public final class Osmium {
 
-	private static final HashMap<Class<? extends OsmiumPlugin>, Database> databases = new HashMap<>();
+	//	private static final HashMap<Class<? extends OsmiumPlugin>, Database> databases = new HashMap<>();
 
 	private static final PluginLoader pluginLoader = new PluginLoader();
 	private static final ConfigManager configManager = new ConfigManager();
@@ -68,62 +48,6 @@ public final class Osmium {
 	private static final OsmiumMetrics metrics = new OsmiumMetrics();
 
 	protected static boolean shuttingDown;
-
-	@Table(name = "players")
-	@Entity(name = "player_data")
-	public static class PlayerData {
-
-		@Id
-		private UUID uuid;
-
-		private String name;
-
-		public PlayerData(UUID uuid, String name) {
-			this.uuid = uuid;
-			this.name = name;
-		}
-
-	}
-
-	public static void main(String[] args) {
-		Session session = getSessionFactory().openSession();
-		session.beginTransaction();
-		session.save(new PlayerData(UUID.randomUUID(), "kmecpp"));
-		session.getTransaction().commit();
-		session.close();
-		System.out.println("Successfully created object!");
-	}
-
-	public static SessionFactory getSessionFactory() {
-		// Create registry builder
-		StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
-
-		// Hibernate settings equivalent to hibernate.cfg.xml's properties
-		Map<String, String> settings = new HashMap<>();
-		settings.put(Environment.DRIVER, "org.sqlite.JDBC");
-		settings.put(Environment.URL, "jdbc:sqlite:test.db");
-		settings.put(Environment.DIALECT, "org.hibernate.dialect.SQLiteDialect");//OsmiumSQLiteDialect.class.getName());//
-		settings.put(Environment.HBM2DDL_AUTO, "update");
-
-		// Apply settings
-		registryBuilder.applySettings(settings);
-
-		// Create registry
-		StandardServiceRegistry registry = registryBuilder.build();
-
-		// Create MetadataSources
-		MetadataSources sources = new MetadataSources(registry);
-		sources.addAnnotatedClass(PlayerData.class);
-
-		// Create Metadata
-		Metadata metadata = sources.getMetadataBuilder().build();
-
-		// Create SessionFactory
-		SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
-		return sessionFactory;
-		//		Configuration configuration = new Configuration().configure();
-		//		return configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build());
-	}
 
 	/*
 	 * TODO:
@@ -181,19 +105,35 @@ public final class Osmium {
 		commandManager.processCommand(command);
 	}
 
-	public static Database getDatabase() {
-		return getDatabase(getInvokingPlugin());
+	public static ConfigManager getConfigurationManager() {
+		return configManager;
 	}
 
-	public static Database getDatabase(OsmiumPlugin plugin) {
-		Database database = databases.get(plugin.getClass());
-		if (database == null) {
-			database = new Database(plugin);
-			database.start();
-			databases.put(plugin.getClass(), database);
-		}
-		return database;
+	public static EventManager getEventManager() {
+		return eventManager;
 	}
+
+	public static CommandManager getCommandManager() {
+		return commandManager;
+	}
+
+	public static ItemManager getItemManager() {
+		return itemManager;
+	}
+
+	//	public static Database getDatabase() {
+	//		return getDatabase(getInvokingPlugin());
+	//	}
+	//
+	//	public static Database getDatabase(OsmiumPlugin plugin) {
+	//		Database database = databases.get(plugin.getClass());
+	//		if (database == null) {
+	//			database = new Database(plugin);
+	//			database.start();
+	//			databases.put(plugin.getClass(), database);
+	//		}
+	//		return database;
+	//	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T getInstance(Class<T> cls) {
@@ -224,21 +164,21 @@ public final class Osmium {
 		}
 	}
 
-	public static OsmiumTask getTask() {
-		return getTask(getInvokingPlugin());
-	}
-
-	public static OsmiumTask getTask(OsmiumPlugin plugin) {
-		return new OsmiumTask(plugin);
-	}
-
-	public static CountdownTask countdown(int count) {
-		return countdown(getInvokingPlugin(), count);
-	}
-
-	public static CountdownTask countdown(OsmiumPlugin plugin, int count) {
-		return new CountdownTask(plugin, count);
-	}
+	//	public static OsmiumTask getTask() {
+	//		return getInvokingPlugin().getTask();
+	//	}
+	//
+	//	public static CountdownTask countdown(int count) {
+	//		return getInvokingPlugin().countdown(count);
+	//	}
+	//
+	//	public static SimpleCommand registerCommand(String name, String... aliases) {
+	//		return registerCommand(getInvokingPlugin(), name, aliases);
+	//	}
+	//
+	//	public static SimpleCommand registerCommand(OsmiumPlugin plugin, String name, String... aliases) {
+	//		return commandManager.register(plugin, new Command(name, aliases));
+	//	}
 
 	public static boolean isShuttingDown() {
 		return shuttingDown;
@@ -250,10 +190,6 @@ public final class Osmium {
 
 	public static final Platform getPlatform() {
 		return Platform.getPlatform();
-	}
-
-	public static ConfigManager getConfigurationManager() {
-		return configManager;
 	}
 
 	public static boolean reloadPlugin(OsmiumPlugin plugin) {
@@ -364,26 +300,6 @@ public final class Osmium {
 		} else {
 			return false;
 		}
-	}
-
-	public static EventManager getEventManager() {
-		return eventManager;
-	}
-
-	public static CommandManager getCommandManager() {
-		return commandManager;
-	}
-
-	public static ItemManager getItemManager() {
-		return itemManager;
-	}
-
-	public static SimpleCommand registerCommand(String name, String... aliases) {
-		return registerCommand(getInvokingPlugin(), name, aliases);
-	}
-
-	public static SimpleCommand registerCommand(OsmiumPlugin plugin, String name, String... aliases) {
-		return commandManager.register(plugin, new Command(name, aliases));
 	}
 
 	private static OsmiumPlugin getInvokingPlugin() {

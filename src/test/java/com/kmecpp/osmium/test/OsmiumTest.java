@@ -3,16 +3,22 @@ package com.kmecpp.osmium.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Method;
+
+import org.bukkit.ChatColor;
 import org.junit.Test;
 
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.command.CS;
+import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.config.ConfigProperties;
 import com.kmecpp.osmium.api.config.Setting;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.event.events.PlayerMovePositionEvent;
-import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
 
 public class OsmiumTest {
@@ -69,6 +75,36 @@ public class OsmiumTest {
 	 * 
 	 * Test colors and color schemes
 	 */
+
+	@Test
+	public void testColorScheme() {
+		assertEquals(CS.X6AB.getPrimary().toString(), ChatColor.GOLD.toString());
+		assertEquals(CS.X6AB.getSecondary().toString(), ChatColor.GREEN.toString());
+		assertEquals(CS.X6AB.getTertiary().toString(), ChatColor.AQUA.toString());
+	}
+
+	@Test
+	public void testColor() {
+		assertEquals(Chat.GREEN.toString(), ChatColor.GREEN.toString());
+	}
+
+	@Test
+	public void testPlugins() throws NoSuchMethodException, SecurityException {
+		@Plugin(name = "test", version = "1.0")
+		class TestOsmiumPlugin extends OsmiumPlugin {
+
+		}
+		TestOsmiumPlugin plugin = new TestOsmiumPlugin();
+		Method method = plugin.getClass().getSuperclass().getDeclaredMethod("setupPlugin", Object.class);
+		method.setAccessible(true);
+		//		try {
+		//			method.invoke(plugin, new SpongePlugin() {});
+		//		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		//			e.printStackTrace();
+		//		}
+
+		//		assertTrue(true);
+	}
 
 	@Test
 	public void testRegisterEvents() {
