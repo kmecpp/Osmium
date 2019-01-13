@@ -1,9 +1,8 @@
 package com.kmecpp.osmium;
 
-import com.kmecpp.osmium.api.database.CustomSerialization;
 import com.kmecpp.osmium.api.util.TimeUtil;
 
-public class SimpleDate implements CustomSerialization {
+public class SimpleDate {
 
 	private int year;
 	private int month;
@@ -68,11 +67,6 @@ public class SimpleDate implements CustomSerialization {
 	@Override
 	public String toString() {
 		return year + "-" + month + "-" + day;
-	}
-
-	@Override
-	public String serialize() {
-		return toString();
 	}
 
 }

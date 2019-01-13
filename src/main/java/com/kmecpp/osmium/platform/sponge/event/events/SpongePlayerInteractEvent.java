@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.platform.sponge.event.events;
 
 import org.spongepowered.api.event.action.InteractEvent;
+import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
@@ -71,6 +72,47 @@ public class SpongePlayerInteractEvent implements PlayerInteractEvent {
 		@Override
 		public com.kmecpp.osmium.api.Block getBlock() {
 			return SpongeAccess.getBlock(event.getTargetBlock().getLocation().get());
+		}
+
+	}
+
+	public static class SpongePlayerInteractPhysicalEvent implements PlayerInteractEvent.Block {
+
+		private ChangeBlockEvent.Modify event;
+
+		public SpongePlayerInteractPhysicalEvent(ChangeBlockEvent.Modify event) {
+			this.event = event;
+		}
+
+		@Override
+		public Object getSource() {
+			return event;
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return event.isCancelled();
+		}
+
+		@Override
+		public void setCancelled(boolean cancel) {
+			event.setCancelled(cancel);
+		}
+
+		@Override
+		public com.kmecpp.osmium.api.Block getBlock() {
+			return SpongeAccess.getBlock(event.getTransactions().get(0).getOriginal().getLocation().get());
+		}
+
+		@Override
+		public Player getPlayer() {
+			return SpongeAccess.getPlayer((org.spongepowered.api.entity.living.player.Player) event.getSource());
+		}
+
+		@Override
+		public boolean shouldFire() {
+			return event.getSource() instanceof org.spongepowered.api.entity.living.player.Player
+					&& event.getTransactions().size() == 1;
 		}
 
 	}

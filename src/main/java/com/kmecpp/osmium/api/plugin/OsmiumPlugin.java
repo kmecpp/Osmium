@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Sponge;
 
 import com.google.common.base.Preconditions;
-import com.kmecpp.osmium.Database;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.SimpleCommand;
+import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.PersistentPluginData;
 import com.kmecpp.osmium.api.platform.Platform;
@@ -228,6 +228,7 @@ public abstract class OsmiumPlugin {
 	public Database getDatabase() {
 		if (database == null) {
 			database = new Database(this);
+			database.rebuildSessionFactory();
 		}
 		return database;
 	}
@@ -239,8 +240,12 @@ public abstract class OsmiumPlugin {
 	//	}
 
 	public Path getFolder() {
+		if (Platform.isBukkit() && Platform.isSponge()) {
+			return Paths.get("");//TODO: Find a better way to handle tests
+		}
+
 		if (Platform.isBukkit()) {
-			return Paths.get(((JavaPlugin) pluginImplementation).getDataFolder().toURI());
+			return ((JavaPlugin) pluginImplementation).getDataFolder().toPath();
 		} else if (Platform.isSponge()) {
 			return Sponge.getGame().getConfigManager().getPluginConfig(pluginImplementation).getDirectory();
 		} else {

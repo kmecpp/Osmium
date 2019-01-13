@@ -145,6 +145,7 @@ dependencies {
 	//shade "org.bstats:bstats-bukkit:1.2"
 	//shade "org.bstats:bstats-sponge:1.2"
 	shade "org.hibernate:hibernate-core:5.4.0.Final"
+	shade "org.hibernate:hibernate-hikaricp:5.4.0.Final"
 	//shade "org.hibernate:hibernate-annotations:3.4.0-Final"
 	shade "com.github.gwenn:sqlite-dialect:0.1.0"
 	//shade "com.zsoltfabok:sqlite-dialect:1.0"

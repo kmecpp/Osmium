@@ -130,7 +130,27 @@ public class ClassProcessor {
 		//		}
 		Entity entity = cls.getAnnotation(Entity.class);
 		if (entity != null) {
+			OsmiumLogger.debug("Initializing database table: " + entity.name());
 			plugin.getDatabase().addTable(cls);
+			//			try {
+			//				ClassPool.getDefault().insertClassPath(new ClassClassPath(cls));
+			//				CtClass c = ClassPool.getDefault().getAndRename(cls.getName(), cls.getName() + "_REMAPPED");
+			//				for (CtField field : c.getDeclaredFields()) {
+			//					if (!field.hasAnnotation(Transient.class)) {
+			//						String customType = plugin.getDatabase().getTypeKey(field.getType().getClass());
+			//						if (customType != null) {
+			//							ConstPool cp = c.getClassFile().getConstPool();
+			//							Annotation annotation = new Annotation(Type.class.getName(), cp);
+			//							annotation.addMemberValue("type", new StringMemberValue(customType, cp));
+			//							field.getFieldInfo().addAttribute(new AnnotationsAttribute(cp, null));
+			//						}
+			//					}
+			//				}
+			//				plugin.getDatabase().addTable(c.toClass());
+			//			} catch (CannotCompileException | NotFoundException e) {
+			//				OsmiumLogger.error("Failed to register database table: " + cls.getName());
+			//				e.printStackTrace();
+			//			}
 		}
 
 		//PERSISTENT FIELDS
@@ -190,6 +210,7 @@ public class ClassProcessor {
 			//Retrieve instance or create one if possible
 			Object instance;
 			try {
+				Class.forName(cls.getName()); //Initialize class. This hack allows classes to register themselves in a static initializer
 				boolean contains = classInstances.containsKey(cls); //DONE THIS WAY BECAUSE LISTENER MUST BE FINAL
 				instance = contains ? classInstances.get(cls) : cls.newInstance();
 				if (!contains) {

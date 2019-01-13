@@ -1,9 +1,9 @@
 package com.kmecpp.osmium.api.database;
 
 import java.lang.Thread.State;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.hibernate.Session;
 
 import com.kmecpp.osmium.Osmium;
 
@@ -44,22 +44,18 @@ public class DatabaseQueue {
 	public class QueueExecutor extends Thread {
 
 		public QueueExecutor() {
-			setName("Database Queue Executor");
+			setName("Osmium Database Queue");
 			setDaemon(true);
 		}
 
 		@Override
 		public void run() {
-			Connection connection = database.getConnection();
+			Session session = database.getSession();
 			while (true) {
 				try {
 					String update = queue.take();
-					if (database.isClosed()) {
-						connection = database.getConnection();
-					}
-					connection.createStatement().executeUpdate(update);
-					database.update(update);
-				} catch (InterruptedException | SQLException e) {
+					session.createNativeQuery(update).executeUpdate();
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}

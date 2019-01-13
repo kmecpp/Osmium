@@ -83,7 +83,33 @@ public class SpongeInventoryEvent implements InventoryEvent {
 
 	}
 
-	public static class SpongeInventoryClickEvent extends SpongeInventoryEvent implements InventoryEvent.Click {
+	public static class SpongeInventoryInteractEvent extends SpongeInventoryEvent implements InventoryEvent.Interact {
+
+		private ClickInventoryEvent event;
+
+		public SpongeInventoryInteractEvent(ClickInventoryEvent event) {
+			super(event);
+			this.event = event;
+		}
+
+		@Override
+		public InteractInventoryEvent getSource() {
+			return event;
+		}
+
+		@Override
+		public boolean isClick() {
+			return !(event instanceof ClickInventoryEvent.Drag);
+		}
+
+		@Override
+		public boolean isDrag() {
+			return event instanceof ClickInventoryEvent.Drag;
+		}
+
+	}
+
+	public static class SpongeInventoryClickEvent extends SpongeInventoryInteractEvent implements InventoryEvent.Click {
 
 		private ClickInventoryEvent event;
 
@@ -124,7 +150,7 @@ public class SpongeInventoryEvent implements InventoryEvent {
 
 	}
 
-	public static class SpongeInventoryDragEvent extends SpongeInventoryEvent implements InventoryEvent.Drag {
+	public static class SpongeInventoryDragEvent extends SpongeInventoryInteractEvent implements InventoryEvent.Drag {
 
 		private ClickInventoryEvent.Drag event;
 

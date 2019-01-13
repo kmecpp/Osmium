@@ -1,6 +1,5 @@
 package com.kmecpp.osmium.api.event;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import com.kmecpp.osmium.api.event.events.BlockEvent;
@@ -19,6 +18,7 @@ import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlo
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryClickEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryCloseEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryDragEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryInteractEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryOpenEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerChatEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectionEvent.BukkitPlayerAuthEvent;
@@ -28,6 +28,7 @@ import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectionEven
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerInteractEvent.BukkitPlayerInteractBlockEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerInteractEvent.BukkitPlayerInteractEntityEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerInteractEvent.BukkitPlayerInteractItemEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerInteractEvent.BukkitPlayerInteractPhysicalEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerMoveEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerTeleportEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
@@ -36,6 +37,7 @@ import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlo
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryClickEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryCloseEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryDragEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryInteractEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryOpenEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerChatEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerAuthEvent;
@@ -45,6 +47,7 @@ import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.S
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerInteractEvent.SpongePlayerInteractBlockEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerInteractEvent.SpongePlayerInteractEntityEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerInteractEvent.SpongePlayerInteractItemEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerInteractEvent.SpongePlayerInteractPhysicalEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerMoveEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerTeleportEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeServerListPingEvent;
@@ -93,11 +96,12 @@ public class EventInfo {
 		register(InventoryEvent.Close.class,          BukkitInventoryCloseEvent.class,         SpongeInventoryCloseEvent.class);
 		register(InventoryEvent.Click.class,          BukkitInventoryClickEvent.class,         SpongeInventoryClickEvent.class);
 		register(InventoryEvent.Drag.class,           BukkitInventoryDragEvent.class,          SpongeInventoryDragEvent.class);
+		register(InventoryEvent.Interact.class,       BukkitInventoryInteractEvent.class,      SpongeInventoryInteractEvent.class);
 		                                                                                       
 		register(PlayerInteractEvent.Item.class,      BukkitPlayerInteractItemEvent.class,     SpongePlayerInteractItemEvent.class);
 		register(PlayerInteractEvent.Block.class,     BukkitPlayerInteractBlockEvent.class,    SpongePlayerInteractBlockEvent.class);
 		register(PlayerInteractEvent.Entity.class,    BukkitPlayerInteractEntityEvent.class,   SpongePlayerInteractEntityEvent.class);
-//		register(PlayerInteractEvent.Physical.class,  BukkitPlayerInteractPhysicalEvent.class, SpongePlayerInteractPhysicalEvent.class);
+		register(PlayerInteractEvent.Physical.class,  BukkitPlayerInteractPhysicalEvent.class, SpongePlayerInteractPhysicalEvent.class);
                                                                                        
 		register(PlayerChatEvent.class,               BukkitPlayerChatEvent.class,             SpongePlayerChatEvent.class);
 		register(PlayerMoveEvent.class,               BukkitPlayerMoveEvent.class,             SpongePlayerMoveEvent.class);
@@ -111,6 +115,10 @@ public class EventInfo {
 		register(ServerListPingEvent.class,           BukkitServerListPingEvent.class,         SpongeServerListPingEvent.class);
 		register(BlockEvent.Break.class,              BukkitBlockBreakEvent.class,             SpongeBlockBreakEvent.class);
 		//@formatter:on
+	}
+
+	public static HashMap<Class<? extends Event>, EventInfo> getEvents() {
+		return events;
 	}
 
 	public static void register(Class<? extends Event> event, Class<? extends Event> osmiumImplementation) {
@@ -136,9 +144,10 @@ public class EventInfo {
 		//			field = osmiumClass.getDeclaredFields()[0];
 		//		}
 		try {
-			Field field = osmiumClass.getDeclaredFields()[0];
-			field.setAccessible(true);
-			return Reflection.cast(field.getType());
+			//			Field field = osmiumClass.getDeclaredFields()[0];
+			//			field.setAccessible(true);
+			//			return Reflection.cast(field.getType());
+			return Reflection.cast(osmiumClass.getDeclaredConstructors()[0].getParameterTypes()[0]);
 		} catch (Exception e) {
 			OsmiumLogger.error("Failed to extract source class for " + osmiumClass.getName());
 			throw new RuntimeException(e);

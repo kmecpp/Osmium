@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.platform.bukkit.event.events;
 
 import org.bukkit.event.Event;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
@@ -62,13 +63,31 @@ public class BukkitPlayerInteractEvent implements PlayerInteractEvent {
 		}
 
 		@Override
+		public com.kmecpp.osmium.api.Block getBlock() {
+			return BukkitAccess.getBlock(event.getClickedBlock());
+		}
+
+		@Override
 		public boolean shouldFire() {
 			return event.hasBlock();
+		}
+
+	}
+
+	public static class BukkitPlayerInteractPhysicalEvent extends BukkitPlayerInteractEvent implements PlayerInteractEvent.Block {
+
+		public BukkitPlayerInteractPhysicalEvent(org.bukkit.event.player.PlayerInteractEvent event) {
+			super(event);
 		}
 
 		@Override
 		public com.kmecpp.osmium.api.Block getBlock() {
 			return BukkitAccess.getBlock(event.getClickedBlock());
+		}
+
+		@Override
+		public boolean shouldFire() {
+			return event.hasBlock() && event.getAction() == Action.PHYSICAL;
 		}
 
 	}
@@ -113,15 +132,15 @@ public class BukkitPlayerInteractEvent implements PlayerInteractEvent {
 		}
 
 		@Override
+		public com.kmecpp.osmium.api.entity.Entity getEntity() {
+			return BukkitAccess.getEntity(leftClickEvent != null ? leftClickEvent.getEntity() : rightClickEvent.getRightClicked());
+		}
+
+		@Override
 		public boolean shouldFire() {
 			return leftClickEvent != null
 					? leftClickEvent.getDamager() instanceof org.bukkit.entity.Player
 					: true;
-		}
-
-		@Override
-		public com.kmecpp.osmium.api.entity.Entity getEntity() {
-			return BukkitAccess.getEntity(leftClickEvent != null ? leftClickEvent.getEntity() : rightClickEvent.getRightClicked());
 		}
 
 	}
