@@ -199,9 +199,9 @@ Osmium comes with its very own built-in plugin written entirely with the Osmium 
 
 The plugin allows you do perform a wide range of management tasks for any plugin using Osmium as well as Osmium itself. This includes
 
-	- Viewing important plugin information such as name, version, author, website and dependencies
-	- Viewing a list of commands for each plugin and information on each
-	- Reloading plugins and their configurations
+- Viewing important plugin information such as name, version, author, website and dependencies
+- Viewing a list of commands for each plugin and information on each
+- Reloading plugins and their configurations
 
 ## Persistent Data
 

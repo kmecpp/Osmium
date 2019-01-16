@@ -227,6 +227,7 @@ public abstract class OsmiumPlugin {
 
 	public Database getDatabase() {
 		if (database == null) {
+			logger.info("Establishing database connection");
 			database = new Database(this);
 			database.rebuildSessionFactory();
 		}

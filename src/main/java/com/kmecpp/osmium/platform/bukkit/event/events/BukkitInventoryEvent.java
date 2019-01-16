@@ -35,6 +35,7 @@ public abstract class BukkitInventoryEvent implements InventoryEvent {
 
 	@Override
 	public boolean shouldFire() {
+		System.out.println("Should Fire: " + event.getView().getPlayer() + " :: " + (event.getView().getPlayer() instanceof org.bukkit.entity.Player));
 		return event.getView().getPlayer() instanceof org.bukkit.entity.Player;
 	}
 
