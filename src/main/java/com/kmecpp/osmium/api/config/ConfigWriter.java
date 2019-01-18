@@ -41,10 +41,10 @@ public class ConfigWriter {
 
 		boolean first = true;
 		for (ConfigField field : block.getFields()) {
-			//Line spacing
-			//			if (!first) {
-			//				sb.append('\n');
-			//			}
+			if (field.getType().toGenericString().contains("<") && field.getSetting().type() == Object.class) {
+				new ConfigWriteException("Failed to write Config setting '" + field.getName() + "'. Generics must specify a type parameter.").printStackTrace();
+				continue;
+			}
 
 			//Add comment
 			if (!field.getSetting().comment().isEmpty()) {
@@ -171,8 +171,9 @@ public class ConfigWriter {
 
 		//Write end
 		if (!condensed) {
-			tab.setLength(Math.max(0, tab.length() - 1));
+			tab.setLength(Math.max(0, tab.length() - 2));
 			sb.append(tab);
+			sb.append('\n');
 		}
 		sb.append(']');
 	}
@@ -180,7 +181,9 @@ public class ConfigWriter {
 	private void writeElement(Object value, boolean last) {
 		sb.append(tab);
 		writeValue(value == null ? Object.class : value.getClass(), value);
-		sb.append(",\n");
+		if (!last) {
+			sb.append(",\n");
+		}
 	}
 
 }

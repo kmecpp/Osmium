@@ -68,7 +68,7 @@ public class ConfigParser {
 	}
 
 	private void readBlock(int blockNameLength, ConfigField map) {
-		skipToNextSignificantChar();
+		skipWhitespaceAndComments();
 		while (index < length) {
 			if (current == '}') {
 				read();
@@ -76,7 +76,7 @@ public class ConfigParser {
 				return;
 			}
 			readNext(path, map);
-			skipToNextSignificantChar();
+			skipWhitespaceAndComments();
 		}
 	}
 
@@ -92,7 +92,7 @@ public class ConfigParser {
 		String key = substring(start, index);
 		//		System.out.println("KEY: " + key);
 
-		skipToNextSignificantChar();
+		skipWhitespaceAndComments();
 
 		//Read block or map
 		if (current == '{') {
@@ -105,7 +105,7 @@ public class ConfigParser {
 		//Read value
 		else if (current == ':') {
 			read();
-			skipToNextSignificantChar();
+			skipWhitespaceAndComments();
 
 			String fullPath = path.length() == 0 ? key : path.toString() + "." + key;
 			ConfigField field = data.getField(fullPath);
@@ -127,7 +127,7 @@ public class ConfigParser {
 			if (current == '[') {
 
 				read();
-				skipToNextSignificantChar();
+				skipWhitespaceAndComments();
 
 				Collection collection;
 				if (fieldType.isArray()) {
@@ -149,9 +149,10 @@ public class ConfigParser {
 				while (current != ']') {
 					collection.add(parseValue(componentType));
 
+					skipWhitespaceAndComments();
 					if (current == ',') {
 						read();
-						skipToNextSignificantChar();
+						skipWhitespaceAndComments();
 					}
 				}
 				read(); //Read closing bracket
@@ -202,6 +203,8 @@ public class ConfigParser {
 
 	private String readValue() {
 		int start = index;
+
+		//Read string
 		if (current == '\"') {
 			read();
 			while (current != '\"' && chars[index - 1] != '\\') {
@@ -209,13 +212,19 @@ public class ConfigParser {
 			}
 			read();
 			return substring(start + 1, index - 1);
-		} else if (current == 'n' && chars[index + 1] == 'u' && chars[index + 2] == 'l' && chars[index + 2] == 'l') {
+		}
+
+		//Read null
+		else if (current == 'n' && chars[index + 1] == 'u' && chars[index + 2] == 'l' && chars[index + 2] == 'l') {
 			read();
 			read();
 			read();
 			read();
 			return null;
-		} else {
+		}
+
+		//Read regular value (contains no spaces commas or brackets)
+		else {
 			while (!Character.isWhitespace(current) && current != ',' && current != ']') {
 				read();
 			}
@@ -223,11 +232,15 @@ public class ConfigParser {
 		}
 	}
 
-	private void skipToNextSignificantChar() {
-		skipWhitespace();
+	private void skipWhitespaceAndComments() {
+		while (Character.isWhitespace(current)) {
+			read();
+		}
 		while (current == '#') {
 			skip('\n');
-			skipWhitespace();
+			while (Character.isWhitespace(current)) {
+				read();
+			}
 		}
 	}
 
@@ -244,11 +257,11 @@ public class ConfigParser {
 		read();
 	}
 
-	private void skipWhitespace() {
-		while (Character.isWhitespace(current)) {
-			read();
-		}
-	}
+	//	private void skipWhitespace() {
+	//		while (Character.isWhitespace(current)) {
+	//			read();
+	//		}
+	//	}
 
 	private String substring(int start, int end) {
 		char[] str = new char[end - start];

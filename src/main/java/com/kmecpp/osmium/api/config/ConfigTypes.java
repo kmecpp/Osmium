@@ -1,7 +1,10 @@
 package com.kmecpp.osmium.api.config;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Function;
 
 import com.kmecpp.osmium.api.persistence.Deserializer;
 import com.kmecpp.osmium.api.persistence.SerializationData;
@@ -28,17 +31,29 @@ public class ConfigTypes {
 		registerDefaultType(Double.class, Double::parseDouble);
 		registerDefaultType(Boolean.class, Boolean::parseBoolean);
 
+		registerDefaultType(byte[].class, Arrays::toString, (s) -> get(byte.class, s, Byte::parseByte));
+		registerDefaultType(short[].class, Arrays::toString, (s) -> get(short.class, s, Short::parseShort));
+		registerDefaultType(int[].class, Arrays::toString, (s) -> get(int.class, s, Integer::parseInt));
+		registerDefaultType(long[].class, Arrays::toString, (s) -> get(long.class, s, Long::parseLong));
+		registerDefaultType(float[].class, Arrays::toString, (s) -> get(float.class, s, Float::parseFloat));
+		registerDefaultType(double[].class, Arrays::toString, (s) -> get(double.class, s, Double::parseDouble));
+		registerDefaultType(boolean[].class, Arrays::toString, (s) -> get(boolean.class, s, Boolean::parseBoolean));
+
 		registerDefaultType(char.class, (s) -> s.charAt(0));
+		registerDefaultType(char[].class, String::new, String::toCharArray);
 		registerDefaultType(String.class, (obj) -> obj == null ? null : "\"" + obj + "\"", String::valueOf);
 
-		//		register(int[].class, Arrays::toString, DefaultTypes::getInts);
-		//		register(long[].class, Arrays::toString, DefaultTypes::getInts);
-		//		register(byte[].class, Arrays::toString, DefaultTypes::getInts);
-		//		register(short[].class, Arrays::toString, DefaultTypes::getInts);
-		//		register(float[].class, Arrays::toString, DefaultTypes::getInts);
-		//		register(double[].class, Arrays::toString, DefaultTypes::getInts);
-		//		register(boolean[].class, Arrays::toString, DefaultTypes::getInts);
 		registerDefaultType(UUID.class, UUID::fromString);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T, C> T get(Class<C> componentType, String str, Function<String, C> deserializer) {
+		String[] parts = str.split(",");
+		Object[] result = (Object[]) Array.newInstance(componentType, parts.length);
+		for (int i = 0; i < parts.length; i++) {
+			result[i] = Integer.parseInt(parts[i]);
+		}
+		return (T) result;
 	}
 
 	private static <T> void registerDefaultType(Class<T> cls, Deserializer<T> deserializer) {
