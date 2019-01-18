@@ -216,7 +216,7 @@ build.doLast {
 	//SPONGE
 	if (project.hasProperty("sponge_server")) {
 		exec {
-			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("sponge_server").replaceAll("%20", " ") + "\\mods", '/Y'
+			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("sponge_server").replaceAll("%20", " ") + "\\mods\\plugins", '/Y'
 		}
 	}
 	

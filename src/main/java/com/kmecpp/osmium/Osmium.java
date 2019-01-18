@@ -33,6 +33,7 @@ import com.kmecpp.osmium.api.plugin.PluginLoader;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
+import com.kmecpp.osmium.core.TPSTask;
 import com.kmecpp.osmium.platform.bukkit.BukkitUser;
 import com.kmecpp.osmium.platform.sponge.SpongeUser;
 
@@ -119,6 +120,10 @@ public final class Osmium {
 
 	public static ItemManager getItemManager() {
 		return itemManager;
+	}
+
+	public static double getTPS() {
+		return TPSTask.getAverage(60);
 	}
 
 	//	public static Database getDatabase() {
