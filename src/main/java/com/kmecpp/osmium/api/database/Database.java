@@ -5,6 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+import javax.persistence.Entity;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -30,6 +38,7 @@ public class Database {
 	private final ArrayList<Class<?>> tables = new ArrayList<>();
 	private final ArrayList<AbstractSingleColumnStandardBasicType<?>> types = new ArrayList<>();
 	private final HashMap<Class<?>, String> typeKeys = new HashMap<>();
+	private final HashMap<String, String> properties = new HashMap<>();
 
 	private StandardServiceRegistry registry;
 	private SessionFactory sessionFactory;
@@ -43,10 +52,15 @@ public class Database {
 		return initialized;
 	}
 
+	public void setProperty(String property, String value) {
+		properties.put(property, value);
+	}
+
 	public void initialize() {
 		if (initialized) {
 			throw new IllegalStateException("Database already initialized!");
 		}
+		plugin.info("Establishing database connection...");
 		StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
 		Map<String, String> settings = new HashMap<>();
 		settings.put(Environment.DRIVER, "org.sqlite.JDBC");
@@ -56,10 +70,11 @@ public class Database {
 		settings.put(Environment.HBM2DDL_AUTO, "update");
 		settings.put(Environment.SHOW_SQL, "true");
 
-		//		settings.put("hibernate.hikari.connectionTimeout", "20000");
-		//		settings.put("hibernate.hikari.minimumIdle", "2");
-		//		settings.put("hibernate.hikari.maximumPoolSize", "10");
-		//		settings.put("hibernate.hikari.idleTimeout", "300000");
+		settings.put("hibernate.hikari.connectionTimeout", "5000");
+		settings.put("hibernate.hikari.minimumIdle", "2");
+		settings.put("hibernate.hikari.maximumPoolSize", "10");
+		settings.put("hibernate.hikari.idleTimeout", "300000");
+		settings.putAll(properties);
 
 		registryBuilder.applySettings(settings);
 		this.registry = registryBuilder.build();
@@ -193,35 +208,140 @@ public class Database {
 	//	}
 
 	public List<?> query(String query) {
-		return getSession().createSQLQuery(query).getResultList();
+		return query(s -> s.createQuery(query).getResultList());
 	}
 
-	public int update(String update) {
-		return getSession().createSQLQuery(update).executeUpdate();
+	public List<?> query(Class<?> entity, String query) {
+		return query(s -> s.createQuery(withTable(entity, query)).getResultList());
+	}
+
+	public int update(String update, Object... params) {
+		return query(s -> {
+			Query q = s.createQuery(update);
+			for (int i = 0; i < params.length; i++) {
+				q.setParameter(i, params[i]);
+			}
+			return q.executeUpdate();
+		});
 	}
 
 	public int updateAsync(String update) {
-		return getSession().createSQLQuery(update).executeUpdate();
+		//		return run(s -> s.createQuery(update).executeUpdate());
+		throw new UnsupportedOperationException();
 	}
 
 	public void save(Object obj) {
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		session.saveOrUpdate(obj);
-		session.getTransaction().commit();
-		session.close();
+		send((s) -> s.saveOrUpdate(obj));
+		//		Session session = sessionFactory.openSession();
+		//		session.beginTransaction();
+		//		session.saveOrUpdate(obj);
+		//		session.getTransaction().commit();
+		//		session.close();
+	}
+
+	public void increment(Class<?> entity, String column) {
+		update(withTable(entity, "update {table} set ? = ? + 1"), column, column);
+	}
+
+	public void add(Class<?> entity, String column, int amount) {
+		update(withTable(entity, "update {table} set ? = ? + ?"), column, column, amount);
+	}
+
+	private static String withTable(Class<?> entity, String query) {
+		String name = entity.getAnnotation(Entity.class).name();
+		String tableName = name.isEmpty() ? entity.getSimpleName() : name;
+		return query.replace("{table}", tableName);
+	}
+
+	public <T> List<T> sort(Class<T> entity, String column, OrderBy order, int limit) {
+		return sort(entity, column, order, limit, 0);
+	}
+
+	public <T> List<T> sort(Class<T> entity, String column, OrderBy order, int limit, int offset) {
+		return query(s -> {
+			CriteriaBuilder builder = s.getCriteriaBuilder();
+			CriteriaQuery<T> query = builder.createQuery(entity);
+			if (order == OrderBy.ASC) {
+				query.orderBy(builder.asc(query.from(entity).get(column)));
+			} else {
+				query.orderBy(builder.desc(query.from(entity).get(column)));
+			}
+			return s.createQuery(query).setMaxResults(limit).getResultList();
+		});
+	}
+
+	public <T> List<T> diff(Class<T> entity, String first, String second, int limit) {
+		return diff(entity, first, second, limit, 0);
+	}
+
+	public <T> List<T> diff(Class<T> entity, String first, String second, int limit, int offset) {
+		return query(s -> {
+			CriteriaBuilder builder = s.getCriteriaBuilder();
+			CriteriaQuery<T> query = builder.createQuery(entity);
+			Root<T> root = query.from(entity);
+			query.orderBy(builder.desc(builder.diff(root.get(first), root.get(second))));
+			return s.createQuery(query).setFirstResult(offset).setMaxResults(limit).getResultList();
+		});
+	}
+
+	public <T> T getOrCreate(Class<T> cls, Serializable id, T def) {
+		return query((s) -> {
+			T data = s.get(cls, id);
+			if (data != null) {
+				return data;
+			} else {
+				s.save(def);
+				return def;
+			}
+		});
+	}
+
+	public <T> T get(Class<T> tableClass, Serializable id, Serializable... ids) {
+		return query(session -> {
+			if (ids.length == 0) {
+				return session.get(tableClass, id);
+			} else {
+				Serializable[] full_ids = new Serializable[ids.length + 1];
+				full_ids[0] = id;
+				System.arraycopy(ids, 0, full_ids, 1, ids.length);
+				return session.byMultipleIds(tableClass).multiLoad(full_ids).get(0);
+			}
+		});
 	}
 
 	public <T> T load(Class<T> tableClass, Serializable id, Serializable... ids) {
-		Session session = getSession();
-		if (ids.length == 0) {
+		return query(session -> {
+			if (ids.length == 0) {
+				return session.load(tableClass, id);
+			} else {
+				Serializable[] full_ids = new Serializable[ids.length + 1];
+				full_ids[0] = id;
+				System.arraycopy(ids, 0, full_ids, 1, ids.length);
+				return session.byMultipleIds(tableClass).multiLoad(full_ids).get(0);
+			}
+		});
+	}
+
+	public void send(Consumer<Session> consumer) {
+		query((s) -> {
+			consumer.accept(s);
+			return null;
+		});
+	}
+
+	public <T> T query(Function<Session, T> consumer) {
+		Session session = null;
+		try {
+			session = sessionFactory.openSession();
 			session.beginTransaction();
-			return session.load(tableClass, id);
-		} else {
-			Serializable[] full_ids = new Serializable[ids.length + 1];
-			full_ids[0] = id;
-			System.arraycopy(ids, 0, full_ids, 1, ids.length);
-			return session.byMultipleIds(tableClass).multiLoad(full_ids).get(0);
+			T result = consumer.apply(session);
+			session.getTransaction().commit();
+			return result;
+		} catch (Throwable t) {
+			if (session != null) {
+				session.close();
+			}
+			throw new RuntimeException(t);
 		}
 	}
 

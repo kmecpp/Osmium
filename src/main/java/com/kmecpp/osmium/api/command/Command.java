@@ -24,6 +24,10 @@ public class Command extends SimpleCommand {
 	}
 
 	public final void setTitle(String title) {
+		this.title = Chat.style(title);
+	}
+
+	public final void setRawTitle(String title) {
 		this.title = title;
 	}
 

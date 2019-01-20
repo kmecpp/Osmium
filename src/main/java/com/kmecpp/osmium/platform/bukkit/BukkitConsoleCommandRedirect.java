@@ -2,11 +2,13 @@ package com.kmecpp.osmium.platform.bukkit;
 
 import org.bukkit.craftbukkit.v1_13_R2.command.CraftConsoleCommandSender;
 
+import com.kmecpp.osmium.api.command.CommandSender;
+
 public class BukkitConsoleCommandRedirect extends CraftConsoleCommandSender {
 
-	private org.bukkit.command.CommandSender output;
+	private CommandSender output;
 
-	public BukkitConsoleCommandRedirect(org.bukkit.command.CommandSender output) {
+	public BukkitConsoleCommandRedirect(CommandSender output) {
 		this.output = output;
 	}
 

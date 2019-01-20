@@ -13,12 +13,13 @@ import com.kmecpp.osmium.api.util.StringUtil;
 public class CommandEvent implements Messageable {
 
 	private CommandSender sender;
-	private String command;
+	private String baseLabel;
+	private String argLabel;
 	private String[] args;
 
-	public CommandEvent(CommandSender sender, String command, String[] args) {
+	public CommandEvent(CommandSender sender, String baseLabel, String argLabel, String[] args) {
 		this.sender = sender;
-		this.command = command;
+		this.baseLabel = baseLabel;
 		this.args = args;
 	}
 
@@ -110,8 +111,12 @@ public class CommandEvent implements Messageable {
 		return sender;
 	}
 
-	public String getCommand() {
-		return command;
+	public String getBaseLabel() {
+		return baseLabel;
+	}
+
+	public String getArgLabel() {
+		return argLabel;
 	}
 
 	public void consumeArgument() {
@@ -120,9 +125,18 @@ public class CommandEvent implements Messageable {
 		this.args = temp;
 	}
 
-	public boolean equalsIgnoreCase(int index, String... labels) {
+	public boolean matches(int index, String... labels) {
 		for (String label : labels) {
 			if (get(index).equalsIgnoreCase(label)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean startsWith(int index, String... labels) {
+		for (String label : labels) {
+			if (get(index).toLowerCase().startsWith(label.toLowerCase())) {
 				return true;
 			}
 		}

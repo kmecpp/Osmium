@@ -90,13 +90,13 @@ public class SimpleCommand {
 		return this;
 	}
 
-	public SimpleCommand setAdmin() {
-		this.admin = true;
+	public SimpleCommand setAdmin(boolean admin) {
+		this.admin = admin;
 		return this;
 	}
 
-	public SimpleCommand setConsole() {
-		this.console = true;
+	public SimpleCommand setConsole(boolean console) {
+		this.console = console;
 		return this;
 	}
 

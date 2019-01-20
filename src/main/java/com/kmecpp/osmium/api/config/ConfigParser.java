@@ -80,7 +80,7 @@ public class ConfigParser {
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	private void readNext(StringBuilder path, ConfigField mapField) {
 		int start = index;
 		while (!Character.isWhitespace(current) && current != ':') {
@@ -116,64 +116,36 @@ public class ConfigParser {
 
 			if (field == null) {
 				OsmiumLogger.warn("Config file for '" + data.getProperties().path() + "' contains unknown setting: " + fullPath);
+
+				//Skip entry
+				if (current == '[') {
+					read();
+					while (current != ']') {
+						readSingleValue();
+						skipWhitespaceAndComments();
+						if (current == ',') {
+							read();
+							skipWhitespaceAndComments();
+						}
+					}
+					read();
+				} else {
+					readSingleValue();
+				}
 				return;
 			}
 
-			Class<?> fieldType = field.getType();
 			Class<?> componentType = field.getComponentType();
 			Object value;
 
 			//Read list
 			if (current == '[') {
-
-				read();
-				skipWhitespaceAndComments();
-
-				Collection collection;
-				if (fieldType.isArray()) {
-					collection = new ArrayList<>();
-				} else if (Collection.class.isAssignableFrom(fieldType)) {
-					collection = (Collection<?>) field.getValue();
-					if (collection == null) {
-						//Create default collection if user didn't set a default value
-						try {
-							collection = (Collection<?>) fieldType.newInstance();
-						} catch (InstantiationException | IllegalAccessException e) {
-							throw getError("Failed to initialize collection", e);
-						}
-					}
-				} else {
-					throw getError("Found list when expecting '" + componentType + "'");
-				}
-
-				while (current != ']') {
-					collection.add(parseValue(componentType));
-
-					skipWhitespaceAndComments();
-					if (current == ',') {
-						read();
-						skipWhitespaceAndComments();
-					}
-				}
-				read(); //Read closing bracket
-
-				if (fieldType.isArray()) {
-					Object fieldArray = Array.newInstance(componentType, collection.size());
-
-					int i = 0;
-					for (Object element : collection) {
-						Array.set(fieldArray, i, element);
-						i++;
-					}
-					value = fieldArray;
-				} else {
-					value = collection;
-				}
+				value = parseList(field, componentType);
 			}
 
 			//Read single value
 			else {
-				value = parseValue(componentType);
+				value = parseSingleValue(componentType);
 			}
 
 			//			System.out.println("VALUE: " + value);
@@ -192,8 +164,57 @@ public class ConfigParser {
 		return;
 	}
 
-	private Object parseValue(Class<?> type) {
-		String value = readValue();
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Object parseList(ConfigField field, Class<?> componentType) {
+		Class<?> fieldType = field.getType();
+
+		read();
+		skipWhitespaceAndComments();
+
+		Collection collection;
+		if (fieldType.isArray()) {
+			collection = new ArrayList<>();
+		} else if (Collection.class.isAssignableFrom(fieldType)) {
+			collection = (Collection) field.getValue();
+			if (collection == null) {
+				//Create default collection if user didn't set a default value
+				try {
+					collection = (Collection) fieldType.newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					throw getError("Failed to initialize collection", e);
+				}
+			}
+		} else {
+			throw getError("Found list when expecting '" + componentType + "'");
+		}
+
+		while (current != ']') {
+			collection.add(parseSingleValue(componentType));
+
+			skipWhitespaceAndComments();
+			if (current == ',') {
+				read();
+				skipWhitespaceAndComments();
+			}
+		}
+		read(); //Read closing bracket
+
+		if (fieldType.isArray()) {
+			Object fieldArray = Array.newInstance(componentType, collection.size());
+
+			int i = 0;
+			for (Object element : collection) {
+				Array.set(fieldArray, i, element);
+				i++;
+			}
+			return fieldArray;
+		} else {
+			return collection;
+		}
+	}
+
+	private Object parseSingleValue(Class<?> type) {
+		String value = readSingleValue();
 		try {
 			return ConfigTypes.deserialize(type, value);
 		} catch (Exception e) {
@@ -201,7 +222,7 @@ public class ConfigParser {
 		}
 	}
 
-	private String readValue() {
+	private String readSingleValue() {
 		int start = index;
 
 		//Read string

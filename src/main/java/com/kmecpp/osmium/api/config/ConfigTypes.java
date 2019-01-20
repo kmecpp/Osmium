@@ -94,7 +94,8 @@ public class ConfigTypes {
 
 		SerializationData<T> data = (SerializationData<T>) types.get(type);
 		if (data != null) {
-			return data.deserialize(data.isCustomType() ? str.substring(1, str.length() - 1) : str);
+			return data.deserialize(str); //The parser will remove the quotations from custom types
+			//			return data.deserialize(data.isCustomType() ? str.substring(1, str.length() - 1) : str);
 		}
 		throw new IllegalArgumentException("Cannot parse as " + type.getName() + ": '" + str + "'");
 	}

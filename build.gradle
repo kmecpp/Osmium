@@ -145,13 +145,13 @@ dependencies {
 	shade "org.yaml:snakeyaml:1.21"
 	//shade "org.bstats:bstats-bukkit:1.2"
 	//shade "org.bstats:bstats-sponge:1.2"
+	shade "com.zaxxer:HikariCP:3.1.0"
+	shade "org.xerial:sqlite-jdbc:3.25.2"
+	shade "com.github.gwenn:sqlite-dialect:0.1.0"
 	shade "org.hibernate:hibernate-core:5.4.0.Final"
 	shade "org.hibernate:hibernate-hikaricp:5.4.0.Final"
 	//shade "org.hibernate:hibernate-annotations:3.4.0-Final"
-	shade "com.github.gwenn:sqlite-dialect:0.1.0"
 	//shade "com.zsoltfabok:sqlite-dialect:1.0"
-	shade "org.xerial:sqlite-jdbc:3.25.2"
-	shade "com.zaxxer:HikariCP:3.1.0"
 	shade "org.slf4j:log4j-over-slf4j:1.7.25"
 		
     testCompile 'junit:junit:4.12'

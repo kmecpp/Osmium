@@ -88,7 +88,7 @@ public class BukkitAccess {
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 	}
 
-	public static void processConsoleCommand(org.bukkit.command.CommandSender output, String command) {
+	public static void processConsoleCommand(CommandSender output, String command) {
 		Bukkit.dispatchCommand(new BukkitConsoleCommandRedirect(output), command);
 	}
 

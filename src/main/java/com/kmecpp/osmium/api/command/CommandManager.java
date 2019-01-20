@@ -47,7 +47,11 @@ public final class CommandManager {
 	}
 
 	public void processConsoleCommand(CommandSender output, String command) {
-
+		if (Platform.isBukkit()) {
+			BukkitAccess.processConsoleCommand(output, command);
+		} else if (Platform.isSponge()) {
+			SpongeAccess.processConsoleCommand(output, command);
+		}
 	}
 
 	public void processCommand(CommandSender sender, String command) {
@@ -64,7 +68,7 @@ public final class CommandManager {
 				throw CommandException.PLAYERS_ONLY;
 			}
 
-			CommandEvent event = new CommandEvent(sender, commandLabel, args);
+			CommandEvent event = new CommandEvent(sender, commandLabel, null, args);
 			command.checkPermission(event);
 
 			//Simple commands
@@ -78,9 +82,10 @@ public final class CommandManager {
 					command.sendHelp(event);
 				} else {
 					SimpleCommand arg = command.getArgumentMatching(args[0]);
-					arg.checkPermission(event);
-					event.consumeArgument();
-					arg.execute(event);
+					if (arg.isAllowed(sender)) {
+						event.consumeArgument();
+						arg.execute(event);
+					}
 				}
 			}
 			return true;

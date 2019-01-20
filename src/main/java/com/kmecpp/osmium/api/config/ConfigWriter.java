@@ -42,7 +42,7 @@ public class ConfigWriter {
 		boolean first = true;
 		for (ConfigField field : block.getFields()) {
 			if (field.getType().toGenericString().contains("<") && field.getSetting().type() == Object.class) {
-				new ConfigWriteException("Failed to write Config setting '" + field.getName() + "'. Generics must specify a type parameter.").printStackTrace();
+				new ConfigWriteException("Failed to write Config setting '" + field.getJavaPath() + "'. \nError: generics fields must specify a type parameter.").printStackTrace();
 				continue;
 			}
 
@@ -153,7 +153,8 @@ public class ConfigWriter {
 	private void writeList(Object[] arr, Collection<?> collection, boolean condensed) {
 		sb.append('[');
 		if (!condensed) {
-			tab.append("\n\t");
+			sb.append('\n');
+			tab.append("\t");
 		}
 
 		//Write elements
@@ -171,9 +172,9 @@ public class ConfigWriter {
 
 		//Write end
 		if (!condensed) {
-			tab.setLength(Math.max(0, tab.length() - 2));
-			sb.append(tab);
+			tab.setLength(Math.max(0, tab.length() - 1));
 			sb.append('\n');
+			sb.append(tab);
 		}
 		sb.append(']');
 	}

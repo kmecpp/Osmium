@@ -1,10 +1,14 @@
 # Osmium API
 
-Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the *easiest most concise way to create Minecraft plugins period*. Everything in Osmium is done with only one method or one class. There is no registration of commands/listeners/configurations 
+Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the *easiest most concise way to create Minecraft plugins period!*.
 
-In addition to being able to target multiple platforms, Osmium has many unique features which drastically reduce the amount of code necessary to complete many common tasks. Everything from listener/command registration, to config file handling, to database storage is handled completely automatically.
+Say goodbye to registering commands or listeners! Writing code to handle configuration files or databases? NOT ANYMORE! No need to store your plugin instance anywhere. No need to write SQL code. Compile your plugin, and it will work automatically on both Bukkit/Spigot and Sponge servers!
 
-In order to achieve maximum compatibility between platforms, only functionality that can be safely implemented across both platforms will be implemented. Osmium is not intended to be a replacement for Bukkit or Sponge. Osmium is currently in ALPHA so the API is far from complete. However, plugins requiring any functionality that has not yet been implemented can easily write platform specific code as needed. Osmium even has many utility methods to help you do this.
+Everything in Osmium is also completely optional. Don't want to use our config or database system. You don't have to! If there is any part of our API that we haven't finished yet, just write platform specific code. Osmium is designed to work with existing codebases and helps you handle platform specific code correctly.
+
+Osmium is perfect for servers using Thermos that eventually might upgrade to Sponge or plugin developers that want to write multiplatform plugins FAST.
+
+Osmium is currently in ALPHA so the API is far from complete. However, plugins requiring any functionality that has not yet been implemented can easily write platform specific code as needed. Osmium even has many utility methods to help you do this.
 
 Please join the Discord server if you have questions, would like to stay updated with the project or want to help out: https://discord.gg/jBjYckt
 
@@ -14,13 +18,14 @@ Some servers already using Osmium:
 # Features
 
 * Platform independent
-* More concise command API and automatic registration of commands
-* More concise listener API and automatic registration of listeners
-* Service API that allows hooking into common server events at any time
-* Super easy configuration handling
-* And much more...
- 
- 
+* No need to register commands or listeners
+* Built in Hibernate + HikariCP integration
+* Resources files like plugin.yml don't exist anymore
+* Configuration files are generated automatically from a class file
+* Super awesome command API that combines the best of both Bukkit and Sponge
+* And much much more...
+
+
 #### Implemented:
 
 * Configs
@@ -32,8 +37,6 @@ Some servers already using Osmium:
 #### TODO:
 * More events
 * More methods
-* Inventories
-* Databases
 * Everything else...
  
 <hr>
@@ -53,6 +56,9 @@ Osmium can be downloaded from Maven Central.
 
 # Examples
 
+To see a fully working example of an Osmium plugin, check out the [built in plugin we have here](https://github.com/kmecpp/Osmium/tree/master/src/main/java/com/kmecpp/osmium/core).
+
+You can ignore OsmiumBukkitMain and OsmiumSpongeMain as those will be automatically generated for regular Osmium plugins.
 
 ## Listeners
 
@@ -232,6 +238,20 @@ if (Platform.isBukkit()){
 	//Bukkit code
 } else if(Platform.isSponge()){
 	//Sponge code
+}
+```
+
+This class will only loaded on Bukkit:
+
+```
+@Bukkit
+public class BukkitListener {
+	
+	@EventHandler
+	public void on(BlockBreakEvent e){
+		//Do some fancy Bukkit only stuff
+	}
+	
 }
 ```
 

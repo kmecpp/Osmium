@@ -11,7 +11,6 @@ import java.util.HashSet;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
-import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
 
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -21,12 +20,13 @@ public class ConfigManager {
 	private final HashMap<OsmiumPlugin, HashSet<Class<?>>> plugins = new HashMap<>();
 	private final HashMap<Class<?>, ConfigData> configs = new HashMap<>();
 
-	public static void main(String[] args) throws IOException {
-		ConfigManager m = new ConfigManager();
-		ConfigData data = m.getConfigData(CoreOsmiumConfiguration.class);
-		new ConfigWriter(data, new File("config.conf")).write(); //File handling is done by the writer
-		new ConfigParser(data, new File("config.conf")).load();
-	}
+	//	public static void main(String[] args) throws IOException {
+	//		ConfigManager m = new ConfigManager();
+	//		ConfigData data = m.getConfigData(CoreOsmiumConfiguration.class);
+	//		new ConfigWriter(data, new File("config.conf")).write(); //File handling is done by the writer
+	//		new ConfigParser(data, new File("config.conf")).load();
+	//		System.out.println(CoreOsmiumConfiguration.Banned.banned);
+	//	}
 
 	public void registerConfig(OsmiumPlugin plugin, Class<?> config) {
 		plugins.putIfAbsent(plugin, new HashSet<>());

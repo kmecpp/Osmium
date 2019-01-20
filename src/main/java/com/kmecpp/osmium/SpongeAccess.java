@@ -92,7 +92,7 @@ public class SpongeAccess {
 		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
 	}
 
-	public static void processConsoleCommand(CommandSource output, String command) {
+	public static void processConsoleCommand(CommandSender output, String command) {
 		Sponge.getCommandManager().process(new SpongeConsoleCommandRedirect(output), command);
 	}
 

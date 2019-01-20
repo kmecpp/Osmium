@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectData;
@@ -13,11 +14,14 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.util.Tristate;
 
+import com.kmecpp.osmium.api.command.CommandSender;
+
 public class SpongeConsoleCommandRedirect implements CommandSource {
 
-	private CommandSource output;
+	private CommandSender output;
+	private ConsoleSource console;
 
-	public SpongeConsoleCommandRedirect(CommandSource output) {
+	public SpongeConsoleCommandRedirect(CommandSender output) {
 		this.output = output;
 	}
 
@@ -28,77 +32,77 @@ public class SpongeConsoleCommandRedirect implements CommandSource {
 
 	@Override
 	public void sendMessage(Text message) {
-		output.sendMessage(message);
+		output.sendMessage(message.toString());
 	}
 
 	@Override
 	public MessageChannel getMessageChannel() {
-		return output.getMessageChannel();
+		return console.getMessageChannel();
 	}
 
 	@Override
 	public void setMessageChannel(MessageChannel channel) {
-		output.setMessageChannel(channel);
+		console.setMessageChannel(channel);
 	}
 
 	@Override
 	public Optional<CommandSource> getCommandSource() {
-		return output.getCommandSource();
+		return console.getCommandSource();
 	}
 
 	@Override
 	public SubjectCollection getContainingCollection() {
-		return output.getContainingCollection();
+		return console.getContainingCollection();
 	}
 
 	@Override
 	public SubjectReference asSubjectReference() {
-		return output.asSubjectReference();
+		return console.asSubjectReference();
 	}
 
 	@Override
 	public boolean isSubjectDataPersisted() {
-		return output.isSubjectDataPersisted();
+		return console.isSubjectDataPersisted();
 	}
 
 	@Override
 	public SubjectData getSubjectData() {
-		return output.getSubjectData();
+		return console.getSubjectData();
 	}
 
 	@Override
 	public SubjectData getTransientSubjectData() {
-		return output.getTransientSubjectData();
+		return console.getTransientSubjectData();
 	}
 
 	@Override
 	public boolean isChildOf(Set<Context> contexts, SubjectReference parent) {
-		return output.isChildOf(contexts, parent);
+		return console.isChildOf(contexts, parent);
 	}
 
 	@Override
 	public List<SubjectReference> getParents(Set<Context> contexts) {
-		return output.getParents(contexts);
+		return console.getParents(contexts);
 	}
 
 	@Override
 	public Optional<String> getOption(Set<Context> contexts, String key) {
-		return output.getOption(contexts, key);
+		return console.getOption(contexts, key);
 	}
 
 	@Override
 	public String getIdentifier() {
-		return output.getIdentifier();
+		return console.getIdentifier();
 	}
 
 	@Override
 	public Set<Context> getActiveContexts() {
-		return output.getActiveContexts();
+		return console.getActiveContexts();
 	}
 
 	@Override
 	public String getName() {
-		return output.getName();
+		return console.getName();
 	}
 
 }

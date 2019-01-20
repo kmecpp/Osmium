@@ -23,7 +23,7 @@ public class CoreOsmiumCommands extends Command {
 				});
 
 		add("reload")
-				.setAdmin()
+				.setAdmin(true)
 				.setExecutor((e) -> {
 					for (OsmiumPlugin plugin : Osmium.getPlugins()) {
 						plugin.onReload();
@@ -32,7 +32,7 @@ public class CoreOsmiumCommands extends Command {
 				});
 
 		add("plugins")
-				.setAdmin()
+				.setAdmin(true)
 				.setUsage("{plugin}")
 				.setExecutor((e) -> {
 					if (e.isBaseCommand()) {
@@ -60,7 +60,7 @@ public class CoreOsmiumCommands extends Command {
 				});
 
 		add("commands")
-				.setAdmin()
+				.setAdmin(true)
 				.setUsage("<plugin>")
 				.setExecutor((e) -> {
 					OsmiumPlugin plugin = e.getPlugin(0);

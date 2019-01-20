@@ -22,6 +22,10 @@ public class ConfigField {
 		return setting.name().isEmpty() ? field.getName() : setting.name();
 	}
 
+	public String getJavaPath() {
+		return field.getDeclaringClass().getName() + "." + field.getName();
+	}
+
 	public boolean isPrimitive() {
 		return field.getType().isPrimitive();
 	}
