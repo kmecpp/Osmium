@@ -33,6 +33,7 @@ import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.platform.bukkit.BukkitBlock;
 import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitChunk;
+import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandRedirect;
 import com.kmecpp.osmium.platform.bukkit.BukkitConsoleCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitEntity;
 import com.kmecpp.osmium.platform.bukkit.BukkitInventory;
@@ -87,6 +88,10 @@ public class BukkitAccess {
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 	}
 
+	public static void processConsoleCommand(org.bukkit.command.CommandSender output, String command) {
+		Bukkit.dispatchCommand(new BukkitConsoleCommandRedirect(output), command);
+	}
+
 	public static void processCommand(org.bukkit.command.CommandSender sender, String command) {
 		Bukkit.dispatchCommand(sender, command);
 	}
@@ -119,14 +124,19 @@ public class BukkitAccess {
 
 				@Override
 				public boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args) {
-					CommandSender sender = bukkitSender instanceof org.bukkit.entity.Player
-							? getPlayer((org.bukkit.entity.Player) bukkitSender)
-							: bukkitSender instanceof org.bukkit.command.ConsoleCommandSender
-									? new BukkitConsoleCommandSender((org.bukkit.command.ConsoleCommandSender) bukkitSender)
-									: bukkitSender instanceof org.bukkit.command.BlockCommandSender
-											? new BukkitBlockCommandSender((org.bukkit.command.BlockCommandSender) bukkitSender)
-											: new GenericBukkitCommandSender(bukkitSender);
-					return CommandManager.invokeCommand(command, sender, label, args);
+					try {
+						CommandSender sender = bukkitSender instanceof org.bukkit.entity.Player
+								? getPlayer((org.bukkit.entity.Player) bukkitSender)
+								: bukkitSender instanceof org.bukkit.command.ConsoleCommandSender
+										? new BukkitConsoleCommandSender((org.bukkit.command.ConsoleCommandSender) bukkitSender)
+										: bukkitSender instanceof org.bukkit.command.BlockCommandSender
+												? new BukkitBlockCommandSender((org.bukkit.command.BlockCommandSender) bukkitSender)
+												: new GenericBukkitCommandSender(bukkitSender);
+						return CommandManager.invokeCommand(command, sender, label, args);
+					} catch (Throwable t) {
+						t.printStackTrace();
+						return false;
+					}
 				}
 
 			});

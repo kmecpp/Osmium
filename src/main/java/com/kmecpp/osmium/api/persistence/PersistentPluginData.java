@@ -43,7 +43,12 @@ public class PersistentPluginData {
 		this.fields.add(field);
 
 		try {
-			field.set(null, file.getNode(getId(field)).getValue());
+			Object value = file.getNode(getId(field)).getValue();
+			if (value == null && field.getType().isPrimitive()) {
+				return;
+			}
+
+			field.set(null, value);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}

@@ -38,12 +38,16 @@ public final class CommandManager {
 		return commands.getOrDefault(plugin, new ArrayList<>());
 	}
 
-	public void processCommand(String command) {
+	public void processConsoleCommand(String command) {
 		if (Platform.isBukkit()) {
 			BukkitAccess.processConsoleCommand(command);
 		} else if (Platform.isSponge()) {
 			SpongeAccess.processConsoleCommand(command);
 		}
+	}
+
+	public void processConsoleCommand(CommandSender output, String command) {
+
 	}
 
 	public void processCommand(CommandSender sender, String command) {
@@ -82,12 +86,16 @@ public final class CommandManager {
 			return true;
 		} catch (CommandException e) {
 			if (e == CommandException.USAGE_ERROR) {
-				sender.send("&cUsage: " + command.getUsage());
+				String arg = args.length > 0 ? command.getArgumentMatching(args[0]).getPrimaryAlias() + " " : "";
+				sender.send("&cUsage: /" + command.getPrimaryAlias() + " " + arg + command.getUsage());
 			} else {
 				sender.send("&c" + e.getMessage());
 			}
 			return false;
 		}
+		//		catch (ArrayIndexOutOfBoundsException e) {
+		//			sender
+		//		}
 	}
 
 	public static void sendFailedRegistrationMessage(OsmiumPlugin plugin, Command command) {

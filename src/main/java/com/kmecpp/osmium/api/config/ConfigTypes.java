@@ -43,7 +43,8 @@ public class ConfigTypes {
 		registerDefaultType(char[].class, String::new, String::toCharArray);
 		registerDefaultType(String.class, (obj) -> obj == null ? null : "\"" + obj + "\"", String::valueOf);
 
-		registerDefaultType(UUID.class, UUID::fromString);
+		//Not default type
+		register(UUID.class, UUID::fromString);
 	}
 
 	@SuppressWarnings("unchecked")

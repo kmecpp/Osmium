@@ -27,16 +27,26 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 public class Database {
 
 	private final OsmiumPlugin plugin;
-	private final StandardServiceRegistry registry;
 	private final ArrayList<Class<?>> tables = new ArrayList<>();
 	private final ArrayList<AbstractSingleColumnStandardBasicType<?>> types = new ArrayList<>();
 	private final HashMap<Class<?>, String> typeKeys = new HashMap<>();
 
+	private StandardServiceRegistry registry;
 	private SessionFactory sessionFactory;
+	private boolean initialized;
 
 	public Database(OsmiumPlugin plugin) {
 		this.plugin = plugin;
+	}
 
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public void initialize() {
+		if (initialized) {
+			throw new IllegalStateException("Database already initialized!");
+		}
 		StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
 		Map<String, String> settings = new HashMap<>();
 		settings.put(Environment.DRIVER, "org.sqlite.JDBC");
@@ -53,10 +63,74 @@ public class Database {
 
 		registryBuilder.applySettings(settings);
 		this.registry = registryBuilder.build();
+
+		MetadataSources sources = new MetadataSources(registry);
+		for (Class<?> table : tables) {
+			plugin.info("Registering database table: " + table.getName());
+			System.out.println("Registering database table: " + table.getName());
+			sources.addAnnotatedClass(table);
+		}
+
+		MetadataBuilder builder = sources.getMetadataBuilder();
+		for (AbstractSingleColumnStandardBasicType<?> type : types) {
+			builder.applyBasicType(type);
+		}
+		Metadata metadata = builder.build();
+		//		for (AbstractSingleColumnStandardBasicType<?> type : types) {
+		//			((MetadataImplementor) metadastota).getTypeResolver().registerTypeOverride(type);
+		//		}
+
+		//		System.out.println("RRE: " + metadata.getTypeDefinition("osmium_test_type"));
+		//		Type result = ((MetadataImplementor) metadata).getTypeConfiguration().getTypeResolver().heuristicType("osmium_test_type");
+		//		System.out.println("RESULT: " + result);
+		sessionFactory = metadata.getSessionFactoryBuilder().build();
+		initialized = true;
+	}
+
+	public ArrayList<Class<?>> getTables() {
+		return tables;
 	}
 
 	public void addTable(Class<?> cls) {
+		plugin.info("Adding database table: " + cls.getName());
 		tables.add(cls);
+	}
+
+	public <T> void registerType(Class<T> typeClass, String key, Serializer<T> serializer, Deserializer<T> deserializer) {
+		JavaTypeDescriptor<T> javaTypeDescriptor = new AbstractTypeDescriptor<T>(typeClass) {
+
+			private static final long serialVersionUID = -505731604660159178L;
+
+			@Override
+			public T fromString(String string) {
+				return deserializer.deserialize(string);
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public <X> X unwrap(T value, Class<X> type, WrapperOptions options) {
+				return (X) serializer.serialize(value);
+			}
+
+			@Override
+			public <X> T wrap(X value, WrapperOptions options) {
+				return deserializer.deserialize((String) value);
+			}
+
+		};
+
+		types.add(new AbstractSingleColumnStandardBasicType<T>(VarcharTypeDescriptor.INSTANCE, javaTypeDescriptor) {
+
+			private static final long serialVersionUID = -7835848990623858505L;
+
+			@Override
+			public String getName() {
+				return plugin.getName() + "_" + key;
+			}
+
+		});
+		typeKeys.put(typeClass, key);
+		//		needsUpdate = true;
 	}
 
 	public String getTypeKey(Class<?> cls) {
@@ -69,27 +143,12 @@ public class Database {
 			sessionFactory.close();
 		}
 
-		MetadataSources sources = new MetadataSources(registry);
-		for (Class<?> table : tables) {
-			sources.addAnnotatedClass(table);
-		}
-
-		MetadataBuilder builder = sources.getMetadataBuilder();
-		for (AbstractSingleColumnStandardBasicType<?> type : types) {
-			builder.applyBasicType(type);
-		}
-		Metadata metadata = builder.build();
-		//		for (AbstractSingleColumnStandardBasicType<?> type : types) {
-		//			((MetadataImplementor) metadata).getTypeResolver().registerTypeOverride(type);
-		//		}
-
-		//		System.out.println("RRE: " + metadata.getTypeDefinition("osmium_test_type"));
-		//		Type result = ((MetadataImplementor) metadata).getTypeConfiguration().getTypeResolver().heuristicType("osmium_test_type");
-		//		System.out.println("RESULT: " + result);
-		sessionFactory = metadata.getSessionFactoryBuilder().build();
 	}
 
 	public Session getSession() {
+		if (sessionFactory.getCurrentSession().isOpen()) {
+			return sessionFactory.getCurrentSession();
+		}
 		return sessionFactory.openSession();
 	}
 
@@ -134,29 +193,27 @@ public class Database {
 	//	}
 
 	public List<?> query(String query) {
-		Session session = sessionFactory.getCurrentSession();
-		return session.createSQLQuery(query).getResultList();
+		return getSession().createSQLQuery(query).getResultList();
 	}
 
 	public int update(String update) {
-		Session session = sessionFactory.getCurrentSession();
-		return session.createSQLQuery(update).executeUpdate();
+		return getSession().createSQLQuery(update).executeUpdate();
 	}
 
 	public int updateAsync(String update) {
-		Session session = sessionFactory.getCurrentSession();
-		return session.createSQLQuery(update).executeUpdate();
+		return getSession().createSQLQuery(update).executeUpdate();
 	}
 
 	public void save(Object obj) {
-		Session session = sessionFactory.getCurrentSession();
+		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		session.saveOrUpdate(obj);
 		session.getTransaction().commit();
+		session.close();
 	}
 
 	public <T> T load(Class<T> tableClass, Serializable id, Serializable... ids) {
-		Session session = sessionFactory.getCurrentSession();
+		Session session = getSession();
 		if (ids.length == 0) {
 			session.beginTransaction();
 			return session.load(tableClass, id);
@@ -166,42 +223,6 @@ public class Database {
 			System.arraycopy(ids, 0, full_ids, 1, ids.length);
 			return session.byMultipleIds(tableClass).multiLoad(full_ids).get(0);
 		}
-	}
-
-	public <T> void registerType(Class<T> typeClass, String key, Serializer<T> serializer, Deserializer<T> deserializer) {
-		JavaTypeDescriptor<T> javaTypeDescriptor = new AbstractTypeDescriptor<T>(typeClass) {
-
-			private static final long serialVersionUID = -505731604660159178L;
-
-			@Override
-			public T fromString(String string) {
-				return deserializer.deserialize(string);
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public <X> X unwrap(T value, Class<X> type, WrapperOptions options) {
-				return (X) serializer.serialize(value);
-			}
-
-			@Override
-			public <X> T wrap(X value, WrapperOptions options) {
-				return deserializer.deserialize((String) value);
-			}
-
-		};
-
-		types.add(new AbstractSingleColumnStandardBasicType<T>(VarcharTypeDescriptor.INSTANCE, javaTypeDescriptor) {
-
-			private static final long serialVersionUID = -7835848990623858505L;
-
-			@Override
-			public String getName() {
-				return plugin.getName() + "_" + key;
-			}
-
-		});
-		typeKeys.put(typeClass, key);
 	}
 
 }

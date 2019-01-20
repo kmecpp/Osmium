@@ -29,7 +29,7 @@ public abstract class OsmiumPlugin {
 	//	private final Class<? extends OsmiumPlugin> main = OsmiumProperties.getMainClass();
 	//	private final OsmiumProperties osmiumProperties = new OsmiumProperties(this);
 	private final Plugin properties = this.getClass().getAnnotation(Plugin.class);
-	private Database database;
+	private final Database database = new Database(this);
 
 	//Effectively final variables
 	private Object pluginImplementation; //This field is set on instantiation using reflection
@@ -66,6 +66,10 @@ public abstract class OsmiumPlugin {
 		this.pluginImplementation = pluginImpl;
 		this.persistentData = new PersistentPluginData(this);
 		this.classProcessor = new ClassProcessor(this, pluginImpl);
+
+		if (!database.getTables().isEmpty()) {
+			database.initialize();
+		}
 	}
 
 	//	public Class<? extends OsmiumPlugin> getMainClass() {
@@ -226,11 +230,6 @@ public abstract class OsmiumPlugin {
 	}
 
 	public Database getDatabase() {
-		if (database == null) {
-			logger.info("Establishing database connection");
-			database = new Database(this);
-			database.rebuildSessionFactory();
-		}
 		return database;
 	}
 

@@ -128,8 +128,9 @@ repositories {
 }
 
 dependencies {
-	//compileOnly files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648.jar")
 	compile files("lib/spigot-1.13.2.jar")
+	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648_DEOBF.jar")
+	compile files("lib/spongevanilla-1.12.2-8.0.0-BETA-448.jar");
 	//compile "org.spigotmc:spigot:$bukkit_version"
 	compile "org.spongepowered:spongeapi:$sponge_version"
 	compile files("build/generated/com/kmecpp/osmium/AppInfo.class")

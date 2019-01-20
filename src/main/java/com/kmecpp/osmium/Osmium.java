@@ -103,7 +103,7 @@ public final class Osmium {
 	}
 
 	public static void execute(String command) {
-		commandManager.processCommand(command);
+		commandManager.processConsoleCommand(command);
 	}
 
 	public static ConfigManager getConfigurationManager() {

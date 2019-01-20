@@ -41,6 +41,7 @@ public class PluginLoader {
 				}
 
 				String jarFilePath = jar.getName();
+				OsmiumLogger.debug("File location: " + jarFilePath);
 
 				plugins.put(main, plugin);
 				pluginFiles.put(jarFilePath, plugin);
@@ -51,7 +52,6 @@ public class PluginLoader {
 				//				Reflection.invokeMethod(OsmiumPlugin.class, plugin, "setupPlugin", pluginImpl);//Setup plugin after everything else
 
 				OsmiumLogger.info("Successfully loaded Osmium plugin: " + plugin.getName() + " v" + plugin.getVersion());
-				OsmiumLogger.debug("File location: " + jarFilePath);
 
 				return plugin;
 			} catch (InvocationTargetException e) {

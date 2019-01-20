@@ -1,7 +1,5 @@
 package com.kmecpp.osmium.api.inventory;
 
-import java.util.HashSet;
-
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.InventoryHolder;
 import org.spongepowered.api.item.inventory.InventoryArchetype;
@@ -19,12 +17,11 @@ import com.kmecpp.osmium.core.OsmiumCore;
 
 public class InventoryMenu {
 
-	private HashSet<Player> viewers;
+	//	private HashSet<Player> viewers = new HashSet<>();
 	private Inventory inventory;
 	private MenuItem[] items;
 
 	public InventoryMenu(String title, InventoryType type) {
-		this.viewers = new HashSet<>();
 		if (Platform.isBukkit()) {
 			org.bukkit.inventory.Inventory bukkitInventory = Bukkit.createInventory(new InventoryHolder() {
 
@@ -67,18 +64,22 @@ public class InventoryMenu {
 		}
 	}
 
-	@Listener
-	public void on(PlayerInteractEvent.Item e) {
-		System.out.println("Interact with Item!!");
-		InventoryMenu menu = new InventoryMenu("Test", InventoryType.DOUBLE_CHEST);
-		menu.set(0, MenuItem.of(ItemType.DIAMOND_BLOCK, click -> System.out.println("Clicked!")));
-		menu.send(e.getPlayer());
-	}
+	public static class InventoryListener {
 
-	@Listener
-	public void on(InventoryEvent.Close e) {
-		viewers.remove(e.getPlayer());
-		System.out.println("CLOSED!");
+		@Listener
+		public void on(PlayerInteractEvent.Item e) {
+			System.out.println("Interact with Item!!");
+			InventoryMenu menu = new InventoryMenu("Test", InventoryType.DOUBLE_CHEST);
+			menu.set(0, MenuItem.of(ItemType.DIAMOND_BLOCK, click -> System.out.println("Clicked!")));
+			menu.send(e.getPlayer());
+		}
+
+		@Listener
+		public void on(InventoryEvent.Close e) {
+			//			viewers.remove(e.getPlayer());
+			System.out.println("CLOSED!");
+		}
+
 	}
 
 	public void set(int index, MenuItem item) {
@@ -87,13 +88,13 @@ public class InventoryMenu {
 	}
 
 	public void send(Player player) {
-		this.viewers.add(player);
+		//		this.viewers.add(player);
 		player.openInventory(inventory);
 	}
 
-	public HashSet<Player> getViewers() {
-		return viewers;
-	}
+	//	public HashSet<Player> getViewers() {
+	//		return viewers;
+	//	}
 
 	public static class MenuItem {
 

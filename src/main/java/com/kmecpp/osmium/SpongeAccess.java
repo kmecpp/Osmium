@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -35,6 +36,7 @@ import com.kmecpp.osmium.platform.sponge.GenericSpongeCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeBlock;
 import com.kmecpp.osmium.platform.sponge.SpongeBlockCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeChunk;
+import com.kmecpp.osmium.platform.sponge.SpongeConsoleCommandRedirect;
 import com.kmecpp.osmium.platform.sponge.SpongeConsoleCommandSender;
 import com.kmecpp.osmium.platform.sponge.SpongeEntity;
 import com.kmecpp.osmium.platform.sponge.SpongeInventory;
@@ -90,7 +92,11 @@ public class SpongeAccess {
 		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
 	}
 
-	public static void processCommand(org.spongepowered.api.command.CommandSource sender, String command) {
+	public static void processConsoleCommand(CommandSource output, String command) {
+		Sponge.getCommandManager().process(new SpongeConsoleCommandRedirect(output), command);
+	}
+
+	public static void processCommand(CommandSource sender, String command) {
 		Sponge.getCommandManager().process(sender, command);
 	}
 
@@ -100,16 +106,21 @@ public class SpongeAccess {
 				.permission(command.getPermission())
 				.arguments(GenericArguments.remainingRawJoinedStrings(SpongeAccess.getText("args")))
 				.executor((src, context) -> {
-					CommandSender sender = src instanceof org.spongepowered.api.entity.living.player.Player ? getPlayer((org.spongepowered.api.entity.living.player.Player) src)
-							: src instanceof ConsoleSource ? new SpongeConsoleCommandSender((ConsoleSource) src)
-									: src instanceof CommandBlockSource ? new SpongeBlockCommandSender((CommandBlockSource) src)
-											: new GenericSpongeCommandSender(src);
+					try {
+						CommandSender sender = src instanceof org.spongepowered.api.entity.living.player.Player ? getPlayer((org.spongepowered.api.entity.living.player.Player) src)
+								: src instanceof ConsoleSource ? new SpongeConsoleCommandSender((ConsoleSource) src)
+										: src instanceof CommandBlockSource ? new SpongeBlockCommandSender((CommandBlockSource) src)
+												: new GenericSpongeCommandSender(src);
 
-					String[] args = context.<String> getOne("args").map((s) -> s.split(" ")).orElse(new String[0]);
+						String[] args = context.<String> getOne("args").map((s) -> s.split(" ")).orElse(new String[0]);
 
-					return CommandManager.invokeCommand(command, sender, command.getAliases()[0], args)
-							? CommandResult.success()
-							: CommandResult.empty();
+						return CommandManager.invokeCommand(command, sender, command.getAliases()[0], args)
+								? CommandResult.success()
+								: CommandResult.empty();
+					} catch (Throwable t) {
+						t.printStackTrace();
+						return CommandResult.empty();
+					}
 				})
 				.build();
 

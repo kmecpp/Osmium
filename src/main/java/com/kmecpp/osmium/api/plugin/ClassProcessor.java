@@ -75,6 +75,7 @@ public class ClassProcessor {
 			}
 		}
 		jarFile.close();
+
 	}
 
 	public Class<?> getMainClass() {

@@ -34,7 +34,7 @@ public class Command extends SimpleCommand {
 		event.send("");
 		for (SimpleCommand arg : args) {
 			if (arg.isAllowed(event.getSender())) {
-				event.send("&b/" + this.getShortestAlias() + " " + arg.getShortestAlias()
+				event.send("&b/" + this.getPrimaryAlias() + " " + arg.getPrimaryAlias()
 						+ (arg.hasUsage() ? " " + arg.getUsage() : "")
 						+ (arg.hasDescription() ? "&e - &b" + arg.getDescription() : ""));
 			}
