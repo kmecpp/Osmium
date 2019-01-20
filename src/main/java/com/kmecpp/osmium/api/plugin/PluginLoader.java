@@ -30,7 +30,7 @@ public class PluginLoader {
 				Class<? extends OsmiumPlugin> main = pluginClassLoader.loadClass(mainClassName).asSubclass(OsmiumPlugin.class);
 
 				OsmiumPlugin plugin = main.newInstance();
-				OsmiumLogger.info("Loading Osmium plugin: " + plugin.getName() + " v" + plugin.getVersion());
+				OsmiumLogger.info("Loading plugin: " + plugin.getName() + " v" + plugin.getVersion());
 
 				for (Field field : plugin.getClass().getDeclaredFields()) {
 					if (field.isAnnotationPresent(PluginInstance.class)

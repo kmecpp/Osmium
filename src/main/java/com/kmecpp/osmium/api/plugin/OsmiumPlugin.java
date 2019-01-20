@@ -5,8 +5,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Sponge;
 
 import com.google.common.base.Preconditions;
@@ -15,6 +13,7 @@ import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.SimpleCommand;
 import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.logging.OsmiumPluginLogger;
 import com.kmecpp.osmium.api.persistence.PersistentPluginData;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.tasks.CountdownTask;
@@ -35,7 +34,7 @@ public abstract class OsmiumPlugin {
 	private Object pluginImplementation; //This field is set on instantiation using reflection
 	private Object metricsImplementation;
 	private PersistentPluginData persistentData;
-	private Logger logger = LoggerFactory.getLogger(properties.name());
+	private OsmiumPluginLogger logger = new OsmiumPluginLogger(properties.name());
 
 	private Class<?> config;
 
@@ -221,13 +220,13 @@ public abstract class OsmiumPlugin {
 		logger.error(message);
 	}
 
-	public Logger getLogger() {
-		return logger;
-	}
-
-	public void setLogger(Logger logger) {
-		this.logger = logger;
-	}
+	//	public Logger getLogger() {
+	//		return logger;
+	//	}
+	//
+	//	public void setLogger(Logger logger) {
+	//		this.logger = logger;
+	//	}
 
 	public Database getDatabase() {
 		return database;

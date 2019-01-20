@@ -35,19 +35,21 @@ public class BukkitItemStack implements ItemStack {
 
 	@Override
 	public int getDamage() {
-		if (itemStack.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable) {
-			return ((org.bukkit.inventory.meta.Damageable) itemStack.getItemMeta()).getDamage();
-		}
-		return 0;
+		return itemStack.getDurability();
+		//		if (itemStack.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable) {
+		//			return ((org.bukkit.inventory.meta.Damageable) itemStack.getItemMeta()).getDamage();
+		//		}
+		//		return 0;
 	}
 
 	@Override
 	public void setDamage(int damage) {
-		if (itemStack.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable) {
-			ItemMeta meta = itemStack.getItemMeta();
-			((org.bukkit.inventory.meta.Damageable) meta).setDamage(damage);
-			itemStack.setItemMeta(meta);
-		}
+		//		if (itemStack.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable) {
+		//			ItemMeta meta = itemStack.getItemMeta();
+		//			((org.bukkit.inventory.meta.Damageable) meta).setDamage(damage);
+		//			itemStack.setItemMeta(meta);
+		//		}
+		itemStack.setDurability((short) damage);
 	}
 
 	@Override

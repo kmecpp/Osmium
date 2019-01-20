@@ -128,7 +128,7 @@ repositories {
 }
 
 dependencies {
-	compile files("lib/spigot-1.13.2.jar")
+	//compile files("lib/spigot-1.13.2.jar")
 	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648_DEOBF.jar")
 	compile files("lib/spongevanilla-1.12.2-8.0.0-BETA-448.jar");
 	//compile "org.spigotmc:spigot:$bukkit_version"
@@ -152,7 +152,7 @@ dependencies {
 	shade "org.hibernate:hibernate-hikaricp:5.4.0.Final"
 	//shade "org.hibernate:hibernate-annotations:3.4.0-Final"
 	//shade "com.zsoltfabok:sqlite-dialect:1.0"
-	shade "org.slf4j:log4j-over-slf4j:1.7.25"
+	shade "org.apache.logging.log4j:log4j-api:2.11.1"
 		
     testCompile 'junit:junit:4.12'
 }
