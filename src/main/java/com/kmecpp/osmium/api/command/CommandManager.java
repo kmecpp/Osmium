@@ -68,7 +68,7 @@ public final class CommandManager {
 				throw CommandException.PLAYERS_ONLY;
 			}
 
-			CommandEvent event = new CommandEvent(sender, commandLabel, null, args);
+			CommandEvent event = new CommandEvent(sender, commandLabel, args);
 			command.checkPermission(event);
 
 			//Simple commands
@@ -83,6 +83,9 @@ public final class CommandManager {
 				} else {
 					SimpleCommand arg = command.getArgumentMatching(args[0]);
 					if (arg.isAllowed(sender)) {
+						if (sender instanceof ConsoleCommandSender && !command.isConsole()) {
+							throw CommandException.PLAYERS_ONLY;
+						}
 						event.consumeArgument();
 						arg.execute(event);
 					}
@@ -91,16 +94,17 @@ public final class CommandManager {
 			return true;
 		} catch (CommandException e) {
 			if (e == CommandException.USAGE_ERROR) {
-				String arg = args.length > 0 ? command.getArgumentMatching(args[0]).getPrimaryAlias() + " " : "";
-				sender.send("&cUsage: /" + command.getPrimaryAlias() + " " + arg + command.getUsage());
+				String argMessage = args.length > 0 ? command.getArgumentMatching(args[0]).getPrimaryAlias() + " " : "";
+				sender.send("&cUsage: /" + command.getPrimaryAlias() + " " + argMessage + command.getUsage());
 			} else {
 				sender.send("&c" + e.getMessage());
 			}
 			return false;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			sender.sendMessage(Chat.RED + "Internal command error. Please see console for details");
+			e.printStackTrace();
+			return false;
 		}
-		//		catch (ArrayIndexOutOfBoundsException e) {
-		//			sender
-		//		}
 	}
 
 	public static void sendFailedRegistrationMessage(OsmiumPlugin plugin, Command command) {

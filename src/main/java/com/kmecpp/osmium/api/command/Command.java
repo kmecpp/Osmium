@@ -77,8 +77,11 @@ public class Command extends SimpleCommand {
 	public SimpleCommand getArgumentMatching(String argLabel) {
 		for (SimpleCommand arg : args) {
 			for (String alias : arg.getAliases()) {
-				if (alias.equalsIgnoreCase(argLabel)) {
-					return arg;
+				//Allow aliases partitioned with '/' to be treated as individual arguments
+				for (String part : alias.split("/")) {
+					if (part.equalsIgnoreCase(argLabel)) {
+						return arg;
+					}
 				}
 			}
 		}

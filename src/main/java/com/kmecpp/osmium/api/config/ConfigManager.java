@@ -22,10 +22,10 @@ public class ConfigManager {
 
 	//	public static void main(String[] args) throws IOException {
 	//		ConfigManager m = new ConfigManager();
-	//		ConfigData data = m.getConfigData(CoreOsmiumConfiguration.class);
+	//
+	//		ConfigData data = m.getConfigData(CoreOsmiumConfig.class);
 	//		new ConfigWriter(data, new File("config.conf")).write(); //File handling is done by the writer
 	//		new ConfigParser(data, new File("config.conf")).load();
-	//		System.out.println(CoreOsmiumConfiguration.Banned.banned);
 	//	}
 
 	public void registerConfig(OsmiumPlugin plugin, Class<?> config) {

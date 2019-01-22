@@ -74,6 +74,7 @@ public class Database {
 		settings.put("hibernate.hikari.minimumIdle", "2");
 		settings.put("hibernate.hikari.maximumPoolSize", "10");
 		settings.put("hibernate.hikari.idleTimeout", "300000");
+		//		settings.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
 		settings.putAll(properties);
 
 		registryBuilder.applySettings(settings);
@@ -82,7 +83,6 @@ public class Database {
 		MetadataSources sources = new MetadataSources(registry);
 		for (Class<?> table : tables) {
 			plugin.info("Registering database table: " + table.getName());
-			System.out.println("Registering database table: " + table.getName());
 			sources.addAnnotatedClass(table);
 		}
 
@@ -107,7 +107,6 @@ public class Database {
 	}
 
 	public void addTable(Class<?> cls) {
-		plugin.info("Adding database table: " + cls.getName());
 		tables.add(cls);
 	}
 
@@ -276,24 +275,37 @@ public class Database {
 
 	public <T> List<T> diff(Class<T> entity, String first, String second, int limit, int offset) {
 		return query(s -> {
-			CriteriaBuilder builder = s.getCriteriaBuilder();
-			CriteriaQuery<T> query = builder.createQuery(entity);
+			CriteriaBuilder c = s.getCriteriaBuilder();
+			CriteriaQuery<T> query = c.createQuery(entity);
 			Root<T> root = query.from(entity);
-			query.orderBy(builder.desc(builder.diff(root.get(first), root.get(second))));
+			query.orderBy(c.desc(c.diff(root.get(first), root.get(second))));
 			return s.createQuery(query).setFirstResult(offset).setMaxResults(limit).getResultList();
 		});
 	}
 
-	public <T> T getOrCreate(Class<T> cls, Serializable id, T def) {
-		return query((s) -> {
-			T data = s.get(cls, id);
-			if (data != null) {
-				return data;
-			} else {
-				s.save(def);
-				return def;
-			}
+	public <T> T getOrDefault(Class<T> cls, Serializable id, T def) {
+		T result = query((s) -> {
+			return s.get(cls, id);
+			//			T data = s.get(cls, id);
+			//			if (data != null) {
+			//				return data;
+			//			} else {
+			//				s.save(def);
+			//				return def;
+			//			}
 		});
+		return result != null ? result : def;
+	}
+
+	public <T> T getIgnoreCaseOrDefault(Class<T> entity, String column, String id, T def) {
+		T result = query((s) -> {
+			CriteriaBuilder c = s.getCriteriaBuilder();
+			CriteriaQuery<T> query = c.createQuery(entity);
+			Root<T> root = query.from(entity);
+			query.where(c.equal(c.lower(root.get(column)), id));
+			return s.get(entity, id);
+		});
+		return result != null ? result : def;
 	}
 
 	public <T> T get(Class<T> tableClass, Serializable id, Serializable... ids) {
@@ -319,6 +331,19 @@ public class Database {
 				System.arraycopy(ids, 0, full_ids, 1, ids.length);
 				return session.byMultipleIds(tableClass).multiLoad(full_ids).get(0);
 			}
+		});
+	}
+
+	public <T> boolean delete(Class<T> entity, Serializable id) {
+		return query(s -> {
+			T obj = s.get(entity, id);
+			if (obj != null) {
+				s.delete(obj);
+				return true;
+			} else {
+				return false;
+			}
+
 		});
 	}
 

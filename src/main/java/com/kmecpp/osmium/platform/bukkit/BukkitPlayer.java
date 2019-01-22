@@ -48,9 +48,14 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 		return new BukkitInventory(player.getInventory());
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public ItemStack getItemInMainHand() {
-		return new BukkitItemStack(player.getInventory().getItemInMainHand());
+		try {
+			return new BukkitItemStack(player.getInventory().getItemInMainHand());
+		} catch (NoSuchMethodError e) {
+			return new BukkitItemStack(player.getInventory().getItemInHand());
+		}
 	}
 
 	@Override

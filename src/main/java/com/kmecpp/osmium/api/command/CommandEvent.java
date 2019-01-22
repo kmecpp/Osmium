@@ -17,7 +17,7 @@ public class CommandEvent implements Messageable {
 	private String argLabel;
 	private String[] args;
 
-	public CommandEvent(CommandSender sender, String baseLabel, String argLabel, String[] args) {
+	public CommandEvent(CommandSender sender, String baseLabel, String[] args) {
 		this.sender = sender;
 		this.baseLabel = baseLabel;
 		this.args = args;
@@ -34,18 +34,8 @@ public class CommandEvent implements Messageable {
 		}
 	}
 
-	private void checkIndex(int index) {
-		if (index < 0) {
-			throw new CommandException("Internal command error. Tried to retrieve index: " + index);
-		} else if (index >= args.length) {
-			//			throw new CommandException("Expected at least " + index + 1 + " arguments");
-			throw CommandException.USAGE_ERROR;
-		}
-	}
-
-	private String get(int index) {
-		checkIndex(index);
-		return args[index];
+	public int getInt(int index, int def) {
+		return index < args.length ? getInt(index) : def;
 	}
 
 	public double getDouble(int index) {
@@ -55,6 +45,10 @@ public class CommandEvent implements Messageable {
 		} catch (NumberFormatException e) {
 			throw new CommandException("Expected a decimal but got: '" + input + "'");
 		}
+	}
+
+	public double getDouble(int index, double def) {
+		return index < args.length ? getDouble(index) : def;
 	}
 
 	public boolean getBoolean(int index) {
@@ -68,24 +62,48 @@ public class CommandEvent implements Messageable {
 		}
 	}
 
+	public boolean getBoolean(int index, boolean def) {
+		return index < args.length ? getBoolean(index) : def;
+	}
+
 	public String getString(int index) {
 		return get(index);
+	}
+
+	public String getString(int index, String def) {
+		return index < args.length ? getString(index) : def;
 	}
 
 	public User getUser(int index) {
 		return Osmium.getUser(get(index)).orElseThrow(() -> notFound("user", get(index)));
 	}
 
+	public User getUser(int index, User def) {
+		return index < args.length ? getUser(index) : def;
+	}
+
 	public Player getPlayer(int index) {
 		return Osmium.getPlayer(get(index)).orElseThrow(() -> notFound("player", get(index)));
+	}
+
+	public Player getPlayer(int index, Player def) {
+		return index < args.length ? getPlayer(index) : def;
 	}
 
 	public World getWorld(int index) {
 		return Osmium.getWorld(get(index)).orElseThrow(() -> notFound("world", get(index)));
 	}
 
+	public World getWorld(int index, World def) {
+		return index < args.length ? getWorld(index) : def;
+	}
+
 	public OsmiumPlugin getPlugin(int index) {
 		return Osmium.getPlugin(get(index)).orElseThrow(() -> notFound("plugin", get(index)));
+	}
+
+	public OsmiumPlugin getPlugin(int index, OsmiumPlugin def) {
+		return index < args.length ? getPlugin(index) : def;
 	}
 
 	public Location getLocation(int index) {
@@ -94,9 +112,27 @@ public class CommandEvent implements Messageable {
 				: new Location(getWorld(index), getDouble(index + 1), getDouble(index + 2), getDouble(index + 3));
 	}
 
+	public Location getLocation(int index, Location def) {
+		return index < args.length ? getLocation(index) : def;
+	}
+
 	public String getRemainingJoined(int index) {
 		checkIndex(index);
 		return String.join(" ", Arrays.copyOfRange(args, index, args.length));
+	}
+
+	public String get(int index) {
+		checkIndex(index);
+		return args[index];
+	}
+
+	private void checkIndex(int index) {
+		if (index < 0) {
+			throw new CommandException("Internal command error. Tried to retrieve index: " + index);
+		} else if (index >= args.length) {
+			//			throw new CommandException("Expected at least " + index + 1 + " arguments");
+			throw CommandException.USAGE_ERROR;
+		}
 	}
 
 	public boolean hasPermission(String permission) {
@@ -120,6 +156,7 @@ public class CommandEvent implements Messageable {
 	}
 
 	public void consumeArgument() {
+		this.argLabel = args[0]; //Update arg label
 		String[] temp = new String[args.length - 1];
 		System.arraycopy(args, 1, temp, 0, temp.length);
 		this.args = temp;

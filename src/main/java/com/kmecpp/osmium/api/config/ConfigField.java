@@ -1,8 +1,7 @@
 package com.kmecpp.osmium.api.config;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
+import java.util.ArrayList;
 
 public class ConfigField {
 
@@ -38,13 +37,27 @@ public class ConfigField {
 		return field.getType();
 	}
 
-	public Class<?> getComponentType() {
+	public Class<?>[] getComponentTypes() {
 		if (field.getType().isArray()) {
-			return field.getType().getComponentType();
-		} else if (Collection.class.isAssignableFrom(field.getType()) || Map.class.isAssignableFrom(field.getType())) {
-			return setting.type();
+			ArrayList<Class<?>> componentTypes = new ArrayList<>();
+			Class<?> type = field.getType();
+			//			componentTypes.add(type);
+			while (type.isArray()) {
+				type = type.getComponentType();
+				componentTypes.add(type);
+			}
+			return componentTypes.toArray(new Class[componentTypes.size()]);
 		}
-		return field.getType();
+		return setting.type();
+
+		//		else if (Collection.class.isAssignableFrom(field.getType()) || Map.class.isAssignableFrom(field.getType())) {
+		//			//			Class<?>[] types = new Class[setting.type().length + 1];
+		//			//			types[0] = field.getType();
+		//			//			System.arraycopy(setting.type(), 0, types, 1, setting.type().length);
+		//			//			return types;
+		//			return setting.type();
+		//		}
+		//		return new Class[0];//new Class[] { field.getType() };
 	}
 
 	public void setValue(Object value) {

@@ -6,7 +6,7 @@ import com.kmecpp.osmium.api.config.ConfigProperties;
 import com.kmecpp.osmium.api.config.Setting;
 
 @ConfigProperties(path = "osmium.conf", header = "Osmium configuration file, author: kmecpp, website: https://github.com/kmecpp/Osmium")
-public class CoreOsmiumConfiguration {
+public class CoreOsmiumConfig {
 
 	/*
 	 * ROOT

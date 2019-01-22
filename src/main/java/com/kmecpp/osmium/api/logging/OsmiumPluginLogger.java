@@ -10,7 +10,7 @@ import org.spongepowered.api.text.format.TextColors;
 
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.platform.Platform;
-import com.kmecpp.osmium.core.CoreOsmiumConfiguration;
+import com.kmecpp.osmium.core.CoreOsmiumConfig;
 
 public class OsmiumPluginLogger {
 
@@ -25,7 +25,7 @@ public class OsmiumPluginLogger {
 	}
 
 	public final void debug(String message) {
-		if (CoreOsmiumConfiguration.coloredConsole) {
+		if (CoreOsmiumConfig.coloredConsole) {
 			log(LogLevel.DEBUG, NAME, message);
 		} else {
 			LOGGER.debug(message);
@@ -33,7 +33,7 @@ public class OsmiumPluginLogger {
 	}
 
 	public final void info(String message) {
-		if (CoreOsmiumConfiguration.coloredConsole) {
+		if (CoreOsmiumConfig.coloredConsole) {
 			log(LogLevel.INFO, NAME, message);
 		} else {
 			LOGGER.info(message);
@@ -41,7 +41,7 @@ public class OsmiumPluginLogger {
 	}
 
 	public final void warn(String message) {
-		if (CoreOsmiumConfiguration.coloredConsole) {
+		if (CoreOsmiumConfig.coloredConsole) {
 			log(LogLevel.WARN, NAME, message);
 		} else {
 			LOGGER.warn(message);
@@ -49,7 +49,7 @@ public class OsmiumPluginLogger {
 	}
 
 	public final void error(String message) {
-		if (CoreOsmiumConfiguration.coloredConsole) {
+		if (CoreOsmiumConfig.coloredConsole) {
 			log(LogLevel.ERROR, NAME, message);
 		} else {
 			LOGGER.error(message);
@@ -67,7 +67,7 @@ public class OsmiumPluginLogger {
 	 *            the message
 	 */
 	private void log(LogLevel level, String prefix, String message) {
-		if (level == LogLevel.DEBUG && !CoreOsmiumConfiguration.debug) {
+		if (level == LogLevel.DEBUG && !CoreOsmiumConfig.debug) {
 			return;
 		}
 

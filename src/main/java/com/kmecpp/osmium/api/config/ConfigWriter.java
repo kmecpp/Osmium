@@ -41,9 +41,19 @@ public class ConfigWriter {
 
 		boolean first = true;
 		for (ConfigField field : block.getFields()) {
-			if (field.getType().toGenericString().contains("<") && field.getSetting().type() == Object.class) {
+			if (field.getType().toGenericString().contains("<") && (field.getSetting().type().length == 0 || field.getSetting().type()[0] == Object.class)) {
 				new ConfigWriteException("Failed to write Config setting '" + field.getJavaPath() + "'. \nError: generics fields must specify a type parameter.").printStackTrace();
 				continue;
+			}
+
+			int maps = 0;
+			for (Class<?> type : field.getComponentTypes()) {
+				if (Map.class.isAssignableFrom(type)) {
+					if (++maps > 1) {
+						new ConfigWriteException("You cannot nest HashMaps in a config file!").printStackTrace();
+						continue;
+					}
+				}
 			}
 
 			//Add comment

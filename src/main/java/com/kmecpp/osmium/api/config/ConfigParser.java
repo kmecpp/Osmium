@@ -8,6 +8,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
@@ -135,18 +136,14 @@ public class ConfigParser {
 				return;
 			}
 
-			Class<?> componentType = field.getComponentType();
-			Object value;
-
-			//Read list
-			if (current == '[') {
-				value = parseList(field, componentType);
-			}
-
-			//Read single value
-			else {
-				value = parseSingleValue(componentType);
-			}
+			Class<?>[] componentTypes = field.getComponentTypes();
+			//			System.out.println(Arrays.toString(componentTypes));
+			//			if (componentTypes.length == 0) {
+			//				throw new IllegalArgumentException("Type for field cannot be empty: " + field.getJavaPath());
+			//			}
+			int startType = mapField != null ? 0 : -1;
+			Object defaultValue = mapField != null ? ((Map<?, ?>) mapField.getValue()).get(key) : field.getValue();
+			Object value = parseValue(field, defaultValue, componentTypes, startType);
 
 			//			System.out.println("VALUE: " + value);
 			//Write the value to the field
@@ -157,70 +154,96 @@ public class ConfigParser {
 				field.setValue(value);
 				fieldUpdateCount++;
 			}
-
 		} else {
 			throw getError("Unexpected character '" + current + "'");
 		}
 		return;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Object parseList(ConfigField field, Class<?> componentType) {
-		Class<?> fieldType = field.getType();
+	@SuppressWarnings("unchecked")
+	private Object parseValue(ConfigField field, Object defaultValue, Class<?>[] componentTypes, int typeIndex) {
+		//		Class<?>[] componentTypes = field.getComponentTypes();
+		//		Class<?> fieldType = field.getType();
+		Class<?> currentType = typeIndex == -1 || componentTypes.length == 0 ? field.getType() : componentTypes[typeIndex];
+		Object value;
 
-		read();
-		skipWhitespaceAndComments();
+		//Read list
+		if (current == '[') {
+			boolean array = currentType.isArray();
 
-		Collection collection;
-		if (fieldType.isArray()) {
-			collection = new ArrayList<>();
-		} else if (Collection.class.isAssignableFrom(fieldType)) {
-			collection = (Collection) field.getValue();
-			if (collection == null) {
-				//Create default collection if user didn't set a default value
-				try {
-					collection = (Collection) fieldType.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					throw getError("Failed to initialize collection", e);
+			//Create default
+			Collection<Object> list;
+			if (array) {
+				list = new ArrayList<>();
+			} else if (Collection.class.isAssignableFrom(currentType)) {
+				if (defaultValue != null) {
+					list = (Collection<Object>) defaultValue;
+				} else {
+					//Create default collection if user didn't set a default value
+					try {
+						list = (Collection<Object>) currentType.newInstance();
+					} catch (InstantiationException | IllegalAccessException e) {
+						throw getError("Failed to initialize collection", e);
+					}
+				}
+			} else {
+				throw getError("Found list when expecting '" + currentType.getName() + "'");
+			}
+
+			read();
+			skipWhitespaceAndComments();
+
+			while (current != ']') {
+				list.add(parseValue(field, list, componentTypes, typeIndex + 1));
+
+				skipWhitespaceAndComments();
+				if (current == ',') {
+					read();
+					skipWhitespaceAndComments();
 				}
 			}
-		} else {
-			throw getError("Found list when expecting '" + componentType + "'");
+			read(); //Read closing bracket
+
+			if (array) {
+				Object fieldArray = Array.newInstance(currentType.getComponentType(), list.size());
+
+				int i = 0;
+				for (Object element : list) {
+					Array.set(fieldArray, i, element);
+					i++;
+				}
+				return fieldArray;
+			} else {
+				return list;
+			}
+
+			//			value = readIntoList(field, array, collection, componentTypes, typeIndex);
 		}
 
-		while (current != ']') {
-			collection.add(parseSingleValue(componentType));
-
-			skipWhitespaceAndComments();
-			if (current == ',') {
-				read();
-				skipWhitespaceAndComments();
+		//Read single value
+		else {
+			String stringValue = readSingleValue();
+			try {
+				value = ConfigTypes.deserialize(currentType, stringValue);
+			} catch (Exception e) {
+				throw getError("Failed to parse '" + stringValue + "' as " + currentType.getName());
 			}
 		}
-		read(); //Read closing bracket
-
-		if (fieldType.isArray()) {
-			Object fieldArray = Array.newInstance(componentType, collection.size());
-
-			int i = 0;
-			for (Object element : collection) {
-				Array.set(fieldArray, i, element);
-				i++;
-			}
-			return fieldArray;
-		} else {
-			return collection;
-		}
+		return value;
 	}
 
-	private Object parseSingleValue(Class<?> type) {
-		String value = readSingleValue();
-		try {
-			return ConfigTypes.deserialize(type, value);
-		} catch (Exception e) {
-			throw getError("Failed to parse '" + value + "' as " + type.getName());
-		}
-	}
+	//	private Object readIntoList(ConfigField field, boolean array, Collection<Object> list, Class<?>[] componentTypes, int typeIndex) {
+	//
+	//	}
+
+	//	private Object parseSingleValue(Class<?> type) {
+	//		String value = readSingleValue();
+	//		try {
+	//			return ConfigTypes.deserialize(type, value);
+	//		} catch (Exception e) {
+	//			throw getError("Failed to parse '" + value + "' as " + type.getName());
+	//		}
+	//	}
 
 	private String readSingleValue() {
 		int start = index;
