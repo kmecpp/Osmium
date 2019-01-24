@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.api.command;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.User;
@@ -12,15 +13,62 @@ import com.kmecpp.osmium.api.util.StringUtil;
 
 public class CommandEvent implements Messageable {
 
+	private Command command;
+	private SimpleCommand subCommand;
 	private CommandSender sender;
 	private String baseLabel;
 	private String argLabel;
 	private String[] args;
 
-	public CommandEvent(CommandSender sender, String baseLabel, String[] args) {
+	public CommandEvent(Command command, CommandSender sender, String baseLabel, String[] args) {
+		this.command = command;
 		this.sender = sender;
 		this.baseLabel = baseLabel;
 		this.args = args;
+	}
+
+	public Command getCommand() {
+		return command;
+	}
+
+	public Player getPlayer() {
+		return (Player) sender;
+	}
+
+	public CommandSender getSender() {
+		return sender;
+	}
+
+	public String getBaseLabel() {
+		return baseLabel;
+	}
+
+	public String getArgLabel() {
+		return argLabel;
+	}
+
+	public Optional<SimpleCommand> getSubCommand() {
+		return Optional.ofNullable(subCommand);
+	}
+
+	void setSubCommand(SimpleCommand subCommand) {
+		this.subCommand = subCommand;
+	}
+
+	public String[] getArgs() {
+		return args;
+	}
+
+	public int size() {
+		return args.length;
+	}
+
+	public boolean isBaseCommand() {
+		return args.length == 0;
+	}
+
+	public boolean hasArgs() {
+		return args.length > 0;
 	}
 
 	public int getInt(int index) {
@@ -130,6 +178,13 @@ public class CommandEvent implements Messageable {
 		if (index < 0) {
 			throw new CommandException("Internal command error. Tried to retrieve index: " + index);
 		} else if (index >= args.length) {
+			if (index < command.getUsageParams().length) {
+				if (subCommand == null) {
+					throw new CommandException("Missing argument: /" + command.getPrimaryAlias() + " " + command.getUsage());
+				} else {
+					throw new CommandException("Missing argument: /" + command.getPrimaryAlias() + " " + subCommand.getPrimaryAlias() + " " + subCommand.getUsage());
+				}
+			}
 			//			throw new CommandException("Expected at least " + index + 1 + " arguments");
 			throw CommandException.USAGE_ERROR;
 		}
@@ -137,22 +192,6 @@ public class CommandEvent implements Messageable {
 
 	public boolean hasPermission(String permission) {
 		return sender.hasPermission(permission);
-	}
-
-	public Player getPlayer() {
-		return (Player) sender;
-	}
-
-	public CommandSender getSender() {
-		return sender;
-	}
-
-	public String getBaseLabel() {
-		return baseLabel;
-	}
-
-	public String getArgLabel() {
-		return argLabel;
 	}
 
 	public void consumeArgument() {
@@ -180,25 +219,9 @@ public class CommandEvent implements Messageable {
 		return false;
 	}
 
-	public String[] getArgs() {
-		return args;
-	}
-
 	@Override
 	public void sendMessage(String message) {
 		sender.sendMessage(message);
-	}
-
-	public int size() {
-		return args.length;
-	}
-
-	public boolean isBaseCommand() {
-		return args.length == 0;
-	}
-
-	public boolean hasArgs() {
-		return args.length > 0;
 	}
 
 	public void handleError(Throwable t) {

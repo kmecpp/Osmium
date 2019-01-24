@@ -7,6 +7,7 @@ public class SimpleCommand {
 	private String description = "";
 	private String permission = "";
 	private String usage = "";
+	private String[] usageParams;
 	private boolean admin;
 	private boolean console;
 	private CommandExecutor executor;
@@ -32,6 +33,7 @@ public class SimpleCommand {
 			this.description = command.description();
 			this.permission = command.permission();
 			this.usage = command.usage();
+			this.usageParams = parseUsage(command.usage());
 			this.admin = command.admin();
 			this.console = command.console();
 		} else {
@@ -144,12 +146,39 @@ public class SimpleCommand {
 		return usage;
 	}
 
+	public String getUsageHighlight(int index) {
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		for (String param : usageParams) {
+			if (i == index) {
+				sb.append(Chat.DARK_RED + Chat.BOLD.toString() + "<" + param + ">" + Chat.RED);
+			} else {
+				sb.append("<" + param + ">");
+			}
+			i++;
+		}
+		return sb.toString();
+	}
+
+	public String[] getUsageParams() {
+		return usageParams;
+	}
+
 	public boolean isAdmin() {
 		return admin;
 	}
 
 	public boolean isConsole() {
 		return console;
+	}
+
+	//<add/remove>
+	private static String[] parseUsage(String usage) {
+		String[] params = usage.split(">.+<");
+		for (int i = 0; i < params.length; i++) {
+			params[i] = params[i].replace("<", "").replace(">", "").trim();
+		}
+		return params;
 	}
 
 }

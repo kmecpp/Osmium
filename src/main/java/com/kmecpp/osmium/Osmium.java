@@ -106,7 +106,7 @@ public final class Osmium {
 		commandManager.processConsoleCommand(command);
 	}
 
-	public static ConfigManager getConfigurationManager() {
+	public static ConfigManager getConfigManager() {
 		return configManager;
 	}
 

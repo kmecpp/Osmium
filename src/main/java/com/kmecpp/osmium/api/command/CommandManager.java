@@ -68,7 +68,7 @@ public final class CommandManager {
 				throw CommandException.PLAYERS_ONLY;
 			}
 
-			CommandEvent event = new CommandEvent(sender, commandLabel, args);
+			CommandEvent event = new CommandEvent(command, sender, commandLabel, args);
 			command.checkPermission(event);
 
 			//Simple commands
@@ -87,6 +87,7 @@ public final class CommandManager {
 							throw CommandException.PLAYERS_ONLY;
 						}
 						event.consumeArgument();
+						event.setSubCommand(arg);
 						arg.execute(event);
 					}
 				}
@@ -94,8 +95,16 @@ public final class CommandManager {
 			return true;
 		} catch (CommandException e) {
 			if (e == CommandException.USAGE_ERROR) {
-				String argMessage = args.length > 0 ? command.getArgumentMatching(args[0]).getPrimaryAlias() + " " : "";
-				sender.send("&cUsage: /" + command.getPrimaryAlias() + " " + argMessage + command.getUsage());
+				if (e.getMessage().isEmpty()) {
+					if (args.length > 0) {
+						SimpleCommand arg = command.getArgumentMatching(args[0]);
+						sender.send("&cUsage: /" + command.getPrimaryAlias() + " " + arg.getPrimaryAlias() + " " + arg.getUsage());
+					} else {
+						sender.send("&cUsage: /" + command.getPrimaryAlias() + " " + command.getUsage());
+					}
+				} else {
+					sender.sendMessage(Chat.RED + e.getMessage());
+				}
 			} else {
 				sender.send("&c" + e.getMessage());
 			}

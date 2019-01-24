@@ -10,6 +10,8 @@ import java.util.HashSet;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.persistence.Deserializer;
+import com.kmecpp.osmium.api.persistence.Serializer;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -105,6 +107,14 @@ public class ConfigManager {
 			writeKey(sb, nested.getSimpleName());
 			loadFields(nested, fields, block.createChild(sb.toString()));
 		}
+	}
+
+	public static <T> void registerType(Class<T> cls, Deserializer<T> deserializer) {
+		ConfigTypes.register(cls, deserializer);
+	}
+
+	public static <T> void registerType(Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
+		ConfigTypes.register(cls, serializer, deserializer);
 	}
 
 	public static void writeKey(StringBuilder sb, String key) {
