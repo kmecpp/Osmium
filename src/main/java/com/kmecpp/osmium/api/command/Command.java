@@ -23,26 +23,7 @@ public class Command extends SimpleCommand {
 	public void configure() {
 	}
 
-	public final void setTitle(String title) {
-		this.title = Chat.style(title);
-	}
-
-	public final void setRawTitle(String title) {
-		this.title = title;
-	}
-
-	public void sendHelp(CommandEvent event) {
-		event.send("");
-		event.send(title);
-		event.send("&e&m----------------------------------------");
-		event.send("");
-		for (SimpleCommand arg : args) {
-			if (arg.isAllowed(event.getSender())) {
-				event.send("&b/" + this.getPrimaryAlias() + " " + arg.getPrimaryAlias()
-						+ (arg.hasUsage() ? " " + arg.getUsage() : "")
-						+ (arg.hasDescription() ? "&e - &b" + arg.getDescription() : ""));
-			}
-		}
+	public void validate() {
 	}
 
 	public void execute(CommandEvent event) {
@@ -66,6 +47,28 @@ public class Command extends SimpleCommand {
 		//				throw new CommandException("Unknown command! Type /" + this.getPrimaryAlias() + " for a list of commands!");
 		//			}
 		//		}
+	}
+
+	public final void setTitle(String title) {
+		this.title = Chat.style(title);
+	}
+
+	public final void setRawTitle(String title) {
+		this.title = title;
+	}
+
+	public void sendHelp(CommandEvent event) {
+		event.send("");
+		event.send(title);
+		event.send("&e&m----------------------------------------");
+		event.send("");
+		for (SimpleCommand arg : args) {
+			if (arg.isAllowed(event.getSender())) {
+				event.send("&b/" + this.getPrimaryAlias() + " " + arg.getPrimaryAlias()
+						+ (arg.hasUsage() ? " " + arg.getUsage() : "")
+						+ (arg.hasDescription() ? "&e - &b" + arg.getDescription() : ""));
+			}
+		}
 	}
 
 	public final SimpleCommand add(String name, String... aliases) {

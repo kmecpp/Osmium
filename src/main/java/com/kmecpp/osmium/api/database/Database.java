@@ -66,6 +66,7 @@ public class Database {
 		settings.put(Environment.DRIVER, "org.sqlite.JDBC");
 		settings.put(Environment.URL, "jdbc:sqlite:" + (plugin == null ? "test.db" : plugin.getFolder().resolve("plugin.db").toString()));
 		settings.put(Environment.DIALECT, "org.hibernate.dialect.SQLiteDialect");
+		settings.put(Environment.CONNECTION_PROVIDER, "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
 		settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
 		settings.put(Environment.HBM2DDL_AUTO, "update");
 		settings.put(Environment.SHOW_SQL, "true");
@@ -152,12 +153,11 @@ public class Database {
 	}
 
 	//	@SuppressWarnings("deprecation")
-	public void rebuildSessionFactory() {
-		if (sessionFactory != null) {
-			sessionFactory.close();
-		}
-
-	}
+	//	public void rebuildSessionFactory() {
+	//		if (sessionFactory != null) {
+	//			sessionFactory.close();
+	//		}
+	//	}
 
 	public Session getSession() {
 		if (sessionFactory.getCurrentSession().isOpen()) {
@@ -357,7 +357,7 @@ public class Database {
 	public <T> T query(Function<Session, T> consumer) {
 		Session session = null;
 		try {
-			session = sessionFactory.openSession();
+			session = getSession();
 			session.beginTransaction();
 			T result = consumer.apply(session);
 			session.getTransaction().commit();

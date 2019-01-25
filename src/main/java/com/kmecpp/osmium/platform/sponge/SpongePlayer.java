@@ -101,6 +101,11 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 	}
 
 	@Override
+	public boolean hasPlayedBefore() {
+		return player.hasPlayedBefore();
+	}
+
+	@Override
 	public boolean isOnline() {
 		return player.isOnline();
 	}

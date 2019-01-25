@@ -26,7 +26,7 @@ public class SimpleCommand {
 			}
 			CommandProperties command = this.getClass().getAnnotation(CommandProperties.class);
 			if (command == null) {
-				throw new CommandException("Osmium commands must have an @" + CommandProperties.class.getSimpleName() + " annotation");
+				throw new IllegalArgumentException("Osmium commands must have an @" + CommandProperties.class.getSimpleName() + " annotation");
 			}
 
 			this.aliases = command.aliases();

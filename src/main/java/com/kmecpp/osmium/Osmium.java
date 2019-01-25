@@ -30,6 +30,8 @@ import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMetrics;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.PluginLoader;
+import com.kmecpp.osmium.api.tasks.CountdownTask;
+import com.kmecpp.osmium.api.tasks.OsmiumTask;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
@@ -169,14 +171,18 @@ public final class Osmium {
 		}
 	}
 
-	//	public static OsmiumTask getTask() {
-	//		return getInvokingPlugin().getTask();
-	//	}
-	//
-	//	public static CountdownTask countdown(int count) {
-	//		return getInvokingPlugin().countdown(count);
-	//	}
-	//
+	public static OsmiumPlugin getPlugin() {
+		return getInvokingPlugin();
+	}
+
+	public static OsmiumTask getTask() {
+		return getInvokingPlugin().getTask();
+	}
+
+	public static CountdownTask countdown(int count) {
+		return getInvokingPlugin().countdown(count);
+	}
+
 	//	public static SimpleCommand registerCommand(String name, String... aliases) {
 	//		return registerCommand(getInvokingPlugin(), name, aliases);
 	//	}

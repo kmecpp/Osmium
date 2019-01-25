@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.kmecpp.osmium.api.config.ConfigProperties;
 import com.kmecpp.osmium.api.config.Setting;
+import com.kmecpp.osmium.api.config.Transient;
 
 @ConfigProperties(path = "osmium.conf", header = "Osmium configuration file, author: kmecpp, website: https://github.com/kmecpp/Osmium")
 public class CoreOsmiumConfig {
@@ -20,6 +21,22 @@ public class CoreOsmiumConfig {
 
 	@Setting(comment = "Whether or not to display color in console messages")
 	public static boolean coloredConsole = true;
+
+	//	@Setting
+	//	public static Test test = new Test(2, 3.1415926535);
+
+	@Transient
+	public static class Test {
+
+		private int a;
+		private double b;
+
+		public Test(int a, double b) {
+			this.a = a;
+			this.b = b;
+		}
+
+	}
 
 	/*
 	 * DATABASE

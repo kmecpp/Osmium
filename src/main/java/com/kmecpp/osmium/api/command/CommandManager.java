@@ -73,6 +73,7 @@ public final class CommandManager {
 
 			//Simple commands
 			if (command.getArgs().isEmpty()) {
+				command.validate();
 				command.execute(event);
 			}
 
@@ -94,6 +95,8 @@ public final class CommandManager {
 			}
 			return true;
 		} catch (CommandException e) {
+			System.out.println(e);
+			System.out.println(e.getMessage());
 			if (e == CommandException.USAGE_ERROR) {
 				if (e.getMessage().isEmpty()) {
 					if (args.length > 0) {

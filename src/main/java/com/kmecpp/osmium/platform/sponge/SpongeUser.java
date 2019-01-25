@@ -56,6 +56,11 @@ public class SpongeUser implements User {
 	}
 
 	@Override
+	public boolean hasPlayedBefore() {
+		return user.isOnline() ? user.getPlayer().get().hasPlayedBefore() : true;
+	}
+
+	@Override
 	public boolean isOnline() {
 		return user.isOnline();
 	}

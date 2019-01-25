@@ -45,6 +45,11 @@ public class BukkitUser implements User {
 	}
 
 	@Override
+	public boolean hasPlayedBefore() {
+		return user.hasPlayedBefore();
+	}
+
+	@Override
 	public boolean isOnline() {
 		return user.isOnline();
 	}

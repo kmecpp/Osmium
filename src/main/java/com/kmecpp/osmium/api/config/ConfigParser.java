@@ -220,6 +220,29 @@ public class ConfigParser {
 			//			value = readIntoList(field, array, collection, componentTypes, typeIndex);
 		}
 
+		//Read ConfigSerializable
+		else if (current == '{') {
+			ConfigSerializable cs;
+			if (defaultValue instanceof ConfigSerializable) {
+				cs = (ConfigSerializable) defaultValue;
+			} else {
+				try {
+					cs = (ConfigSerializable) field.getClass().newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					throw getError("Failed to load config. No default value or default constructor provided config setting: " + field.getJavaPath(), e);
+				}
+			}
+
+			skipWhitespaceAndComments();
+			while (index < length && current != '}') {
+				read();
+				//				path.setLength(Math.max(0, path.length() - blockNameLength - 1));
+				//				readNext(path, map);
+				skipWhitespaceAndComments();
+			}
+			value = cs;
+		}
+
 		//Read single value
 		else {
 			String stringValue = readSingleValue();
@@ -231,19 +254,6 @@ public class ConfigParser {
 		}
 		return value;
 	}
-
-	//	private Object readIntoList(ConfigField field, boolean array, Collection<Object> list, Class<?>[] componentTypes, int typeIndex) {
-	//
-	//	}
-
-	//	private Object parseSingleValue(Class<?> type) {
-	//		String value = readSingleValue();
-	//		try {
-	//			return ConfigTypes.deserialize(type, value);
-	//		} catch (Exception e) {
-	//			throw getError("Failed to parse '" + value + "' as " + type.getName());
-	//		}
-	//	}
 
 	private String readSingleValue() {
 		int start = index;

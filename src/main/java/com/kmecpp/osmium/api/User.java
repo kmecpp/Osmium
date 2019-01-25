@@ -14,6 +14,8 @@ public interface User extends Abstraction {
 
 	long getFirstPlayed();
 
+	boolean hasPlayedBefore();
+
 	boolean isOnline();
 
 }

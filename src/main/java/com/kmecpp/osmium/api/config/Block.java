@@ -52,4 +52,13 @@ public class Block {
 		return child;
 	}
 
+	public void delete(Block block) {
+		blocks.remove(block);
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
+
 }

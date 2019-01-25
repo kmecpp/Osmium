@@ -10,17 +10,19 @@ import java.util.Map.Entry;
 
 import com.kmecpp.osmium.api.util.IOUtil;
 
-public class ConfigWriter {
+public class ConfigFormatWriter {
 
-	private ConfigData data;
-	private File file;
+	private final File file;
+	private final ConfigData data;
+	private ConfigFormat format;
 
-	private StringBuilder sb = new StringBuilder();
-	private StringBuilder tab = new StringBuilder();
+	protected StringBuilder sb = new StringBuilder();
+	protected StringBuilder tab = new StringBuilder();
 
-	public ConfigWriter(ConfigData data, File file) {
+	public ConfigFormatWriter(ConfigData data, File file, ConfigFormat format) {
 		this.data = data;
 		this.file = file;
+		this.format = format;
 	}
 
 	public void write() throws IOException {
@@ -36,7 +38,8 @@ public class ConfigWriter {
 		if (!block.isRoot()) {
 			sb.append('\n');
 			ConfigManager.writeKey(sb, block.getName());
-			sb.append(" {\n");
+			sb.append(format.blockOpen);
+			sb.append("\n");
 		}
 
 		boolean first = true;
@@ -63,7 +66,8 @@ public class ConfigWriter {
 				}
 				for (String line : field.getSetting().comment().split("\n")) {
 					sb.append(tab);
-					sb.append("# " + line + "\n");
+					sb.append(format.comment);
+					sb.append(" " + line + "\n");
 				}
 			}
 
@@ -80,9 +84,9 @@ public class ConfigWriter {
 			first = false;
 		}
 		for (Block nestedBlock : block.getBlocks()) {
-			tab.append('\t');
+			tab.append(format.tab);
 			writeBlock(nestedBlock);
-			tab.setLength(tab.length() - 1);
+			tab.setLength(tab.length() - format.tab.length);
 		}
 
 		if (!block.isRoot()) {
@@ -90,7 +94,8 @@ public class ConfigWriter {
 			if (tab.length() > 0) {
 				sb.setLength(sb.length() - 1);
 			}
-			sb.append("}\n");
+			sb.append(format.blockClose);
+			sb.append("\n");
 		}
 	}
 
@@ -157,24 +162,26 @@ public class ConfigWriter {
 	}
 
 	private void writeMap(Map<?, ?> map) {
-		sb.append(" {\n");
-		tab.append('\t');
+		sb.append(format.blockOpen);
+		sb.append("\n");
+		tab.append(format.tab);
 		for (Entry<?, ?> entry : map.entrySet()) {
 			sb.append(tab);
-			sb.append(entry.getKey() + ": ");
+			sb.append(entry.getKey());
+			sb.append(format.mapSeparator);
 			writeValue(entry.getValue().getClass(), entry.getValue());
 			sb.append('\n');
 		}
-		tab.setLength(tab.length() - 1);
+		tab.setLength(tab.length() - format.tab.length);
 		sb.append(tab);
-		sb.append("}");
+		sb.append(format.blockClose);
 	}
 
 	private void writeList(Object[] arr, Collection<?> collection, boolean condensed) {
-		sb.append('[');
+		sb.append(format.listOpen);
 		if (!condensed) {
 			sb.append('\n');
-			tab.append("\t");
+			tab.append(format.tab);
 		}
 
 		//Write elements
@@ -196,15 +203,93 @@ public class ConfigWriter {
 			sb.append('\n');
 			sb.append(tab);
 		}
-		sb.append(']');
+		sb.append(format.listClose);
 	}
 
 	private void writeElement(Object value, boolean last) {
 		sb.append(tab);
+		sb.append(format.listElementPrefix);
 		writeValue(value == null ? Object.class : value.getClass(), value);
 		if (!last) {
-			sb.append(",\n");
+			sb.append(format.listElementSuffix);
+			sb.append("\n");
 		}
+	}
+
+	public static class ConfigFormat {
+
+		private char[] tab = new char[0];
+		private char[] comment = new char[0];
+		private char[] blockOpen = new char[0];
+		private char[] blockClose = new char[0];
+		private char[] listOpen = new char[0];
+		private char[] listClose = new char[0];
+		private char[] mapSeparator = new char[0];
+		private char[] listElementPrefix = new char[0];
+		private char[] listElementSuffix = new char[0];
+
+		public static Builder builder() {
+			return new Builder();
+		}
+
+		private ConfigFormat() {
+		}
+
+		public static class Builder {
+
+			private ConfigFormat chars = new ConfigFormat();
+
+			public Builder setTab(String tab) {
+				chars.tab = tab.toCharArray();
+				return this;
+			}
+
+			public Builder setComment(String comment) {
+				chars.comment = comment.toCharArray();
+				return this;
+			}
+
+			public Builder setBlockOpen(String blockOpen) {
+				chars.blockOpen = blockOpen.toCharArray();
+				return this;
+			}
+
+			public Builder setBlockClose(String blockClose) {
+				chars.blockClose = blockClose.toCharArray();
+				return this;
+			}
+
+			public Builder setListOpen(String listOpen) {
+				chars.listOpen = listOpen.toCharArray();
+				return this;
+			}
+
+			public Builder setListClose(String listClose) {
+				chars.listClose = listClose.toCharArray();
+				return this;
+			}
+
+			public Builder setMapSeparator(String mapSeparator) {
+				chars.mapSeparator = mapSeparator.toCharArray();
+				return this;
+			}
+
+			public Builder setListElementPrefix(String prefix) {
+				chars.listElementPrefix = prefix.toCharArray();
+				return this;
+			}
+
+			public Builder setListElementSuffix(String suffix) {
+				chars.listElementSuffix = suffix.toCharArray();
+				return this;
+			}
+
+			public ConfigFormat build() {
+				return chars;
+			}
+
+		}
+
 	}
 
 }
