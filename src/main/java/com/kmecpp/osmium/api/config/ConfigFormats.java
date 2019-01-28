@@ -8,6 +8,7 @@ public class ConfigFormats {
 			.setTab("\t")
 			.setComment("#")
 			.setBlockOpen(" {")
+			.setKeySeparator(": ")
 			.setBlockClose("}")
 			.setListOpen("[")
 			.setListClose("]")
@@ -18,6 +19,7 @@ public class ConfigFormats {
 			.setTab("    ")
 			.setComment("#")
 			.setBlockOpen(":")
+			.setKeySeparator(": ")
 			.setListElementPrefix("- ")
 			.build();
 

@@ -20,7 +20,6 @@ import com.kmecpp.osmium.api.persistence.Serializer;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.core.CoreOsmiumConfig;
 
-import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
@@ -34,18 +33,23 @@ public class ConfigManager {
 
 		ConfigData data = m.getConfigData(CoreOsmiumConfig.class);
 		//		new ConfigWriter(data, new File("config.yml")).write(); //File handling is done by the writer
-		new ConfigFormatWriter(data, new File("config.yml"), ConfigFormats.HOCON).write();
+		ConfigFormatWriter w = new ConfigFormatWriter(data, new File("config.yml"), ConfigFormats.YAML);
+		//		VirtualConfig v = m.load(Paths.get("config.yml"), ConfigFormats.YAML);
 		long start = System.currentTimeMillis();
+		//		v.save();
 		//		YamlConfiguration yml = new YamlConfiguration();
 		//		yml.load(new File("config.yml"));
-		System.out.println(data.getRoot().getBlocks());
+		//		System.out.println(data.getRoot().getBlocks());
+		//		System.out.println(data.getRoot().getFields());
+		w.write();
+
 		//		yml.save(new File("config.yml"));
 
-		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
-				.setPath(Paths.get("config.yml"))
-				.build();
-
-		loader.load();
+		//		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
+		//				.setPath(Paths.get("config.yml"))
+		//				.build();
+		//
+		//		loader.load();
 		for (Entry<String, ConfigField> entry : data.getFields().entrySet()) {
 			//			entry.getValue().setValue(yml.get(entry.getKey()));
 		}
@@ -63,21 +67,21 @@ public class ConfigManager {
 		return plugins.getOrDefault(plugin, new HashSet<>());
 	}
 
-	public VirtualConfig load(Path path) throws IOException {
-		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
-				.setPath(path)
-				.build();
+	public VirtualConfig load(Path path, ConfigFormat format) throws IOException {
+		if (format == ConfigFormats.HOCON) {
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
+					.setPath(path)
+					.build();
+			return new VirtualConfig(path, loader, loader.load());
+		} else if (format == ConfigFormats.YAML) {
+			YAMLConfigurationLoader loader = YAMLConfigurationLoader.builder()
+					.setPath(path)
+					.build();
 
-		return new VirtualConfig(path, loader, loader.load());
-	}
-
-	public ConfigurationNode loadYaml(Path path) throws IOException {
-		YAMLConfigurationLoader loader = YAMLConfigurationLoader.builder()
-				.setPath(path)
-				.build();
-
-		return loader.load();
-		//		return new VirtualConfig(path, loader, loader.load());
+			return new VirtualConfig(path, loader, loader.load());
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	public void load(Class<?> config) throws IOException {
@@ -121,24 +125,26 @@ public class ConfigManager {
 	private void loadFields(Block block, Field[] declaredFields, Class<?>[] declaredClasses, HashMap<String, ConfigField> fields) {
 		for (Field field : declaredFields) {
 			field.setAccessible(true);
-			Setting setting = field.getAnnotation(Setting.class);
-			if (setting == null) {
-				continue;
-			} else if (field.isAnnotationPresent(Transient.class)) {
+			//			Setting setting = field.getAnnotation(Setting.class);
+			//			if (setting == null) {
+			//				continue;
+			//			} else
+
+			if (field.isAnnotationPresent(Transient.class)) {
 				continue;
 			} else if (!Modifier.isStatic(field.getModifiers())) {
 				OsmiumLogger.warn("Invalid configuration setting! Must be declared static: " + field);
 				continue;
 			}
 
-			ConfigField configField = new ConfigField(field, setting);
+			ConfigField configField = new ConfigField(field, field.getAnnotation(Setting.class));
 			String rawKey = block.getPath().isEmpty() ? configField.getName() : block.getPath() + "." + configField.getName();
 			fields.put(getKey(rawKey), configField);
 			block.addField(configField);
 		}
 
 		for (Class<?> nested : declaredClasses) {
-			if (nested.isAnnotationPresent(Transient.class)) {
+			if (nested.isAnnotationPresent(Transient.class) || nested.isAnnotationPresent(ConfigType.class)) {
 				continue;
 			}
 			Field[] nestedFields = nested.getDeclaredFields();
@@ -159,6 +165,11 @@ public class ConfigManager {
 
 	public static String getKey(String key) {
 		sb.setLength(0);
+		writeKey(sb, key);
+		return sb.toString();
+	}
+
+	public static void writeKey(StringBuilder sb, String key) {
 		for (int i = 0; i < key.length(); i++) {
 			char c = key.charAt(i);
 			if (Character.isUpperCase(c)) {
@@ -170,7 +181,6 @@ public class ConfigManager {
 				sb.append(c);
 			}
 		}
-		return sb.toString();
 	}
 
 }

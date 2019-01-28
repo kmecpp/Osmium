@@ -5,18 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Setting {
-
-	//	String parent() default "";
-
-	String name() default "";
-
-	String comment() default "";
-
-	boolean deletable() default false;
-
-	Class<?>[] types() default {};//Object.class
-
+public @interface ConfigType {
 }

@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api.config;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -10,7 +11,16 @@ public class ConfigField {
 
 	public ConfigField(Field field, Setting setting) {
 		this.field = field;
-		this.setting = setting;
+		this.setting = setting != null ? setting : DEFAULT_SETTING;
+
+		//		if (setting != null) {
+		//			this.name = setting.name();
+		//			this.comment = setting.comment();
+		//			this.deletable = setting.deletable();
+		//			this.types = setting.types();
+		//		} else {
+		//			this.name = "";
+		//		}
 	}
 
 	public Setting getSetting() {
@@ -18,7 +28,7 @@ public class ConfigField {
 	}
 
 	public String getName() {
-		return setting.name().isEmpty() ? field.getName() : setting.name();
+		return setting != null && setting.name().isEmpty() ? field.getName() : setting.name();
 	}
 
 	public String getJavaPath() {
@@ -48,7 +58,7 @@ public class ConfigField {
 			}
 			return componentTypes.toArray(new Class[componentTypes.size()]);
 		}
-		return setting.type();
+		return setting != null ? setting.types() : new Class<?>[0];
 
 		//		else if (Collection.class.isAssignableFrom(field.getType()) || Map.class.isAssignableFrom(field.getType())) {
 		//			//			Class<?>[] types = new Class[setting.type().length + 1];
@@ -82,6 +92,40 @@ public class ConfigField {
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static final Setting DEFAULT_SETTING = new Setting() {
+
+		@Override
+		public Class<? extends Annotation> annotationType() {
+			return Setting.class;
+		}
+
+		@Override
+		public Class<?>[] types() {
+			return new Class<?>[0];
+		}
+
+		@Override
+		public String name() {
+			return "";
+		}
+
+		@Override
+		public String comment() {
+			return "";
+		}
+
+		@Override
+		public boolean deletable() {
+			return false;
+		}
+
+	};
+
+	@Override
+	public String toString() {
+		return "field{" + getName() + "}";
 	}
 
 }

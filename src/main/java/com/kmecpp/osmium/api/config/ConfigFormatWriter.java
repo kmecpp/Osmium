@@ -3,6 +3,8 @@ package com.kmecpp.osmium.api.config;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -39,12 +41,12 @@ public class ConfigFormatWriter {
 			sb.append('\n');
 			ConfigManager.writeKey(sb, block.getName());
 			sb.append(format.blockOpen);
-			sb.append("\n");
+			sb.append('\n');
 		}
 
 		boolean first = true;
 		for (ConfigField field : block.getFields()) {
-			if (field.getType().toGenericString().contains("<") && (field.getSetting().type().length == 0 || field.getSetting().type()[0] == Object.class)) {
+			if (field.getType().toGenericString().contains("<") && (field.getSetting().types().length == 0 || field.getSetting().types()[0] == Object.class)) {
 				new ConfigWriteException("Failed to write Config setting '" + field.getJavaPath() + "'. \nError: generics fields must specify a type parameter.").printStackTrace();
 				continue;
 			}
@@ -74,7 +76,7 @@ public class ConfigFormatWriter {
 			//Write key value pair
 			sb.append(tab);
 			ConfigManager.writeKey(sb, field.getName());
-			sb.append(": ");
+			sb.append(format.keySeparator);
 			if (field.getType().isPrimitive()) {
 				sb.append(String.valueOf(field.getValue()));
 			} else {
@@ -89,6 +91,7 @@ public class ConfigFormatWriter {
 			tab.setLength(tab.length() - format.tab.length);
 		}
 
+		//Write block close
 		if (!block.isRoot()) {
 			sb.append(tab);
 			if (tab.length() > 0) {
@@ -138,16 +141,38 @@ public class ConfigFormatWriter {
 		}
 
 		else if (Map.class.isAssignableFrom(type)) {
-			sb.setLength(sb.length() - 2);
-			writeMap((Map<?, ?>) value);
+			@SuppressWarnings("unchecked")
+			Map<String, ?> map = (Map<String, ?>) value;
+			writeMapOpen();
+			for (Entry<String, ?> entry : map.entrySet()) {
+				writeMapElement(entry.getValue().getClass(), entry.getKey(), entry.getValue());
+			}
+			writeMapClose();
 		}
 
-		else if (ConfigSerializable.class.isAssignableFrom(type)) {
-			ConfigSerializable cs = (ConfigSerializable) value;
-			TypeData data = new TypeData();
-			cs.write(data);
-			writeMap((Map<?, ?>) data.getData());
+		else if (type.isAnnotationPresent(ConfigType.class)) {
+			//Attempt complex type serialization
+			writeMapOpen();
+			for (Field field : type.getDeclaredFields()) {
+				try {
+					field.setAccessible(true);
+					if (field.isAnnotationPresent(Transient.class) || Modifier.isStatic(field.getModifiers())) {
+						continue;
+					}
+					writeMapElement(field.getType(), ConfigManager.getKey(field.getName()), field.get(value));
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+			writeMapClose();
 		}
+
+		//		else if (ConfigSerializable.class.isAssignableFrom(type)) {
+		//			ConfigSerializable cs = (ConfigSerializable) value;
+		//			TypeData data = new TypeData();
+		//			cs.write(data);
+		//			writeMap((Map<?, ?>) data.getData());
+		//		}
 
 		else {
 			String str = ConfigTypes.serialize(value);
@@ -161,17 +186,35 @@ public class ConfigFormatWriter {
 		}
 	}
 
-	private void writeMap(Map<?, ?> map) {
+	private void writeMapElement(Class<?> type, String key, Object value) {
+		sb.append(tab);
+		sb.append(key);
+		sb.append(format.keySeparator);
+		writeValue(type, value);
+		sb.append('\n');
+	}
+
+	private void writeMapOpen() {
+		//		System.out.println("SB: " + sb.toString().replace("\n", ""));
+		sb.setLength(sb.length() - format.keySeparator.length);
+		System.out.println(tab.length());
+		//		if (format.listOpen.length == 1 && sb.charAt(sb.length() - 1) == format.listOpen[0]) {
+		//			sb.append('\n');
+		//			sb.append(tab);
+		//			if (format.blockOpen.length == 2) {
+		//				sb.append(format.blockOpen[1]);
+		//			}
+		//		} else {
+		//			sb.append(format.blockOpen);
+		//		}
 		sb.append(format.blockOpen);
-		sb.append("\n");
+
+		//		System.out.println("SB: " + sb.toString().replace("\n", ""));
+		sb.append('\n');
 		tab.append(format.tab);
-		for (Entry<?, ?> entry : map.entrySet()) {
-			sb.append(tab);
-			sb.append(entry.getKey());
-			sb.append(format.mapSeparator);
-			writeValue(entry.getValue().getClass(), entry.getValue());
-			sb.append('\n');
-		}
+	}
+
+	private void writeMapClose() {
 		tab.setLength(tab.length() - format.tab.length);
 		sb.append(tab);
 		sb.append(format.blockClose);
@@ -224,7 +267,7 @@ public class ConfigFormatWriter {
 		private char[] blockClose = new char[0];
 		private char[] listOpen = new char[0];
 		private char[] listClose = new char[0];
-		private char[] mapSeparator = new char[0];
+		private char[] keySeparator = new char[0];
 		private char[] listElementPrefix = new char[0];
 		private char[] listElementSuffix = new char[0];
 
@@ -269,8 +312,8 @@ public class ConfigFormatWriter {
 				return this;
 			}
 
-			public Builder setMapSeparator(String mapSeparator) {
-				chars.mapSeparator = mapSeparator.toCharArray();
+			public Builder setKeySeparator(String keySeparator) {
+				chars.keySeparator = keySeparator.toCharArray();
 				return this;
 			}
 

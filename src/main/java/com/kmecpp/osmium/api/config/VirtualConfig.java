@@ -5,17 +5,17 @@ import java.nio.file.Path;
 
 import com.kmecpp.osmium.api.util.FileUtil;
 
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ValueType;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class VirtualConfig {
 
 	private Path path;
-	private HoconConfigurationLoader loader;
-	private CommentedConfigurationNode root;
+	private ConfigurationLoader<?> loader;
+	private ConfigurationNode root;
 
-	public VirtualConfig(Path path, HoconConfigurationLoader loader, CommentedConfigurationNode root) {
+	public VirtualConfig(Path path, ConfigurationLoader<?> loader, ConfigurationNode root) {
 		this.path = path;
 		this.loader = loader;
 		this.root = root;
@@ -25,15 +25,15 @@ public class VirtualConfig {
 		return path;
 	}
 
-	public HoconConfigurationLoader getLoader() {
+	public ConfigurationLoader<?> getLoader() {
 		return loader;
 	}
 
-	public CommentedConfigurationNode getRoot() {
+	public ConfigurationNode getRoot() {
 		return root;
 	}
 
-	public CommentedConfigurationNode getNode(String path) {
+	public ConfigurationNode getNode(String path) {
 		return root.getNode((Object[]) path.split("\\."));
 	}
 
