@@ -12,6 +12,14 @@ public class SerializationData<T> {
 		this.deserializer = deserializer;
 	}
 
+	public Serializer<T> getSerializer() {
+		return serializer;
+	}
+
+	public Deserializer<T> getDeserializer() {
+		return deserializer;
+	}
+
 	public boolean isCustomType() {
 		return customType;
 	}

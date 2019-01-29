@@ -74,6 +74,12 @@ public class ConfigTypes {
 	}
 
 	@SuppressWarnings("unchecked")
+	public static <T> Deserializer<T> getDeserializer(Class<T> type) {
+		SerializationData<T> data = (SerializationData<T>) types.get(type);
+		return data != null ? data.getDeserializer() : null;
+	}
+
+	@SuppressWarnings("unchecked")
 	public static <T> String serialize(T obj) {
 		if (obj == null) {
 			return "null";

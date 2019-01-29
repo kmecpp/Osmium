@@ -70,10 +70,12 @@ public class ConfigParser {
 
 	private void readBlock(int blockNameLength, ConfigField map) {
 		skipWhitespaceAndComments();
+		System.out.println("Read block");
 		while (index < length) {
 			if (current == '}') {
 				read();
 				path.setLength(Math.max(0, path.length() - blockNameLength - 1));
+				System.out.println("END OF BLOCK!");
 				return;
 			}
 			readNext(path, map);
@@ -95,18 +97,19 @@ public class ConfigParser {
 
 		skipWhitespaceAndComments();
 
-		//Read block or map
-		if (current == '{') {
-			read();
-			path.append(path.length() == 0 ? key : "." + key);
-			ConfigField map = data.getField(path.toString());
-			readBlock(key.length(), map);
-		}
-
 		//Read value
-		else if (current == ':') {
+		if (current == ':') {
 			read();
 			skipWhitespaceAndComments();
+
+			//Read block or map
+			if (current == '{') {
+				read();
+				path.append(path.length() == 0 ? key : "." + key);
+				ConfigField map = data.getField(path.toString());
+				readBlock(key.length(), map);
+				return;
+			}
 
 			String fullPath = path.length() == 0 ? key : path.toString() + "." + key;
 			ConfigField field = data.getField(fullPath);
@@ -169,6 +172,7 @@ public class ConfigParser {
 
 		//Read list
 		if (current == '[') {
+			System.out.println("Reading list!");
 			boolean array = currentType.isArray();
 
 			//Create default
@@ -222,25 +226,37 @@ public class ConfigParser {
 
 		//Read ConfigSerializable
 		else if (current == '{') {
-			ConfigSerializable cs;
-			if (defaultValue instanceof ConfigSerializable) {
-				cs = (ConfigSerializable) defaultValue;
-			} else {
-				try {
-					cs = (ConfigSerializable) field.getClass().newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					throw getError("Failed to load config. No default value or default constructor provided config setting: " + field.getJavaPath(), e);
-				}
-			}
+			read();
+			System.out.println("Reading object");
+			String key = ConfigManager.getKey(field.getName());
+			readBlock(key.length(), field);
+			//			readBlock(blockNameLength, map);
 
-			skipWhitespaceAndComments();
-			while (index < length && current != '}') {
-				read();
-				//				path.setLength(Math.max(0, path.length() - blockNameLength - 1));
-				//				readNext(path, map);
-				skipWhitespaceAndComments();
-			}
-			value = cs;
+			//			if (Map.class.isAssignableFrom(currentType)) {
+			//
+			//			}
+
+			System.out.println(currentType);
+			//			ConfigSerializable cs;
+			//			if (defaultValue instanceof ConfigSerializable) {
+			//				cs = (ConfigSerializable) defaultValue;
+			//			} else {
+			//				try {
+			//					cs = (ConfigSerializable) field.getClass().newInstance();
+			//				} catch (InstantiationException | IllegalAccessException e) {
+			//					throw getError("Failed to load config. No default value or default constructor provided config setting: " + field.getJavaPath(), e);
+			//				}
+			//			}
+
+			//			skipWhitespaceAndComments();
+			//			while (index < length && current != '}') {
+			//				read();
+			//				path.setLength(Math.max(0, path.length() - blockNameLength - 1));
+			//				readNext(path, map);
+			//				skipWhitespaceAndComments();
+			//			}
+			//			value = cs;
+			value = null;
 		}
 
 		//Read single value

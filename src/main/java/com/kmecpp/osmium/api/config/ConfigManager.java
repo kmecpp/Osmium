@@ -5,8 +5,12 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
+
+import org.bukkit.configuration.InvalidConfigurationException;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.config.ConfigFormatWriter.ConfigFormat;
@@ -14,7 +18,10 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Deserializer;
 import com.kmecpp.osmium.api.persistence.Serializer;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.util.StringUtil;
+import com.kmecpp.osmium.core.CoreOsmiumConfig;
 
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
@@ -23,37 +30,41 @@ public class ConfigManager {
 	private final HashMap<OsmiumPlugin, HashSet<Class<?>>> plugins = new HashMap<>();
 	private final HashMap<Class<?>, ConfigData> configs = new HashMap<>();
 
-	//	public static void main(String[] args) throws IOException, InvalidConfigurationException {
-	//		ConfigManager m = new ConfigManager();
-	//
-	//		ConfigData data = m.getConfigData(CoreOsmiumConfig.class);
-	//		//		new ConfigWriter(data, new File("config.yml")).write(); //File handling is done by the writer
-	//		ConfigFormatWriter w = new ConfigFormatWriter(data, new File("config.yml"), ConfigFormats.HOCON);
-	//		//		VirtualConfig v = m.load(Paths.get("config.yml"), ConfigFormats.YAML);
-	//		long start = System.currentTimeMillis();
-	//		//		v.save();
-	//		//		System.out.println(data.getRoot().getBlocks());
-	//		//		System.out.println(data.getRoot().getFields());
-	//		w.write();
-	//
-	//		//		YamlConfiguration yml = new YamlConfiguration();
-	//		//		yml.load(new File("config.yml"));
-	//		//		System.out.println(yml.get("test"));
-	//
-	//		//		yml.save(new File("config.yml"));
-	//
-	//		//		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
-	//		//				.setPath(Paths.get("config.yml"))
-	//		//				.build();
-	//		//
-	//		//		loader.load();
-	//		//		for (Entry<String, ConfigField> entry : data.getFields().entrySet()) {
-	//		//			entry.getValue().setValue(yml.get(entry.getKey()));
-	//		//		}
-	//		//		m.load(Paths.get("config.yml"));
-	//		//		new ConfigParser(data, new File("config.conf")).load();
-	//		System.out.println("TIME: " + (System.currentTimeMillis() - start) + "ms");
-	//	}
+	public static void main(String[] args) throws IOException, InvalidConfigurationException {
+		ConfigManager m = new ConfigManager();
+
+		ConfigData data = m.getConfigData(CoreOsmiumConfig.class);
+		//		new ConfigWriter(data, new File("config.yml")).write(); //File handling is done by the writer
+		ConfigFormat format = ConfigFormats.HOCON;
+		ConfigFormatWriter w = new ConfigFormatWriter(data, new File("config.yml"), format);
+		//		VirtualConfig v = m.load(Paths.get("config.yml"), ConfigFormats.YAML);
+		long start = System.currentTimeMillis();
+		//		v.save();
+		//		System.out.println(data.getRoot().getBlocks());
+		//		System.out.println(data.getRoot().getFields());
+		w.write();
+
+		//		new ConfigParser(data, new File("config.yml")).load();
+
+		//		YamlConfiguration yml = new YamlConfiguration();
+		//		yml.load(new File("config.yml"));
+		//		System.out.println(yml.get("test"));
+
+		//		yml.save(new File("config.yml"));
+
+		//		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
+		//				.setPath(Paths.get("config.yml"))
+		//				.build();
+		//
+		//		loader.load();
+
+		//		m.load(Paths.get("config.yml"));
+		//		new ConfigParser(data, new File("config.conf")).load();
+		System.out.println("Write: " + (System.currentTimeMillis() - start) + "ms");
+		start = System.currentTimeMillis();
+		new ConfigParser(data, new File("config.yml")).load();
+		System.out.println("Read: " + (System.currentTimeMillis() - start) + "ms");
+	}
 
 	public void registerConfig(OsmiumPlugin plugin, Class<?> config) {
 		plugins.putIfAbsent(plugin, new HashSet<>());
@@ -64,7 +75,18 @@ public class ConfigManager {
 		return plugins.getOrDefault(plugin, new HashSet<>());
 	}
 
-	public VirtualConfig load(Path path, ConfigFormat format) throws IOException {
+	public static ConfigFormat getFormat() {
+		if (StringUtil.equalsIgnoreCase(CoreOsmiumConfig.configFormat, "YAML", "YML")) {
+			return ConfigFormats.YAML;
+		}
+		return ConfigFormats.HOCON;
+	}
+
+	private VirtualConfig load(Path path) throws IOException {
+		return this.load(path, getFormat());
+	}
+
+	private VirtualConfig load(Path path, ConfigFormat format) throws IOException {
 		if (format == ConfigFormats.HOCON) {
 			HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
 					.setPath(path)
@@ -82,6 +104,39 @@ public class ConfigManager {
 	}
 
 	public void load(Class<?> config) throws IOException {
+		ConfigData data = getConfigData(config);
+		OsmiumPlugin plugin = Osmium.getPlugin(config);
+		VirtualConfig c = this.load(plugin.getFolder().resolve(data.getProperties().path()));
+		for (Entry<String, ConfigField> entry : data.getFields().entrySet()) {
+			ConfigField field = entry.getValue();
+			Class<?> type = field.getType();
+			ConfigurationNode node = c.getNode(entry.getKey());
+			Object value = node.getValue();
+			if (value instanceof String) {
+				Deserializer<?> d = ConfigTypes.getDeserializer(type);
+				if (d != null) {
+					entry.getValue().setValue(d.deserialize((String) value));
+					continue;
+				}
+			} else if (node.isVirtual()) {
+				if (!field.getSetting().deletable()) {
+					plugin.warn("Missing config setting: " + field.getJavaPath());
+				}
+				continue;
+			} else if (Collection.class.isAssignableFrom(field.getType())) {
+				@SuppressWarnings("unchecked")
+				Collection<Object> collection = (Collection<Object>) field.getValue();
+				for (Object e : (Collection<?>) value) {
+					collection.add(e);
+				}
+				continue;
+			}
+
+			field.setValue(value);
+		}
+	}
+
+	public void loadWithParser(Class<?> config) throws IOException {
 		ConfigData data = getConfigData(config);
 		OsmiumPlugin plugin = Osmium.getPlugin(config);
 		registerConfig(plugin, config);
