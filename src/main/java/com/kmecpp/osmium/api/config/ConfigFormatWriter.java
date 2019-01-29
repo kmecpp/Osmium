@@ -40,13 +40,17 @@ public class ConfigFormatWriter {
 		if (!block.isRoot()) {
 			sb.append('\n');
 			ConfigManager.writeKey(sb, block.getName());
+			//HOCON formatting
+			//			if (format.blockOpen.length == 1 && format.blockOpen[0] == '{') {
+			//				sb.append(' ');
+			//			}
 			sb.append(format.blockOpen);
 			sb.append('\n');
 		}
 
 		boolean first = true;
 		for (ConfigField field : block.getFields()) {
-			if (field.getType().toGenericString().contains("<") && (field.getSetting().types().length == 0 || field.getSetting().types()[0] == Object.class)) {
+			if (field.getType().toGenericString().contains("<") && (field.getSetting().type().length == 0 || field.getSetting().type()[0] == Object.class)) {
 				new ConfigWriteException("Failed to write Config setting '" + field.getJavaPath() + "'. \nError: generics fields must specify a type parameter.").printStackTrace();
 				continue;
 			}
@@ -76,6 +80,7 @@ public class ConfigFormatWriter {
 			//Write key value pair
 			sb.append(tab);
 			ConfigManager.writeKey(sb, field.getName());
+			//			System.out.println("KEY: " + field.getName());
 			sb.append(format.keySeparator);
 			if (field.getType().isPrimitive()) {
 				sb.append(String.valueOf(field.getValue()));
@@ -152,6 +157,11 @@ public class ConfigFormatWriter {
 
 		else if (type.isAnnotationPresent(ConfigType.class)) {
 			//Attempt complex type serialization
+
+			if (sb.charAt(sb.length() - 1) == ' ') {
+				sb.setLength(sb.length() - 1);
+			}
+
 			writeMapOpen();
 			for (Field field : type.getDeclaredFields()) {
 				try {
@@ -195,9 +205,14 @@ public class ConfigFormatWriter {
 	}
 
 	private void writeMapOpen() {
-		//		System.out.println("SB: " + sb.toString().replace("\n", ""));
-		sb.setLength(sb.length() - format.keySeparator.length);
-		System.out.println(tab.length());
+		//Remove key separator
+		//		if(format.keySeparator )
+		//		System.out.println("CHAR: '" + (int) sb.charAt(sb.length() - 1) + "'");
+		//		if (sb.charAt(sb.length() - 1) == ' ') {
+		//			sb.setLength(sb.length() - 1);
+		//			System.out.println("FUCKKK!");
+		//		}
+		//		sb.setLength(sb.length() - format.keySeparator.length);
 		//		if (format.listOpen.length == 1 && sb.charAt(sb.length() - 1) == format.listOpen[0]) {
 		//			sb.append('\n');
 		//			sb.append(tab);
@@ -207,7 +222,7 @@ public class ConfigFormatWriter {
 		//		} else {
 		//			sb.append(format.blockOpen);
 		//		}
-		sb.append(format.blockOpen);
+		sb.append(format.mapOpen);
 
 		//		System.out.println("SB: " + sb.toString().replace("\n", ""));
 		sb.append('\n');
@@ -222,6 +237,11 @@ public class ConfigFormatWriter {
 
 	private void writeList(Object[] arr, Collection<?> collection, boolean condensed) {
 		sb.append(format.listOpen);
+
+		//		if (format.listOpen.length == 1 && format.listOpen[0] == '[') {
+		//			condensed = true;
+		//		}
+
 		if (!condensed) {
 			sb.append('\n');
 			tab.append(format.tab);
@@ -242,7 +262,7 @@ public class ConfigFormatWriter {
 
 		//Write end
 		if (!condensed) {
-			tab.setLength(Math.max(0, tab.length() - 1));
+			tab.setLength(Math.max(0, tab.length() - format.tab.length));
 			sb.append('\n');
 			sb.append(tab);
 		}
@@ -263,6 +283,7 @@ public class ConfigFormatWriter {
 
 		private char[] tab = new char[0];
 		private char[] comment = new char[0];
+		private char[] mapOpen = new char[0];
 		private char[] blockOpen = new char[0];
 		private char[] blockClose = new char[0];
 		private char[] listOpen = new char[0];
@@ -289,6 +310,11 @@ public class ConfigFormatWriter {
 
 			public Builder setComment(String comment) {
 				chars.comment = comment.toCharArray();
+				return this;
+			}
+
+			public Builder setMapOpen(String mapOpen) {
+				chars.mapOpen = mapOpen.toCharArray();
 				return this;
 			}
 

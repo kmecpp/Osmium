@@ -58,7 +58,7 @@ public class ConfigField {
 			}
 			return componentTypes.toArray(new Class[componentTypes.size()]);
 		}
-		return setting != null ? setting.types() : new Class<?>[0];
+		return setting != null ? setting.type() : new Class<?>[0];
 
 		//		else if (Collection.class.isAssignableFrom(field.getType()) || Map.class.isAssignableFrom(field.getType())) {
 		//			//			Class<?>[] types = new Class[setting.type().length + 1];
@@ -102,7 +102,7 @@ public class ConfigField {
 		}
 
 		@Override
-		public Class<?>[] types() {
+		public Class<?>[] type() {
 			return new Class<?>[0];
 		}
 

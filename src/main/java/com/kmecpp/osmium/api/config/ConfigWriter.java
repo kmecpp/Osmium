@@ -41,7 +41,7 @@ public class ConfigWriter {
 
 		boolean first = true;
 		for (ConfigField field : block.getFields()) {
-			if (field.getType().toGenericString().contains("<") && (field.getSetting().types().length == 0 || field.getSetting().types()[0] == Object.class)) {
+			if (field.getType().toGenericString().contains("<") && (field.getSetting().type().length == 0 || field.getSetting().type()[0] == Object.class)) {
 				new ConfigWriteException("Failed to write Config setting '" + field.getJavaPath() + "'. \nError: generics fields must specify a type parameter.").printStackTrace();
 				continue;
 			}

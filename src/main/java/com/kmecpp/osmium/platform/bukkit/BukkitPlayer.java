@@ -1,6 +1,9 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import org.bukkit.util.Vector;
+
 import com.kmecpp.osmium.api.GameMode;
+import com.kmecpp.osmium.api.Vector3d;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
@@ -111,6 +114,17 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 	@Override
 	public void closeInventory() {
 		player.closeInventory();
+	}
+
+	@Override
+	public Vector3d getVelocity() {
+		Vector v = player.getVelocity();
+		return new Vector3d(v.getX(), v.getY(), v.getZ());
+	}
+
+	@Override
+	public void setVelocity(double x, double y, double z) {
+		player.setVelocity(new Vector(x, y, z));
 	}
 
 }

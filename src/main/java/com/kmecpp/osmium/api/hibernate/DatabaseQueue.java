@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.hibernate;
 
 import java.lang.Thread.State;
 import java.util.concurrent.LinkedBlockingQueue;

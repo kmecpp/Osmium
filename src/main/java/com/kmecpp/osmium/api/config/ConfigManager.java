@@ -5,12 +5,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
-
-import org.bukkit.configuration.InvalidConfigurationException;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.config.ConfigFormatWriter.ConfigFormat;
@@ -18,7 +14,6 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Deserializer;
 import com.kmecpp.osmium.api.persistence.Serializer;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
-import com.kmecpp.osmium.core.CoreOsmiumConfig;
 
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
@@ -28,35 +23,37 @@ public class ConfigManager {
 	private final HashMap<OsmiumPlugin, HashSet<Class<?>>> plugins = new HashMap<>();
 	private final HashMap<Class<?>, ConfigData> configs = new HashMap<>();
 
-	public static void main(String[] args) throws IOException, InvalidConfigurationException {
-		ConfigManager m = new ConfigManager();
-
-		ConfigData data = m.getConfigData(CoreOsmiumConfig.class);
-		//		new ConfigWriter(data, new File("config.yml")).write(); //File handling is done by the writer
-		ConfigFormatWriter w = new ConfigFormatWriter(data, new File("config.yml"), ConfigFormats.YAML);
-		//		VirtualConfig v = m.load(Paths.get("config.yml"), ConfigFormats.YAML);
-		long start = System.currentTimeMillis();
-		//		v.save();
-		//		YamlConfiguration yml = new YamlConfiguration();
-		//		yml.load(new File("config.yml"));
-		//		System.out.println(data.getRoot().getBlocks());
-		//		System.out.println(data.getRoot().getFields());
-		w.write();
-
-		//		yml.save(new File("config.yml"));
-
-		//		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
-		//				.setPath(Paths.get("config.yml"))
-		//				.build();
-		//
-		//		loader.load();
-		for (Entry<String, ConfigField> entry : data.getFields().entrySet()) {
-			//			entry.getValue().setValue(yml.get(entry.getKey()));
-		}
-		//		m.load(Paths.get("config.yml"));
-		//		new ConfigParser(data, new File("config.conf")).load();
-		System.out.println("TIME: " + (System.currentTimeMillis() - start) + "ms");
-	}
+	//	public static void main(String[] args) throws IOException, InvalidConfigurationException {
+	//		ConfigManager m = new ConfigManager();
+	//
+	//		ConfigData data = m.getConfigData(CoreOsmiumConfig.class);
+	//		//		new ConfigWriter(data, new File("config.yml")).write(); //File handling is done by the writer
+	//		ConfigFormatWriter w = new ConfigFormatWriter(data, new File("config.yml"), ConfigFormats.HOCON);
+	//		//		VirtualConfig v = m.load(Paths.get("config.yml"), ConfigFormats.YAML);
+	//		long start = System.currentTimeMillis();
+	//		//		v.save();
+	//		//		System.out.println(data.getRoot().getBlocks());
+	//		//		System.out.println(data.getRoot().getFields());
+	//		w.write();
+	//
+	//		//		YamlConfiguration yml = new YamlConfiguration();
+	//		//		yml.load(new File("config.yml"));
+	//		//		System.out.println(yml.get("test"));
+	//
+	//		//		yml.save(new File("config.yml"));
+	//
+	//		//		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
+	//		//				.setPath(Paths.get("config.yml"))
+	//		//				.build();
+	//		//
+	//		//		loader.load();
+	//		//		for (Entry<String, ConfigField> entry : data.getFields().entrySet()) {
+	//		//			entry.getValue().setValue(yml.get(entry.getKey()));
+	//		//		}
+	//		//		m.load(Paths.get("config.yml"));
+	//		//		new ConfigParser(data, new File("config.conf")).load();
+	//		System.out.println("TIME: " + (System.currentTimeMillis() - start) + "ms");
+	//	}
 
 	public void registerConfig(OsmiumPlugin plugin, Class<?> config) {
 		plugins.putIfAbsent(plugin, new HashSet<>());

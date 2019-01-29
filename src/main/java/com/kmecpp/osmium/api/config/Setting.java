@@ -17,6 +17,6 @@ public @interface Setting {
 
 	boolean deletable() default false;
 
-	Class<?>[] types() default {};//Object.class
+	Class<?>[] type() default {};//Object.class
 
 }

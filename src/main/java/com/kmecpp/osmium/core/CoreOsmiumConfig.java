@@ -1,11 +1,9 @@
 package com.kmecpp.osmium.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.config.ConfigProperties;
-import com.kmecpp.osmium.api.config.ConfigType;
 import com.kmecpp.osmium.api.config.Setting;
 
 @ConfigProperties(path = "osmium.conf", header = "Osmium configuration file, author: kmecpp, website: https://github.com/kmecpp/Osmium")
@@ -24,32 +22,8 @@ public class CoreOsmiumConfig {
 	@Setting(comment = "Whether or not to display color in console messages")
 	public static boolean coloredConsole = true;
 
-	@Setting(types = Integer.class)
+	@Setting(type = Integer.class)
 	public static HashMap<String, Integer> map = new HashMap<>();
-
-	@Setting(types = Test.class)
-	public static ArrayList<Test> test = new ArrayList<>();
-
-	static {
-		map.put("MAPKEY1", 1);
-		map.put("MAPKEY2", 2);
-		test.add(new Test(2, 3.1415926535));
-	}
-
-	@ConfigType
-	public static class Test {
-
-		private int a;
-		private double b;
-		private UUID uuid;
-
-		public Test(int a, double b) {
-			this.a = a;
-			this.b = b;
-			this.uuid = UUID.randomUUID();
-		}
-
-	}
 
 	/*
 	 * DATABASE

@@ -6,6 +6,7 @@ import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.text.Text;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
@@ -118,6 +119,17 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 	@Override
 	public void closeInventory() {
 		player.closeInventory();
+	}
+
+	@Override
+	public com.kmecpp.osmium.api.Vector3d getVelocity() {
+		Vector3d v = player.getVelocity();
+		return new com.kmecpp.osmium.api.Vector3d(v.getX(), v.getY(), v.getZ());
+	}
+
+	@Override
+	public void setVelocity(double x, double y, double z) {
+		player.setVelocity(new Vector3d(x, y, z));
 	}
 
 }

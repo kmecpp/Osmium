@@ -11,7 +11,7 @@ import com.google.common.base.Preconditions;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.SimpleCommand;
-import com.kmecpp.osmium.api.database.Database;
+import com.kmecpp.osmium.api.hibernate.Database;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.logging.OsmiumPluginLogger;
 import com.kmecpp.osmium.api.persistence.PersistentPluginData;
