@@ -18,4 +18,8 @@ public interface User extends Abstraction {
 
 	boolean isOnline();
 
+	//	default Optional<Player> getPlayer() {
+	//		return Osmium.getPlayer(getName());
+	//	}
+
 }

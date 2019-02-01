@@ -122,14 +122,24 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 	}
 
 	@Override
-	public com.kmecpp.osmium.api.Vector3d getVelocity() {
+	public com.kmecpp.osmium.api.location.Vector3d getVelocity() {
 		Vector3d v = player.getVelocity();
-		return new com.kmecpp.osmium.api.Vector3d(v.getX(), v.getY(), v.getZ());
+		return new com.kmecpp.osmium.api.location.Vector3d(v.getX(), v.getY(), v.getZ());
 	}
 
 	@Override
 	public void setVelocity(double x, double y, double z) {
 		player.setVelocity(new Vector3d(x, y, z));
+	}
+
+	@Override
+	public void kick() {
+		player.kick();
+	}
+
+	@Override
+	public void kick(String message) {
+		player.kick(Text.of(message));
 	}
 
 }

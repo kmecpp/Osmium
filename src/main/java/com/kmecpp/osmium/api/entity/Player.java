@@ -2,10 +2,10 @@ package com.kmecpp.osmium.api.entity;
 
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.User;
-import com.kmecpp.osmium.api.Vector3d;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
+import com.kmecpp.osmium.api.location.Vector3d;
 
 public interface Player extends User, EntityLiving, CommandSender {
 
@@ -28,5 +28,9 @@ public interface Player extends User, EntityLiving, CommandSender {
 	void setVelocity(double x, double y, double z);
 
 	Vector3d getVelocity();
+
+	void kick();
+
+	void kick(String message);
 
 }

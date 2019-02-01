@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api;
+package com.kmecpp.osmium.api.location;
 
 public class Vector3d {
 

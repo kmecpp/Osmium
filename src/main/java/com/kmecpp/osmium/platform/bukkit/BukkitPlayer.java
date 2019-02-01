@@ -3,10 +3,10 @@ package com.kmecpp.osmium.platform.bukkit;
 import org.bukkit.util.Vector;
 
 import com.kmecpp.osmium.api.GameMode;
-import com.kmecpp.osmium.api.Vector3d;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
+import com.kmecpp.osmium.api.location.Vector3d;
 
 public class BukkitPlayer extends BukkitEntityLiving implements Player {
 
@@ -125,6 +125,16 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 	@Override
 	public void setVelocity(double x, double y, double z) {
 		player.setVelocity(new Vector(x, y, z));
+	}
+
+	@Override
+	public void kick() {
+		player.kickPlayer("You have been kicked from the server!");
+	}
+
+	@Override
+	public void kick(String message) {
+		player.kickPlayer(message);
 	}
 
 }

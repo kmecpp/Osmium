@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -28,6 +29,51 @@ public class Reflection {
 		try {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T createInstance(Class<T> cls) {
+		Constructor<T> c = (Constructor<T>) cls.getDeclaredConstructors()[0];
+		c.setAccessible(true);
+		Class<?>[] paramClasses = c.getParameterTypes();
+		Object[] params = new Object[paramClasses.length];
+		for (int i = 0; i < params.length; i++) {
+			params[i] = Reflection.getDefaultValue(paramClasses[i]);
+		}
+		try {
+			return c.newInstance(params);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	// These gets initialized to their default values
+	private static boolean DEFAULT_BOOLEAN;
+	private static byte DEFAULT_BYTE;
+	private static short DEFAULT_SHORT;
+	private static int DEFAULT_INT;
+	private static long DEFAULT_LONG;
+	private static float DEFAULT_FLOAT;
+	private static double DEFAULT_DOUBLE;
+
+	public static Object getDefaultValue(Class<?> cls) {
+		if (cls.equals(boolean.class)) {
+			return DEFAULT_BOOLEAN;
+		} else if (cls.equals(byte.class)) {
+			return DEFAULT_BYTE;
+		} else if (cls.equals(short.class)) {
+			return DEFAULT_SHORT;
+		} else if (cls.equals(int.class)) {
+			return DEFAULT_INT;
+		} else if (cls.equals(long.class)) {
+			return DEFAULT_LONG;
+		} else if (cls.equals(float.class)) {
+			return DEFAULT_FLOAT;
+		} else if (cls.equals(double.class)) {
+			return DEFAULT_DOUBLE;
+		} else {
 			return null;
 		}
 	}

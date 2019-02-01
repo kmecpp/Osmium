@@ -109,31 +109,35 @@ public class ConfigManager {
 		VirtualConfig c = this.load(plugin.getFolder().resolve(data.getProperties().path()));
 		for (Entry<String, ConfigField> entry : data.getFields().entrySet()) {
 			ConfigField field = entry.getValue();
-			Class<?> type = field.getType();
 			ConfigurationNode node = c.getNode(entry.getKey());
-			Object value = node.getValue();
-			if (value instanceof String) {
-				Deserializer<?> d = ConfigTypes.getDeserializer(type);
-				if (d != null) {
-					entry.getValue().setValue(d.deserialize((String) value));
-					continue;
-				}
-			} else if (node.isVirtual()) {
-				if (!field.getSetting().deletable()) {
-					plugin.warn("Missing config setting: " + field.getJavaPath());
-				}
-				continue;
-			} else if (Collection.class.isAssignableFrom(field.getType())) {
-				@SuppressWarnings("unchecked")
-				Collection<Object> collection = (Collection<Object>) field.getValue();
-				for (Object e : (Collection<?>) value) {
-					collection.add(e);
-				}
-				continue;
-			}
-
+			Object value = loadValue(plugin, field, node);
 			field.setValue(value);
 		}
+	}
+
+	private Object loadValue(OsmiumPlugin plugin, ConfigField field, ConfigurationNode node) {
+		Class<?> type = field.getType();
+		Object value = node.getValue();
+		if (value instanceof String) {
+
+			Deserializer<?> d = ConfigTypes.getDeserializer(type);
+			if (d != null) {
+				return d.deserialize((String) value);
+			}
+		} else if (node.isVirtual()) {
+			if (!field.getSetting().deletable()) {
+				plugin.warn("Missing config setting: " + field.getJavaPath());
+			}
+			return null;
+		} else if (Collection.class.isAssignableFrom(field.getType())) {
+			@SuppressWarnings("unchecked")
+			Collection<Object> collection = (Collection<Object>) field.getValue();
+			for (Object e : (Collection<?>) value) {
+				collection.add(e);
+			}
+			return collection;
+		}
+		return null;
 	}
 
 	public void loadWithParser(Class<?> config) throws IOException {

@@ -58,6 +58,14 @@ public class BukkitEntity implements Entity {
 	}
 
 	@Override
+	public void setDirection(Direction direction) {
+		org.bukkit.Location l = (org.bukkit.Location) entity.getLocation();
+		l.setPitch(direction.getPitch());
+		l.setYaw(l.getYaw());
+		entity.teleport(l);
+	}
+
+	@Override
 	public void setLocation(Location location) {
 		org.bukkit.Location l = (org.bukkit.Location) location.getImplementation();
 		l.setDirection(entity.getLocation().getDirection());

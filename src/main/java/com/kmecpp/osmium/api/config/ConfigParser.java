@@ -5,12 +5,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.util.Reflection;
 
 public class ConfigParser {
 
@@ -78,13 +83,13 @@ public class ConfigParser {
 				System.out.println("END OF BLOCK!");
 				return;
 			}
-			readNext(path, map);
+			readNext(path, map, null);
 			skipWhitespaceAndComments();
 		}
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private void readNext(StringBuilder path, ConfigField mapField) {
+	private void readNext(StringBuilder path, ConfigField mapField, @Nullable Object customType) {
 		int start = index;
 		while (!Character.isWhitespace(current) && current != ':') {
 			read();
@@ -93,7 +98,7 @@ public class ConfigParser {
 			}
 		}
 		String key = substring(start, index);
-		//		System.out.println("KEY: " + key);
+		System.out.println("KEY: " + key);
 
 		skipWhitespaceAndComments();
 
@@ -145,12 +150,16 @@ public class ConfigParser {
 			//				throw new IllegalArgumentException("Type for field cannot be empty: " + field.getJavaPath());
 			//			}
 			int startType = mapField != null ? 0 : -1;
-			Object defaultValue = mapField != null ? ((Map<?, ?>) mapField.getValue()).get(key) : field.getValue();
+			Object defaultValue = customType != null ? customType
+					: mapField != null ? ((Map<?, ?>) mapField.getValue()).get(key) : field.getValue();
 			Object value = parseValue(field, defaultValue, componentTypes, startType);
+			System.out.println("VALUE: " + value);
 
 			//			System.out.println("VALUE: " + value);
 			//Write the value to the field
-			if (field == mapField) {
+			if (customType != null) {
+
+			} else if (field == mapField) {
 				HashMap<String, Object> map = (HashMap<String, Object>) mapField.getValue();
 				map.put(key, value);
 			} else {
@@ -227,9 +236,36 @@ public class ConfigParser {
 		//Read ConfigSerializable
 		else if (current == '{') {
 			read();
-			System.out.println("Reading object");
+			System.out.println("Reading object: " + currentType);
 			String key = ConfigManager.getKey(field.getName());
-			readBlock(key.length(), field);
+			//			path.setLength(Math.max(0, path.length() - key.length() - 1));
+			skipWhitespaceAndComments();
+			while (current != '}') {
+				try {
+					readNext(path, field, Reflection.createInstance(currentType));
+					skipWhitespaceAndComments();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			//			readNext(path, new ConfigField);
+			//			readNext(path, mapField);
+			//			Object newDefautltValue;
+			//			try {
+			//				newDefaultValue = currentType.newInstance();
+			//			} catch (InstantiationException | IllegalAccessException e) {
+			//				// TODO Auto-generated catch block
+			//				e.printStackTrace();
+			//				return;
+			//			}
+			//			while (index < length && current != '}') {
+			//				read();
+			//				//				path.setLength(Math.max(0, path.length() - blockNameLength - 1));
+			//				//				readNext(path, map);
+			//				parseValue(field, defaultValue, componentTypes, typeIndex);
+			//				skipWhitespaceAndComments();
+			//			}
+
 			//			readBlock(blockNameLength, map);
 
 			//			if (Map.class.isAssignableFrom(currentType)) {
