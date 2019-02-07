@@ -9,6 +9,10 @@ public class ConfigField {
 	private final Field field;
 	private final Setting setting;
 
+	public ConfigField(Field field) {
+		this(field, DEFAULT_SETTING);
+	}
+
 	public ConfigField(Field field, Setting setting) {
 		this.field = field;
 		this.setting = setting != null ? setting : DEFAULT_SETTING;
@@ -47,6 +51,10 @@ public class ConfigField {
 		return field.getType();
 	}
 
+	public Field getBackingField() {
+		return field;
+	}
+
 	public Class<?>[] getComponentTypes() {
 		if (field.getType().isArray()) {
 			ArrayList<Class<?>> componentTypes = new ArrayList<>();
@@ -79,14 +87,18 @@ public class ConfigField {
 	}
 
 	public Object getValue() {
+		return getValue(null);
+	}
+
+	public Object getValue(Object fieldInstance) {
 		try {
-			Object value = field.get(null);
+			Object value = field.get(fieldInstance);
 			if (value == null) {
 				value = field.getType().newInstance();
-				field.set(null, value);
+				field.set(fieldInstance, value);
 				return value;
 			}
-			return field.get(null);
+			return value;
 		} catch (InstantiationException e) {
 			return null;
 		} catch (IllegalArgumentException | IllegalAccessException e) {
@@ -125,7 +137,7 @@ public class ConfigField {
 
 	@Override
 	public String toString() {
-		return "field{" + getName() + "}";
+		return "field[" + getName() + "]";
 	}
 
 }

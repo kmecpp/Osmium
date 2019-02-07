@@ -42,9 +42,9 @@ public class CoreOsmiumConfig {
 	@ConfigType
 	public static class Test {
 
-		private int a;
-		private double b;
-		private UUID uuid;
+		public int a;
+		public double b;
+		public UUID uuid;
 
 		public Test(int a, double b) {
 			this.a = a;

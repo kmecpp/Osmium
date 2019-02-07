@@ -75,6 +75,8 @@ public class ConfigFormatWriter {
 					sb.append(format.comment);
 					sb.append(" " + line + "\n");
 				}
+			} else if (!field.getType().isPrimitive()) {
+				sb.append('\n');
 			}
 
 			//Write key value pair

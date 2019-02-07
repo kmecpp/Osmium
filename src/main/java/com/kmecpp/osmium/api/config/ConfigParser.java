@@ -5,14 +5,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Reflection;
@@ -75,21 +72,18 @@ public class ConfigParser {
 
 	private void readBlock(int blockNameLength, ConfigField map) {
 		skipWhitespaceAndComments();
-		System.out.println("Read block");
 		while (index < length) {
 			if (current == '}') {
 				read();
 				path.setLength(Math.max(0, path.length() - blockNameLength - 1));
-				System.out.println("END OF BLOCK!");
 				return;
 			}
-			readNext(path, map, null);
+			readNext(path, map);
 			skipWhitespaceAndComments();
 		}
 	}
 
-	@SuppressWarnings({ "unchecked" })
-	private void readNext(StringBuilder path, ConfigField mapField, @Nullable Object customType) {
+	private String readKey() {
 		int start = index;
 		while (!Character.isWhitespace(current) && current != ':') {
 			read();
@@ -97,8 +91,13 @@ public class ConfigParser {
 				throw getError("Unexpected end of file");
 			}
 		}
-		String key = substring(start, index);
-		System.out.println("KEY: " + key);
+		return substring(start, index);
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	private void readNext(StringBuilder path, ConfigField mapField) {
+		String key = readKey();
+		//		System.out.println("KEY: " + key);
 
 		skipWhitespaceAndComments();
 
@@ -106,82 +105,74 @@ public class ConfigParser {
 		if (current == ':') {
 			read();
 			skipWhitespaceAndComments();
-
-			//Read block or map
-			if (current == '{') {
-				read();
-				path.append(path.length() == 0 ? key : "." + key);
-				ConfigField map = data.getField(path.toString());
-				readBlock(key.length(), map);
-				return;
-			}
-
-			String fullPath = path.length() == 0 ? key : path.toString() + "." + key;
-			ConfigField field = data.getField(fullPath);
-
-			if (field == null && mapField != null) {
-				field = mapField;
-			}
-
-			if (field == null) {
-				OsmiumLogger.warn("Config file for '" + data.getProperties().path() + "' contains unknown setting: " + fullPath);
-
-				//Skip entry
-				if (current == '[') {
-					read();
-					while (current != ']') {
-						readSingleValue();
-						skipWhitespaceAndComments();
-						if (current == ',') {
-							read();
-							skipWhitespaceAndComments();
-						}
-					}
-					read();
-				} else {
-					readSingleValue();
-				}
-				return;
-			}
-
-			Class<?>[] componentTypes = field.getComponentTypes();
-			//			System.out.println(Arrays.toString(componentTypes));
-			//			if (componentTypes.length == 0) {
-			//				throw new IllegalArgumentException("Type for field cannot be empty: " + field.getJavaPath());
-			//			}
-			int startType = mapField != null ? 0 : -1;
-			Object defaultValue = customType != null ? customType
-					: mapField != null ? ((Map<?, ?>) mapField.getValue()).get(key) : field.getValue();
-			Object value = parseValue(field, defaultValue, componentTypes, startType);
-			System.out.println("VALUE: " + value);
-
-			//			System.out.println("VALUE: " + value);
-			//Write the value to the field
-			if (customType != null) {
-
-			} else if (field == mapField) {
-				HashMap<String, Object> map = (HashMap<String, Object>) mapField.getValue();
-				map.put(key, value);
-			} else {
-				field.setValue(value);
-				fieldUpdateCount++;
-			}
-		} else {
+		} else if (current != '{') {
 			throw getError("Unexpected character '" + current + "'");
 		}
-		return;
+
+		//Read block or map
+		if (current == '{') {
+			read();
+			path.append(path.length() == 0 ? key : "." + key);
+			ConfigField map = data.getField(path.toString());
+			readBlock(key.length(), map);
+			return;
+		}
+
+		String fullPath = path.length() == 0 ? key : path.toString() + "." + key;
+		ConfigField field = data.getField(fullPath);
+
+		if (field == null && mapField != null) {
+			field = mapField;
+		}
+
+		if (field == null) {
+			OsmiumLogger.warn("Config file for '" + data.getProperties().path() + "' contains unknown setting: " + fullPath);
+
+			//Skip entry
+			if (current == '[') {
+				read();
+				while (current != ']') {
+					readSingleValue();
+					skipWhitespaceAndComments();
+					if (current == ',') {
+						read();
+						skipWhitespaceAndComments();
+					}
+				}
+				read();
+			} else {
+				readSingleValue();
+			}
+			return;
+		}
+
+		Class<?>[] componentTypes = field.getComponentTypes();
+		//			System.out.println(Arrays.toString(componentTypes));
+		//			if (componentTypes.length == 0) {
+		//				throw new IllegalArgumentException("Type for field cannot be empty: " + field.getJavaPath());
+		//			}
+		//			if (customType == null) {
+		int startType = mapField != null ? 0 : -1;
+		Object defaultValue = mapField != null ? ((Map<?, ?>) mapField.getValue()).get(key) : field.getValue();
+		Object value = parseValue(field, defaultValue, componentTypes, startType);
+
+		//Write the value to the field
+		if (field == mapField) {
+			HashMap<String, Object> map = (HashMap<String, Object>) mapField.getValue();
+			map.put(key, value);
+		} else {
+			field.setValue(value);
+			fieldUpdateCount++;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private Object parseValue(ConfigField field, Object defaultValue, Class<?>[] componentTypes, int typeIndex) {
-		//		Class<?>[] componentTypes = field.getComponentTypes();
-		//		Class<?> fieldType = field.getType();
 		Class<?> currentType = typeIndex == -1 || componentTypes.length == 0 ? field.getType() : componentTypes[typeIndex];
 		Object value;
 
 		//Read list
 		if (current == '[') {
-			System.out.println("Reading list!");
 			boolean array = currentType.isArray();
 
 			//Create default
@@ -236,63 +227,33 @@ public class ConfigParser {
 		//Read ConfigSerializable
 		else if (current == '{') {
 			read();
-			System.out.println("Reading object: " + currentType);
-			String key = ConfigManager.getKey(field.getName());
-			//			path.setLength(Math.max(0, path.length() - key.length() - 1));
 			skipWhitespaceAndComments();
+			HashMap<String, ConfigField> fields = new HashMap<>();
+			Object typeInstance = Reflection.createInstance(currentType);
+			for (Field dataField : currentType.getDeclaredFields()) {
+				fields.put(ConfigManager.getKey(dataField.getName()), new ConfigField(dataField));
+				dataField.setAccessible(true);
+			}
 			while (current != '}') {
 				try {
-					readNext(path, field, Reflection.createInstance(currentType));
 					skipWhitespaceAndComments();
+					String key = readKey();
+					skip(':');
+					skipWhitespaceAndComments();
+
+					ConfigField dataField = fields.get(key);
+					parseValue(dataField, dataField.getValue(typeInstance), new Class[0], -1);
+					//					readNext(path, field, Reflection.createInstance(currentType), typeIndex);
+					skipWhitespaceAndComments();
+					if (current == ',') {
+						read();
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			//			readNext(path, new ConfigField);
-			//			readNext(path, mapField);
-			//			Object newDefautltValue;
-			//			try {
-			//				newDefaultValue = currentType.newInstance();
-			//			} catch (InstantiationException | IllegalAccessException e) {
-			//				// TODO Auto-generated catch block
-			//				e.printStackTrace();
-			//				return;
-			//			}
-			//			while (index < length && current != '}') {
-			//				read();
-			//				//				path.setLength(Math.max(0, path.length() - blockNameLength - 1));
-			//				//				readNext(path, map);
-			//				parseValue(field, defaultValue, componentTypes, typeIndex);
-			//				skipWhitespaceAndComments();
-			//			}
-
-			//			readBlock(blockNameLength, map);
-
-			//			if (Map.class.isAssignableFrom(currentType)) {
-			//
-			//			}
-
-			System.out.println(currentType);
-			//			ConfigSerializable cs;
-			//			if (defaultValue instanceof ConfigSerializable) {
-			//				cs = (ConfigSerializable) defaultValue;
-			//			} else {
-			//				try {
-			//					cs = (ConfigSerializable) field.getClass().newInstance();
-			//				} catch (InstantiationException | IllegalAccessException e) {
-			//					throw getError("Failed to load config. No default value or default constructor provided config setting: " + field.getJavaPath(), e);
-			//				}
-			//			}
-
-			//			skipWhitespaceAndComments();
-			//			while (index < length && current != '}') {
-			//				read();
-			//				path.setLength(Math.max(0, path.length() - blockNameLength - 1));
-			//				readNext(path, map);
-			//				skipWhitespaceAndComments();
-			//			}
-			//			value = cs;
-			value = null;
+			read();
+			value = typeInstance;
 		}
 
 		//Read single value
@@ -301,7 +262,7 @@ public class ConfigParser {
 			try {
 				value = ConfigTypes.deserialize(currentType, stringValue);
 			} catch (Exception e) {
-				throw getError("Failed to parse '" + stringValue + "' as " + currentType.getName());
+				throw getError("Failed to parse '" + stringValue + "' as " + currentType.getName(), e);
 			}
 		}
 		return value;

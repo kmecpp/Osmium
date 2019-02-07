@@ -39,10 +39,10 @@ public class ConfigManager {
 		ConfigFormatWriter w = new ConfigFormatWriter(data, new File("config.yml"), format);
 		//		VirtualConfig v = m.load(Paths.get("config.yml"), ConfigFormats.YAML);
 		long start = System.currentTimeMillis();
+		w.write();
 		//		v.save();
 		//		System.out.println(data.getRoot().getBlocks());
 		//		System.out.println(data.getRoot().getFields());
-		w.write();
 
 		//		new ConfigParser(data, new File("config.yml")).load();
 
