@@ -148,6 +148,11 @@ public final class Osmium {
 	}
 
 	public static void shutdown() {
+		//Save plugin data first
+		for (OsmiumPlugin plugin : getPlugins()) {
+			savePluginData(plugin);
+		}
+
 		if (Platform.isBukkit()) {
 			Bukkit.shutdown();
 		} else if (Platform.isSponge()) {
@@ -199,6 +204,11 @@ public final class Osmium {
 	//		return scheduler;
 	//	}
 
+	public static void savePluginData(OsmiumPlugin plugin) {
+		Osmium.getConfigManager().saveAll(plugin);
+		plugin.saveData();
+	}
+
 	public static final Platform getPlatform() {
 		return Platform.getPlatform();
 	}
@@ -206,7 +216,7 @@ public final class Osmium {
 	public static boolean reloadPlugin(OsmiumPlugin plugin) {
 		for (Class<?> config : configManager.getPluginConfigs(plugin)) {
 			try {
-				configManager.load(config);
+				configManager.loadWithParser(config);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
@@ -218,7 +228,7 @@ public final class Osmium {
 
 	public static boolean reloadConfig(Class<?> cls) {
 		try {
-			configManager.load(cls);
+			configManager.loadWithParser(cls);
 			return true;
 		} catch (IOException e) {
 			return false;

@@ -32,7 +32,7 @@ public class Location {
 	}
 
 	public int getBlockX() {
-		return (int) x;
+		return (int) Math.floor(x);
 	}
 
 	public double getY() {
@@ -40,7 +40,7 @@ public class Location {
 	}
 
 	public int getBlockY() {
-		return (int) y;
+		return (int) Math.floor(y);
 	}
 
 	public double getZ() {
@@ -48,7 +48,11 @@ public class Location {
 	}
 
 	public int getBlockZ() {
-		return (int) z;
+		return (int) Math.floor(z);
+	}
+
+	public Location add(double x, double y, double z) {
+		return new Location(this.world, this.x + x, this.y + y, this.z + z);
 	}
 
 	public Location getBlockCenter() {

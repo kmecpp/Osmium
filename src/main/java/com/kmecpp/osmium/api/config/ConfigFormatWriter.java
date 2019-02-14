@@ -75,7 +75,7 @@ public class ConfigFormatWriter {
 					sb.append(format.comment);
 					sb.append(" " + line + "\n");
 				}
-			} else if (!field.getType().isPrimitive()) {
+			} else if (!first && !field.getType().isPrimitive()) {
 				sb.append('\n');
 			}
 

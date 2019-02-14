@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Reflection;
 
@@ -48,7 +49,7 @@ public class ConfigParser {
 
 	public boolean load() throws IOException {
 		if (!file.exists()) {
-			new ConfigWriter(data, file).write();
+			new ConfigFormatWriter(data, file, Osmium.getConfigManager().getFormat()).write();
 		}
 		try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file))) {
 			int totalRead = 0, bufferRead = 0;

@@ -23,7 +23,7 @@ public class Command extends SimpleCommand {
 	public void configure() {
 	}
 
-	public void validate() {
+	public void validate(CommandEvent event) {
 	}
 
 	public void execute(CommandEvent event) {

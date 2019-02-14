@@ -73,7 +73,7 @@ public final class CommandManager {
 
 			//Simple commands
 			if (command.getArgs().isEmpty()) {
-				command.validate();
+				command.validate(event);
 				command.execute(event);
 			}
 
@@ -89,6 +89,7 @@ public final class CommandManager {
 						}
 						event.consumeArgument();
 						event.setSubCommand(arg);
+						command.validate(event);
 						arg.execute(event);
 					}
 				}

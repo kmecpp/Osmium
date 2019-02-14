@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.nio.file.Path;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 
@@ -20,10 +17,6 @@ import com.kmecpp.osmium.api.persistence.Serializer;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.StringUtil;
 import com.kmecpp.osmium.core.CoreOsmiumConfig;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
 public class ConfigManager {
 
@@ -67,78 +60,92 @@ public class ConfigManager {
 	}
 
 	public void registerConfig(OsmiumPlugin plugin, Class<?> config) {
-		plugins.putIfAbsent(plugin, new HashSet<>());
-		plugins.get(plugin).add(config);
+		//		plugins.putIfAbsent(plugin, new HashSet<>());
+		//		plugins.get(plugin).add(config);
+
+		HashSet<Class<?>> configs = plugins.get(plugin);
+		if (configs == null) {
+			configs = new HashSet<>();
+			plugins.put(plugin, configs);
+		}
+		configs.add(config);
 	}
 
 	public HashSet<Class<?>> getPluginConfigs(OsmiumPlugin plugin) {
 		return plugins.getOrDefault(plugin, new HashSet<>());
 	}
 
-	public static ConfigFormat getFormat() {
+	public ConfigFormat getFormat() {
 		if (StringUtil.equalsIgnoreCase(CoreOsmiumConfig.configFormat, "YAML", "YML")) {
 			return ConfigFormats.YAML;
 		}
 		return ConfigFormats.HOCON;
 	}
 
-	private VirtualConfig load(Path path) throws IOException {
-		return this.load(path, getFormat());
-	}
-
-	private VirtualConfig load(Path path, ConfigFormat format) throws IOException {
-		if (format == ConfigFormats.HOCON) {
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
-					.setPath(path)
-					.build();
-			return new VirtualConfig(path, loader, loader.load());
-		} else if (format == ConfigFormats.YAML) {
-			YAMLConfigurationLoader loader = YAMLConfigurationLoader.builder()
-					.setPath(path)
-					.build();
-
-			return new VirtualConfig(path, loader, loader.load());
-		} else {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	public void load(Class<?> config) throws IOException {
-		ConfigData data = getConfigData(config);
-		OsmiumPlugin plugin = Osmium.getPlugin(config);
-		VirtualConfig c = this.load(plugin.getFolder().resolve(data.getProperties().path()));
-		for (Entry<String, ConfigField> entry : data.getFields().entrySet()) {
-			ConfigField field = entry.getValue();
-			ConfigurationNode node = c.getNode(entry.getKey());
-			Object value = loadValue(plugin, field, node);
-			field.setValue(value);
-		}
-	}
-
-	private Object loadValue(OsmiumPlugin plugin, ConfigField field, ConfigurationNode node) {
-		Class<?> type = field.getType();
-		Object value = node.getValue();
-		if (value instanceof String) {
-
-			Deserializer<?> d = ConfigTypes.getDeserializer(type);
-			if (d != null) {
-				return d.deserialize((String) value);
-			}
-		} else if (node.isVirtual()) {
-			if (!field.getSetting().deletable()) {
-				plugin.warn("Missing config setting: " + field.getJavaPath());
-			}
-			return null;
-		} else if (Collection.class.isAssignableFrom(field.getType())) {
-			@SuppressWarnings("unchecked")
-			Collection<Object> collection = (Collection<Object>) field.getValue();
-			for (Object e : (Collection<?>) value) {
-				collection.add(e);
-			}
-			return collection;
-		}
-		return null;
-	}
+	//	private VirtualConfig load(Path path) throws IOException {
+	//		return this.load(path, getFormat());
+	//	}
+	//
+	//	private VirtualConfig load(Path path, ConfigFormat format) throws IOException {
+	//		if (format == ConfigFormats.HOCON) {
+	//			HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
+	//					.setPath(path)
+	//					.build();
+	//			return new VirtualConfig(path, loader, loader.load());
+	//		} else if (format == ConfigFormats.YAML) {
+	//			YAMLConfigurationLoader loader = YAMLConfigurationLoader.builder()
+	//					.setPath(path)
+	//					.build();
+	//
+	//			return new VirtualConfig(path, loader, loader.load());
+	//		} else {
+	//			throw new IllegalArgumentException();
+	//		}
+	//	}
+	//
+	//	public void load(Class<?> config) throws IOException {
+	//		ConfigData data = getConfigData(config);
+	//		OsmiumPlugin plugin = Osmium.getPlugin(config);
+	//		VirtualConfig c = this.load(plugin.getFolder().resolve(data.getProperties().path()));
+	//		for (Entry<String, ConfigField> entry : data.getFields().entrySet()) {
+	//			ConfigField field = entry.getValue();
+	//			ConfigurationNode node = c.getNode(entry.getKey());
+	//			Object value = loadValue(plugin, field, node);
+	//			field.setValue(value);
+	//		}
+	//
+	//		registerConfig(plugin, config);
+	//	}
+	//
+	//	private Object loadValue(OsmiumPlugin plugin, ConfigField field, ConfigurationNode node) {
+	//		Class<?> type = field.getType();
+	//		Object value = node.getValue();
+	//		if (value instanceof String) {
+	//
+	//			Deserializer<?> d = ConfigTypes.getDeserializer(type);
+	//			if (d != null) {
+	//				return d.deserialize((String) value);
+	//			}
+	//		} else if (node.isVirtual()) {
+	//			if (!field.getSetting().deletable()) {
+	//				plugin.warn("Missing config setting: " + field.getJavaPath());
+	//			}
+	//			return null;
+	//		} else if (Collection.class.isAssignableFrom(field.getType())) {
+	//			@SuppressWarnings("unchecked")
+	//			Collection<Object> collection = (Collection<Object>) field.getValue();
+	//			for (Object e : (Collection<?>) value) {
+	//				collection.add(e);
+	//			}
+	//			return collection;
+	//		}
+	//		return null;
+	//	}
+	//	public void save(Class<?> config) throws IOException {
+	//		ConfigData data = getConfigData(config);
+	//		File file = Osmium.getPlugin(config).getFolder().resolve(data.getProperties().path()).toFile();
+	//		new ConfigWriter(data, file).write(); //File handling is done by the writer
+	//	}
 
 	public void loadWithParser(Class<?> config) throws IOException {
 		ConfigData data = getConfigData(config);
@@ -148,21 +155,33 @@ public class ConfigManager {
 		if (!new ConfigParser(data, file).load()) {
 			//If the file is missing settings
 			if (!data.getProperties().allowKeyRemoval()) {
-				new ConfigWriter(data, file).write();
+				new ConfigFormatWriter(data, file, getFormat()).write();
 			}
 		}
 	}
 
 	public void save(Class<?> config) throws IOException {
-		ConfigData data = getConfigData(config);
-		File file = Osmium.getPlugin(config).getFolder().resolve(data.getProperties().path()).toFile();
-		new ConfigWriter(data, file).write(); //File handling is done by the writer
+		saveWithFormatter(config, getFormat());
 	}
 
-	public void save(Class<?> config, ConfigFormat format) throws IOException {
+	public void saveWithFormatter(Class<?> config, ConfigFormat format) throws IOException {
 		ConfigData data = getConfigData(config);
 		File file = Osmium.getPlugin(config).getFolder().resolve(data.getProperties().path()).toFile();
 		new ConfigFormatWriter(data, file, format).write(); //File handling is done by the writer
+	}
+
+	public void saveAll(OsmiumPlugin plugin) {
+		HashSet<Class<?>> configs = plugins.get(plugin);
+		if (configs == null) {
+			return;
+		}
+		for (Class<?> config : configs) {
+			try {
+				saveWithFormatter(config, getFormat());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public ConfigData getConfigData(Class<?> config) {
@@ -174,6 +193,7 @@ public class ConfigManager {
 			}
 			data = new ConfigData(config, properties);
 			loadFields(data.getRoot(), config.getDeclaredFields(), config.getDeclaredClasses(), data.getFields());
+			configs.put(config, data);
 		}
 		return data;
 	}
@@ -186,7 +206,7 @@ public class ConfigManager {
 			//				continue;
 			//			} else
 
-			if (field.isAnnotationPresent(Transient.class)) {
+			if (field.isAnnotationPresent(Transient.class) || Modifier.isFinal(field.getModifiers())) {
 				continue;
 			} else if (!Modifier.isStatic(field.getModifiers())) {
 				OsmiumLogger.warn("Invalid configuration setting! Must be declared static: " + field);
