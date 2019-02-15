@@ -24,7 +24,12 @@ public class CommandEvent implements Messageable {
 		this.command = command;
 		this.sender = sender;
 		this.baseLabel = baseLabel;
+		this.argLabel = baseLabel;
 		this.args = args;
+	}
+
+	void setSubCommand(SimpleCommand subCommand) {
+		this.subCommand = subCommand;
 	}
 
 	public Command getCommand() {
@@ -49,10 +54,6 @@ public class CommandEvent implements Messageable {
 
 	public Optional<SimpleCommand> getSubCommand() {
 		return Optional.ofNullable(subCommand);
-	}
-
-	void setSubCommand(SimpleCommand subCommand) {
-		this.subCommand = subCommand;
 	}
 
 	public String[] getArgs() {

@@ -80,6 +80,12 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return this;
 	}
 
+	public AbstractTask<T> setTime(long delay, long interval, TimeUnit unit) {
+		this.delay = delay * unit.getTickValue();
+		this.interval = interval * unit.getTickValue();
+		return getInstance();
+	}
+
 	public TaskExecutor<T> getExecutor() {
 		return executor;
 	}

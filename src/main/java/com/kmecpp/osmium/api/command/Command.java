@@ -1,7 +1,9 @@
 package com.kmecpp.osmium.api.command;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.util.StringUtil;
 
 public class Command extends SimpleCommand {
@@ -17,7 +19,6 @@ public class Command extends SimpleCommand {
 	public Command(String name, String... aliases) {
 		super(name, aliases);
 		configure();
-		//		this.properties = new CommandProperties(this.getClass().getAnnotation(Command.class));
 	}
 
 	public void configure() {
@@ -27,26 +28,18 @@ public class Command extends SimpleCommand {
 	}
 
 	public void execute(CommandEvent event) {
-		//		if (args.isEmpty()) {
-		//			this.execute(event);
-		//		} else {
-		//			if (event.getArgs().length == 0) {
-		//				sendHelp(event);
-		//			} else {
-		//				String argLabel = event.getArg(0);
-		//				for (SimpleCommand arg : args) {
-		//					for (String alias : arg.getAliases()) {
-		//						if (alias.equalsIgnoreCase(argLabel)) {
-		//							arg.checkPermission(event);
-		//							event.consumeArgument();
-		//							arg.execute(event);
-		//							return;
-		//						}
-		//					}
-		//				}
-		//				throw new CommandException("Unknown command! Type /" + this.getPrimaryAlias() + " for a list of commands!");
-		//			}
-		//		}
+	}
+
+	public void finalize(CommandEvent event) {
+	}
+
+	public void saveConfig(Class<?> config, CommandEvent event) {
+		try {
+			Osmium.getConfigManager().save(config);
+		} catch (IOException e) {
+			e.printStackTrace();
+			event.sendMessage(Chat.RED + "Failed to save config file! Check console for details.");
+		}
 	}
 
 	public final void setTitle(String title) {
@@ -78,7 +71,16 @@ public class Command extends SimpleCommand {
 	}
 
 	public SimpleCommand getArgumentMatching(String argLabel) {
+		return getArgumentMatching(argLabel, null);
+	}
+
+	public SimpleCommand getArgumentMatching(String argLabel, CommandSender sender) {
+		SimpleCommand notAllowed = null;
 		for (SimpleCommand arg : args) {
+			if (sender == null && !arg.isAllowed(sender)) {
+				notAllowed = arg;
+			}
+
 			for (String alias : arg.getAliases()) {
 				//Allow aliases partitioned with '/' to be treated as individual arguments
 				for (String part : alias.split("/")) {
@@ -88,7 +90,8 @@ public class Command extends SimpleCommand {
 				}
 			}
 		}
-		throw new CommandException("Unknown command! Type /" + this.getPrimaryAlias() + " for a list of commands!");
+		return notAllowed;
+		//		throw new CommandException("Unknown command! Type /" + this.getPrimaryAlias() + " for a list of commands!");
 	}
 
 	//	public final void notFoundError(String type, String input) {
@@ -97,6 +100,10 @@ public class Command extends SimpleCommand {
 
 	public ArrayList<SimpleCommand> getArgs() {
 		return args;
+	}
+
+	public final void fail(String message) {
+		throw new CommandException(message);
 	}
 
 	public final void usageError() {

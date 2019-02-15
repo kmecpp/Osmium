@@ -33,6 +33,19 @@ public class Reflection {
 		}
 	}
 
+	public static void initialize(Class<?>... classes) {
+		for (Class<?> cls : classes) {
+			if (cls.isPrimitive()) {
+				continue;
+			}
+			try {
+				Class.forName(cls.getName(), true, cls.getClassLoader());
+			} catch (ClassNotFoundException e) {
+				throw new AssertionError(e);
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T> T createInstance(Class<T> cls) {
 		try {

@@ -75,6 +75,7 @@ public final class CommandManager {
 			if (command.getArgs().isEmpty()) {
 				command.validate(event);
 				command.execute(event);
+				command.finalize(event);
 			}
 
 			//Commands with registered arguments
@@ -83,29 +84,37 @@ public final class CommandManager {
 					command.sendHelp(event);
 				} else {
 					SimpleCommand arg = command.getArgumentMatching(args[0]);
-					if (arg.isAllowed(sender)) {
-						if (sender instanceof ConsoleCommandSender && !command.isConsole()) {
-							throw CommandException.PLAYERS_ONLY;
-						}
+					if (arg == null) {
+						sender.sendMessage(Chat.RED + "Unknown command! Type /" + command.getPrimaryAlias() + " for a list of commands.");
+						return false;
+					} else if (!arg.isAllowed(sender)) {
+						sender.sendMessage(Chat.RED + "You do not have permission to perform this command!");
+						return false;
+					} else if (sender instanceof ConsoleCommandSender && !command.isConsole()) {
+						throw CommandException.PLAYERS_ONLY;
+					} else {
 						event.consumeArgument();
 						event.setSubCommand(arg);
+
 						command.validate(event);
 						arg.execute(event);
+						command.finalize(event);
+						return true;
 					}
 				}
 			}
 			return true;
 		} catch (CommandException e) {
-			System.out.println(e);
-			System.out.println(e.getMessage());
 			if (e == CommandException.USAGE_ERROR) {
 				if (e.getMessage().isEmpty()) {
 					if (args.length > 0) {
 						SimpleCommand arg = command.getArgumentMatching(args[0]);
-						sender.send("&cUsage: /" + command.getPrimaryAlias() + " " + arg.getPrimaryAlias() + " " + arg.getUsage());
-					} else {
-						sender.send("&cUsage: /" + command.getPrimaryAlias() + " " + command.getUsage());
+						if (arg != null) {
+							sender.sendMessage(Chat.RED + "Usage: /" + command.getPrimaryAlias() + " " + arg.getPrimaryAlias() + " " + arg.getUsage());
+							return false;
+						}
 					}
+					sender.send("&cUsage: /" + command.getPrimaryAlias() + " " + command.getUsage());
 				} else {
 					sender.sendMessage(Chat.RED + e.getMessage());
 				}

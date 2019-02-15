@@ -217,8 +217,12 @@ public class ClassProcessor {
 				if (!contains) {
 					classInstances.put(cls, instance);
 				}
-			} catch (Exception e) {
+			} catch (IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
 				OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.provideInstance(obj)");
+				e.printStackTrace();
+				break;
+			} catch (Exception e) {
+				OsmiumLogger.error("Caught exception while trying to instantiate task/listener class: " + cls.getName());
 				e.printStackTrace();
 				break;
 			}

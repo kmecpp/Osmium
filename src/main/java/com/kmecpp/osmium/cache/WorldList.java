@@ -2,11 +2,14 @@ package com.kmecpp.osmium.cache;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
+
+import org.bukkit.Bukkit;
+import org.spongepowered.api.Sponge;
 
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
-import com.kmecpp.osmium.api.platform.UnsupportedPlatformException;
 import com.kmecpp.osmium.platform.bukkit.BukkitWorld;
 import com.kmecpp.osmium.platform.sponge.SpongeWorld;
 
@@ -26,27 +29,45 @@ public class WorldList {
 	}
 
 	public static World getWorld(Object worldSource) {
-		World world;
 		if (Platform.isBukkit()) {
-			org.bukkit.World bukkitPlayer = (org.bukkit.World) worldSource;
-			world = getWorld(bukkitPlayer.getName());
-			if (world == null) {
-				world = new BukkitWorld(bukkitPlayer);
+			org.bukkit.World bukkitWorld = (org.bukkit.World) worldSource;
+			World world = worlds.get(bukkitWorld.getName().toLowerCase());
+			if (world != null) {
+				return world;
 			}
+			return registerWorld(new BukkitWorld(bukkitWorld));
 		} else if (Platform.isSponge()) {
 			org.spongepowered.api.world.World spongeWorld = (org.spongepowered.api.world.World) worldSource;
-			world = getWorld(spongeWorld.getName());
-			if (world == null) {
-				world = new SpongeWorld(spongeWorld);
+			World world = worlds.get(spongeWorld.getName().toLowerCase());
+			if (world != null) {
+				return world;
 			}
-		} else {
-			throw new UnsupportedPlatformException();
+			return registerWorld(new SpongeWorld(spongeWorld));
 		}
-		return world;
+		return null;
 	}
 
 	public static World getWorld(String name) {
-		return worlds.get(name.toLowerCase());
+		World world = worlds.get(name.toLowerCase());
+		if (world != null) {
+			return world;
+		}
+
+		if (Platform.isBukkit()) {
+			org.bukkit.World bukkitWorld = Bukkit.getWorld(name);
+			if (bukkitWorld != null) {
+				return registerWorld(new BukkitWorld(bukkitWorld));
+			}
+		} else if (Platform.isSponge()) {
+			Optional<org.spongepowered.api.world.World> opt = Sponge.getServer().getWorld(name);
+			return opt.isPresent() ? registerWorld(new SpongeWorld(opt.get())) : null;
+		}
+		return null;
+	}
+
+	private static World registerWorld(World world) {
+		worlds.put(world.getName().toLowerCase(), world);
+		return world;
 	}
 
 	public static Collection<World> getWorlds() {

@@ -9,6 +9,7 @@ import java.util.function.Function;
 import com.kmecpp.osmium.api.persistence.Deserializer;
 import com.kmecpp.osmium.api.persistence.SerializationData;
 import com.kmecpp.osmium.api.persistence.Serializer;
+import com.kmecpp.osmium.api.util.Reflection;
 
 public class ConfigTypes {
 
@@ -89,11 +90,14 @@ public class ConfigTypes {
 		if (data != null) {
 			return data.isCustomType() ? "\"" + data.serialize(obj) + "\"" : data.serialize(obj);
 		}
-		throw new IllegalArgumentException("Cannot serialize unknown class: " + obj.getClass().getName());
+		throw new IllegalArgumentException("Cannot serialize unregistered config type: " + obj.getClass());
+		//		throw new IllegalArgumentException("Cannot serialize unknown class: " + obj.getClass().getName());
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T deserialize(Class<T> type, String str) {
+		Reflection.initialize(type); //Make sure the class is loaded (they possibly registered it in a static initializer)
+
 		if (str.equals("null")) {
 			return null;
 		}
@@ -103,7 +107,7 @@ public class ConfigTypes {
 			return data.deserialize(str); //The parser will remove the quotations from custom types
 			//			return data.deserialize(data.isCustomType() ? str.substring(1, str.length() - 1) : str);
 		}
-		throw new IllegalArgumentException("Cannot parse as " + type.getName() + ": '" + str + "'");
+		throw new IllegalArgumentException("Cannot parse unregistered config type: " + type.getName());
 	}
 
 }

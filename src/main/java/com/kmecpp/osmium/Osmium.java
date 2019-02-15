@@ -309,7 +309,7 @@ public final class Osmium {
 	}
 
 	public static Optional<World> getWorld(String name) {
-		return Optional.of(WorldList.getWorld(name));
+		return Optional.ofNullable(WorldList.getWorld(name));
 	}
 
 	public static boolean getOnlineMode() {

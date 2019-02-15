@@ -5,7 +5,6 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.inventory.InventoryMenu;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
-import com.kmecpp.osmium.api.tasks.Schedule;
 import com.kmecpp.osmium.api.tasks.TimeUnit;
 
 @Plugin(name = AppInfo.NAME, version = AppInfo.VERSION, authors = { AppInfo.AUTHOR }, url = AppInfo.URL)
@@ -21,18 +20,18 @@ public class OsmiumCore extends OsmiumPlugin {
 		}
 	}
 
-	@Schedule(async = true, delay = 1, interval = 1, unit = TimeUnit.HOUR)
-	public void periodicSave() {
-		for (OsmiumPlugin plugin : Osmium.getPlugins()) {
-			Osmium.savePluginData(plugin);
-		}
-	}
-
 	@Override
 	public void onInit() {
 		enableMetrics();
 
+		Osmium.getTask().setAsync(true).setTime(1, 1, TimeUnit.HOUR).setExecutor(t -> {
+			for (OsmiumPlugin plugin : Osmium.getPlugins()) {
+				Osmium.savePluginData(plugin);
+			}
+		});
+
 		this.getClassProcessor().onEnable(InventoryMenu.class);
+
 		//		if (Platform.isBukkit()) {
 		//			this.metricsImplementation = new OsmiumMetrics(getPluginImplementation());
 		//		} else if (Platform.isSponge()) {
