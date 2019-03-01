@@ -86,7 +86,7 @@ public class ConfigParser {
 
 	private String readKey() {
 		int start = index;
-		while (!Character.isWhitespace(current) && current != ':') {
+		while (index < length && !Character.isWhitespace(current) && current != ':') {
 			read();
 			if (index == length) {
 				throw getError("Unexpected end of file");
@@ -243,7 +243,7 @@ public class ConfigParser {
 					skipWhitespaceAndComments();
 
 					ConfigField dataField = fields.get(key);
-					parseValue(dataField, dataField.getValue(typeInstance), new Class[0], -1);
+					dataField.getBackingField().set(typeInstance, parseValue(dataField, dataField.getValue(typeInstance), new Class[0], -1));
 					//					readNext(path, field, Reflection.createInstance(currentType), typeIndex);
 					skipWhitespaceAndComments();
 					if (current == ',') {

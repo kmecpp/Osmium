@@ -17,4 +17,6 @@ public @interface ConfigProperties {
 
 	boolean allowKeyRemoval() default false;
 
+	boolean loadLate() default false;
+
 }

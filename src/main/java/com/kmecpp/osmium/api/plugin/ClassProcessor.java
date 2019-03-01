@@ -10,8 +10,6 @@ import java.util.HashSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.persistence.Entity;
-
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
@@ -19,6 +17,7 @@ import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandProperties;
 import com.kmecpp.osmium.api.config.ConfigProperties;
+import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
@@ -68,9 +67,9 @@ public class ClassProcessor {
 						e.printStackTrace();
 					}
 					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF??)
-				} catch (Exception e) {
+				} catch (Throwable t) {
 					OsmiumLogger.error("Failed to load plugin class: " + className);
-					e.printStackTrace();
+					t.printStackTrace();
 				}
 			}
 		}
@@ -118,8 +117,10 @@ public class ClassProcessor {
 		//CONFIGURATIONS
 		ConfigProperties configuration = cls.getAnnotation(ConfigProperties.class);
 		if (configuration != null) {
-			Osmium.reloadConfig(cls);
-			OsmiumLogger.debug("Loading configuration file: " + configuration.path());
+			Osmium.getConfigManager().initialize(cls);
+			if (!configuration.loadLate()) {
+				Osmium.reloadConfig(cls);
+			}
 		}
 
 		//DATABASE TABLES
@@ -129,10 +130,14 @@ public class ClassProcessor {
 		//			Osmium.getDatabase(plugin).createTable(cls);
 		//			Database.isSerializable(cls);
 		//		}
-		Entity entity = cls.getAnnotation(Entity.class);
+		DBTable entity = cls.getAnnotation(DBTable.class);
 		if (entity != null) {
 			OsmiumLogger.debug("Initializing database table: " + entity.name());
-			plugin.getDatabase().addTable(cls);
+			plugin.getDatabase().createTable(cls);
+
+			if (entity.playerData()) {
+				Osmium.getPlayerDataManager().registerType(plugin, cls);
+			}
 			//			try {
 			//				ClassPool.getDefault().insertClassPath(new ClassClassPath(cls));
 			//				CtClass c = ClassPool.getDefault().getAndRename(cls.getName(), cls.getName() + "_REMAPPED");

@@ -42,6 +42,11 @@ public class OsmiumCore extends OsmiumPlugin {
 		//		}
 	}
 
+	@Override
+	public void onPostInit() {
+		Osmium.getConfigManager().lateInit();
+	}
+
 	public static OsmiumCore getPlugin() {
 		return instance;
 	}

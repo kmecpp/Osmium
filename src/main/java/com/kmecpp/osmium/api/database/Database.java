@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
+import org.bukkit.Bukkit;
+
 import com.kmecpp.osmium.SimpleDate;
 import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
 import com.kmecpp.osmium.api.inventory.Inventory;
@@ -36,11 +38,11 @@ public class Database {
 	private HikariDataSource source;
 	private CountDownLatch latch = new CountDownLatch(1);
 
-	private static final HashMap<Class<?>, TableProperties> tables = new HashMap<>();
-	private static final HashMap<String, Class<? extends CustomSerialization>> types = new HashMap<>();
-	private static final HashMap<Class<? extends CustomSerialization>, String> typeIds = new HashMap<>();
+	private final HashMap<Class<?>, TableProperties> tables = new HashMap<>();
+	private final HashMap<String, Class<? extends CustomSerialization>> types = new HashMap<>();
+	private final HashMap<Class<? extends CustomSerialization>, String> typeIds = new HashMap<>();
 
-	private static final HashMap<Class<?>, DBSerializationData<?>> typeMap = new HashMap<>();
+	private static final HashMap<Class<?>, DBSerializationData<?>> defaultTypes = new HashMap<>();
 
 	static {
 		registerDefaultType(DBType.INTEGER, int.class, Integer::parseInt);
@@ -61,7 +63,7 @@ public class Database {
 	}
 
 	private static final <T> void registerDefaultType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
-		typeMap.put(cls, new DBSerializationData<>(type, cls, String::valueOf, deserializer));
+		defaultTypes.put(cls, new DBSerializationData<>(type, cls, String::valueOf, deserializer));
 	}
 
 	//	static {
@@ -111,33 +113,42 @@ public class Database {
 		queue.start();
 	}
 
-	public static void registerType(String id, Class<? extends CustomSerialization> cls) {
+	public void registerType(String id, Class<? extends CustomSerialization> cls) {
 		types.put(id, cls);
 		typeIds.put(cls, id);
 	}
 
-	public static String getTypeId(Class<?> cls) {
+	public String getTypeId(Class<?> cls) {
 		return typeIds.get(cls);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> DBSerializationData<T> getSerializationData(Class<T> cls) {
-		return (DBSerializationData<T>) typeMap.get(cls);
+	public <T> DBSerializationData<T> getSerializationData(Class<T> cls) {
+		return (DBSerializationData<T>) defaultTypes.get(cls);
 	}
 
-	public static String serialize(Object obj) {
-		if (typeIds.containsKey(obj.getClass())) {
-			if (obj instanceof CustomSerialization) {
-				return ((CustomSerialization) obj).serialize();
-			} else if (obj instanceof java.io.Serializable) {
-				return JavaSerializer.serialize((java.io.Serializable) obj);
-			}
+	public String serialize(Object obj) {
+		if (obj == null) {
+			return "null";
 		}
-		throw new RuntimeException("Object is not serializable: " + obj.getClass());
+		@SuppressWarnings("unchecked")
+		DBSerializationData<Object> d = (DBSerializationData<Object>) defaultTypes.get(obj.getClass());
+		if (d != null) {
+			return d.serialize(obj);
+		}
+		throw new RuntimeException("Class has no registered serializer: " + obj.getClass());
+
+		//		if (typeIds.containsKey(obj.getClass())) {
+		//			if (obj instanceof CustomSerialization) {
+		//				return ((CustomSerialization) obj).serialize();
+		//			} else if (obj instanceof java.io.Serializable) {
+		//				return JavaSerializer.serialize((java.io.Serializable) obj);
+		//			}
+		//		}
 
 	}
 
-	public static Object deserialize(String key, String value) {
+	public Object deserialize(String key, String value) {
 		try {
 			Class<?> cls = types.get(key);
 			if (CustomSerialization.class.isAssignableFrom(cls)) {
@@ -181,20 +192,20 @@ public class Database {
 		return false;
 	}
 
-	public static final Collection<TableProperties> getTables() {
+	public final Collection<TableProperties> getTables() {
 		return tables.values();
 	}
 
-	public static final TableProperties getTable(Class<?> tableClass) {
+	public final TableProperties getTable(Class<?> tableClass) {
 		return tables.get(tableClass);
 	}
 
-	public static final String getTableName(Class<?> tableClass) {
+	public final String getTableName(Class<?> tableClass) {
 		return tables.get(tableClass).getName();
 	}
 
 	public void replaceInto(Class<?> cls, Object obj) {
-		updateAsync(DBUtil.createReplaceInto(cls, obj));
+		updateAsync(DBUtil.createReplaceInto(this, cls, obj));
 	}
 
 	/**
@@ -437,6 +448,10 @@ public class Database {
 			throw new IllegalStateException("Database table '" + cls.getName() + "' already exists!");
 		}
 
+		if (source == null) {
+			start();
+		}
+
 		TableProperties data = new TableProperties(cls);
 		tables.put(cls, data);
 
@@ -460,7 +475,7 @@ public class Database {
 		//			//		}
 		//		}
 
-		update(DBUtil.createTable(data));
+		update(DBUtil.createTable(this, data));
 	}
 
 	/**

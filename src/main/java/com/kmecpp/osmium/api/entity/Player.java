@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api.entity;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.command.CommandSender;
@@ -32,5 +33,9 @@ public interface Player extends User, EntityLiving, CommandSender {
 	void kick();
 
 	void kick(String message);
+
+	default <T> T getData(Class<T> type) {
+		return Osmium.getPlayerDataManager().getData(this, type);
+	}
 
 }

@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 
@@ -57,6 +58,19 @@ public class ConfigManager {
 		start = System.currentTimeMillis();
 		new ConfigParser(data, new File("config.yml")).load();
 		System.out.println("Read: " + (System.currentTimeMillis() - start) + "ms");
+	}
+
+	public void lateInit() {
+		for (Entry<Class<?>, ConfigData> entry : configs.entrySet()) {
+			if (entry.getValue().getProperties().loadLate()) {
+				Osmium.reloadConfig(entry.getKey());
+			}
+		}
+	}
+
+	public void initialize(Class<?> config) {
+		getConfigData(config);
+		registerConfig(Osmium.getPlugin(config), config);
 	}
 
 	public void registerConfig(OsmiumPlugin plugin, Class<?> config) {
@@ -149,6 +163,8 @@ public class ConfigManager {
 
 	public void loadWithParser(Class<?> config) throws IOException {
 		ConfigData data = getConfigData(config);
+		OsmiumLogger.debug("Loading configuration file: " + data.getProperties().path());
+
 		OsmiumPlugin plugin = Osmium.getPlugin(config);
 		registerConfig(plugin, config);
 		File file = plugin.getFolder().resolve(data.getProperties().path()).toFile();

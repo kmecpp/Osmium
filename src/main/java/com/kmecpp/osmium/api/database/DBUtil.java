@@ -8,8 +8,8 @@ import com.kmecpp.osmium.api.util.StringUtil;
 
 public class DBUtil {
 
-	public String createWhere(Class<?> cls, Object... primaryKeys) {
-		String[] columns = Database.getTable(cls).getPrimaryColumns();
+	public String createWhere(Database db, Class<?> cls, Object... primaryKeys) {
+		String[] columns = db.getTable(cls).getPrimaryColumns();
 		StringBuilder sb = new StringBuilder();
 		for (int i = 1; i < columns.length; i++) {
 			sb.append("AND \"" + columns[0] + "\"='" + primaryKeys[0] + "'");
@@ -17,7 +17,7 @@ public class DBUtil {
 		return sb.toString();
 	}
 
-	public static final String createTable(TableProperties properties) {
+	public static final String createTable(Database db, TableProperties properties) {
 		if (properties.getColumnCount() == 0) {
 			throw new IllegalArgumentException("Invalid database table '" + properties.getName() + "' Must contain at least one column!");
 		}
@@ -27,7 +27,7 @@ public class DBUtil {
 		for (Field field : properties.getFields()) {
 			DBColumn column = field.getAnnotation(DBColumn.class);
 			schema.append(getColumnName(field))
-					.append(" " + Database.getSerializationData(field.getType()).getType().name())
+					.append(" " + db.getSerializationData(field.getType()).getType().name())
 					.append(column.notNull() ? " NOT NULL" : "")
 					.append(column.autoIncrement() ? " AUTOINCREMENT" : "")
 					.append(column.unique() ? " UNIQUE" : "")
@@ -54,16 +54,16 @@ public class DBUtil {
 		return sb.toString();
 	}
 
-	public static final String createReplaceInto(Class<?> cls, Object obj) {
+	public static final String createReplaceInto(Database db, Class<?> cls, Object obj) {
 		ArrayList<String> columns = new ArrayList<>();
 		ArrayList<String> values = new ArrayList<>();
 
-		TableProperties info = Database.getTable(cls);
+		TableProperties info = db.getTable(cls);
 		for (Field field : info.getFields()) {
 			columns.add(DBUtil.getColumnName(field));
 
 			Object value = Reflection.getFieldValue(obj, field);
-			values.add(value == null ? null : "\"" + Database.serialize(value) + "\"");
+			values.add(value == null ? null : "\"" + db.serialize(value) + "\"");
 		}
 
 		return "REPLACE INTO " + info.getName()

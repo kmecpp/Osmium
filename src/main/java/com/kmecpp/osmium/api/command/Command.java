@@ -77,7 +77,7 @@ public class Command extends SimpleCommand {
 	public SimpleCommand getArgumentMatching(String argLabel, CommandSender sender) {
 		SimpleCommand notAllowed = null;
 		for (SimpleCommand arg : args) {
-			if (sender == null && !arg.isAllowed(sender)) {
+			if (sender == null || !arg.isAllowed(sender)) {
 				notAllowed = arg;
 			}
 

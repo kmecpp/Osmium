@@ -46,6 +46,7 @@ public final class Osmium {
 	private static final PluginLoader pluginLoader = new PluginLoader();
 	private static final ConfigManager configManager = new ConfigManager();
 	private static final CommandManager commandManager = new CommandManager();
+	private static final PlayerDataManager playerDataManager = new PlayerDataManager();
 	private static final EventManager eventManager = new EventManager();
 	private static final ItemManager itemManager = new ItemManager();
 	private static final OsmiumMetrics metrics = new OsmiumMetrics();
@@ -118,6 +119,10 @@ public final class Osmium {
 
 	public static CommandManager getCommandManager() {
 		return commandManager;
+	}
+
+	public static PlayerDataManager getPlayerDataManager() {
+		return playerDataManager;
 	}
 
 	public static ItemManager getItemManager() {
