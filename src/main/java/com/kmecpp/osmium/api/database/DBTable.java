@@ -11,6 +11,4 @@ public @interface DBTable {
 
 	String name();
 
-	boolean playerData() default false;
-
 }

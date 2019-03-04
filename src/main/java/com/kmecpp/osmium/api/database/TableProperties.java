@@ -26,16 +26,17 @@ public class TableProperties {
 		}
 		this.name = annotation.name();
 
-		for (Field field : Reflection.getFieldsWith(cls, DBColumn.class)) {
-			field.getName();
-		}
+		//		for (Field field : Reflection.getAllFieldsWith(cls, DBColumn.class)) {
+		//			field.getName();
+		//		}
 
 		ArrayList<Field> fields = new ArrayList<>();
 		ArrayList<Field> primaryFields = new ArrayList<>();
 		ArrayList<String> columns = new ArrayList<>();
 		ArrayList<String> primaryColumns = new ArrayList<>();
 
-		for (Field field : cls.getDeclaredFields()) {
+		for (Field field : Reflection.getAllFieldsWith(cls, DBColumn.class)) {
+			System.out.println("LOOPING THROUGH FIELD: " + field);
 			field.setAccessible(true);
 			DBColumn columnAnnotation = field.getAnnotation(DBColumn.class);
 			if (columnAnnotation != null && !Modifier.isStatic(field.getModifiers())) {

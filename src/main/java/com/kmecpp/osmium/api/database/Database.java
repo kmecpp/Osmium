@@ -1,7 +1,6 @@
 package com.kmecpp.osmium.api.database;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,8 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-
-import org.bukkit.Bukkit;
 
 import com.kmecpp.osmium.SimpleDate;
 import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
@@ -39,31 +36,31 @@ public class Database {
 	private CountDownLatch latch = new CountDownLatch(1);
 
 	private final HashMap<Class<?>, TableProperties> tables = new HashMap<>();
-	private final HashMap<String, Class<? extends CustomSerialization>> types = new HashMap<>();
-	private final HashMap<Class<? extends CustomSerialization>, String> typeIds = new HashMap<>();
+	//	private final HashMap<String, Class<? extends CustomSerialization>> types = new HashMap<>();
+	//	private final HashMap<Class<? extends CustomSerialization>, String> typeIds = new HashMap<>();
 
-	private static final HashMap<Class<?>, DBSerializationData<?>> defaultTypes = new HashMap<>();
+	private static final HashMap<Class<?>, DBSerializationData<?>> types = new HashMap<>();
 
 	static {
-		registerDefaultType(DBType.INTEGER, int.class, Integer::parseInt);
-		registerDefaultType(DBType.INTEGER, Integer.class, Integer::parseInt);
-		registerDefaultType(DBType.LONG, long.class, Long::parseLong);
-		registerDefaultType(DBType.LONG, Long.class, Long::parseLong);
-		registerDefaultType(DBType.FLOAT, float.class, Float::parseFloat);
-		registerDefaultType(DBType.FLOAT, Float.class, Float::parseFloat);
-		registerDefaultType(DBType.DOUBLE, double.class, Double::parseDouble);
-		registerDefaultType(DBType.DOUBLE, Double.class, Double::parseDouble);
-		registerDefaultType(DBType.BOOLEAN, boolean.class, Boolean::parseBoolean);
-		registerDefaultType(DBType.BOOLEAN, Boolean.class, Boolean::parseBoolean);
-		registerDefaultType(DBType.STRING, String.class, (s) -> s);
-		registerDefaultType(DBType.SERIALIZABLE, UUID.class, UUID::fromString);
-		registerDefaultType(DBType.SERIALIZABLE, Location.class, Location::fromString);
-		registerDefaultType(DBType.SERIALIZABLE, SimpleDate.class, SimpleDate::fromString);
-		registerDefaultType(DBType.SERIALIZABLE, Inventory.class, JavaSerializer::deserialize);
+		registerType(DBType.INTEGER, int.class, Integer::parseInt);
+		registerType(DBType.INTEGER, Integer.class, Integer::parseInt);
+		registerType(DBType.LONG, long.class, Long::parseLong);
+		registerType(DBType.LONG, Long.class, Long::parseLong);
+		registerType(DBType.FLOAT, float.class, Float::parseFloat);
+		registerType(DBType.FLOAT, Float.class, Float::parseFloat);
+		registerType(DBType.DOUBLE, double.class, Double::parseDouble);
+		registerType(DBType.DOUBLE, Double.class, Double::parseDouble);
+		registerType(DBType.BOOLEAN, boolean.class, Boolean::parseBoolean);
+		registerType(DBType.BOOLEAN, Boolean.class, Boolean::parseBoolean);
+		registerType(DBType.STRING, String.class, (s) -> s);
+		registerType(DBType.SERIALIZABLE, UUID.class, UUID::fromString);
+		registerType(DBType.SERIALIZABLE, Location.class, Location::fromString);
+		registerType(DBType.SERIALIZABLE, SimpleDate.class, SimpleDate::fromString);
+		registerType(DBType.SERIALIZABLE, Inventory.class, JavaSerializer::deserialize);
 	}
 
-	private static final <T> void registerDefaultType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
-		defaultTypes.put(cls, new DBSerializationData<>(type, cls, String::valueOf, deserializer));
+	public static final <T> void registerType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
+		types.put(cls, new DBSerializationData<>(type, cls, String::valueOf, deserializer));
 	}
 
 	//	static {
@@ -113,18 +110,18 @@ public class Database {
 		queue.start();
 	}
 
-	public void registerType(String id, Class<? extends CustomSerialization> cls) {
-		types.put(id, cls);
-		typeIds.put(cls, id);
-	}
+	//	public void registerType(String id, Class<? extends CustomSerialization> cls) {
+	//		types.put(id, cls);
+	//		typeIds.put(cls, id);
+	//	}
 
-	public String getTypeId(Class<?> cls) {
-		return typeIds.get(cls);
-	}
+	//	public String getTypeId(Class<?> cls) {
+	//		return typeIds.get(cls);
+	//	}
 
 	@SuppressWarnings("unchecked")
 	public <T> DBSerializationData<T> getSerializationData(Class<T> cls) {
-		return (DBSerializationData<T>) defaultTypes.get(cls);
+		return (DBSerializationData<T>) types.get(cls);
 	}
 
 	public String serialize(Object obj) {
@@ -132,7 +129,7 @@ public class Database {
 			return "null";
 		}
 		@SuppressWarnings("unchecked")
-		DBSerializationData<Object> d = (DBSerializationData<Object>) defaultTypes.get(obj.getClass());
+		DBSerializationData<Object> d = (DBSerializationData<Object>) types.get(obj.getClass());
 		if (d != null) {
 			return d.serialize(obj);
 		}
@@ -148,21 +145,21 @@ public class Database {
 
 	}
 
-	public Object deserialize(String key, String value) {
-		try {
-			Class<?> cls = types.get(key);
-			if (CustomSerialization.class.isAssignableFrom(cls)) {
-				Constructor<?> constructor = cls.getConstructor(String.class);
-				constructor.setAccessible(true);
-				return constructor.newInstance(value);
-			} else {
-				return JavaSerializer.deserialize(value);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to deserialize string with key: '" + key + "', string: '" + value + "'");
-		}
-
-	}
+	//	public Object deserialize(String key, String value) {
+	//		try {
+	//			Class<?> cls = types.get(key);
+	//			if (CustomSerialization.class.isAssignableFrom(cls)) {
+	//				Constructor<?> constructor = cls.getConstructor(String.class);
+	//				constructor.setAccessible(true);
+	//				return constructor.newInstance(value);
+	//			} else {
+	//				return JavaSerializer.deserialize(value);
+	//			}
+	//		} catch (Exception e) {
+	//			throw new RuntimeException("Failed to deserialize string with key: '" + key + "', string: '" + value + "'");
+	//		}
+	//
+	//	}
 
 	//	public static Class<?> getSerializable(String id) {
 	//		return typesId.get(id).getJavaClass();
@@ -230,7 +227,8 @@ public class Database {
 	 *            the SQL statement to execute
 	 */
 	public void update(String update) {
-		OsmiumLogger.debug("Executing update" + (Thread.currentThread().getClass().equals(QueueExecutor.class) ? " asynchronously" : "") + ": '" + update + "'");
+		System.out.println("UPDATE: " + update);
+		OsmiumLogger.debug("Executing update" + (Thread.currentThread().getClass().equals(QueueExecutor.class) ? " asynchronously" : "") + ": \"" + update + "\"");
 		Connection connection = null;
 		Statement statement = null;
 		try {
@@ -351,7 +349,7 @@ public class Database {
 
 			ArrayList<T> list = new ArrayList<>();
 
-			OsmiumLogger.debug("Executing query: '" + query + "'");
+			OsmiumLogger.debug("Executing query: \"" + query + "\"");
 			connection = getConnection();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
@@ -359,13 +357,26 @@ public class Database {
 				T obj = properties.<T> getTableClass().newInstance();
 
 				for (int i = 0; i < fields.length; i++) {
-					fields[i].set(obj, resultSet.getObject(i));
+					//					Object value = ;
+					DBSerializationData<?> sd = types.get(properties.getFields()[i].getType());
+					//					value = ;
+					//					if (value instanceof String) {
+					//						DBSerializationData<?> sd = types.get(properties.getFields()[i].getType());
+					//						if (sd != null) {
+					//							value = sd.deserialize((String) value);
+					//						} else {
+					//							IOUtil.close(connection, statement, resultSet); //TODO: Why is Eclipse complaining if this is not here? 
+					//							throw new IllegalArgumentException("");
+					//						}
+					//						//						types
+					//					}
+					fields[i].set(obj, sd.deserialize(resultSet.getString(i + 1)));
 				}
 				list.add(obj);
 			}
 			return list;
-		} catch (SQLException | IllegalArgumentException | IllegalAccessException | InstantiationException e) {
-			OsmiumLogger.error("Failed to execute database query: '" + query + "'");
+		} catch (Exception e) {
+			OsmiumLogger.error("Failed to execute database query: \"" + query + "\"");
 			e.printStackTrace();
 			return null;
 		} finally {
@@ -385,13 +396,13 @@ public class Database {
 		Statement statement = null;
 		ResultSet resultSet = null;
 		try {
-			OsmiumLogger.debug("Executing query: '" + query + "'");
+			OsmiumLogger.debug("Executing query: \"" + query + "\"");
 			connection = getConnection();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
 			processor.process(resultSet);
 		} catch (SQLException e) {
-			OsmiumLogger.error("Failed to execute database query: '" + query + "'");
+			OsmiumLogger.error("Failed to execute database query: \"" + query + "\"");
 			e.printStackTrace();
 		} finally {
 			IOUtil.close(connection, statement, resultSet);

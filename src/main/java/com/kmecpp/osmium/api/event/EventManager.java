@@ -1,11 +1,11 @@
 package com.kmecpp.osmium.api.event;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import com.kmecpp.osmium.BukkitAccess;
@@ -18,7 +18,7 @@ import com.kmecpp.osmium.api.util.Reflection;
 public class EventManager {
 
 	//Event key is combination of event class and order 
-	private final HashMap<EventKey, ArrayList<Method>> listeners = new HashMap<>();
+	private final HashMap<EventKey, HashMap<Object, ArrayList<Method>>> listeners = new HashMap<>();
 
 	//Only for Osmium events
 	private final HashMap<Class<? extends Event>, ArrayList<RegisteredListener>> events = new HashMap<>();
@@ -82,15 +82,20 @@ public class EventManager {
 		Class<?> sourceEventClass = eventInfo.getSource();
 		EventKey key = new EventKey(sourceEventClass, order);
 
-		boolean alreadyRegistered = this.listeners.containsKey(key);
-		ArrayList<Method> listeners = alreadyRegistered ? this.listeners.get(key) : new ArrayList<>();
-		if (!alreadyRegistered) {
-			this.listeners.put(key, listeners);
+		boolean firstEventRegistration = !this.listeners.containsKey(key);
+		HashMap<Object, ArrayList<Method>> listenerInstances = firstEventRegistration ? new HashMap<>() : this.listeners.get(key);
+		if (firstEventRegistration) {
+			this.listeners.put(key, listenerInstances);
 		}
 
+		ArrayList<Method> listeners = listenerInstances.get(listenerInstance);
+		if (listeners == null) {
+			listeners = new ArrayList<>();
+			listenerInstances.put(listenerInstance, listeners);
+		}
 		listeners.add(method);
 
-		if (!alreadyRegistered) {
+		if (firstEventRegistration) {
 			//Register source event once for each sourceEventClass/order combination 
 			final Constructor<? extends Event> eventWrapper;
 			try {
@@ -99,7 +104,8 @@ public class EventManager {
 				e.printStackTrace();
 				return;
 			}
-			Consumer<Object> consumer = (sourceEventInstance) -> {
+
+			Consumer<Object> globalHandlerForEvent = (sourceEventInstance) -> {
 				if (sourceEventClass.isAssignableFrom(sourceEventInstance.getClass())) {
 					try {
 						Event event = eventWrapper.newInstance(sourceEventInstance);
@@ -107,23 +113,29 @@ public class EventManager {
 							return;
 						}
 
-						for (Method listener : listeners) {
-							try {
-								listener.invoke(listenerInstance, event);
-							} catch (Exception ex) {
-								ex.printStackTrace();
+						for (Entry<Object, ArrayList<Method>> entry : listenerInstances.entrySet()) {
+							Object currentListenerInstance = entry.getKey();
+							for (Method listenerMethod : entry.getValue()) {
+								try {
+									//								System.out.println("Invoking: " + listenerMethod + ", " + listenerInstance + ", " + event);
+									listenerMethod.invoke(currentListenerInstance, event);
+								} catch (Exception ex) {
+									//								System.out.println(listenerInstance.getClass().getName());
+									OsmiumLogger.warn("An error occurred while firing " + sourceEventClass.getSimpleName() + " for " + listenerMethod.getClass().getName());
+									ex.printStackTrace();
+								}
 							}
 						}
-					} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 			};
 
 			if (Platform.isBukkit()) {
-				BukkitAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, consumer);
+				BukkitAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
 			} else if (Platform.isSponge()) {
-				SpongeAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, consumer);
+				SpongeAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
 			}
 		}
 	}

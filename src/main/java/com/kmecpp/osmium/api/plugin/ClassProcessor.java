@@ -18,6 +18,7 @@ import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandProperties;
 import com.kmecpp.osmium.api.config.ConfigProperties;
 import com.kmecpp.osmium.api.database.DBTable;
+import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
@@ -135,7 +136,7 @@ public class ClassProcessor {
 			OsmiumLogger.debug("Initializing database table: " + entity.name());
 			plugin.getDatabase().createTable(cls);
 
-			if (entity.playerData()) {
+			if (PlayerData.class.isAssignableFrom(cls)) {
 				Osmium.getPlayerDataManager().registerType(plugin, cls);
 			}
 			//			try {

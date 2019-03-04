@@ -57,8 +57,9 @@ public class DatabaseQueue {
 					if (database.isClosed()) {
 						connection = database.getConnection();
 					}
+					System.out.println("EXECUTING UPDATE: " + update);
 					connection.createStatement().executeUpdate(update);
-					database.update(update);
+					//					database.update(update);
 				} catch (InterruptedException | SQLException e) {
 					e.printStackTrace();
 				}

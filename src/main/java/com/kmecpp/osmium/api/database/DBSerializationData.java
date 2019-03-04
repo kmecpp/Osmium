@@ -37,7 +37,7 @@ public class DBSerializationData<T> {
 		return serializer != null ? serializer.serialize(obj) : String.valueOf(obj);
 	}
 
-	public T serialize(String str) {
+	public T deserialize(String str) {
 		return deserializer.deserialize(str);
 		//		return deserializer != null ? deserializer.deserialize(str) : cls.getConstructor;
 	}

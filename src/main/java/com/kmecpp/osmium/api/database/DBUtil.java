@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.database;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
@@ -45,7 +46,8 @@ public class DBUtil {
 
 	public static String createWhere(String[] columns, Object... values) {
 		if (columns.length != values.length) {
-			throw new IllegalArgumentException("Column size does not match value size! Columns: " + columns.length + " Values: " + values.length);
+			throw new IllegalArgumentException("Column size does not match value size: " + columns.length + " vs " + values.length
+					+ " Columns: " + Arrays.toString(columns) + " Values: " + Arrays.toString(values));
 		}
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < columns.length; i++) {

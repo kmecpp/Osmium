@@ -444,8 +444,8 @@ public class Reflection {
 
 	/**
 	 * Gets all the fields from the object with the given annotation. The object
-	 * may either be a class or an instance of one. In either case the fields
-	 * will retrieved from that class.
+	 * may either be a class or an instance. In either case the fields will
+	 * retrieved from that class.
 	 * 
 	 * @param obj
 	 *            the object or class to search
@@ -461,7 +461,37 @@ public class Reflection {
 				fields.add(field);
 			}
 		}
-		return fields.toArray(new Field[0]);
+		return fields.toArray(new Field[fields.size()]);
+	}
+
+	/**
+	 * Gets all the fields from the object with the given annotation included
+	 * inherited fields. The object may either be a class or an instance. In
+	 * either case the fields will retrieved from that class.
+	 * 
+	 * @param obj
+	 *            the object or class to search
+	 * @param annotation
+	 *            the annotation to filter for
+	 * @return all the fields with the given annotation
+	 */
+	public static Field[] getAllFieldsWith(Object obj, Class<? extends Annotation> annotation) {
+		ArrayList<Field> fields = new ArrayList<>();
+
+		Class<?> current = getClass(obj);
+		while (current != Object.class) {
+			Field[] currentFields = current.getDeclaredFields();
+			for (int i = currentFields.length - 1; i >= 0; i--) {
+				Field field = currentFields[i];
+				field.setAccessible(true);
+				if (field.isAnnotationPresent(annotation)) {
+					fields.add(0, field);
+				}
+			}
+			current = current.getSuperclass();
+		}
+
+		return fields.toArray(new Field[fields.size()]);
 	}
 
 	/**
@@ -482,7 +512,7 @@ public class Reflection {
 				fields.add(field);
 			}
 		}
-		return fields.toArray(new Field[0]);
+		return fields.toArray(new Field[fields.size()]);
 	}
 
 	public static Field[] getFields(Object obj) {
