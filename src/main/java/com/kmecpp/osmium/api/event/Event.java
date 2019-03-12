@@ -1,8 +1,6 @@
 package com.kmecpp.osmium.api.event;
 
-import com.kmecpp.osmium.api.Abstraction;
-
-public interface Event extends Abstraction {
+public interface Event {
 
 	default boolean shouldFire() {
 		return true;

@@ -74,13 +74,14 @@ public class Database {
 
 	public void start() {
 		//TODO: Implement MySQL
-		if (CoreOsmiumConfig.Database.enableMysql) {
-			OsmiumLogger.error("MySQL is is not fully supported yet! Switching to SQLite");
-			CoreOsmiumConfig.Database.enableMysql = false;
-		}
+		//		if (CoreOsmiumConfig.Database.enableMysql) {
+		//			OsmiumLogger.error("MySQL is is not fully supported yet! Switching to SQLite");
+		//			CoreOsmiumConfig.Database.enableMysql = false;
+		//		}
+
+		HikariConfig config = new HikariConfig();
 
 		try {
-			HikariConfig config = new HikariConfig();
 			if (CoreOsmiumConfig.Database.enableMysql) {
 				OsmiumLogger.info("Using MySQL for database storage");
 				usingMySql = true;
@@ -89,21 +90,22 @@ public class Database {
 				config.setDriverClassName("com.mysql.jdbc.Driver");
 				config.setUsername(CoreOsmiumConfig.Database.username);
 				config.setPassword(CoreOsmiumConfig.Database.password);
+				config.setConnectionTestQuery("USE " + CoreOsmiumConfig.Database.database);
 
 				source = new HikariDataSource(config);
 			} else {
 				OsmiumLogger.info("Using SQLite for database storage");
 				config.setJdbcUrl("jdbc:sqlite:" + plugin.getFolder() + File.separator + "data.db");
 				config.setDriverClassName("org.sqlite.JDBC");
+				config.setConnectionTestQuery("SELECT 1");
 			}
 			config.setMinimumIdle(3);
 			config.setMaximumPoolSize(10);
 			config.setConnectionTimeout(3000L);
-			config.setConnectionTestQuery("SELECT 1");
 			source = new HikariDataSource(config);
 			latch.countDown();
 		} catch (PoolInitializationException e) {
-			OsmiumLogger.error("Invalid database configuration!");
+			OsmiumLogger.error("Invalid database configuration! Failed to execute: '" + config.getConnectionTestQuery() + "'");
 			e.printStackTrace();
 		}
 		queue = new DatabaseQueue(this);
@@ -463,7 +465,7 @@ public class Database {
 			start();
 		}
 
-		TableProperties data = new TableProperties(cls);
+		TableProperties data = new TableProperties(this, cls);
 		tables.put(cls, data);
 
 		//		DBResult result = query("PRAGMA TABLE_INFO(" + data.getName() + ")");

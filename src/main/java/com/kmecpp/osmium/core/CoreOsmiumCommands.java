@@ -26,7 +26,7 @@ public class CoreOsmiumCommands extends Command {
 				.setAdmin(true)
 				.setExecutor((e) -> {
 					for (OsmiumPlugin plugin : Osmium.getPlugins()) {
-						plugin.onReload();
+						plugin.reload();
 					}
 					e.send("&aOsmium plugins reloaded successfully!");
 				});

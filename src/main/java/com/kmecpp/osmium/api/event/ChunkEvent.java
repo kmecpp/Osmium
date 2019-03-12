@@ -3,7 +3,7 @@ package com.kmecpp.osmium.api.event;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;
 
-public interface ChunkEvent extends Event {
+public interface ChunkEvent extends EventAbstraction {
 
 	Chunk getChunk();
 

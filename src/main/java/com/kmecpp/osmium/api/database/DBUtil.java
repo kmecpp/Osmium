@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
+import com.kmecpp.osmium.core.CoreOsmiumConfig;
 
 public class DBUtil {
 
@@ -25,10 +26,37 @@ public class DBUtil {
 
 		StringBuilder schema = new StringBuilder("CREATE TABLE IF NOT EXISTS " + properties.getName() + " (");
 
+		//		if (CoreOsmiumConfig.Database.enableMysql) {
+		//			String[] primaryColumnLengths = new String[];
+		//
+		//			for (Field field : properties.getFields()) {
+		//				DBColumn column = field.getAnnotation(DBColumn.class);
+		//
+		//				schema.append(getColumnName(field))
+		//						.append(" " + db.getSerializationData(field.getType()).getType().getName())
+		//						.append(column.notNull() ? " NOT NULL" : "")
+		//						.append(column.autoIncrement() ? " AUTOINCREMENT" : "")
+		//						.append(column.unique() ? " UNIQUE" : "")
+		//						.append(", ");
+		//				if (column.primary()) {
+		//
+		//				}
+		//			}
+		//
+		//			if (properties.getPrimaryColumns().length > 0) {
+		//				schema.append("PRIMARY KEY(" + StringUtil.join(properties.getPrimaryColumns(), ", ") + ")");
+		//			} else {
+		//				schema.setLength(schema.length() - 2);
+		//			}
+		//		} else {
+		//
+		//		}
+
 		for (Field field : properties.getFields()) {
 			DBColumn column = field.getAnnotation(DBColumn.class);
+
 			schema.append(getColumnName(field))
-					.append(" " + db.getSerializationData(field.getType()).getType().name())
+					.append(" " + db.getSerializationData(field.getType()).getType().getName())
 					.append(column.notNull() ? " NOT NULL" : "")
 					.append(column.autoIncrement() ? " AUTOINCREMENT" : "")
 					.append(column.unique() ? " UNIQUE" : "")
@@ -36,7 +64,9 @@ public class DBUtil {
 		}
 
 		if (properties.getPrimaryColumns().length > 0) {
-			schema.append("PRIMARY KEY(" + StringUtil.join(properties.getPrimaryColumns(), ", ") + ")");
+			schema.append("PRIMARY KEY("
+					+ StringUtil.join(CoreOsmiumConfig.Database.enableMysql ? properties.getPrimaryColumnsWithLengths() : properties.getPrimaryColumns(), ", ")
+					+ ")");
 		} else {
 			schema.setLength(schema.length() - 2);
 		}

@@ -1,10 +1,10 @@
 package com.kmecpp.osmium.api.event.events;
 
 import com.kmecpp.osmium.api.Block;
-import com.kmecpp.osmium.api.event.Event;
+import com.kmecpp.osmium.api.event.EventAbstraction;
 import com.kmecpp.osmium.api.event.PlayerEvent;
 
-public interface BlockEvent extends Event {
+public interface BlockEvent extends EventAbstraction {
 
 	Block getBlock();
 

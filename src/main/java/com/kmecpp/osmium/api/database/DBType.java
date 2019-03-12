@@ -4,12 +4,12 @@ import com.kmecpp.osmium.api.util.StringUtil;
 
 public enum DBType {
 
-	STRING,
-	BOOLEAN,
-	INTEGER,
-	LONG,
-	FLOAT,
-	DOUBLE,
+	STRING("VARCHAR", 255),
+	BOOLEAN("BIT"),
+	INTEGER("INT"),
+	LONG("BIGINT"),
+	FLOAT("FLOAT"),
+	DOUBLE("DOUBLE"),
 	//	UUID,
 
 	//	DATE,
@@ -18,11 +18,31 @@ public enum DBType {
 	//	LIST,
 	//	INVENTORY,
 
-	SERIALIZABLE,
+	SERIALIZABLE("TEXT", 255),
 
 	//	OBJECT,
 	//	JAVA_SERIALIZABLE,
 	;
+
+	private String name;
+	private int maxLength;
+
+	private DBType(String mysql) {
+		this(mysql, 0);
+	}
+
+	private DBType(String mysql, int maxLength) {
+		this.name = mysql + (maxLength == 0 ? "" : "(" + maxLength + ")");
+		this.maxLength = maxLength;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getMaxLength() {
+		return maxLength;
+	}
 
 	//	private static final HashMap<Class<?>, DBType> types = new HashMap<>();
 

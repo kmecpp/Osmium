@@ -21,9 +21,9 @@ public class EventManager {
 	private final HashMap<EventKey, HashMap<Object, ArrayList<Method>>> listeners = new HashMap<>();
 
 	//Only for Osmium events
-	private final HashMap<Class<? extends Event>, ArrayList<RegisteredListener>> events = new HashMap<>();
+	private final HashMap<Class<? extends EventAbstraction>, ArrayList<RegisteredListener>> events = new HashMap<>();
 
-	public void registerListener(Class<? extends Event> eventClass, Order order, Object listenerInstance, Method listener) {
+	public void registerListener(Class<? extends EventAbstraction> eventClass, Order order, Object listenerInstance, Method listener) {
 		listener.setAccessible(true);
 
 		if (listener.getParameterTypes().length != 1 || !listener.getParameterTypes()[0].isAssignableFrom(eventClass)) {
@@ -41,7 +41,7 @@ public class EventManager {
 		listeners.add(new RegisteredListener(listenerInstance, listener, order));
 	}
 
-	private static void fail(Class<? extends Event> eventClass, Method listener, String message) {
+	private static void fail(Class<? extends EventAbstraction> eventClass, Method listener, String message) {
 		OsmiumLogger.warn("Failed to register listener for " + eventClass.getName() + "!");
 		OsmiumLogger.warn("Listener: " + listener.getClass().getName() + "." + listener);
 		OsmiumLogger.warn(message);
@@ -60,13 +60,13 @@ public class EventManager {
 	}
 
 	public void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {
-		Class<? extends Event> osmiumEventInterface = eventInfo.getEvent(); //getOsmiumImplementation();
+		Class<? extends EventAbstraction> osmiumEventInterface = eventInfo.getEvent(); //getOsmiumImplementation();
 		Class<?>[] nestedClasses = osmiumEventInterface.getClass().getDeclaredClasses();
 
 		//Register event class with children
 		boolean registered = false;
 		for (Class<?> nestedClass : nestedClasses) {
-			if (Event.class.isAssignableFrom(nestedClass) && nestedClass.isInterface()) {
+			if (EventAbstraction.class.isAssignableFrom(nestedClass) && nestedClass.isInterface()) {
 				registerSourceListener(plugin, EventInfo.get(Reflection.cast(nestedClass)), order, method, listenerInstance);
 				registered = true;
 			}
@@ -97,7 +97,7 @@ public class EventManager {
 
 		if (firstEventRegistration) {
 			//Register source event once for each sourceEventClass/order combination 
-			final Constructor<? extends Event> eventWrapper;
+			final Constructor<? extends EventAbstraction> eventWrapper;
 			try {
 				eventWrapper = eventInfo.getOsmiumImplementation().getConstructor(sourceEventClass);
 			} catch (NoSuchMethodException | SecurityException e) {
@@ -108,7 +108,7 @@ public class EventManager {
 			Consumer<Object> globalHandlerForEvent = (sourceEventInstance) -> {
 				if (sourceEventClass.isAssignableFrom(sourceEventInstance.getClass())) {
 					try {
-						Event event = eventWrapper.newInstance(sourceEventInstance);
+						EventAbstraction event = eventWrapper.newInstance(sourceEventInstance);
 						if (!event.shouldFire()) {
 							return;
 						}

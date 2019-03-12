@@ -1,8 +1,8 @@
 package com.kmecpp.osmium.api.event.events;
 
-import com.kmecpp.osmium.api.event.Event;
+import com.kmecpp.osmium.api.event.EventAbstraction;
 
-public interface ServerListPingEvent extends Event {
+public interface ServerListPingEvent extends EventAbstraction {
 
 	String getDescription();
 

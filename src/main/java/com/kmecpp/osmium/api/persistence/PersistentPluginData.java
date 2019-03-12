@@ -79,8 +79,8 @@ public class PersistentPluginData {
 		}
 		try {
 			file.save();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Throwable t) {
+			t.printStackTrace();
 		}
 	}
 

@@ -1,15 +1,17 @@
 package com.kmecpp.osmium.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.ZoneId;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.config.ConfigProperties;
-import com.kmecpp.osmium.api.config.ConfigType;
 import com.kmecpp.osmium.api.config.Setting;
 
 @ConfigProperties(path = "osmium.conf", header = "Osmium configuration file, author: kmecpp, website: https://github.com/kmecpp/Osmium")
 public class CoreOsmiumConfig {
+
+	//	static {
+	//		Osmium.getConfigManager().registerType(ZoneId.class, ZoneId::getId, ZoneId::of);
+	//	}
 
 	/*
 	 * ROOT
@@ -24,35 +26,38 @@ public class CoreOsmiumConfig {
 	@Setting(comment = "Whether or not to display color in console messages")
 	public static boolean coloredConsole = true;
 
-	public static int[] intlist = new int[] { 1, 2, 3, 4, 5, 6 };
+	@Setting(comment = "Server time zone to use")
+	public static String timeZone = ZoneId.systemDefault().getId();
 
-	@Setting(type = Integer.class)
-	public static HashMap<String, Integer> map = new HashMap<>();
-
-	@Setting(type = Test.class)
-	public static ArrayList<Test> test = new ArrayList<>();
-
-	static {
-		map.put("MAPKEY1", 1);
-		map.put("MAPKEY2", 2);
-		test.add(new Test(2, 3.1415926535));
-		test.add(new Test(2, 2.71818182));
-	}
-
-	@ConfigType
-	public static class Test {
-
-		public int a;
-		public double b;
-		public UUID uuid;
-
-		public Test(int a, double b) {
-			this.a = a;
-			this.b = b;
-			this.uuid = UUID.randomUUID();
-		}
-
-	}
+	//	public static int[] intlist = new int[] { 1, 2, 3, 4, 5, 6 };
+	//
+	//	@Setting(type = Integer.class)
+	//	public static HashMap<String, Integer> map = new HashMap<>();
+	//
+	//	@Setting(type = Test.class)
+	//	public static ArrayList<Test> test = new ArrayList<>();
+	//
+	//	static {
+	//		map.put("MAPKEY1", 1);
+	//		map.put("MAPKEY2", 2);
+	//		test.add(new Test(2, 3.1415926535));
+	//		test.add(new Test(2, 2.71818182));
+	//	}
+	//
+	//	@ConfigType
+	//	public static class Test {
+	//
+	//		public int a;
+	//		public double b;
+	//		public UUID uuid;
+	//
+	//		public Test(int a, double b) {
+	//			this.a = a;
+	//			this.b = b;
+	//			this.uuid = UUID.randomUUID();
+	//		}
+	//
+	//	}
 
 	/*
 	 * DATABASE

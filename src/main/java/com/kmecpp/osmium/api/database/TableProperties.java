@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.util.Reflection;
 
 public class TableProperties {
@@ -13,18 +14,19 @@ public class TableProperties {
 
 	private String[] columns;
 	private String[] primaryColumns;
+	private String[] primaryColumnsWithMaxLengths; //For MySQL
 
 	private Field[] fields;
 	private Field[] primaryFields;
 
-	public TableProperties(Class<?> cls) {
+	public TableProperties(Database db, Class<?> cls) {
 		this.tableClass = cls;
 
 		DBTable annotation = cls.getAnnotation(DBTable.class);
 		if (annotation == null) {
 			throw new IllegalArgumentException("Database table '" + cls.getName() + "' must be annotated with @" + DBTable.class.getSimpleName());
 		}
-		this.name = annotation.name();
+		this.name = Osmium.getPlugin(cls).getId() + "_" + annotation.name();
 
 		//		for (Field field : Reflection.getAllFieldsWith(cls, DBColumn.class)) {
 		//			field.getName();
@@ -34,18 +36,28 @@ public class TableProperties {
 		ArrayList<Field> primaryFields = new ArrayList<>();
 		ArrayList<String> columns = new ArrayList<>();
 		ArrayList<String> primaryColumns = new ArrayList<>();
+		ArrayList<String> primaryColumnsWithMaxLengths = new ArrayList<>();
 
 		for (Field field : Reflection.getAllFieldsWith(cls, DBColumn.class)) {
-			System.out.println("LOOPING THROUGH FIELD: " + field);
+			//			System.out.println("LOOPING THROUGH FIELD: " + field);
 			field.setAccessible(true);
 			DBColumn columnAnnotation = field.getAnnotation(DBColumn.class);
 			if (columnAnnotation != null && !Modifier.isStatic(field.getModifiers())) {
 				String name = DBUtil.getColumnName(field);
+
+				//				if (CoreOsmiumConfig.Database.enableMysql && columnAnnotation.primary()) {
+				//					name += "(" + db.getSerializationData(field.getType()).getType().getMaxLength() + ")";
+				//				}
+
 				fields.add(field);
 				columns.add(name);
+
 				if (columnAnnotation.primary()) {
 					primaryFields.add(field);
 					primaryColumns.add(name);
+					primaryColumnsWithMaxLengths.add(name + "(" + (columnAnnotation.maxLength() > 0
+							? columnAnnotation.maxLength() : db.getSerializationData(field.getType()).getType().getMaxLength())
+							+ ")");
 				}
 			}
 		}
@@ -53,7 +65,7 @@ public class TableProperties {
 		this.primaryFields = primaryFields.toArray(new Field[primaryFields.size()]);
 		this.columns = columns.toArray(new String[columns.size()]);
 		this.primaryColumns = primaryColumns.toArray(new String[primaryColumns.size()]);
-
+		this.primaryColumnsWithMaxLengths = primaryColumnsWithMaxLengths.toArray(new String[primaryColumnsWithMaxLengths.size()]);
 	}
 
 	public String getName() {
@@ -70,6 +82,10 @@ public class TableProperties {
 
 	public String[] getPrimaryColumns() {
 		return primaryColumns;
+	}
+
+	public String[] getPrimaryColumnsWithLengths() {
+		return primaryColumnsWithMaxLengths;
 	}
 
 	public Field[] getFields() {

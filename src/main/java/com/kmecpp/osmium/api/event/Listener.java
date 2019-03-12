@@ -11,8 +11,8 @@ public @interface Listener {
 
 	Order order() default Order.DEFAULT;
 
-	Class<? extends Event>[] include() default {};
+	Class<? extends EventAbstraction>[] include() default {};
 
-	Class<? extends Event>[] exclude() default {};
+	Class<? extends EventAbstraction>[] exclude() default {};
 
 }

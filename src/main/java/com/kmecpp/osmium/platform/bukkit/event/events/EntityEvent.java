@@ -2,9 +2,9 @@ package com.kmecpp.osmium.platform.bukkit.event.events;
 
 import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.EntityType;
-import com.kmecpp.osmium.api.event.Event;
+import com.kmecpp.osmium.api.event.EventAbstraction;
 
-public interface EntityEvent extends Event {
+public interface EntityEvent extends EventAbstraction {
 
 	Entity getEntity();
 

@@ -24,10 +24,8 @@ public class OsmiumCore extends OsmiumPlugin {
 	public void onInit() {
 		enableMetrics();
 
-		Osmium.getTask().setAsync(true).setTime(1, 1, TimeUnit.HOUR).setExecutor(t -> {
-			for (OsmiumPlugin plugin : Osmium.getPlugins()) {
-				Osmium.savePluginData(plugin);
-			}
+		Osmium.getTask().setAsync(true).setTime(1, 1, TimeUnit.HOUR).setExecutor(task -> {
+			saveAllData();
 		});
 
 		this.getClassProcessor().onEnable(InventoryMenu.class);
@@ -40,6 +38,22 @@ public class OsmiumCore extends OsmiumPlugin {
 		//			//			Reflection.newInstance(org.bstats.sponge.Metrics.class);
 		//			//			this.metricsImplementation = org.bstats.sponge.Metrics.
 		//		}
+	}
+
+	@Override
+	public void onDisable() {
+		saveAllData();
+	}
+
+	private static void saveAllData() {
+		for (OsmiumPlugin plugin : Osmium.getPlugins()) {
+			try {
+				Osmium.savePluginData(plugin);
+				Osmium.getPlayerDataManager().saveAllPlayers();
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
 	}
 
 	@Override

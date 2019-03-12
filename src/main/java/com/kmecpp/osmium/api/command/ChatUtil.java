@@ -83,23 +83,23 @@ public class ChatUtil {
 		return stripColorCodes(stripFormattingCodes(str));
 	}
 
-	public static void sendNumberedList(CommandSender sender, String title, CS colors, List<?> list) {
+	public static void sendNumberedList(Messageable sender, String title, CS colors, List<?> list) {
 		sendTitle(sender, colors, title);
 		for (int i = 0; i < list.size(); i++) {
 			sender.send(colors.getTertiary() + " " + (i + 1) + ") " + colors.getSecondary() + list.get(i));
 		}
 	}
 
-	public static void sendTitle(CommandSender out, String title) {
+	public static void sendTitle(Messageable out, String title) {
 		sendTitle(out, CS.XEA, title);
 	}
 
-	public static void sendItem(CommandSender out, String key, Object value) {
+	public static void sendItem(Messageable out, String key, Object value) {
 		out.send(ChatColor.AQUA + ChatColor.BOLD.toString() + key + ": " + ChatColor.GREEN + ChatColor.BOLD + String.valueOf(value));
 
 	}
 
-	public static void sendTitle(CommandSender out, CS colors, String title) {
+	public static void sendTitle(Messageable out, CS colors, String title) {
 		out.send("");
 		out.send(colors.getPrimary() + ChatColor.BOLD.toString() + title);
 		out.send(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");

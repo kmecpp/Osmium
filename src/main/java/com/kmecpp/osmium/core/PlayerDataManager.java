@@ -3,6 +3,7 @@ package com.kmecpp.osmium.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -36,21 +37,32 @@ public class PlayerDataManager {
 		return playerData;
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> Set<Entry<UUID, T>> get(Class<T> type) {
+		HashMap<UUID, T> map = new HashMap<>();
+		for (Entry<UUID, HashMap<Class<?>, Object>> entry : playerData.entrySet()) {
+			map.put(entry.getKey(), (T) entry.getValue().get(type));
+		}
+		return map.entrySet();
+	}
+
+	public ArrayList<Class<?>> getRegisteredTypes(OsmiumPlugin plugin) {
+		return registeredTypes.getOrDefault(plugin, new ArrayList<>());
+	}
+
 	public <T> void forEach(Class<T> type, Consumer<T> consumer) {
 		//				for()
 	}
 
 	//This is not in core so it can't listen to events
 	public void onPlayerAuthenticate(PlayerConnectionEvent.Auth e) {
-		System.out.println("AUTHENTICATE");
-		System.out.println("REGISTERED TYPES: " + registeredTypes);
 		for (Entry<OsmiumPlugin, ArrayList<Class<?>>> entry : registeredTypes.entrySet()) {
-			System.out.println(entry.getValue());
 			for (Class<?> type : entry.getValue()) {
-				System.out.println("TYPE: " + type);
 				Object value = entry.getKey().getDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), e.getUniqueId());
+				System.out.println("VALUE: " + value);
 
 				if (value instanceof PlayerData) {
+					System.out.println("UPDATITNG PLAYER!");
 					((PlayerData) value).updatePlayerData(e.getUniqueId(), e.getPlayerName());
 				}
 
@@ -59,14 +71,18 @@ public class PlayerDataManager {
 					data = new HashMap<>();
 					this.playerData.put(e.getUniqueId(), data);
 				}
+				System.out.println();
 				data.put(type, value);
 			}
 		}
 	}
 
 	public void onPlayerQuit(PlayerConnectionEvent.Quit e) {
-		HashMap<Class<?>, Object> playerData = this.playerData.remove(e.getUniqueId());
-		System.out.println("PLAYER QUIT!: " + playerData);
+		savePlayer(e.getPlayer());
+	}
+
+	public void savePlayer(Player player) {
+		HashMap<Class<?>, Object> playerData = this.playerData.remove(player.getUniqueId());
 
 		if (playerData == null) {
 			return;
@@ -74,6 +90,12 @@ public class PlayerDataManager {
 
 		for (Entry<Class<?>, Object> data : playerData.entrySet()) {
 			Osmium.getPlugin(data.getKey()).getDatabase().replaceInto(data.getKey(), data.getValue());
+		}
+	}
+
+	public void saveAllPlayers() {
+		for (Player player : Osmium.getOnlinePlayers()) {
+			savePlayer(player);
 		}
 	}
 

@@ -19,7 +19,7 @@ import com.kmecpp.osmium.api.command.CommandProperties;
 import com.kmecpp.osmium.api.config.ConfigProperties;
 import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.database.PlayerData;
-import com.kmecpp.osmium.api.event.Event;
+import com.kmecpp.osmium.api.event.EventAbstraction;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
@@ -210,15 +210,21 @@ public class ClassProcessor {
 		for (Method method : cls.getDeclaredMethods()) {
 			Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
 			Listener listenerAnnotation = method.getAnnotation(Listener.class);
-			if (scheduleAnnotation == null && listenerAnnotation == null) {
+			Startup startup = method.getAnnotation(Startup.class);
+
+			if (scheduleAnnotation == null && listenerAnnotation == null && startup == null) {
 				continue;
 			}
+
+			method.setAccessible(true);
 
 			//Retrieve instance or create one if possible
 			Object instance;
 			try {
 				Class.forName(cls.getName()); //Initialize class. This hack allows classes to register themselves in a static initializer
-				boolean contains = classInstances.containsKey(cls); //DONE THIS WAY BECAUSE LISTENER MUST BE FINAL
+
+				//THE FOLLOWING CODE IS DONE THIS WAY BECAUSE THE LISTENER INSTANCE MUST BE FINAL
+				boolean contains = classInstances.containsKey(cls);
 				instance = contains ? classInstances.get(cls) : cls.newInstance();
 				if (!contains) {
 					classInstances.put(cls, instance);
@@ -231,6 +237,17 @@ public class ClassProcessor {
 				OsmiumLogger.error("Caught exception while trying to instantiate task/listener class: " + cls.getName());
 				e.printStackTrace();
 				break;
+			}
+
+			//STARTUP
+			if (startup != null) {
+				try {
+					method.invoke(instance);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					OsmiumLogger.error("Method " + cls.getSimpleName() + "." + method.getName() + " annotated with @" + Startup.class.getSimpleName()
+							+ " cannot be executed because it contains parameters!");
+					e.printStackTrace();
+				}
 			}
 
 			//TASKS
@@ -253,10 +270,10 @@ public class ClassProcessor {
 			if (listenerAnnotation != null) {
 				if (method.getParameterCount() != 1) {
 					plugin.error("Invalid listener method with signature: '" + method + "'");
-				} else if (!Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
+				} else if (!EventAbstraction.class.isAssignableFrom(method.getParameterTypes()[0])) {
 					plugin.error("Invalid listener method with signature: '" + method + "'");
 				} else {
-					Class<? extends Event> eventClass = Reflection.cast(method.getParameterTypes()[0]);
+					Class<? extends EventAbstraction> eventClass = Reflection.cast(method.getParameterTypes()[0]);
 					EventInfo eventInfo = EventInfo.get(eventClass);
 
 					if (eventInfo == null) {

@@ -54,10 +54,10 @@ import com.kmecpp.osmium.platform.sponge.event.events.SpongeServerListPingEvent;
 
 public class EventInfo {
 
-	private static final HashMap<Class<? extends Event>, EventInfo> events = new HashMap<>(); //<Interface, EventInfo>
+	private static final HashMap<Class<? extends EventAbstraction>, EventInfo> events = new HashMap<>(); //<Interface, EventInfo>
 
-	private final Class<? extends Event> event;
-	private final Class<? extends Event> osmiumImplementation;
+	private final Class<? extends EventAbstraction> event;
+	private final Class<? extends EventAbstraction> osmiumImplementation;
 	private final Class<?> source;
 	private final boolean osmiumEvent;
 
@@ -78,7 +78,7 @@ public class EventInfo {
 	//		this.osmiumEvent = osmiumEvent;
 	//	}
 
-	public EventInfo(Class<? extends Event> event, Class<? extends Event> implementation, Class<?> source, boolean osmiumEvent) {
+	public EventInfo(Class<? extends EventAbstraction> event, Class<? extends EventAbstraction> implementation, Class<?> source, boolean osmiumEvent) {
 		this.event = event;
 		this.osmiumImplementation = implementation;
 		this.source = source;
@@ -117,15 +117,15 @@ public class EventInfo {
 		//@formatter:on
 	}
 
-	public static HashMap<Class<? extends Event>, EventInfo> getEvents() {
+	public static HashMap<Class<? extends EventAbstraction>, EventInfo> getEvents() {
 		return events;
 	}
 
-	public static void register(Class<? extends Event> event, Class<? extends Event> osmiumImplementation) {
+	public static void register(Class<? extends EventAbstraction> event, Class<? extends EventAbstraction> osmiumImplementation) {
 		events.put(event, new EventInfo(event, osmiumImplementation, null, true));
 	}
 
-	public static void register(Class<? extends Event> event, Class<? extends Event> bukkitImplementation, Class<? extends Event> spongeImplementation) {
+	public static void register(Class<? extends EventAbstraction> event, Class<? extends EventAbstraction> bukkitImplementation, Class<? extends EventAbstraction> spongeImplementation) {
 		//Don't exact source unless needed
 		if (Platform.isBukkit()) {
 			events.put(event, new EventInfo(event, bukkitImplementation, extractSourceClass(bukkitImplementation), false));
@@ -136,7 +136,7 @@ public class EventInfo {
 
 	}
 
-	private static <T> Class<T> extractSourceClass(Class<? extends Event> osmiumClass) {
+	private static <T> Class<T> extractSourceClass(Class<? extends EventAbstraction> osmiumClass) {
 		//		Field field;
 		//		if (BukkitEvent.class.isAssignableFrom(osmiumClass)) {
 		//			field = osmiumClass.getSuperclass().getDeclaredFields()[0];
@@ -154,7 +154,7 @@ public class EventInfo {
 		}
 	}
 
-	public static EventInfo get(Class<? extends Event> event) {
+	public static EventInfo get(Class<? extends EventAbstraction> event) {
 		return events.get(event);
 	}
 
@@ -162,12 +162,12 @@ public class EventInfo {
 		return osmiumEvent;
 	}
 
-	public Class<? extends Event> getEvent() {
+	public Class<? extends EventAbstraction> getEvent() {
 		return event;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Event> Class<T> getOsmiumImplementation() {
+	public <T extends EventAbstraction> Class<T> getOsmiumImplementation() {
 		return (Class<T>) osmiumImplementation;
 	}
 

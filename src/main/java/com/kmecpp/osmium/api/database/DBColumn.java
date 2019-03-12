@@ -34,4 +34,6 @@ public @interface DBColumn {
 
 	boolean unique() default false;
 
+	int maxLength() default -1;
+
 }
