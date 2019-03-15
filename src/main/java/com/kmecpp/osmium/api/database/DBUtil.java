@@ -65,7 +65,7 @@ public class DBUtil {
 
 		if (properties.getPrimaryColumns().length > 0) {
 			schema.append("PRIMARY KEY("
-					+ StringUtil.join(CoreOsmiumConfig.Database.enableMysql ? properties.getPrimaryColumnsWithLengths() : properties.getPrimaryColumns(), ", ")
+					+ StringUtil.join(CoreOsmiumConfig.Database.useMySql ? properties.getPrimaryColumnsWithLengths() : properties.getPrimaryColumns(), ", ")
 					+ ")");
 		} else {
 			schema.setLength(schema.length() - 2);

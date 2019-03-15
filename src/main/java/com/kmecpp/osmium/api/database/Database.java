@@ -82,7 +82,7 @@ public class Database {
 		HikariConfig config = new HikariConfig();
 
 		try {
-			if (CoreOsmiumConfig.Database.enableMysql) {
+			if (CoreOsmiumConfig.Database.useMySql) {
 				OsmiumLogger.info("Using MySQL for database storage");
 				usingMySql = true;
 

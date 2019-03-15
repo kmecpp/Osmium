@@ -65,10 +65,10 @@ public class CoreOsmiumConfig {
 	public static class Database {
 
 		@Setting(comment = "Set to true to store plugin data in a MySQL database instead of SQLite")
-		public static boolean enableMysql = false;
+		public static boolean useMySql = false;
 
 		@Setting(comment = "The address to access the database")
-		public static String host = "";
+		public static String host = "localhost";
 
 		@Setting(comment = "The port of the MySQL database. Usually this is 3306.")
 		public static int port = 3306;
