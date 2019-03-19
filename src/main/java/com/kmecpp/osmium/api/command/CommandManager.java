@@ -11,7 +11,7 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public final class CommandManager {
 
-	private HashMap<OsmiumPlugin, Boolean> defaultAllowConsole = new HashMap<>();
+	//	private HashMap<OsmiumPlugin, Boolean> defaultAllowConsole = new HashMap<>();
 	private HashMap<OsmiumPlugin, ArrayList<Command>> commands = new HashMap<>();
 
 	public Command register(OsmiumPlugin plugin, Command command) {
@@ -22,13 +22,13 @@ public final class CommandManager {
 		return command;
 	}
 
-	public void setAllowConsoleByDefault(OsmiumPlugin plugin, boolean allow) {
-		defaultAllowConsole.put(plugin, allow);
-	}
-
-	public boolean isConsoleAllowedByDefault(OsmiumPlugin plugin) {
-		return defaultAllowConsole.getOrDefault(plugin, true);
-	}
+	//	public void setAllowConsoleByDefault(OsmiumPlugin plugin, boolean allow) {
+	//		defaultAllowConsole.put(plugin, allow);
+	//	}
+	//
+	//	public boolean isConsoleAllowedByDefault(OsmiumPlugin plugin) {
+	//		return defaultAllowConsole.getOrDefault(plugin, true);
+	//	}
 
 	public HashMap<OsmiumPlugin, ArrayList<Command>> getCommands() {
 		return commands;
@@ -64,9 +64,9 @@ public final class CommandManager {
 
 	public static boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {
 		try {
-			if (sender instanceof ConsoleCommandSender && !command.isConsole()) {
-				throw CommandException.PLAYERS_ONLY;
-			}
+			//			if (sender instanceof ConsoleCommandSender && !command.isConsole()) {
+			//				throw CommandException.PLAYERS_ONLY;
+			//			}
 
 			CommandEvent event = new CommandEvent(command, sender, commandLabel, args);
 			command.checkPermission(event);
@@ -83,15 +83,13 @@ public final class CommandManager {
 				if (args.length == 0) {
 					command.sendHelp(event);
 				} else {
-					SimpleCommand arg = command.getArgumentMatching(args[0]);
+					CommandBase arg = command.getArgumentMatching(args[0]);
 					if (arg == null) {
 						sender.sendMessage(Chat.RED + "Unknown command! Type /" + command.getPrimaryAlias() + " for a list of commands.");
 						return false;
 					} else if (!arg.isAllowed(sender)) {
 						sender.sendMessage(Chat.RED + "You do not have permission to perform this command!");
 						return false;
-					} else if (sender instanceof ConsoleCommandSender && !command.isConsole()) {
-						throw CommandException.PLAYERS_ONLY;
 					} else {
 						event.consumeArgument();
 						event.setSubCommand(arg);
@@ -108,7 +106,7 @@ public final class CommandManager {
 			if (e == CommandException.USAGE_ERROR) {
 				if (e.getMessage().isEmpty()) {
 					if (args.length > 0) {
-						SimpleCommand arg = command.getArgumentMatching(args[0]);
+						CommandBase arg = command.getArgumentMatching(args[0]);
 						if (arg != null) {
 							sender.sendMessage(Chat.RED + "Usage: /" + command.getPrimaryAlias() + " " + arg.getPrimaryAlias() + " " + arg.getUsage());
 							return false;

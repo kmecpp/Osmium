@@ -37,6 +37,14 @@ public interface Player extends User, EntityLiving, CommandSender {
 
 	void chat(String message);
 
+	int getFoodLevel();
+
+	void setFoodLevel(int level);
+
+	int getTotalExperience();
+
+	void setTotalExperience(int exp);
+
 	default <T> T getData(Class<T> type) {
 		return Osmium.getPlayerDataManager().getData(this, type);
 	}

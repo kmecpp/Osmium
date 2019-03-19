@@ -10,7 +10,7 @@ import org.spongepowered.api.Sponge;
 import com.google.common.base.Preconditions;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.command.Command;
-import com.kmecpp.osmium.api.command.SimpleCommand;
+import com.kmecpp.osmium.api.command.CommandBase;
 import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.logging.OsmiumPluginLogger;
@@ -264,7 +264,7 @@ public abstract class OsmiumPlugin {
 		Osmium.reloadPlugin(this);
 	}
 
-	public SimpleCommand registerCommand(String name, String... aliases) {
+	public CommandBase registerCommand(String name, String... aliases) {
 		return Osmium.getCommandManager().register(this, new Command(name, aliases));
 	}
 

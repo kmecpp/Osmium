@@ -43,7 +43,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return getInstance();
 	}
 
-	public long getDelay() {
+	public int getDelay() {
 		return delay;
 	}
 
@@ -57,7 +57,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return getInstance();
 	}
 
-	public long getInterval() {
+	public int getInterval() {
 		return interval;
 	}
 

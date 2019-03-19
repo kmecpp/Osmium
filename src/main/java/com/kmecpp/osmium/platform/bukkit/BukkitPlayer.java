@@ -152,4 +152,24 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 		}
 	}
 
+	@Override
+	public int getFoodLevel() {
+		return player.getFoodLevel();
+	}
+
+	@Override
+	public void setFoodLevel(int level) {
+		player.setFoodLevel(level);
+	}
+
+	@Override
+	public int getTotalExperience() {
+		return player.getTotalExperience();
+	}
+
+	@Override
+	public void setTotalExperience(int exp) {
+		player.setTotalExperience(exp);
+	}
+
 }

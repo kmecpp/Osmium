@@ -15,10 +15,10 @@ import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.command.Command;
-import com.kmecpp.osmium.api.command.CommandProperties;
 import com.kmecpp.osmium.api.config.ConfigProperties;
 import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.database.PlayerData;
+import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventAbstraction;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
@@ -179,12 +179,7 @@ public class ClassProcessor {
 		OsmiumLogger.debug("Initializing class: " + cls.getName());
 
 		//COMMANDS
-		if (cls.isAnnotationPresent(CommandProperties.class)) {
-			if (!Command.class.isAssignableFrom(cls)) {
-				OsmiumLogger.warn("Class is annotated with @" + CommandProperties.class.getSimpleName() + " but does not extend " + Command.class.getSimpleName() + ": " + cls);
-				return;
-			}
-
+		if (Command.class.isAssignableFrom(cls)) {
 			Command command;
 			try {
 				command = (Command) cls.newInstance();
@@ -268,9 +263,7 @@ public class ClassProcessor {
 
 			//LISTENERS
 			if (listenerAnnotation != null) {
-				if (method.getParameterCount() != 1) {
-					plugin.error("Invalid listener method with signature: '" + method + "'");
-				} else if (!EventAbstraction.class.isAssignableFrom(method.getParameterTypes()[0])) {
+				if (method.getParameterCount() != 1 || !Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
 					plugin.error("Invalid listener method with signature: '" + method + "'");
 				} else {
 					Class<? extends EventAbstraction> eventClass = Reflection.cast(method.getParameterTypes()[0]);

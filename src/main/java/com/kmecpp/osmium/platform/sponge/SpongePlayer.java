@@ -158,4 +158,24 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 		player.offer(Keys.POTION_EFFECTS, new ArrayList<>());
 	}
 
+	@Override
+	public int getFoodLevel() {
+		return player.foodLevel().get();
+	}
+
+	@Override
+	public void setFoodLevel(int level) {
+		player.foodLevel().set(level);
+	}
+
+	@Override
+	public int getTotalExperience() {
+		return player.get(Keys.TOTAL_EXPERIENCE).get();
+	}
+
+	@Override
+	public void setTotalExperience(int exp) {
+		player.offer(Keys.TOTAL_EXPERIENCE, exp);
+	}
+
 }

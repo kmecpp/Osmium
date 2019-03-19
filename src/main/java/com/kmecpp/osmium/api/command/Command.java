@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.util.StringUtil;
 
-public class Command extends SimpleCommand {
+public class Command extends CommandBase {
 
-	private ArrayList<SimpleCommand> args = new ArrayList<>();
+	private ArrayList<CommandBase> args = new ArrayList<>();
 
 	private String title = "&a&l" + StringUtil.capitalize(getPrimaryAlias()) + " Commands";
 
@@ -22,6 +22,7 @@ public class Command extends SimpleCommand {
 	}
 
 	public void configure() {
+
 	}
 
 	public void validate(CommandEvent event) {
@@ -55,7 +56,7 @@ public class Command extends SimpleCommand {
 		event.send(title);
 		event.send("&e&m----------------------------------------");
 		event.send("");
-		for (SimpleCommand arg : args) {
+		for (CommandBase arg : args) {
 			if (arg.isAllowed(event.getSender())) {
 				event.send("&b/" + event.getBaseLabel() + " " + arg.getPrimaryAlias()
 						+ (arg.hasUsage() ? " " + arg.getUsage() : "")
@@ -64,19 +65,19 @@ public class Command extends SimpleCommand {
 		}
 	}
 
-	public final SimpleCommand add(String name, String... aliases) {
-		SimpleCommand arg = new SimpleCommand(name, aliases);
+	public final CommandBase add(String name, String... aliases) {
+		CommandBase arg = new CommandBase(name, aliases);
 		args.add(arg);
 		return arg;
 	}
 
-	public SimpleCommand getArgumentMatching(String argLabel) {
+	public CommandBase getArgumentMatching(String argLabel) {
 		return getArgumentMatching(argLabel, null);
 	}
 
-	public SimpleCommand getArgumentMatching(String argLabel, CommandSender sender) {
-		SimpleCommand notAllowed = null;
-		for (SimpleCommand arg : args) {
+	public CommandBase getArgumentMatching(String argLabel, CommandSender sender) {
+		CommandBase notAllowed = null;
+		for (CommandBase arg : args) {
 			for (String alias : arg.getAliases()) {
 				//Allow aliases partitioned with '/' to be treated as individual arguments
 				for (String part : alias.split("/")) {
@@ -98,7 +99,7 @@ public class Command extends SimpleCommand {
 	//		throw new CommandException("&4Error: &c" + StringUtil.capitalize(type) + " not found: '" + input + "'");
 	//	}
 
-	public ArrayList<SimpleCommand> getArgs() {
+	public ArrayList<CommandBase> getArgs() {
 		return args;
 	}
 

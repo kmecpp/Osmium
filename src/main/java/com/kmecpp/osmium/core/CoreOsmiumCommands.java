@@ -5,14 +5,17 @@ import java.util.Arrays;
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.command.Command;
-import com.kmecpp.osmium.api.command.CommandProperties;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-@CommandProperties(aliases = { "osmium", "os", "om", "o" }, description = "Base command for interacting with the Osmium API")
+// @CommandProperties(aliases = { "osmium", "os", "om", "o" }, description =
+// "Base command for interacting with the Osmium API")
 public class CoreOsmiumCommands extends Command {
 
-	@Override
-	public void configure() {
+	public CoreOsmiumCommands() {
+		super("osmium", "os", "om", "o");
+
+		setDescription("Base command for interacting with the Osmium API");
+
 		add("info")
 				.setDescription("Displays information about the Osmium API")
 				.setExecutor((e) -> {

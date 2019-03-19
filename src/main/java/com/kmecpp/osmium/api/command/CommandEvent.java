@@ -14,7 +14,7 @@ import com.kmecpp.osmium.api.util.StringUtil;
 public class CommandEvent implements Messageable {
 
 	private Command command;
-	private SimpleCommand subCommand;
+	private CommandBase subCommand;
 	private CommandSender sender;
 	private String baseLabel;
 	private String argLabel;
@@ -28,7 +28,7 @@ public class CommandEvent implements Messageable {
 		this.args = args;
 	}
 
-	void setSubCommand(SimpleCommand subCommand) {
+	void setSubCommand(CommandBase subCommand) {
 		this.subCommand = subCommand;
 	}
 
@@ -37,7 +37,11 @@ public class CommandEvent implements Messageable {
 	}
 
 	public Player getPlayer() {
-		return (Player) sender;
+		if (sender instanceof Player) {
+			return (Player) sender;
+		} else {
+			throw CommandException.PLAYERS_ONLY;
+		}
 	}
 
 	public boolean isNotOp() {
@@ -56,7 +60,7 @@ public class CommandEvent implements Messageable {
 		return argLabel;
 	}
 
-	public Optional<SimpleCommand> getSubCommand() {
+	public Optional<CommandBase> getSubCommand() {
 		return Optional.ofNullable(subCommand);
 	}
 
@@ -184,13 +188,11 @@ public class CommandEvent implements Messageable {
 			throw new CommandException("Internal command error. Tried to retrieve index: " + index);
 		} else if (index >= args.length) {
 			if (index < command.getUsageParams().length) {
-				if (subCommand == null) {
-					throw new CommandException("Missing " + StringUtil.nth(index + 1) + " argument: /"
-							+ command.getPrimaryAlias() + " " + command.getUsage());
-				} else {
-					throw new CommandException("Missing " + StringUtil.nth(index + 1) + " argument: /"
-							+ command.getPrimaryAlias() + " " + subCommand.getPrimaryAlias() + " " + subCommand.getUsage());
-				}
+				CommandBase target = subCommand != null ? command : subCommand;
+
+				throw new CommandException("Missing " + StringUtil.nth(index + 1) + " argument"
+						+ (target.getUsage().isEmpty() ? "!"
+								: (": /" + this.baseLabel + " " + target.getUsageHighlight(index))));
 			}
 			//			throw new CommandException("Expected at least " + index + 1 + " arguments");
 			throw CommandException.USAGE_ERROR;

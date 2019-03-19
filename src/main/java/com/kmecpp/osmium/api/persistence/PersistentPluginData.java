@@ -42,6 +42,7 @@ public class PersistentPluginData {
 	}
 
 	public void addField(Field field) {
+		field.setAccessible(true);
 		this.fields.add(field);
 
 		try {
