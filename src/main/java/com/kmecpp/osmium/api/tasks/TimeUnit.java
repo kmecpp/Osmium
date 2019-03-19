@@ -8,13 +8,13 @@ public enum TimeUnit {
 	HOUR(20 * 60 * 60),
 	DAY(20 * 60 * 60 * 24);
 
-	private long tickValue;
+	private int tickValue;
 
-	private TimeUnit(long tickValue) {
+	private TimeUnit(int tickValue) {
 		this.tickValue = tickValue;
 	}
 
-	public long getTickValue() {
+	public int getTickValue() {
 		return tickValue;
 	}
 

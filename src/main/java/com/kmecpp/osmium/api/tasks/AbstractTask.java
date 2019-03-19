@@ -13,8 +13,8 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 
 	protected String name;
 	protected boolean async;
-	protected long delay;
-	protected long interval;
+	protected int delay;
+	protected int interval;
 	protected TaskExecutor<T> executor;
 
 	public AbstractTask(OsmiumPlugin plugin) {
@@ -47,12 +47,12 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return delay;
 	}
 
-	public T setDelay(long delay) {
+	public T setDelay(int delay) {
 		this.delay = delay;
 		return getInstance();
 	}
 
-	public T setDelay(long delay, TimeUnit unit) {
+	public T setDelay(int delay, TimeUnit unit) {
 		this.delay = delay * unit.getTickValue();
 		return getInstance();
 	}
@@ -61,12 +61,12 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return interval;
 	}
 
-	public T setInterval(long interval) {
+	public T setInterval(int interval) {
 		this.interval = interval;
 		return getInstance();
 	}
 
-	public T setInterval(long interval, TimeUnit unit) {
+	public T setInterval(int interval, TimeUnit unit) {
 		this.interval = interval * unit.getTickValue();
 		return getInstance();
 	}
@@ -80,7 +80,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return this;
 	}
 
-	public AbstractTask<T> setTime(long delay, long interval, TimeUnit unit) {
+	public AbstractTask<T> setTime(int delay, int interval, TimeUnit unit) {
 		this.delay = delay * unit.getTickValue();
 		this.interval = interval * unit.getTickValue();
 		return getInstance();

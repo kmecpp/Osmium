@@ -212,8 +212,16 @@ public final class Osmium {
 	//	}
 
 	public static void savePluginData(OsmiumPlugin plugin) {
-		Osmium.getConfigManager().saveAll(plugin);
+		configManager.saveAll(plugin);
 		plugin.saveData();
+	}
+
+	public static void saveConfig(Class<?> config) {
+		try {
+			configManager.save(config);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to save configuration class: " + config.getName());
+		}
 	}
 
 	public static final Platform getPlatform() {
