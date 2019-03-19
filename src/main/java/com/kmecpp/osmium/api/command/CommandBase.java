@@ -7,7 +7,7 @@ public class CommandBase {
 	private String description = "";
 	private String permission = "";
 	private String usage = "";
-	private String[] usageParams;
+	private String[] usageParams = new String[0];
 	private boolean admin;
 	private CommandExecutor executor;
 

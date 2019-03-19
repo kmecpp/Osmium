@@ -239,12 +239,12 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 	}
 
 	public void info(String message) {
-		System.out.println("[" + AppInfo.NAME.toUpperCase() + "] " + message);
+		System.out.println("[" + AppInfo.NAME + "] " + message);
 		//		getMessager().printMessage(Kind.NOTE, "[" + Osmium.OSMIUM + "] " + message);
 	}
 
 	public void error(String message) {
-		System.err.println("[" + AppInfo.NAME.toUpperCase() + "] " + message);
+		System.err.println("[" + AppInfo.NAME + "] " + message);
 		//		getMessager().printMessage(Kind.ERROR, "[" + Osmium.OSMIUM + "] " + message);
 	}
 

@@ -102,7 +102,7 @@ public class DBUtil {
 			columns.add(DBUtil.getColumnName(field));
 
 			Object value = Reflection.getFieldValue(obj, field);
-			values.add(value == null ? null : "\"" + Serialization.serialize(value) + "\"");
+			values.add(value == null ? null : Serialization.serialize(value));
 		}
 
 		return "REPLACE INTO " + info.getName()

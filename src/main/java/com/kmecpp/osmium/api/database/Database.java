@@ -31,49 +31,12 @@ public class Database {
 	private CountDownLatch latch = new CountDownLatch(1);
 
 	private final HashMap<Class<?>, TableProperties> tables = new HashMap<>();
-	//	private final HashMap<String, Class<? extends CustomSerialization>> types = new HashMap<>();
-	//	private final HashMap<Class<? extends CustomSerialization>, String> typeIds = new HashMap<>();
-
-	//	private static final HashMap<Class<?>, DBSerializationData<?>> types = new HashMap<>();
-	//
-	//	static {
-	//		registerType(DBType.INTEGER, int.class, Integer::parseInt);
-	//		registerType(DBType.INTEGER, Integer.class, Integer::parseInt);
-	//		registerType(DBType.LONG, long.class, Long::parseLong);
-	//		registerType(DBType.LONG, Long.class, Long::parseLong);
-	//		registerType(DBType.FLOAT, float.class, Float::parseFloat);
-	//		registerType(DBType.FLOAT, Float.class, Float::parseFloat);
-	//		registerType(DBType.DOUBLE, double.class, Double::parseDouble);
-	//		registerType(DBType.DOUBLE, Double.class, Double::parseDouble);
-	//		registerType(DBType.BOOLEAN, boolean.class, Boolean::parseBoolean);
-	//		registerType(DBType.BOOLEAN, Boolean.class, Boolean::parseBoolean);
-	//		registerType(DBType.STRING, String.class, (s) -> s);
-	//		registerType(DBType.SERIALIZABLE, UUID.class, UUID::fromString);
-	//		registerType(DBType.SERIALIZABLE, Location.class, Location::fromString);
-	//		registerType(DBType.SERIALIZABLE, SimpleDate.class, SimpleDate::fromString);
-	//		registerType(DBType.SERIALIZABLE, Inventory.class, JavaSerializer::deserialize);
-	//	}
-	//
-	//	public static final <T> void registerType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
-	//		types.put(cls, new DBSerializationData<>(type, cls, String::valueOf, deserializer));
-	//	}
-
-	//	static {
-	//		registerType("Day", SimpleDate.class);
-	//		registerType("List", DBList.class);
-	//	}
 
 	public Database(OsmiumPlugin plugin) {
 		this.plugin = plugin;
 	}
 
 	public void start() {
-		//TODO: Implement MySQL
-		//		if (CoreOsmiumConfig.Database.enableMysql) {
-		//			OsmiumLogger.error("MySQL is is not fully supported yet! Switching to SQLite");
-		//			CoreOsmiumConfig.Database.enableMysql = false;
-		//		}
-
 		HikariConfig config = new HikariConfig();
 
 		try {
@@ -105,85 +68,6 @@ public class Database {
 		}
 		queue = new DatabaseQueue(this);
 		queue.start();
-	}
-
-	//	public void registerType(String id, Class<? extends CustomSerialization> cls) {
-	//		types.put(id, cls);
-	//		typeIds.put(cls, id);
-	//	}
-
-	//	public String getTypeId(Class<?> cls) {
-	//		return typeIds.get(cls);
-	//	}
-
-	//	@SuppressWarnings("unchecked")
-	//	public <T> DBSerializationData<T> getSerializationData(Class<T> cls) {
-	//		return (DBSerializationData<T>) types.get(cls);
-	//	}
-
-	//	public String serialize(Object obj) {
-	//		if (obj == null) {
-	//			return "null";
-	//		}
-	//		@SuppressWarnings("unchecked")
-	//		DBSerializationData<Object> d = (DBSerializationData<Object>) types.get(obj.getClass());
-	//		if (d != null) {
-	//			return d.serialize(obj);
-	//		}
-	//		throw new RuntimeException("Class has no registered serializer: " + obj.getClass());
-	//
-	//		//		if (typeIds.containsKey(obj.getClass())) {
-	//		//			if (obj instanceof CustomSerialization) {
-	//		//				return ((CustomSerialization) obj).serialize();
-	//		//			} else if (obj instanceof java.io.Serializable) {
-	//		//				return JavaSerializer.serialize((java.io.Serializable) obj);
-	//		//			}
-	//		//		}
-	//
-	//	}
-
-	//	public Object deserialize(String key, String value) {
-	//		try {
-	//			Class<?> cls = types.get(key);
-	//			if (CustomSerialization.class.isAssignableFrom(cls)) {
-	//				Constructor<?> constructor = cls.getConstructor(String.class);
-	//				constructor.setAccessible(true);
-	//				return constructor.newInstance(value);
-	//			} else {
-	//				return JavaSerializer.deserialize(value);
-	//			}
-	//		} catch (Exception e) {
-	//			throw new RuntimeException("Failed to deserialize string with key: '" + key + "', string: '" + value + "'");
-	//		}
-	//
-	//	}
-
-	//	public static Class<?> getSerializable(String id) {
-	//		return typesId.get(id).getJavaClass();
-	//	}
-	//
-	//	public static String serialize(Object obj) {
-	//		if (obj instanceof Inventory) {
-	//			return Serialize.playerInventory((Inventory) obj);
-	//		} else if (obj instanceof Location) {
-	//			return Serialize.location((Location) obj);
-	//		}
-	//		return String.valueOf(obj);
-	//	}
-	//
-	//	@SuppressWarnings("unchecked")
-	//	public static <T> T deserialize(String id, String str) {
-	//		CustomType<T> type = (CustomType<T>) typesId.get(id);
-	//		if (type != null) {
-	//			return type.deserialize(str);
-	//		}
-	//		throw new RuntimeException("No deserializer registered for ID: " + id);
-	//	}
-
-	public static final boolean isSerializable(Class<?> cls) {
-		//		return typeKeys.containsKey(cls);
-		//		return cls ins
-		return false;
 	}
 
 	public final Collection<TableProperties> getTables() {
@@ -248,9 +132,9 @@ public class Database {
 
 	public <T> T getFirst(Class<T> tableClass, OrderBy orderBy, String columns, Object... values) {
 		TableProperties properties = tables.get(tableClass);
-		return query(tableClass, "SELECT * FROM " + properties.getName()
+		return this.<T> query("SELECT * FROM " + properties.getName()
 				+ " WHERE " + DBUtil.createWhere(columns.split(","), values)
-				+ " " + orderBy + " LIMIT 1").get(0);
+				+ " " + orderBy + " LIMIT 1", properties).get(0);
 
 		//		TableProperties properties = tables.get(tableClass);
 		//		DBResult result = query(tableClass, "SELECT * FROM " + properties.getName() + " WHERE " + DBUtil.createWhere(columns.split(","), values) + " " + orderBy);
@@ -347,8 +231,7 @@ public class Database {
 		ResultSet resultSet = null;
 		try {
 			Field[] fields = properties.getFields();
-
-			ArrayList<T> list = new ArrayList<>();
+			ArrayList<T> result = new ArrayList<>();
 
 			OsmiumLogger.debug("Executing query: \"" + query + "\"");
 			connection = getConnection();
@@ -358,28 +241,32 @@ public class Database {
 				T obj = properties.<T> getTableClass().newInstance();
 
 				for (int i = 0; i < fields.length; i++) {
-					//					Object value = ;
-					//					value = ;
-					//					if (value instanceof String) {
-					//						DBSerializationData<?> sd = types.get(properties.getFields()[i].getType());
-					//						if (sd != null) {
-					//							value = sd.deserialize((String) value);
-					//						} else {
-					//							IOUtil.close(connection, statement, resultSet); //TODO: Why is Eclipse complaining if this is not here? 
-					//							throw new IllegalArgumentException("");
-					//						}
-					//						//						types
-					//					}
-					//					DBSerializationData<?> sd = types.get(properties.getFields()[i].getType());
 					fields[i].set(obj, Serialization.deserialize(properties.getFields()[i].getType(), (resultSet.getString(i + 1))));
 				}
-				list.add(obj);
+				result.add(obj);
 			}
-			return list;
+			return result;
 		} catch (Exception e) {
 			OsmiumLogger.error("Failed to execute database query: \"" + query + "\"");
 			e.printStackTrace();
 			return null;
+		} finally {
+			IOUtil.close(connection, statement, resultSet);
+		}
+	}
+
+	public <T> T rawQuery(String query, ResultSetProcessor processor) {
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			OsmiumLogger.debug("Executing query: \"" + query + "\"");
+			connection = getConnection();
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			return processor.process(resultSet);
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to execute database query: \"" + query + "\"");
 		} finally {
 			IOUtil.close(connection, statement, resultSet);
 		}
@@ -466,6 +353,12 @@ public class Database {
 
 		TableProperties data = new TableProperties(this, cls);
 		tables.put(cls, data);
+
+		try {
+			Class.forName(cls.getName()); //Call static initializer
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 
 		//		DBResult result = query("PRAGMA TABLE_INFO(" + data.getName() + ")");
 		//

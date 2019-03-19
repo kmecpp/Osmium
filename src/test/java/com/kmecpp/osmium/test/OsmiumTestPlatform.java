@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.test;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
 import org.junit.Test;
@@ -37,6 +38,9 @@ public class OsmiumTestPlatform extends TestCase {
 
 		@Setting(comment = " comment!")
 		public static String str = "test\"";
+
+		@Setting
+		public static ArrayList<String> list = new ArrayList<>();
 
 	}
 
