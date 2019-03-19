@@ -8,6 +8,8 @@ import com.kmecpp.osmium.api.config.DataFile;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+
 public class PersistentPluginData {
 
 	private OsmiumPlugin plugin;
@@ -43,7 +45,12 @@ public class PersistentPluginData {
 		this.fields.add(field);
 
 		try {
-			Object value = file.getNode(getId(field)).getValue();
+			CommentedConfigurationNode node = file.getNode(getId(field));
+			if (node.isVirtual()) {
+				return;
+			}
+
+			Object value = node.getValue();
 			if (value == null && field.getType().isPrimitive()) {
 				return;
 			}

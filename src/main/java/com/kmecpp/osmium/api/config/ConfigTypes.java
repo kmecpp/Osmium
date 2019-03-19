@@ -98,7 +98,7 @@ public class ConfigTypes {
 	public static <T> T deserialize(Class<T> type, String str) {
 		Reflection.initialize(type); //Make sure the class is loaded (they possibly registered it in a static initializer)
 
-		if (str.equals("null")) {
+		if (str == null || str.equals("null")) {
 			return null;
 		}
 

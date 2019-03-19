@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.world.World;
 
 import com.kmecpp.osmium.SpongeAccess;
@@ -17,6 +18,11 @@ public class SpongeBlock implements Block {
 	@Override
 	public org.spongepowered.api.world.Location<World> getSource() {
 		return block;
+	}
+
+	@Override
+	public boolean isAir() {
+		return block.getBlockType() == BlockTypes.AIR;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import org.bukkit.Material;
+
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.location.Location;
@@ -15,6 +17,11 @@ public class BukkitBlock implements Block {
 	@Override
 	public Object getSource() {
 		return block;
+	}
+
+	@Override
+	public boolean isAir() {
+		return block.getType() == Material.AIR;
 	}
 
 	public Location getLocation() {

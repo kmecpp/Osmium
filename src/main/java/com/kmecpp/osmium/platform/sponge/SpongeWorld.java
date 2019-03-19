@@ -8,6 +8,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.WrappedCollection;
+import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.WorldType;
 import com.kmecpp.osmium.api.entity.Entity;
@@ -45,6 +46,11 @@ public class SpongeWorld implements World {
 	@Override
 	public int getHighestYAt(int x, int z) {
 		return world.getHighestYAt(x, z);
+	}
+
+	@Override
+	public Block getBlock(Location location) {
+		return new SpongeBlock(location.<org.spongepowered.api.world.Location<org.spongepowered.api.world.World>> getImplementation());
 	}
 
 	@Override

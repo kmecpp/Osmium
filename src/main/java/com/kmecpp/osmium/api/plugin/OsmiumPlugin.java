@@ -260,7 +260,7 @@ public abstract class OsmiumPlugin {
 		return new CountdownTask(this, count);
 	}
 
-	public void reload() {
+	public final void reload() {
 		Osmium.reloadPlugin(this);
 	}
 

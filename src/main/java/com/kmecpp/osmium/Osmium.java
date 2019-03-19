@@ -38,6 +38,7 @@ import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.core.PlayerDataManager;
 import com.kmecpp.osmium.core.TPSTask;
 import com.kmecpp.osmium.platform.bukkit.BukkitUser;
+import com.kmecpp.osmium.platform.osmium.OsmiumPluginReloadEvent;
 import com.kmecpp.osmium.platform.sponge.SpongeUser;
 
 public final class Osmium {
@@ -228,6 +229,7 @@ public final class Osmium {
 				return false;
 			}
 		}
+		eventManager.callEvent(new OsmiumPluginReloadEvent(plugin));
 		plugin.onReload();
 		return true;
 	}
@@ -261,6 +263,11 @@ public final class Osmium {
 
 	public static Optional<Player> getPlayer(String name) {
 		return Optional.of(PlayerList.getPlayer(name));
+	}
+
+	public static Optional<UUID> getUUID(String playerName) {
+		Optional<User> user = getUser(playerName);
+		return user.isPresent() ? Optional.of(user.get().getUniqueId()) : Optional.empty();
 	}
 
 	public static Optional<User> getUser(UUID uuid) {

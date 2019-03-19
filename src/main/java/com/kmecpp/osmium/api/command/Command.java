@@ -57,7 +57,7 @@ public class Command extends SimpleCommand {
 		event.send("");
 		for (SimpleCommand arg : args) {
 			if (arg.isAllowed(event.getSender())) {
-				event.send("&b/" + this.getPrimaryAlias() + " " + arg.getPrimaryAlias()
+				event.send("&b/" + event.getBaseLabel() + " " + arg.getPrimaryAlias()
 						+ (arg.hasUsage() ? " " + arg.getUsage() : "")
 						+ (arg.hasDescription() ? "&e - &b" + arg.getDescription() : ""));
 			}
@@ -77,15 +77,15 @@ public class Command extends SimpleCommand {
 	public SimpleCommand getArgumentMatching(String argLabel, CommandSender sender) {
 		SimpleCommand notAllowed = null;
 		for (SimpleCommand arg : args) {
-			if (sender == null || !arg.isAllowed(sender)) {
-				notAllowed = arg;
-			}
-
 			for (String alias : arg.getAliases()) {
 				//Allow aliases partitioned with '/' to be treated as individual arguments
 				for (String part : alias.split("/")) {
 					if (part.equalsIgnoreCase(argLabel)) {
-						return arg;
+						if (sender == null || !arg.isAllowed(sender)) {
+							notAllowed = arg;
+						} else {
+							return arg;
+						}
 					}
 				}
 			}

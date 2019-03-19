@@ -2,7 +2,9 @@ package com.kmecpp.osmium.api.location;
 
 import org.spongepowered.api.world.extent.Extent;
 
+import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.World;
+import com.kmecpp.osmium.api.config.ConfigTypes;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.cache.WorldList;
 
@@ -23,8 +25,20 @@ public class Location {
 		this.z = z;
 	}
 
+	static {
+		ConfigTypes.register(Location.class, Location::fromString);
+	}
+
 	public World getWorld() {
 		return world;
+	}
+
+	public String getWorldName() {
+		return world.getName();
+	}
+
+	public Block getBlock() {
+		return world.getBlock(this);
 	}
 
 	public double getX() {
@@ -55,7 +69,7 @@ public class Location {
 		return new Location(this.world, this.x + x, this.y + y, this.z + z);
 	}
 
-	public Location getBlockCenter() {
+	public Location getBlockTopCenter() {
 		return new Location(world, ((int) x) + 0.5, y, ((int) z) + 0.5);
 	}
 

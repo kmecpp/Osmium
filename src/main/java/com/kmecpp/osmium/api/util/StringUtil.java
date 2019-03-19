@@ -47,6 +47,14 @@ public class StringUtil {
 		return true;
 	}
 
+	public static String plural(int n) {
+		return n == 1 ? "" : "s";
+	}
+
+	public static String nth(int n) {
+		return n + (n == 1 ? "st" : n == 2 ? "nd" : n == 3 ? "rd" : "th");
+	}
+
 	/**
 	 * Constructs a new {@link URL} from the String. This method is intended to
 	 * be used with hardcoded String URL's and as result rethrows

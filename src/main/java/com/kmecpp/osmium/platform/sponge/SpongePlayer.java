@@ -1,9 +1,13 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 import org.spongepowered.api.data.type.HandTypes;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.text.Text;
 
 import com.flowpowered.math.vector.Vector3d;
@@ -140,6 +144,18 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 	@Override
 	public void kick(String message) {
 		player.kick(Text.of(message));
+	}
+
+	@Override
+	public void chat(String message) {
+		player.simulateChat(Text.of(message), Cause.of(EventContext.empty(), player, this));
+	}
+
+	@Override
+	public void heal() {
+		player.health().set(player.maxHealth().get());
+		player.foodLevel().set(player.foodLevel().getMaxValue());
+		player.offer(Keys.POTION_EFFECTS, new ArrayList<>());
 	}
 
 }

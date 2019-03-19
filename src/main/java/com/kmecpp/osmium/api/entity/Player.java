@@ -6,6 +6,7 @@ import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
+import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.location.Vector3d;
 
 public interface Player extends User, EntityLiving, CommandSender {
@@ -34,8 +35,15 @@ public interface Player extends User, EntityLiving, CommandSender {
 
 	void kick(String message);
 
+	void chat(String message);
+
 	default <T> T getData(Class<T> type) {
 		return Osmium.getPlayerDataManager().getData(this, type);
+	}
+
+	default Location getHighestLocation() {
+		Location loc = this.getLocation();
+		return new Location(this.getWorld(), loc.getX(), this.getWorld().getHighestYAt(loc.getBlockX(), loc.getBlockZ()), loc.getZ());
 	}
 
 }

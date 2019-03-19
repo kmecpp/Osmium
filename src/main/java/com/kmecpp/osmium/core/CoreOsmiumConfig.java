@@ -64,7 +64,7 @@ public class CoreOsmiumConfig {
 	 */
 	public static class Database {
 
-		@Setting(comment = "Set to true to store plugin data in a MySQL database instead of SQLite")
+		@Setting(name = "use-mysql", comment = "Set to true to store plugin data in a MySQL database instead of SQLite")
 		public static boolean useMySql = false;
 
 		@Setting(comment = "The address to access the database")

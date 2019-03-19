@@ -95,7 +95,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return this;
 	}
 
-	public abstract AbstractTask<T> start();
+	public abstract T start();
 
 	public void cancel() {
 		if (Platform.isBukkit()) {

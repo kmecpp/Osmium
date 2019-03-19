@@ -17,6 +17,8 @@ public interface Block extends Abstraction {
 
 	Location getLocation();
 
+	boolean isAir();
+
 	default int getX() {
 		return getLocation().getBlockX();
 	}

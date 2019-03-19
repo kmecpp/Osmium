@@ -181,16 +181,16 @@ public class ConfigParser {
 			if (array) {
 				list = new ArrayList<>();
 			} else if (Collection.class.isAssignableFrom(currentType)) {
-				if (defaultValue != null) {
-					list = (Collection<Object>) defaultValue;
-				} else {
-					//Create default collection if user didn't set a default value
-					try {
-						list = (Collection<Object>) currentType.newInstance();
-					} catch (InstantiationException | IllegalAccessException e) {
-						throw getError("Failed to initialize collection", e);
-					}
+				//				if (defaultValue != null) {
+				//					list = (Collection<Object>) defaultValue;
+				//				} else {
+				//Create default collection if user didn't set a default value
+				try {
+					list = (Collection<Object>) currentType.newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					throw getError("Failed to initialize collection", e);
 				}
+				//				}
 			} else {
 				throw getError("Found list when expecting '" + currentType.getName() + "'");
 			}

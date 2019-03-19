@@ -55,8 +55,13 @@ public class DBUtil {
 		for (Field field : properties.getFields()) {
 			DBColumn column = field.getAnnotation(DBColumn.class);
 
+			DBSerializationData<?> serializationData = db.getSerializationData(field.getType());
+			if (serializationData == null) {
+				throw new IllegalArgumentException("Cannot create database table with unregistered type: " + field.getType());
+			}
+
 			schema.append(getColumnName(field))
-					.append(" " + db.getSerializationData(field.getType()).getType().getName())
+					.append(" " + serializationData.getType().getName())
 					.append(column.notNull() ? " NOT NULL" : "")
 					.append(column.autoIncrement() ? " AUTOINCREMENT" : "")
 					.append(column.unique() ? " UNIQUE" : "")

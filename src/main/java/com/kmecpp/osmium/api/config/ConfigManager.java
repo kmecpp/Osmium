@@ -163,9 +163,9 @@ public class ConfigManager {
 
 	public void loadWithParser(Class<?> config) throws IOException {
 		ConfigData data = getConfigData(config);
-		OsmiumLogger.debug("Loading configuration file: " + data.getProperties().path());
-
 		OsmiumPlugin plugin = Osmium.getPlugin(config);
+		OsmiumLogger.debug("Loading configuration file: " + plugin.getName() + File.separator + data.getProperties().path());
+
 		registerConfig(plugin, config);
 		File file = plugin.getFolder().resolve(data.getProperties().path()).toFile();
 		if (!new ConfigParser(data, file).load()) {

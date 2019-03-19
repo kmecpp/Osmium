@@ -229,7 +229,6 @@ public class Database {
 	 *            the SQL statement to execute
 	 */
 	public void update(String update) {
-		System.out.println("UPDATE: " + update);
 		OsmiumLogger.debug("Executing update" + (Thread.currentThread().getClass().equals(QueueExecutor.class) ? " asynchronously" : "") + ": \"" + update + "\"");
 		Connection connection = null;
 		Statement statement = null;
@@ -253,10 +252,15 @@ public class Database {
 	}
 
 	public <T> T getFirst(Class<T> tableClass, OrderBy orderBy, String columns, Object... values) {
+		TableProperties properties = tables.get(tableClass);
+		return query(tableClass, "SELECT * FROM " + properties.getName()
+				+ " WHERE " + DBUtil.createWhere(columns.split(","), values)
+				+ " " + orderBy + " LIMIT 1").get(0);
+
 		//		TableProperties properties = tables.get(tableClass);
-		//		DBResult result = query("SELECT * FROM " + properties.getName() + " WHERE " + DBUtil.createWhere(columns.split(","), values) + " " + orderBy);
+		//		DBResult result = query(tableClass, "SELECT * FROM " + properties.getName() + " WHERE " + DBUtil.createWhere(columns.split(","), values) + " " + orderBy);
 		//		return result.isEmpty() ? null : result.first().as(tableClass);
-		return orderBy(tableClass, orderBy, 1).get(0);
+		//		return orderBy(tableClass, orderBy, 1).get(0);
 	}
 
 	public <T> T getFirst(Class<T> tableClass, OrderBy orderBy) {

@@ -25,10 +25,12 @@ public class CoreOsmiumCommands extends Command {
 		add("reload")
 				.setAdmin(true)
 				.setExecutor((e) -> {
+					int count = 0;
 					for (OsmiumPlugin plugin : Osmium.getPlugins()) {
 						plugin.reload();
+						count++;
 					}
-					e.send("&aOsmium plugins reloaded successfully!");
+					e.send("&a" + count + " Osmium plugins reloaded successfully!");
 				});
 
 		add("plugins")

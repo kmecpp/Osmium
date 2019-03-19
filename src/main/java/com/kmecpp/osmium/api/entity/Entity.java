@@ -22,7 +22,7 @@ public interface Entity extends Abstraction {
 
 	Location getLocation();
 
-	void setLocation(Location location);
+	boolean setLocation(Location location);
 
 	Direction getDirection();
 
@@ -33,5 +33,9 @@ public interface Entity extends Abstraction {
 	default WorldPosition getPosition() {
 		return new WorldPosition(getLocation(), getDirection());
 	}
+
+	//	default SerializableLocation getBlockPosition() {
+	//		return new SerializableLocation(getLocation());
+	//	}
 
 }

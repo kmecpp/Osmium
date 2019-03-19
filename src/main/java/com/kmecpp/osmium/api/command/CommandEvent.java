@@ -40,6 +40,10 @@ public class CommandEvent implements Messageable {
 		return (Player) sender;
 	}
 
+	public boolean isNotOp() {
+		return !sender.isOp();
+	}
+
 	public CommandSender getSender() {
 		return sender;
 	}
@@ -181,9 +185,11 @@ public class CommandEvent implements Messageable {
 		} else if (index >= args.length) {
 			if (index < command.getUsageParams().length) {
 				if (subCommand == null) {
-					throw new CommandException("Missing argument: /" + command.getPrimaryAlias() + " " + command.getUsage());
+					throw new CommandException("Missing " + StringUtil.nth(index + 1) + " argument: /"
+							+ command.getPrimaryAlias() + " " + command.getUsage());
 				} else {
-					throw new CommandException("Missing argument: /" + command.getPrimaryAlias() + " " + subCommand.getPrimaryAlias() + " " + subCommand.getUsage());
+					throw new CommandException("Missing " + StringUtil.nth(index + 1) + " argument: /"
+							+ command.getPrimaryAlias() + " " + subCommand.getPrimaryAlias() + " " + subCommand.getUsage());
 				}
 			}
 			//			throw new CommandException("Expected at least " + index + 1 + " arguments");

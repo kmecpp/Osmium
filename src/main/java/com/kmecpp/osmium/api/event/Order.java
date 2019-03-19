@@ -7,6 +7,10 @@ import com.kmecpp.osmium.api.platform.Platform;
 
 public enum Order implements Abstraction {
 
+	/*
+	 * THESE CONSTANTS MUST BE DECLARED IN THE ORDER THEY ARE EXECUTED.
+	 * RegisteredListener depends on it for comparing
+	 */
 	FIRST,
 	EARLY,
 	DEFAULT,

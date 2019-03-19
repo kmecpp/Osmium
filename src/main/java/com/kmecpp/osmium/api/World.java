@@ -31,6 +31,8 @@ public interface World extends Abstraction {
 
 	Collection<Entity> getEntities();
 
+	Block getBlock(Location location);
+
 	default Collection<Player> getPlayers() {
 		ArrayList<Player> players = new ArrayList<>();
 		for (Player player : Osmium.getOnlinePlayers()) {

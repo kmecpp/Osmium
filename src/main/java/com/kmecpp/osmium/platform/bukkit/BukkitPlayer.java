@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
 import com.kmecpp.osmium.api.GameMode;
@@ -135,6 +136,20 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 	@Override
 	public void kick(String message) {
 		player.kickPlayer(message);
+	}
+
+	@Override
+	public void chat(String message) {
+		player.chat(message);
+	}
+
+	@Override
+	public void heal() {
+		player.setHealth(20);
+		player.setFoodLevel(20);
+		for (PotionEffect e : player.getActivePotionEffects()) {
+			player.removePotionEffect(e.getType());
+		}
 	}
 
 }

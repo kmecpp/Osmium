@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
-public class RegisteredListener {
+public class RegisteredListener implements Comparable<RegisteredListener> {
 
 	private Object instance;
 	private Method method;
@@ -35,6 +35,11 @@ public class RegisteredListener {
 			OsmiumLogger.error("Error occurred while executing event!");
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public int compareTo(RegisteredListener l) {
+		return order.ordinal() - l.order.ordinal();
 	}
 
 }
