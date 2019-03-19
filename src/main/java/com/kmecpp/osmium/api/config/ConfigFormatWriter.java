@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.util.IOUtil;
 
 public class ConfigFormatWriter {
@@ -187,7 +188,7 @@ public class ConfigFormatWriter {
 		//		}
 
 		else {
-			String str = ConfigTypes.serialize(value);
+			String str = Serialization.serialize(value);
 			for (int i = 0; i < str.length(); i++) {
 				char c = str.charAt(i);
 				sb.append(c);

@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.util.Reflection;
 
 public class TableProperties {
@@ -56,7 +57,7 @@ public class TableProperties {
 					primaryFields.add(field);
 					primaryColumns.add(name);
 					primaryColumnsWithMaxLengths.add(name + "(" + (columnAnnotation.maxLength() > 0
-							? columnAnnotation.maxLength() : db.getSerializationData(field.getType()).getType().getMaxLength())
+							? columnAnnotation.maxLength() : Serialization.getData(field.getType()).getType().getMaxLength())
 							+ ")");
 				}
 			}

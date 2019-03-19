@@ -13,6 +13,7 @@ import java.util.Map;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.util.Reflection;
 
 public class ConfigParser {
@@ -261,7 +262,7 @@ public class ConfigParser {
 		else {
 			String stringValue = readSingleValue();
 			try {
-				value = ConfigTypes.deserialize(currentType, stringValue);
+				value = Serialization.deserialize(currentType, stringValue);
 			} catch (Exception e) {
 				throw getError("Failed to parse '" + stringValue + "' as " + currentType.getName(), e);
 			}

@@ -9,16 +9,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-import com.kmecpp.osmium.SimpleDate;
 import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
-import com.kmecpp.osmium.api.inventory.Inventory;
-import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
-import com.kmecpp.osmium.api.persistence.Deserializer;
-import com.kmecpp.osmium.api.persistence.JavaSerializer;
+import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.IOUtil;
 import com.kmecpp.osmium.core.CoreOsmiumConfig;
@@ -39,29 +34,29 @@ public class Database {
 	//	private final HashMap<String, Class<? extends CustomSerialization>> types = new HashMap<>();
 	//	private final HashMap<Class<? extends CustomSerialization>, String> typeIds = new HashMap<>();
 
-	private static final HashMap<Class<?>, DBSerializationData<?>> types = new HashMap<>();
-
-	static {
-		registerType(DBType.INTEGER, int.class, Integer::parseInt);
-		registerType(DBType.INTEGER, Integer.class, Integer::parseInt);
-		registerType(DBType.LONG, long.class, Long::parseLong);
-		registerType(DBType.LONG, Long.class, Long::parseLong);
-		registerType(DBType.FLOAT, float.class, Float::parseFloat);
-		registerType(DBType.FLOAT, Float.class, Float::parseFloat);
-		registerType(DBType.DOUBLE, double.class, Double::parseDouble);
-		registerType(DBType.DOUBLE, Double.class, Double::parseDouble);
-		registerType(DBType.BOOLEAN, boolean.class, Boolean::parseBoolean);
-		registerType(DBType.BOOLEAN, Boolean.class, Boolean::parseBoolean);
-		registerType(DBType.STRING, String.class, (s) -> s);
-		registerType(DBType.SERIALIZABLE, UUID.class, UUID::fromString);
-		registerType(DBType.SERIALIZABLE, Location.class, Location::fromString);
-		registerType(DBType.SERIALIZABLE, SimpleDate.class, SimpleDate::fromString);
-		registerType(DBType.SERIALIZABLE, Inventory.class, JavaSerializer::deserialize);
-	}
-
-	public static final <T> void registerType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
-		types.put(cls, new DBSerializationData<>(type, cls, String::valueOf, deserializer));
-	}
+	//	private static final HashMap<Class<?>, DBSerializationData<?>> types = new HashMap<>();
+	//
+	//	static {
+	//		registerType(DBType.INTEGER, int.class, Integer::parseInt);
+	//		registerType(DBType.INTEGER, Integer.class, Integer::parseInt);
+	//		registerType(DBType.LONG, long.class, Long::parseLong);
+	//		registerType(DBType.LONG, Long.class, Long::parseLong);
+	//		registerType(DBType.FLOAT, float.class, Float::parseFloat);
+	//		registerType(DBType.FLOAT, Float.class, Float::parseFloat);
+	//		registerType(DBType.DOUBLE, double.class, Double::parseDouble);
+	//		registerType(DBType.DOUBLE, Double.class, Double::parseDouble);
+	//		registerType(DBType.BOOLEAN, boolean.class, Boolean::parseBoolean);
+	//		registerType(DBType.BOOLEAN, Boolean.class, Boolean::parseBoolean);
+	//		registerType(DBType.STRING, String.class, (s) -> s);
+	//		registerType(DBType.SERIALIZABLE, UUID.class, UUID::fromString);
+	//		registerType(DBType.SERIALIZABLE, Location.class, Location::fromString);
+	//		registerType(DBType.SERIALIZABLE, SimpleDate.class, SimpleDate::fromString);
+	//		registerType(DBType.SERIALIZABLE, Inventory.class, JavaSerializer::deserialize);
+	//	}
+	//
+	//	public static final <T> void registerType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
+	//		types.put(cls, new DBSerializationData<>(type, cls, String::valueOf, deserializer));
+	//	}
 
 	//	static {
 	//		registerType("Day", SimpleDate.class);
@@ -121,31 +116,31 @@ public class Database {
 	//		return typeIds.get(cls);
 	//	}
 
-	@SuppressWarnings("unchecked")
-	public <T> DBSerializationData<T> getSerializationData(Class<T> cls) {
-		return (DBSerializationData<T>) types.get(cls);
-	}
+	//	@SuppressWarnings("unchecked")
+	//	public <T> DBSerializationData<T> getSerializationData(Class<T> cls) {
+	//		return (DBSerializationData<T>) types.get(cls);
+	//	}
 
-	public String serialize(Object obj) {
-		if (obj == null) {
-			return "null";
-		}
-		@SuppressWarnings("unchecked")
-		DBSerializationData<Object> d = (DBSerializationData<Object>) types.get(obj.getClass());
-		if (d != null) {
-			return d.serialize(obj);
-		}
-		throw new RuntimeException("Class has no registered serializer: " + obj.getClass());
-
-		//		if (typeIds.containsKey(obj.getClass())) {
-		//			if (obj instanceof CustomSerialization) {
-		//				return ((CustomSerialization) obj).serialize();
-		//			} else if (obj instanceof java.io.Serializable) {
-		//				return JavaSerializer.serialize((java.io.Serializable) obj);
-		//			}
-		//		}
-
-	}
+	//	public String serialize(Object obj) {
+	//		if (obj == null) {
+	//			return "null";
+	//		}
+	//		@SuppressWarnings("unchecked")
+	//		DBSerializationData<Object> d = (DBSerializationData<Object>) types.get(obj.getClass());
+	//		if (d != null) {
+	//			return d.serialize(obj);
+	//		}
+	//		throw new RuntimeException("Class has no registered serializer: " + obj.getClass());
+	//
+	//		//		if (typeIds.containsKey(obj.getClass())) {
+	//		//			if (obj instanceof CustomSerialization) {
+	//		//				return ((CustomSerialization) obj).serialize();
+	//		//			} else if (obj instanceof java.io.Serializable) {
+	//		//				return JavaSerializer.serialize((java.io.Serializable) obj);
+	//		//			}
+	//		//		}
+	//
+	//	}
 
 	//	public Object deserialize(String key, String value) {
 	//		try {
@@ -364,7 +359,6 @@ public class Database {
 
 				for (int i = 0; i < fields.length; i++) {
 					//					Object value = ;
-					DBSerializationData<?> sd = types.get(properties.getFields()[i].getType());
 					//					value = ;
 					//					if (value instanceof String) {
 					//						DBSerializationData<?> sd = types.get(properties.getFields()[i].getType());
@@ -376,7 +370,8 @@ public class Database {
 					//						}
 					//						//						types
 					//					}
-					fields[i].set(obj, sd.deserialize(resultSet.getString(i + 1)));
+					//					DBSerializationData<?> sd = types.get(properties.getFields()[i].getType());
+					fields[i].set(obj, Serialization.deserialize(properties.getFields()[i].getType(), (resultSet.getString(i + 1))));
 				}
 				list.add(obj);
 			}

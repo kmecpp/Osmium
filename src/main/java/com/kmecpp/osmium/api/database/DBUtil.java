@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.kmecpp.osmium.api.persistence.Serialization;
+import com.kmecpp.osmium.api.persistence.SerializationData;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 import com.kmecpp.osmium.core.CoreOsmiumConfig;
@@ -55,7 +57,7 @@ public class DBUtil {
 		for (Field field : properties.getFields()) {
 			DBColumn column = field.getAnnotation(DBColumn.class);
 
-			DBSerializationData<?> serializationData = db.getSerializationData(field.getType());
+			SerializationData<?> serializationData = Serialization.getData(field.getType());
 			if (serializationData == null) {
 				throw new IllegalArgumentException("Cannot create database table with unregistered type: " + field.getType());
 			}
@@ -100,7 +102,7 @@ public class DBUtil {
 			columns.add(DBUtil.getColumnName(field));
 
 			Object value = Reflection.getFieldValue(obj, field);
-			values.add(value == null ? null : "\"" + db.serialize(value) + "\"");
+			values.add(value == null ? null : "\"" + Serialization.serialize(value) + "\"");
 		}
 
 		return "REPLACE INTO " + info.getName()

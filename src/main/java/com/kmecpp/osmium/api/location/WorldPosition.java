@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.World;
-import com.kmecpp.osmium.api.config.ConfigTypes;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.persistence.Serialization;
 
 public class WorldPosition {
 
@@ -15,7 +15,7 @@ public class WorldPosition {
 	private String serialized;
 
 	static {
-		ConfigTypes.register(WorldPosition.class, WorldPosition::fromString);
+		Serialization.register(WorldPosition.class, WorldPosition::fromString);
 	}
 
 	public WorldPosition(Player player) {

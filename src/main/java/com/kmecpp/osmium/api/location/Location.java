@@ -4,7 +4,7 @@ import org.spongepowered.api.world.extent.Extent;
 
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.World;
-import com.kmecpp.osmium.api.config.ConfigTypes;
+import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.cache.WorldList;
 
@@ -26,7 +26,7 @@ public class Location {
 	}
 
 	static {
-		ConfigTypes.register(Location.class, Location::fromString);
+		Serialization.register(Location.class, Location::fromString);
 	}
 
 	public World getWorld() {

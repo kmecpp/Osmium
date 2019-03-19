@@ -14,6 +14,7 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.config.ConfigFormatWriter.ConfigFormat;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Deserializer;
+import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.persistence.Serializer;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.StringUtil;
@@ -246,11 +247,11 @@ public class ConfigManager {
 	}
 
 	public <T> void registerType(Class<T> cls, Deserializer<T> deserializer) {
-		ConfigTypes.register(cls, deserializer);
+		Serialization.register(cls, deserializer);
 	}
 
 	public <T> void registerType(Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
-		ConfigTypes.register(cls, serializer, deserializer);
+		Serialization.register(cls, serializer, deserializer);
 	}
 
 	private static final StringBuilder sb = new StringBuilder();
