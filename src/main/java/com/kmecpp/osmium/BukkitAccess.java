@@ -147,34 +147,12 @@ public class BukkitAccess {
 	}
 
 	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> consumer) {
-		Class<? extends org.bukkit.event.Event> bukkitEventClass = eventInfo.getSource();
+		for (Class<? extends org.bukkit.event.Event> bukkitEventClass : eventInfo.<org.bukkit.event.Event> getSourceClasses()) {
+			Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getPluginImplementation(), (EventPriority) order.getSource(),
+					(bukkitListener, bukkitEvent) -> consumer.accept(bukkitEvent),
+					plugin.getPluginImplementation(), true);
+		}
 
-		//		Constructor<? extends Event> eventWrapper;
-		//		try {
-		//			eventWrapper = eventInfo.getImplementation().getConstructor(bukkitEventClass);
-		//		} catch (NoSuchMethodException | SecurityException e) {
-		//			e.printStackTrace();
-		//			return;
-		//		}
-		Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getPluginImplementation(), (EventPriority) order.getSource(), (bukkitListener, bukkitEvent) -> {
-			consumer.accept(bukkitEvent);
-			//			if (bukkitEventClass.isAssignableFrom(bukkitEvent.getClass())) {
-			//				try {
-			//					Event event = eventWrapper.newInstance(bukkitEvent);
-			//					if (!event.shouldFire()) {
-			//						return;
-			//					}
-			//
-			//					try {
-			//						method.invoke(listenerInstance, event);
-			//					} catch (Exception ex) {
-			//						ex.printStackTrace();
-			//					}
-			//				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			//					e.printStackTrace();
-			//				}
-			//			}
-		}, plugin.getPluginImplementation(), true);
 	}
 
 }

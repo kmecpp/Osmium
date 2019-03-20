@@ -63,7 +63,7 @@ public class EventManager {
 		Class<? extends EventAbstraction> osmiumEventInterface = eventInfo.getEvent(); //getOsmiumImplementation();
 		Class<?>[] nestedClasses = osmiumEventInterface.getClass().getDeclaredClasses();
 
-		//Register event class with children
+		//Register event class with children. Ex: void on(BlockEvent)
 		boolean registered = false;
 		for (Class<?> nestedClass : nestedClasses) {
 			if (EventAbstraction.class.isAssignableFrom(nestedClass) && nestedClass.isInterface()) {
@@ -79,36 +79,32 @@ public class EventManager {
 	}
 
 	private void registerSourceListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {
-		Class<?> sourceEventClass = eventInfo.getSource();
-		EventKey key = new EventKey(sourceEventClass, order);
+		for (Class<?> sourceEventClass : eventInfo.getSourceClasses()) {
+			EventKey key = new EventKey(sourceEventClass, order);
 
-		boolean firstEventRegistration = !this.listeners.containsKey(key);
-		HashMap<Object, ArrayList<Method>> listenerInstances = firstEventRegistration ? new HashMap<>() : this.listeners.get(key);
-		if (firstEventRegistration) {
-			this.listeners.put(key, listenerInstances);
-		}
-
-		ArrayList<Method> listeners = listenerInstances.get(listenerInstance);
-		if (listeners == null) {
-			listeners = new ArrayList<>();
-			listenerInstances.put(listenerInstance, listeners);
-		}
-		listeners.add(method);
-
-		if (firstEventRegistration) {
-			//Register source event once for each sourceEventClass/order combination 
-			final Constructor<? extends EventAbstraction> eventWrapper;
-			try {
-				eventWrapper = eventInfo.getOsmiumImplementation().getConstructor(sourceEventClass);
-			} catch (NoSuchMethodException | SecurityException e) {
-				e.printStackTrace();
-				return;
+			boolean firstEventRegistration = !this.listeners.containsKey(key);
+			HashMap<Object, ArrayList<Method>> listenerInstances = firstEventRegistration ? new HashMap<>() : this.listeners.get(key);
+			if (firstEventRegistration) {
+				this.listeners.put(key, listenerInstances);
 			}
 
-			Consumer<Object> globalHandlerForEvent = (sourceEventInstance) -> {
-				if (sourceEventClass.isAssignableFrom(sourceEventInstance.getClass())) {
+			ArrayList<Method> listeners = listenerInstances.get(listenerInstance);
+			if (listeners == null) {
+				listeners = new ArrayList<>();
+				listenerInstances.put(listenerInstance, listeners);
+			}
+			listeners.add(method);
+
+			if (firstEventRegistration) {
+				//Register source event once for each sourceEventClass/order combination 
+				final Constructor<? extends EventAbstraction> eventWrapperConstructor = getConstructor(eventInfo, sourceEventClass);
+
+				Consumer<Object> globalHandlerForEvent = (sourceEventInstance) -> {
+					if (!sourceEventClass.isAssignableFrom(sourceEventInstance.getClass())) {
+						return;
+					}
 					try {
-						EventAbstraction event = eventWrapper.newInstance(sourceEventInstance);
+						EventAbstraction event = eventWrapperConstructor.newInstance(sourceEventInstance);
 						if (!event.shouldFire()) {
 							return;
 						}
@@ -117,11 +113,11 @@ public class EventManager {
 							Object currentListenerInstance = entry.getKey();
 							for (Method listenerMethod : entry.getValue()) {
 								try {
-									//								System.out.println("Invoking: " + listenerMethod + ", " + listenerInstance + ", " + event);
+									//									System.out.println("Invoking: " + listenerMethod + ", " + listenerInstance + ", " + event);
 									listenerMethod.invoke(currentListenerInstance, event);
 								} catch (Exception ex) {
 									//								System.out.println(listenerInstance.getClass().getName());
-									OsmiumLogger.warn("An error occurred while firing " + sourceEventClass.getSimpleName() + " for " + listenerMethod.getClass().getName());
+									OsmiumLogger.warn("An error occurred while firing " + sourceEventClass.getSimpleName() + " for " + currentListenerInstance.getClass().getName());
 									ex.printStackTrace();
 								}
 							}
@@ -129,15 +125,25 @@ public class EventManager {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				}
-			};
+				};
 
-			if (Platform.isBukkit()) {
-				BukkitAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
-			} else if (Platform.isSponge()) {
-				SpongeAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
+				if (Platform.isBukkit()) {
+					BukkitAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
+				} else if (Platform.isSponge()) {
+					SpongeAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
+				}
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends EventAbstraction> Constructor<T> getConstructor(EventInfo eventInfo, Class<?> sourceEventClass) {
+		for (Constructor<?> constructor : eventInfo.getOsmiumImplementation().getConstructors()) {
+			if (constructor.getParameterCount() == 1 && constructor.getParameterTypes()[0].isAssignableFrom(sourceEventClass)) {
+				return (Constructor<T>) constructor;
+			}
+		}
+		throw new RuntimeException("Failed to extract event wrapper constructor for " + sourceEventClass.getName());
 	}
 
 }

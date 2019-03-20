@@ -14,7 +14,7 @@ public interface BlockEvent extends EventAbstraction {
 	public interface Place extends BlockEvent, PlayerEvent {
 	}
 
-	public interface Modify extends BlockEvent {
+	public interface PlayerChange extends Break, Place {
 	}
 
 	public interface Explode extends BlockEvent {

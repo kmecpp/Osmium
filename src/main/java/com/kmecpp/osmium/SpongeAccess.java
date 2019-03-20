@@ -12,6 +12,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.event.Event;
 import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.api.Block;
@@ -135,9 +136,12 @@ public class SpongeAccess {
 	}
 
 	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> consumer) {
-		Sponge.getEventManager().registerListener(plugin.getPluginImplementation(), eventInfo.getSource(), (org.spongepowered.api.event.Order) order.getSource(), false, (spongeEvent) -> {
-			consumer.accept(spongeEvent);
-		});
+		for (Class<Event> sourceClass : eventInfo.<Event> getSourceClasses()) {
+			Sponge.getEventManager().registerListener(plugin.getPluginImplementation(), sourceClass,
+					(org.spongepowered.api.event.Order) order.getSource(), false,
+					(spongeEvent) -> consumer.accept(spongeEvent));
+		}
+
 		//		Class<? extends org.spongepowered.api.event.Event> spongeEventClass = eventInfo.getSource();
 		//		Constructor<? extends Event> eventWrapper = eventInfo.getImplementation().getConstructor(spongeEventClass);
 		//

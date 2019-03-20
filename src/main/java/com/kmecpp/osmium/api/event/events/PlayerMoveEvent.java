@@ -10,6 +10,10 @@ public interface PlayerMoveEvent extends PlayerEvent, Cancellable {
 		return getFrom().getBlockX() != getTo().getBlockX() || getFrom().getBlockY() != getTo().getBlockY() || getFrom().getBlockZ() != getTo().getBlockZ();
 	}
 
+	default boolean isNewHorizontalPosition() {
+		return getFrom().getBlockX() != getTo().getBlockX() || getFrom().getBlockZ() != getTo().getBlockZ();
+	}
+
 	Location getFrom();
 
 	Location getTo();

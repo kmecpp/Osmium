@@ -77,4 +77,17 @@ public class BukkitWorld implements World {
 		return new WrappedCollection<>(world.getEntities(), BukkitAccess::getEntity);
 	}
 
+	@Override
+	public int hashCode() {
+		return world.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof BukkitWorld) {
+			return world.equals(((BukkitWorld) obj).world);
+		}
+		return false;
+	}
+
 }

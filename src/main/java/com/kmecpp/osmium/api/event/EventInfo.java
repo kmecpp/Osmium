@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.api.event;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.kmecpp.osmium.api.event.events.BlockEvent;
@@ -15,6 +17,8 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockBreakEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockPlaceEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitPlayerChangeBlockEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryClickEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryCloseEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryDragEvent;
@@ -34,6 +38,8 @@ import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerTeleportEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockBreakEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockPlaceEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongePlayerChangeBlockEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryClickEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryCloseEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryDragEvent;
@@ -58,7 +64,7 @@ public class EventInfo {
 
 	private final Class<? extends EventAbstraction> event;
 	private final Class<? extends EventAbstraction> osmiumImplementation;
-	private final Class<?> source;
+	private final ArrayList<Class<?>> sourceClasses;
 	private final boolean osmiumEvent;
 
 	//	private final Class<? extends Event> bukkitImplementation;
@@ -78,10 +84,10 @@ public class EventInfo {
 	//		this.osmiumEvent = osmiumEvent;
 	//	}
 
-	public EventInfo(Class<? extends EventAbstraction> event, Class<? extends EventAbstraction> implementation, Class<?> source, boolean osmiumEvent) {
+	public EventInfo(Class<? extends EventAbstraction> event, Class<? extends EventAbstraction> implementation, ArrayList<Class<?>> sourceClasses, boolean osmiumEvent) {
 		this.event = event;
 		this.osmiumImplementation = implementation;
-		this.source = source;
+		this.sourceClasses = sourceClasses;
 		this.osmiumEvent = osmiumEvent;
 	}
 
@@ -90,7 +96,7 @@ public class EventInfo {
 	 */
 	static {
 		//@formatter:off
-		register(PlayerMovePositionEvent.class,     OsmiumPlayerMovePositionEvent.class);
+		register(PlayerMovePositionEvent.class,       OsmiumPlayerMovePositionEvent.class);
 
 		register(InventoryEvent.Open.class,           BukkitInventoryOpenEvent.class,          SpongeInventoryOpenEvent.class);
 		register(InventoryEvent.Close.class,          BukkitInventoryCloseEvent.class,         SpongeInventoryCloseEvent.class);
@@ -106,14 +112,16 @@ public class EventInfo {
 		register(PlayerChatEvent.class,               BukkitPlayerChatEvent.class,             SpongePlayerChatEvent.class);
 		register(PlayerMoveEvent.class,               BukkitPlayerMoveEvent.class,             SpongePlayerMoveEvent.class);
 		register(PlayerTeleportEvent.class,           BukkitPlayerTeleportEvent.class,         SpongePlayerTeleportEvent.class);
-		                                                                                       
+		                    
+		register(ServerListPingEvent.class,           BukkitServerListPingEvent.class,         SpongeServerListPingEvent.class);
 		register(PlayerConnectionEvent.Auth.class,    BukkitPlayerAuthEvent.class,             SpongePlayerAuthEvent.class);
 		register(PlayerConnectionEvent.Login.class,   BukkitPlayerLoginEvent.class,            SpongePlayerLoginEvent.class);
 		register(PlayerConnectionEvent.Join.class,    BukkitPlayerJoinEvent.class,             SpongePlayerJoinEvent.class);
 		register(PlayerConnectionEvent.Quit.class,    BukkitPlayerQuitEvent.class,             SpongePlayerQuitEvent.class);
 		                                                                                       
-		register(ServerListPingEvent.class,           BukkitServerListPingEvent.class,         SpongeServerListPingEvent.class);
 		register(BlockEvent.Break.class,              BukkitBlockBreakEvent.class,             SpongeBlockBreakEvent.class);
+		register(BlockEvent.Place.class,              BukkitBlockPlaceEvent.class,             SpongeBlockPlaceEvent.class);
+		register(BlockEvent.PlayerChange.class,       BukkitPlayerChangeBlockEvent.class,      SpongePlayerChangeBlockEvent.class);
 		//@formatter:on
 	}
 
@@ -128,26 +136,32 @@ public class EventInfo {
 	public static void register(Class<? extends EventAbstraction> event, Class<? extends EventAbstraction> bukkitImplementation, Class<? extends EventAbstraction> spongeImplementation) {
 		//Don't exact source unless needed
 		if (Platform.isBukkit()) {
-			events.put(event, new EventInfo(event, bukkitImplementation, extractSourceClass(bukkitImplementation), false));
+			events.put(event, new EventInfo(event, bukkitImplementation, extractSourceClasses(bukkitImplementation), false));
 		} else if (Platform.isSponge()) {
-			events.put(event, new EventInfo(event, spongeImplementation, extractSourceClass(spongeImplementation), false));
+			events.put(event, new EventInfo(event, spongeImplementation, extractSourceClasses(spongeImplementation), false));
 		}
 		//		EVENTS.put(event, new EventInfo(bukkitImplementation, bukkitSource, spongeImplementation, spongeSource, false));
 
 	}
 
-	private static <T> Class<T> extractSourceClass(Class<? extends EventAbstraction> osmiumClass) {
+	private static ArrayList<Class<?>> extractSourceClasses(Class<? extends EventAbstraction> osmiumClass) {
 		//		Field field;
 		//		if (BukkitEvent.class.isAssignableFrom(osmiumClass)) {
 		//			field = osmiumClass.getSuperclass().getDeclaredFields()[0];
 		//		} else {
 		//			field = osmiumClass.getDeclaredFields()[0];
 		//		}
+		ArrayList<Class<?>> result = new ArrayList<>();
 		try {
-			//			Field field = osmiumClass.getDeclaredFields()[0];
-			//			field.setAccessible(true);
-			//			return Reflection.cast(field.getType());
-			return Reflection.cast(osmiumClass.getDeclaredConstructors()[0].getParameterTypes()[0]);
+			//			return Reflection.cast();
+			Field[] fields = osmiumClass.getDeclaredFields();
+			for (Field field : fields) {
+				result.add(field.getType());
+			}
+			if (result.isEmpty()) {
+				result.add(osmiumClass.getDeclaredConstructors()[0].getParameterTypes()[0]);
+			}
+			return result;
 		} catch (Exception e) {
 			OsmiumLogger.error("Failed to extract source class for " + osmiumClass.getName());
 			throw new RuntimeException(e);
@@ -171,9 +185,8 @@ public class EventInfo {
 		return (Class<T>) osmiumImplementation;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> Class<T> getSource() {
-		return (Class<T>) source;
+	public <T> ArrayList<Class<T>> getSourceClasses() {
+		return Reflection.cast(sourceClasses);
 	}
 
 	//	public Class<? extends org.bukkit.event.Event> getBukkitClass() {

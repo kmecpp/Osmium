@@ -81,4 +81,17 @@ public class SpongeWorld implements World {
 		return new WrappedCollection<>(world.getEntities(), SpongeAccess::getEntity);
 	}
 
+	@Override
+	public int hashCode() {
+		return world.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof SpongeWorld) {
+			return world.equals(((SpongeWorld) obj).world);
+		}
+		return false;
+	}
+
 }

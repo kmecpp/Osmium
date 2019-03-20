@@ -69,4 +69,34 @@ public class SpongeBlockEvent {
 
 	}
 
+	public static class SpongePlayerChangeBlockEvent implements BlockEvent.PlayerChange {
+
+		private ChangeBlockEvent event;
+
+		public SpongePlayerChangeBlockEvent(org.spongepowered.api.event.block.ChangeBlockEvent event) {
+			this.event = event;
+		}
+
+		@Override
+		public ChangeBlockEvent getSource() {
+			return event;
+		}
+
+		@Override
+		public Block getBlock() {
+			return SpongeAccess.getBlock(event.getTransactions().get(0).getOriginal().getLocation().get());
+		}
+
+		@Override
+		public Player getPlayer() {
+			return SpongeAccess.getPlayer((org.spongepowered.api.entity.living.player.Player) event.getSource());
+		}
+
+		@Override
+		public boolean shouldFire() {
+			return event.getSource() instanceof org.spongepowered.api.entity.living.player.Player;
+		}
+
+	}
+
 }

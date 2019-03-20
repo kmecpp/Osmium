@@ -124,6 +124,10 @@ public final class CommandManager {
 			sender.sendMessage(Chat.RED + "Internal command error. Please see console for details");
 			e.printStackTrace();
 			return false;
+		} catch (Throwable t) {
+			sender.sendMessage(Chat.RED + t.getMessage());
+			t.printStackTrace();
+			return false;
 		}
 	}
 
