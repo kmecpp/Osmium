@@ -33,6 +33,16 @@ public class BukkitBlockEvent {
 			return BukkitAccess.getPlayer(event.getPlayer());
 		}
 
+		@Override
+		public boolean isCancelled() {
+			return event.isCancelled();
+		}
+
+		@Override
+		public void setCancelled(boolean cancel) {
+			event.setCancelled(cancel);
+		}
+
 	}
 
 	public static class BukkitBlockPlaceEvent implements BlockEvent.Break {
@@ -56,6 +66,16 @@ public class BukkitBlockEvent {
 		@Override
 		public Player getPlayer() {
 			return BukkitAccess.getPlayer(event.getPlayer());
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return event.isCancelled();
+		}
+
+		@Override
+		public void setCancelled(boolean cancel) {
+			event.setCancelled(cancel);
 		}
 
 	}
@@ -86,6 +106,16 @@ public class BukkitBlockEvent {
 		@Override
 		public Player getPlayer() {
 			return BukkitAccess.getPlayer(breakEvent != null ? breakEvent.getPlayer() : placeEvent.getPlayer());
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return breakEvent != null ? breakEvent.isCancelled() : placeEvent.isCancelled();
+		}
+
+		@Override
+		public void setCancelled(boolean cancel) {
+			(breakEvent != null ? breakEvent : placeEvent).setCancelled(cancel);
 		}
 
 	}

@@ -7,24 +7,41 @@ import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.BlockEvent;
 
-public class SpongeBlockEvent {
+public class SpongeBlockEvent implements BlockEvent {
 
-	public static class SpongeBlockBreakEvent implements BlockEvent.Break {
+	private ChangeBlockEvent event;
+
+	public SpongeBlockEvent(ChangeBlockEvent event) {
+		this.event = event;
+	}
+
+	@Override
+	public ChangeBlockEvent getSource() {
+		return event;
+	}
+
+	@Override
+	public Block getBlock() {
+		return SpongeAccess.getBlock(event.getTransactions().get(0).getOriginal().getLocation().get());
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return event.isCancelled();
+	}
+
+	@Override
+	public void setCancelled(boolean cancel) {
+		event.setCancelled(cancel);
+	}
+
+	public static class SpongeBlockBreakEvent extends SpongeBlockEvent implements BlockEvent.Break {
 
 		private ChangeBlockEvent.Break event;
 
 		public SpongeBlockBreakEvent(org.spongepowered.api.event.block.ChangeBlockEvent.Break event) {
+			super(event);
 			this.event = event;
-		}
-
-		@Override
-		public Object getSource() {
-			return event;
-		}
-
-		@Override
-		public Block getBlock() {
-			return SpongeAccess.getBlock(event.getTransactions().get(0).getOriginal().getLocation().get());
 		}
 
 		@Override
@@ -37,13 +54,19 @@ public class SpongeBlockEvent {
 			return event.getSource() instanceof org.spongepowered.api.entity.living.player.Player;
 		}
 
+		@Override
+		public ChangeBlockEvent.Break getSource() {
+			return event;
+		}
+
 	}
 
-	public static class SpongeBlockPlaceEvent implements BlockEvent.Place {
+	public static class SpongeBlockPlaceEvent extends SpongeBlockEvent implements BlockEvent.Place {
 
 		private ChangeBlockEvent.Place event;
 
 		public SpongeBlockPlaceEvent(org.spongepowered.api.event.block.ChangeBlockEvent.Place event) {
+			super(event);
 			this.event = event;
 		}
 
@@ -53,11 +76,6 @@ public class SpongeBlockEvent {
 		}
 
 		@Override
-		public Block getBlock() {
-			return SpongeAccess.getBlock(event.getTransactions().get(0).getOriginal().getLocation().get());
-		}
-
-		@Override
 		public Player getPlayer() {
 			return SpongeAccess.getPlayer((org.spongepowered.api.entity.living.player.Player) event.getSource());
 		}
@@ -69,22 +87,18 @@ public class SpongeBlockEvent {
 
 	}
 
-	public static class SpongePlayerChangeBlockEvent implements BlockEvent.PlayerChange {
+	public static class SpongePlayerChangeBlockEvent extends SpongeBlockEvent implements BlockEvent.PlayerChange {
 
 		private ChangeBlockEvent event;
 
 		public SpongePlayerChangeBlockEvent(org.spongepowered.api.event.block.ChangeBlockEvent event) {
+			super(event);
 			this.event = event;
 		}
 
 		@Override
 		public ChangeBlockEvent getSource() {
 			return event;
-		}
-
-		@Override
-		public Block getBlock() {
-			return SpongeAccess.getBlock(event.getTransactions().get(0).getOriginal().getLocation().get());
 		}
 
 		@Override
