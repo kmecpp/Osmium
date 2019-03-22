@@ -5,10 +5,10 @@ import java.util.UUID;
 public abstract class PlayerData {
 
 	@DBColumn(primary = true)
-	private UUID uuid;
+	protected UUID uuid;
 
 	@DBColumn
-	private String name;
+	protected String name;
 
 	public UUID getUniqueId() {
 		return uuid;

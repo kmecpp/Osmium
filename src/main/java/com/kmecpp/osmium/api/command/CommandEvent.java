@@ -20,11 +20,11 @@ public class CommandEvent implements Messageable {
 	private String argLabel;
 	private String[] args;
 
-	public CommandEvent(Command command, CommandSender sender, String baseLabel, String[] args) {
+	public CommandEvent(Command command, CommandSender sender, String baseLabel, String argLabel, String[] args) {
 		this.command = command;
 		this.sender = sender;
 		this.baseLabel = baseLabel;
-		this.argLabel = baseLabel;
+		this.argLabel = argLabel;
 		this.args = args;
 	}
 

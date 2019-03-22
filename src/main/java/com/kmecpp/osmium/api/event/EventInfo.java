@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.kmecpp.osmium.api.event.events.BlockEvent;
+import com.kmecpp.osmium.api.event.events.DateChangeEvent;
 import com.kmecpp.osmium.api.event.events.InventoryEvent;
 import com.kmecpp.osmium.api.event.events.PlayerChatEvent;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
@@ -36,7 +37,10 @@ import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerInteractEvent.
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerMoveEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerTeleportEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
+import com.kmecpp.osmium.platform.osmium.OsmiumDayChangeEvent;
+import com.kmecpp.osmium.platform.osmium.OsmiumMonthChangeEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
+import com.kmecpp.osmium.platform.osmium.OsmiumWeekChangeEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockBreakEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockPlaceEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongePlayerChangeBlockEvent;
@@ -60,10 +64,10 @@ import com.kmecpp.osmium.platform.sponge.event.events.SpongeServerListPingEvent;
 
 public class EventInfo {
 
-	private static final HashMap<Class<? extends EventAbstraction>, EventInfo> events = new HashMap<>(); //<Interface, EventInfo>
+	private static final HashMap<Class<? extends Event>, EventInfo> events = new HashMap<>(); //<Interface, EventInfo>
 
-	private final Class<? extends EventAbstraction> event;
-	private final Class<? extends EventAbstraction> osmiumImplementation;
+	private final Class<? extends Event> event;
+	private final Class<? extends Event> osmiumImplementation;
 	private final ArrayList<Class<?>> sourceClasses;
 	private final boolean osmiumEvent;
 
@@ -84,7 +88,7 @@ public class EventInfo {
 	//		this.osmiumEvent = osmiumEvent;
 	//	}
 
-	public EventInfo(Class<? extends EventAbstraction> event, Class<? extends EventAbstraction> implementation, ArrayList<Class<?>> sourceClasses, boolean osmiumEvent) {
+	public EventInfo(Class<? extends Event> event, Class<? extends Event> implementation, ArrayList<Class<?>> sourceClasses, boolean osmiumEvent) {
 		this.event = event;
 		this.osmiumImplementation = implementation;
 		this.sourceClasses = sourceClasses;
@@ -97,6 +101,9 @@ public class EventInfo {
 	static {
 		//@formatter:off
 		register(PlayerMovePositionEvent.class,       OsmiumPlayerMovePositionEvent.class);
+		register(DateChangeEvent.Day.class,           OsmiumDayChangeEvent.class);
+		register(DateChangeEvent.Week.class,          OsmiumWeekChangeEvent.class);
+		register(DateChangeEvent.Month.class,         OsmiumMonthChangeEvent.class);
 
 		register(InventoryEvent.Open.class,           BukkitInventoryOpenEvent.class,          SpongeInventoryOpenEvent.class);
 		register(InventoryEvent.Close.class,          BukkitInventoryCloseEvent.class,         SpongeInventoryCloseEvent.class);
@@ -125,11 +132,11 @@ public class EventInfo {
 		//@formatter:on
 	}
 
-	public static HashMap<Class<? extends EventAbstraction>, EventInfo> getEvents() {
+	public static HashMap<Class<? extends Event>, EventInfo> getEvents() {
 		return events;
 	}
 
-	public static void register(Class<? extends EventAbstraction> event, Class<? extends EventAbstraction> osmiumImplementation) {
+	public static void register(Class<? extends Event> event, Class<? extends Event> osmiumImplementation) {
 		events.put(event, new EventInfo(event, osmiumImplementation, null, true));
 	}
 
@@ -176,7 +183,7 @@ public class EventInfo {
 		return osmiumEvent;
 	}
 
-	public Class<? extends EventAbstraction> getEvent() {
+	public Class<? extends Event> getEvent() {
 		return event;
 	}
 

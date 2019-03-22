@@ -68,7 +68,7 @@ public final class CommandManager {
 			//				throw CommandException.PLAYERS_ONLY;
 			//			}
 
-			CommandEvent event = new CommandEvent(command, sender, commandLabel, args);
+			CommandEvent event = new CommandEvent(command, sender, commandLabel, "", args);
 			command.checkPermission(event);
 
 			//Simple commands

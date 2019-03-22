@@ -4,17 +4,15 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.api.config.ConfigProperties;
-import com.kmecpp.osmium.api.config.Setting;
+import com.kmecpp.osmium.api.persistence.Persistent;
 import com.kmecpp.osmium.api.util.TimeUtil;
 import com.kmecpp.osmium.platform.osmium.OsmiumDayChangeEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumMonthChangeEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumWeekChangeEvent;
 
-@ConfigProperties(path = "data.txt")
 public class OsmiumData {
 
-	@Setting
+	@Persistent(id = "day_of_month")
 	public static int dayOfMonth;
 
 	public static void updateDay() {

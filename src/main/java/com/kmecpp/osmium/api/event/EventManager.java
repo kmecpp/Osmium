@@ -60,7 +60,7 @@ public class EventManager {
 	}
 
 	public void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {
-		Class<? extends EventAbstraction> osmiumEventInterface = eventInfo.getEvent(); //getOsmiumImplementation();
+		Class<? extends Event> osmiumEventInterface = eventInfo.getEvent(); //getOsmiumImplementation();
 		Class<?>[] nestedClasses = osmiumEventInterface.getClass().getDeclaredClasses();
 
 		//Register event class with children. Ex: void on(BlockEvent)

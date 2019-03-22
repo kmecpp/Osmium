@@ -13,6 +13,7 @@ import java.util.jar.JarFile;
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.OsmiumClassLoader;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.ConfigProperties;
@@ -24,9 +25,13 @@ import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Persistent;
+import com.kmecpp.osmium.api.persistence.PersistentField;
+import com.kmecpp.osmium.api.persistence.PersistentPluginData;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.tasks.Schedule;
 import com.kmecpp.osmium.api.util.Reflection;
+
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
 public class ClassProcessor {
 
@@ -43,7 +48,7 @@ public class ClassProcessor {
 		this.mainClass = plugin.getClass();
 		this.mainClassImpl = pluginImpl.getClass();
 
-		ClassLoader classLoader = mainClassImpl.getClassLoader();
+		OsmiumClassLoader classLoader = new OsmiumClassLoader(mainClassImpl.getClassLoader());
 
 		JarFile jarFile = Directory.getJarFile(mainClass);
 		String packageName = mainClass.getPackage().getName();
@@ -56,8 +61,11 @@ public class ClassProcessor {
 			if (elementName.startsWith(packageName) && elementName.endsWith(".class")) {
 				String className = elementName.substring(0, elementName.length() - 6);
 				try {
-					Class<?> cls = classLoader.loadClass(className);
+					OsmiumLogger.debug("Loading class: " + className);
+					Class<?> cls = classLoader.loadClass(className, true);
+					//					Class<?> cls = Class.forName(className, false, classLoader);
 					cls.getDeclaredMethods(); //Verify that return types exist
+					//					cls.getFields();
 					onLoad(cls);
 					pluginClasses.add(cls);
 				} catch (ClassNotFoundException | NoClassDefFoundError e) {
@@ -75,6 +83,7 @@ public class ClassProcessor {
 			}
 		}
 		jarFile.close();
+		classLoader.close();
 
 	}
 
@@ -113,8 +122,6 @@ public class ClassProcessor {
 	}
 
 	public void onLoad(Class<?> cls) {
-		OsmiumLogger.debug("Loading class: " + cls.getName());
-
 		//CONFIGURATIONS
 		ConfigProperties configuration = cls.getAnnotation(ConfigProperties.class);
 		if (configuration != null) {
@@ -169,8 +176,25 @@ public class ClassProcessor {
 					continue;
 				}
 
+				PersistentPluginData data = plugin.getPersistentData();
 				field.setAccessible(true);
-				plugin.getPersistentData().addField(field);
+				PersistentField persistentField = new PersistentField(persistentAnnotation, field);
+
+				try {
+					CommentedConfigurationNode node = data.load(persistentField);
+					if (node.isVirtual()) {
+						return; //Node doesn't exist anymore use the default
+					}
+
+					Object value = node.getValue();
+					if (value == null && field.getType().isPrimitive()) {
+						return; //Data field set to null but this is incorrect. Use default
+					}
+
+					field.set(null, value); //Update the value of the field
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -214,16 +238,21 @@ public class ClassProcessor {
 			method.setAccessible(true);
 
 			//Retrieve instance or create one if possible
-			Object instance;
+			final Object instance;
 			try {
 				Class.forName(cls.getName()); //Initialize class. This hack allows classes to register themselves in a static initializer
+				System.out.println(classInstances);
 
 				//THE FOLLOWING CODE IS DONE THIS WAY BECAUSE THE LISTENER INSTANCE MUST BE FINAL
-				boolean contains = classInstances.containsKey(cls);
-				instance = contains ? classInstances.get(cls) : cls.newInstance();
-				if (!contains) {
+				Object temp = classInstances.get(cls);
+				if (temp != null) {
+					instance = temp;
+				} else {
+					System.out.println("CREATING NEW IJNSTANCE OF FUCKING CLASS: " + cls);
+					instance = cls.newInstance();
 					classInstances.put(cls, instance);
 				}
+				System.out.println(classInstances);
 			} catch (IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
 				OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.provideInstance(obj)");
 				e.printStackTrace();
@@ -249,8 +278,8 @@ public class ClassProcessor {
 			if (scheduleAnnotation != null) {
 				plugin.getTask()
 						.setAsync(scheduleAnnotation.async())
-						.setDelay(scheduleAnnotation.delay() * scheduleAnnotation.unit().getTickValue())
-						.setInterval(scheduleAnnotation.interval() * scheduleAnnotation.unit().getTickValue())
+						.setDelay(scheduleAnnotation.delay(), scheduleAnnotation.unit())
+						.setInterval(scheduleAnnotation.interval(), scheduleAnnotation.unit())
 						.setExecutor((t) -> {
 							try {
 								method.invoke(instance);

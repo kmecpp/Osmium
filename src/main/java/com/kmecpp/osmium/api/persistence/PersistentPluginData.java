@@ -1,7 +1,6 @@
 package com.kmecpp.osmium.api.persistence;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.HashSet;
 
 import com.kmecpp.osmium.api.config.DataFile;
@@ -13,7 +12,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 public class PersistentPluginData {
 
 	private OsmiumPlugin plugin;
-	private HashSet<Field> fields;
+	private HashSet<PersistentField> fields;
 
 	private DataFile file;
 
@@ -37,29 +36,8 @@ public class PersistentPluginData {
 		return file;
 	}
 
-	public HashSet<Field> getFields() {
+	public HashSet<PersistentField> getFields() {
 		return fields;
-	}
-
-	public void addField(Field field) {
-		field.setAccessible(true);
-		this.fields.add(field);
-
-		try {
-			CommentedConfigurationNode node = file.getNode(getId(field));
-			if (node.isVirtual()) {
-				return;
-			}
-
-			Object value = node.getValue();
-			if (value == null && field.getType().isPrimitive()) {
-				return;
-			}
-
-			field.set(null, value);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
 	}
 
 	//	public void reload() {
@@ -72,16 +50,26 @@ public class PersistentPluginData {
 	//		}
 	//	}
 
+	public CommentedConfigurationNode load(PersistentField field) {
+		fields.add(field);
+		CommentedConfigurationNode node = file.getNode("ids." + field.getId());
+		if (node.isVirtual()) {
+			node = file.getNode("classes." + field.getLocation());
+		}
+		return node;
+	}
+
 	public void save() {
 		OsmiumLogger.debug("Saving persistent data for " + plugin.getName());
 		if (fields.isEmpty()) {
 			return;
 		}
 
-		for (Field field : fields) {
+		for (PersistentField field : fields) {
 			try {
-				file.getNode(getId(field)).setValue(field.get(null));
-			} catch (IllegalArgumentException | IllegalAccessException e) {
+				file.getNode("ids." + field.getId()).setValue(field.getValue());
+				file.getNode("classes." + field.getLocation()).setValue(field.getValue());
+			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			}
 		}
@@ -90,10 +78,6 @@ public class PersistentPluginData {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
-	}
-
-	private static String getId(Field field) {
-		return field.getDeclaringClass().getName() + "." + field.getName();
 	}
 
 }

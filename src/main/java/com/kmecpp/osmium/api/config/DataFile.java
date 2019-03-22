@@ -25,6 +25,7 @@ public class DataFile {
 				.build();
 
 		this.root = this.loader.load();
+		//TODO: Remove nodes that have havent't been LOADED in over a week or so
 	}
 
 	public DataFile(Path path, ConfigurationLoader<CommentedConfigurationNode> loader, CommentedConfigurationNode root) {
