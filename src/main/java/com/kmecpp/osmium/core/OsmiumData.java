@@ -15,8 +15,9 @@ public class OsmiumData {
 	@Persistent(id = "day_of_month")
 	public static int dayOfMonth;
 
-	public static void updateDay() {
-		int currentDay = TimeUtil.getCalendar().get(Calendar.DAY_OF_MONTH);
+	public static void update() {
+		Calendar calendar = TimeUtil.getCalendar();
+		int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
 
 		if (dayOfMonth != currentDay) {
 			Calendar logged = TimeUtil.getCalendar();

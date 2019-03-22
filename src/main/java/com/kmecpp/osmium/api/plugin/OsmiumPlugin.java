@@ -25,8 +25,6 @@ import com.kmecpp.osmium.api.util.Reflection;
  */
 public abstract class OsmiumPlugin {
 
-	//	private final Class<? extends OsmiumPlugin> main = OsmiumProperties.getMainClass();
-	//	private final OsmiumProperties osmiumProperties = new OsmiumProperties(this);
 	private final Plugin properties = this.getClass().getAnnotation(Plugin.class);
 	private final Database database = new Database(this);
 
@@ -37,10 +35,7 @@ public abstract class OsmiumPlugin {
 	private OsmiumPluginLogger logger = new OsmiumPluginLogger(properties.name());
 
 	private Class<?> config;
-
 	private ClassProcessor classProcessor;
-
-	//	private HashSet<Class<?>> pluginClasses = new HashSet<>();
 
 	public OsmiumPlugin() {
 		Preconditions.checkNotNull(properties, "Osmium plugins must be annotated with @OsmiumMeta");
@@ -60,24 +55,21 @@ public abstract class OsmiumPlugin {
 		}
 	}
 
+	/*
+	 * This method is called by the Osmium plugin immediately following
+	 * construction to setup the plugin. This is not done in the constructor in
+	 * order to hide these steps from the end user
+	 */
 	@SuppressWarnings("unused")
-	private void setupPlugin(Object pluginImpl) throws Exception {
+	private final void setupPlugin(Object pluginImpl) throws Exception {
 		this.pluginImplementation = pluginImpl;
 		this.persistentData = new PersistentPluginData(this);
-		this.classProcessor = new ClassProcessor(this, pluginImpl);
+		this.classProcessor = new ClassProcessor(this, pluginImpl); //This loads the plugin's configs and persistent data
 
 		//		if (!database.getTables().isEmpty()) {
 		//			database.start();
 		//		}
 	}
-
-	//	public Class<? extends OsmiumPlugin> getMainClass() {
-	//		return this.getClass();
-	//	}
-
-	//	public HashSet<Class<?>> getPluginClasses() {
-	//		return pluginClasses;
-	//	}
 
 	public ClassProcessor getClassProcessor() {
 		return classProcessor;

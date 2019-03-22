@@ -19,10 +19,15 @@ Some servers already using Osmium:
 
 * Platform independent
 * No need to register commands or listeners
-* Built in Hibernate + HikariCP integration
 * Resources files like plugin.yml don't exist anymore
+* Easily schedule a method to run with a single annotation
+* Built in custom database or Hibernate + HikariCP integration
+* Custom made, state-of-the-art configuration handling API  
 * Configuration files are generated automatically from a class file
-* Super awesome command API that combines the best of both Bukkit and Sponge
+* Totally amazing command API that combines the best of both Bukkit and Sponge
+* Server operators can easily manage databases, config formats, command aliases and more
+* Easy persistence API with built in redundancy and backups to avoid any loss of data
+* All of the above features are completely optional
 * And much much more...
 
 

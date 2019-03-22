@@ -144,6 +144,7 @@ public class ClassProcessor {
 			plugin.getDatabase().createTable(cls);
 
 			if (PlayerData.class.isAssignableFrom(cls)) {
+				System.out.println("REGISTERING TABLE: " + cls.getName());
 				Osmium.getPlayerDataManager().registerType(plugin, cls);
 			}
 			//			try {
@@ -241,14 +242,12 @@ public class ClassProcessor {
 			final Object instance;
 			try {
 				Class.forName(cls.getName()); //Initialize class. This hack allows classes to register themselves in a static initializer
-				System.out.println(classInstances);
 
 				//THE FOLLOWING CODE IS DONE THIS WAY BECAUSE THE LISTENER INSTANCE MUST BE FINAL
 				Object temp = classInstances.get(cls);
 				if (temp != null) {
 					instance = temp;
 				} else {
-					System.out.println("CREATING NEW IJNSTANCE OF FUCKING CLASS: " + cls);
 					instance = cls.newInstance();
 					classInstances.put(cls, instance);
 				}

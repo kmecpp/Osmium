@@ -6,6 +6,7 @@ import com.kmecpp.osmium.api.inventory.InventoryMenu;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.tasks.TimeUnit;
+import com.kmecpp.osmium.api.util.TimeUtil;
 
 @Plugin(name = AppInfo.NAME, version = AppInfo.VERSION, authors = { AppInfo.AUTHOR }, url = AppInfo.URL)
 public class OsmiumCore extends OsmiumPlugin {
@@ -21,10 +22,17 @@ public class OsmiumCore extends OsmiumPlugin {
 	}
 
 	@Override
+	public void onLoad() {
+		TimeUtil.setTimeZone(CoreOsmiumConfig.timeZone);
+	}
+
+	@Override
 	public void onInit() {
 		enableMetrics();
 
-		Osmium.getTask().setAsync(true).setTime(1, 1, TimeUnit.HOUR).setExecutor(task -> {
+		OsmiumData.update();
+
+		Osmium.getTask().setAsync(true).setTime(0, 1, TimeUnit.HOUR).setExecutor(task -> {
 			saveAllData();
 		});
 

@@ -31,7 +31,6 @@ public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 			Bukkit.getPluginManager().disablePlugin(this);
 		} else {
 			plugin.onLoad();
-
 		}
 	}
 
