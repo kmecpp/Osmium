@@ -280,3 +280,12 @@ Osmium has a built in metrics feature for collecting statistics through <https:/
 	public void onInit() {
 		enableMetrics();
 	}
+
+	
+# Common Pitfalls
+
+Mixing Bukkit/Sponge/Osmium code
+
+* If a class requires code from one platform to run it wont be loaded/analyzed at startup. Thus mixing Bukkit and Sponge code doesn't work
+* Osmium uses many reflection tricks to do the magic that it does. For this reason, handling dependencies can be a bit tricky. As a general rule, don't use lambda expressions for handling direct access to code from an optional dependency. Otherwise this should usually not pose an issue.
+* Mixing Osmium code with code intended solely for another platform works but can cause some unexpected things to occur. For example, if you have an method annotated with @Schedule inside of a Bukkit listener and you register the Bukkit listener by creating a new instance of that class then you must provide Osmium with THE SAME instance (with plugin.provideInstance()) or else scheduler method and the listener methods will be from two different instances.
