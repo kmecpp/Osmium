@@ -113,8 +113,9 @@ public abstract class OsmiumPlugin {
 	public void onDisable() {
 	}
 
-	public void provideInstance(Object instance) {
+	public <T> T provideInstance(T instance) {
 		classProcessor.provideInstance(instance);
+		return instance;
 	}
 
 	public void enableMetrics() {

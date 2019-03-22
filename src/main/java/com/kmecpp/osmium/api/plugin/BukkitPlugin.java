@@ -39,9 +39,9 @@ public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 	public void onEnable() {
 		if (plugin != null) {
 			plugin.onPreInit();
+			plugin.onInit();
 			Bukkit.getPluginManager().registerEvents(this, this);
 			plugin.getClassProcessor().initializeClasses();
-			plugin.onInit();
 			plugin.onPostInit();
 		}
 	}

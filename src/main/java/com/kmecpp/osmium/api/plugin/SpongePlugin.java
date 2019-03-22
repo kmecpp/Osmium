@@ -40,8 +40,8 @@ public abstract class SpongePlugin {
 
 	@Listener
 	public void onGameInitialization(GameInitializationEvent e) {
-		plugin.getClassProcessor().initializeClasses();
 		plugin.onInit();
+		plugin.getClassProcessor().initializeClasses();
 	}
 
 	@Listener
