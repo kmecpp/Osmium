@@ -1,15 +1,11 @@
 package com.kmecpp.osmium.ap;
 
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -18,22 +14,18 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 import org.spongepowered.plugin.meta.McModInfo;
 import org.spongepowered.plugin.meta.PluginDependency;
 import org.spongepowered.plugin.meta.PluginDependency.LoadOrder;
 import org.spongepowered.plugin.meta.PluginMetadata;
 
-import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMetaContainer;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.plugin.SpongePlugin;
 import com.kmecpp.osmium.api.util.StringUtil;
 
-import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -48,7 +40,7 @@ import javassist.bytecode.annotation.StringMemberValue;
 
 @SupportedAnnotationTypes({ "com.kmecpp.osmium.api.plugin.Plugin" })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-public class OsmiumPluginProcessor extends AbstractProcessor {
+public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 
 	//Cannot use direct class references as one will not exist
 	public static final String BUKKIT_PARENT = "com.kmecpp.osmium.api.plugin.BukkitPlugin";
@@ -168,7 +160,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 			CtClass ctClassBukkit = pool.makeClass(meta.getName() + Platform.BUKKIT.getName());
 			ctClassBukkit.setSuperclass(pool.makeClass(BUKKIT_PARENT));
 			ctClassBukkit.addConstructor(CtNewConstructor.make(null, null, CtNewConstructor.PASS_PARAMS, null, null, ctClassBukkit));
-			writeMainClass(ctClassBukkit);
+			writeClassToRoot(ctClassBukkit);
 
 			// Sponge
 			pool.insertClassPath(new ClassClassPath(SpongePlugin.class));
@@ -192,7 +184,7 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 			classFile.addAttribute(attribute);
 
 			// Write file
-			writeMainClass(ctClassSponge);
+			writeClassToRoot(ctClassSponge);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -208,48 +200,6 @@ public class OsmiumPluginProcessor extends AbstractProcessor {
 		}
 		arrayMember.setValue(elements);
 		return arrayMember;
-	}
-
-	//	public ArrayMemberValue getDependencies(OsmiumMetaContainer meta, ConstPool cpool) {
-	//		ArrayMemberValue arrayMember = new ArrayMemberValue(cpool);
-	//		String[] dependencies = meta.getDependencies();
-	//		MemberValue[] elements = new MemberValue[dependencies.length];
-	//		for (int i = 0; i < dependencies.length; i++) {
-	//			elements[i] = new StringMemberValue(dependencies[i], cpool);
-	//		}
-	//		arrayMember.setValue(elements);
-	//		return arrayMember;
-	//	}
-
-	public void writeMainClass(CtClass ctClass) throws CannotCompileException, IOException {
-		FileObject file = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "root");
-		ctClass.writeFile(new File(file.toUri()).getParent());
-	}
-
-	private BufferedWriter getWriter(String file) throws IOException {
-		return new BufferedWriter(processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", file).openWriter());
-	}
-
-	public void writeRawFile(String file, String contents) {
-		try (BufferedWriter writer = getWriter(file)) {
-			writer.write(contents);
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to create zipped file: '" + file + "'!", e);
-		}
-	}
-
-	public void info(String message) {
-		System.out.println("[" + AppInfo.NAME + "] " + message);
-		//		getMessager().printMessage(Kind.NOTE, "[" + Osmium.OSMIUM + "] " + message);
-	}
-
-	public void error(String message) {
-		System.err.println("[" + AppInfo.NAME + "] " + message);
-		//		getMessager().printMessage(Kind.ERROR, "[" + Osmium.OSMIUM + "] " + message);
-	}
-
-	public Messager getMessager() {
-		return this.processingEnv.getMessager();
 	}
 
 }

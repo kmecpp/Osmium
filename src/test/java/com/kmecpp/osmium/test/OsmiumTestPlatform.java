@@ -1,7 +1,8 @@
 package com.kmecpp.osmium.test;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class OsmiumTestPlatform extends TestCase {
 		public static String str = "test\"";
 
 		@Setting
-		public static ArrayList<String> list = new ArrayList<>();
+		public static HashMap<String, HashMap<UUID, Integer>> list = new HashMap<>();
 
 	}
 
