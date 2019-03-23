@@ -30,11 +30,13 @@ public class OsmiumCore extends OsmiumPlugin {
 	public void onInit() {
 		enableMetrics();
 
-		OsmiumData.update();
+		Osmium.getTask().setTime(0, 1, TimeUnit.MINUTE).setExecutor((t) -> {
+			OsmiumData.update();
+		}).start();
 
 		Osmium.getTask().setAsync(true).setTime(0, 1, TimeUnit.HOUR).setExecutor(task -> {
 			saveAllData();
-		});
+		}).start();
 
 		this.getClassProcessor().onEnable(InventoryMenu.class);
 
@@ -46,6 +48,11 @@ public class OsmiumCore extends OsmiumPlugin {
 		//			//			Reflection.newInstance(org.bstats.sponge.Metrics.class);
 		//			//			this.metricsImplementation = org.bstats.sponge.Metrics.
 		//		}
+	}
+
+	@Override
+	public void onPostInit() {
+		Osmium.getConfigManager().lateInit();
 	}
 
 	@Override
@@ -62,11 +69,6 @@ public class OsmiumCore extends OsmiumPlugin {
 				t.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	public void onPostInit() {
-		Osmium.getConfigManager().lateInit();
 	}
 
 	public static OsmiumCore getPlugin() {

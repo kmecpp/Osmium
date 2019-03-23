@@ -270,7 +270,7 @@ public final class Osmium {
 	}
 
 	public static Optional<Player> getPlayer(String name) {
-		return Optional.of(PlayerList.getPlayer(name));
+		return Optional.ofNullable(PlayerList.getPlayer(name));
 	}
 
 	public static Optional<UUID> getUUID(String playerName) {

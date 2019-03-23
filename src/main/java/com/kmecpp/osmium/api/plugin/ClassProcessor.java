@@ -144,7 +144,6 @@ public class ClassProcessor {
 			plugin.getDatabase().createTable(cls);
 
 			if (PlayerData.class.isAssignableFrom(cls)) {
-				System.out.println("REGISTERING TABLE: " + cls.getName());
 				Osmium.getPlayerDataManager().registerType(plugin, cls);
 			}
 			//			try {
@@ -251,7 +250,6 @@ public class ClassProcessor {
 					instance = cls.newInstance();
 					classInstances.put(cls, instance);
 				}
-				System.out.println(classInstances);
 			} catch (IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
 				OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.provideInstance(obj)");
 				e.printStackTrace();
@@ -304,6 +302,7 @@ public class ClassProcessor {
 
 					if (eventInfo.isOsmiumEvent()) {
 						//Register implementation class for Osmium
+						OsmiumLogger.debug("Registering listener for " + eventInfo.getEvent() + ": " + cls.getSimpleName() + method.getName());
 						Osmium.getEventManager()
 								.registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
 

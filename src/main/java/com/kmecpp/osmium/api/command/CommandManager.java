@@ -103,21 +103,22 @@ public final class CommandManager {
 			}
 			return true;
 		} catch (CommandException e) {
+			//			e.printStackTrace();
 			if (e == CommandException.USAGE_ERROR) {
 				if (e.getMessage().isEmpty()) {
 					if (args.length > 0) {
 						CommandBase arg = command.getArgumentMatching(args[0]);
 						if (arg != null) {
-							sender.sendMessage(Chat.RED + "Usage: /" + command.getPrimaryAlias() + " " + arg.getPrimaryAlias() + " " + arg.getUsage());
+							sender.sendMessage(Chat.RED + "Usage: /" + commandLabel + " " + arg.getPrimaryAlias() + " " + arg.getUsage());
 							return false;
 						}
 					}
-					sender.send("&cUsage: /" + command.getPrimaryAlias() + " " + command.getUsage());
+					sender.send("&cUsage: /" + commandLabel + " " + command.getUsage());
 				} else {
 					sender.sendMessage(Chat.RED + e.getMessage());
 				}
 			} else {
-				sender.send("&c" + e.getMessage());
+				sender.send("&c" + e.getLocalizedMessage());
 			}
 			return false;
 		} catch (ArrayIndexOutOfBoundsException e) {
