@@ -5,7 +5,9 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -45,6 +47,12 @@ public class StringUtil {
 			}
 		}
 		return true;
+	}
+
+	public static String round(double decimal, int places) {
+		BigDecimal bd = new BigDecimal(decimal);
+		bd = bd.setScale(places, RoundingMode.HALF_UP);
+		return String.valueOf(bd.doubleValue());
 	}
 
 	public static String plural(int n) {

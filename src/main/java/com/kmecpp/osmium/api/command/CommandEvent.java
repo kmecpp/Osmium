@@ -80,6 +80,19 @@ public class CommandEvent implements Messageable {
 		return args.length > 0;
 	}
 
+	public boolean hasFlag(String... flags) {
+		for (String arg : args) {
+			if (arg.startsWith("-")) {
+				for (String flag : flags) {
+					if (arg.substring(1).equalsIgnoreCase(flag)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	public int getInt(int index) {
 		String input = get(index);
 		try {

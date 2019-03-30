@@ -6,6 +6,7 @@ import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.util.StringUtil;
 
 // @CommandProperties(aliases = { "osmium", "os", "om", "o" }, description =
 // "Base command for interacting with the Osmium API")
@@ -23,6 +24,15 @@ public class CoreOsmiumCommands extends Command {
 					e.send("&aVersion: " + "&b" + AppInfo.VERSION);
 					e.send("&aAuthor: " + "&b" + "kmecpp");
 					e.send("&aWebsite: " + "&b" + "https://github.com/kmecpp/Osmium");
+				});
+
+		add("tps")
+				.setDescription("Displays the server TPS")
+				.setExecutor((e) -> {
+					e.send("&aLast 60s: &b" + StringUtil.round(TPSTask.getAverage(60), 1));
+					e.send("&aLast 30s: &b" + StringUtil.round(TPSTask.getAverage(30), 1));
+					e.send("&aLast 10s: &b" + StringUtil.round(TPSTask.getAverage(10), 1));
+					e.send("&aLast Tick: &b" + StringUtil.round(TPSTask.getLastTickSpeed(), 1));
 				});
 
 		add("reload")

@@ -21,6 +21,7 @@ public class PlayerDataManager {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getData(Player player, Class<T> dataType) {
+		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + playerData);
 		return (T) playerData.get(player.getUniqueId()).get(dataType);
 	}
 
@@ -62,7 +63,7 @@ public class PlayerDataManager {
 				System.out.println("VALUE: " + value);
 
 				if (value instanceof PlayerData) {
-					System.out.println("UPDATITNG PLAYER!");
+					System.out.println("UPDATITNG PLAYER: " + playerData);
 					((PlayerData) value).updatePlayerData(e.getUniqueId(), e.getPlayerName());
 				}
 
