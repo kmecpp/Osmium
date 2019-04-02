@@ -40,6 +40,7 @@ public class ConfigFormatWriter {
 	private void writeBlock(Block block) {
 		if (!block.isRoot()) {
 			sb.append('\n');
+			sb.append(tab);
 			ConfigManager.writeKey(sb, block.getName());
 			//HOCON formatting
 			//			if (format.blockOpen.length == 1 && format.blockOpen[0] == '{') {
@@ -47,6 +48,7 @@ public class ConfigFormatWriter {
 			//			}
 			sb.append(format.blockOpen);
 			sb.append('\n');
+			tab.append(format.tab);
 		}
 
 		boolean first = true;
@@ -94,9 +96,7 @@ public class ConfigFormatWriter {
 			first = false;
 		}
 		for (Block nestedBlock : block.getBlocks()) {
-			tab.append(format.tab);
 			writeBlock(nestedBlock);
-			tab.setLength(tab.length() - format.tab.length);
 		}
 
 		//Write block close
@@ -107,6 +107,10 @@ public class ConfigFormatWriter {
 			}
 			sb.append(format.blockClose);
 			sb.append("\n");
+		}
+
+		if (tab.length() > 0) {
+			tab.setLength(tab.length() - format.tab.length);
 		}
 	}
 
