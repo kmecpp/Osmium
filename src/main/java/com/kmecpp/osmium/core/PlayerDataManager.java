@@ -16,13 +16,13 @@ import com.kmecpp.osmium.api.util.Reflection;
 
 public class PlayerDataManager {
 
-	private HashMap<OsmiumPlugin, ArrayList<Class<?>>> registeredTypes = new HashMap<>();
-	private HashMap<UUID, HashMap<Class<?>, Object>> playerData = new HashMap<>();
+	private final HashMap<OsmiumPlugin, ArrayList<Class<?>>> registeredTypes = new HashMap<>();
+	private final HashMap<UUID, HashMap<Class<?>, Object>> data = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	public <T> T getData(Player player, Class<T> dataType) {
-		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + playerData);
-		return (T) playerData.get(player.getUniqueId()).get(dataType);
+		//		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + data);
+		return (T) data.get(player.getUniqueId()).get(dataType);
 	}
 
 	public void registerType(OsmiumPlugin plugin, Class<?> dataType) {
@@ -35,13 +35,13 @@ public class PlayerDataManager {
 	}
 
 	public HashMap<UUID, HashMap<Class<?>, Object>> getData() {
-		return playerData;
+		return data;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> Set<Entry<UUID, T>> get(Class<T> type) {
 		HashMap<UUID, T> map = new HashMap<>();
-		for (Entry<UUID, HashMap<Class<?>, Object>> entry : playerData.entrySet()) {
+		for (Entry<UUID, HashMap<Class<?>, Object>> entry : data.entrySet()) {
 			map.put(entry.getKey(), (T) entry.getValue().get(type));
 		}
 		return map.entrySet();
@@ -60,17 +60,17 @@ public class PlayerDataManager {
 		for (Entry<OsmiumPlugin, ArrayList<Class<?>>> entry : registeredTypes.entrySet()) {
 			for (Class<?> type : entry.getValue()) {
 				Object value = entry.getKey().getDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), e.getUniqueId());
-				System.out.println("VALUE: " + value);
+				//				System.out.println("VALUE: " + value);
 
 				if (value instanceof PlayerData) {
-					System.out.println("UPDATITNG PLAYER: " + playerData);
+					//					System.out.println("UPDATITNG PLAYER: " + data);
 					((PlayerData) value).updatePlayerData(e.getUniqueId(), e.getPlayerName());
 				}
 
-				HashMap<Class<?>, Object> data = this.playerData.get(e.getUniqueId());
+				HashMap<Class<?>, Object> data = this.data.get(e.getUniqueId());
 				if (data == null) {
 					data = new HashMap<>();
-					this.playerData.put(e.getUniqueId(), data);
+					this.data.put(e.getUniqueId(), data);
 				}
 				System.out.println();
 				data.put(type, value);
@@ -80,11 +80,11 @@ public class PlayerDataManager {
 
 	public void onPlayerQuit(PlayerConnectionEvent.Quit e) {
 		savePlayer(e.getPlayer());
+		data.remove(e.getUniqueId());
 	}
 
 	public void savePlayer(Player player) {
-		HashMap<Class<?>, Object> playerData = this.playerData.remove(player.getUniqueId());
-
+		HashMap<Class<?>, Object> playerData = this.data.get(player.getUniqueId());
 		if (playerData == null) {
 			return;
 		}

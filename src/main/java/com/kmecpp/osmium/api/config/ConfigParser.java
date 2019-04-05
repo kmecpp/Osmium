@@ -236,10 +236,12 @@ public class ConfigParser {
 				fields.put(ConfigManager.getKey(dataField.getName()), new ConfigField(dataField));
 				dataField.setAccessible(true);
 			}
-			while (current != '}') {
+			while (current != '}' && index < length) {
 				try {
 					skipWhitespaceAndComments();
 					String key = readKey();
+					System.out.println(line + ", " + current);
+					System.out.println("KEY: " + key);
 					skip(':');
 					skipWhitespaceAndComments();
 

@@ -82,6 +82,13 @@ public class CoreOsmiumConfig {
 		@Setting(comment = "The password to access the MySQL database")
 		public static String password = "";
 
+		public static class Stats {
+
+			@Setting
+			public static boolean logStats = false;
+
+		}
+
 	}
 
 	public static class Metrics {

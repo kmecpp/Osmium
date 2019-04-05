@@ -28,37 +28,40 @@ public class ConfigManager {
 	public static void main(String[] args) throws IOException, InvalidConfigurationException {
 		ConfigManager m = new ConfigManager();
 
-		ConfigData data = m.getConfigData(CoreOsmiumConfig.class);
+		ConfigData data = m.getConfigData(BuildingRegions.class);
+		new ConfigParser(data, new File("test.conf")).load();
+
 		//		new ConfigWriter(data, new File("config.yml")).write(); //File handling is done by the writer
-		ConfigFormat format = ConfigFormats.HOCON;
-		ConfigFormatWriter w = new ConfigFormatWriter(data, new File("config.yml"), format);
-		//		VirtualConfig v = m.load(Paths.get("config.yml"), ConfigFormats.YAML);
-		long start = System.currentTimeMillis();
-		w.write();
-		//		v.save();
-		//		System.out.println(data.getRoot().getBlocks());
-		//		System.out.println(data.getRoot().getFields());
-
-		//		new ConfigParser(data, new File("config.yml")).load();
-
-		//		YamlConfiguration yml = new YamlConfiguration();
-		//		yml.load(new File("config.yml"));
-		//		System.out.println(yml.get("test"));
-
-		//		yml.save(new File("config.yml"));
-
-		//		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
-		//				.setPath(Paths.get("config.yml"))
-		//				.build();
+		//		ConfigFormat format = ConfigFormats.HOCON;
+		//		ConfigFormatWriter w = new ConfigFormatWriter(m.getConfigData(CoreOsmiumConfig.class), new File("config.conf"), format);
+		//		w.write();
+		//		//		VirtualConfig v = m.load(Paths.get("config.yml"), ConfigFormats.YAML);
+		//		long start = System.currentTimeMillis();
+		//		w.write();
+		//		//		v.save();
+		//		//		System.out.println(data.getRoot().getBlocks());
+		//		//		System.out.println(data.getRoot().getFields());
 		//
-		//		loader.load();
-
-		//		m.load(Paths.get("config.yml"));
-		//		new ConfigParser(data, new File("config.conf")).load();
-		System.out.println("Write: " + (System.currentTimeMillis() - start) + "ms");
-		start = System.currentTimeMillis();
-		new ConfigParser(data, new File("config.yml")).load();
-		System.out.println("Read: " + (System.currentTimeMillis() - start) + "ms");
+		//		//		new ConfigParser(data, new File("config.yml")).load();
+		//
+		//		//		YamlConfiguration yml = new YamlConfiguration();
+		//		//		yml.load(new File("config.yml"));
+		//		//		System.out.println(yml.get("test"));
+		//
+		//		//		yml.save(new File("config.yml"));
+		//
+		//		//		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
+		//		//				.setPath(Paths.get("config.yml"))
+		//		//				.build();
+		//		//
+		//		//		loader.load();
+		//
+		//		//		m.load(Paths.get("config.yml"));
+		//		//		new ConfigParser(data, new File("config.conf")).load();
+		//		System.out.println("Write: " + (System.currentTimeMillis() - start) + "ms");
+		//		start = System.currentTimeMillis();
+		//		new ConfigParser(data, new File("config.yml")).load();
+		//		System.out.println("Read: " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	public void lateInit() {

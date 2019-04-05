@@ -22,6 +22,10 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 	private static final HashMap<String, String> map = new HashMap<>();
 	//	private static final ArrayList<String> lines = new ArrayList<>();
 
+	//	public static void main(String[] args) {
+	//		String s = "java.util.HashMap<java.lang.String,java.util.HashMap<java.util.UUID,java.lang.Integer>>";
+	//	}
+
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		if (roundEnv.processingOver()) {
@@ -45,8 +49,10 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 				String location = element.getEnclosingElement().toString() + "." + element.getSimpleName();
 				String typeArgs = type.getTypeArguments().toString();
 				map.put(location, typeArgs);
-				//				HashMap<String, ArrayList<Object>> result = new HashMap<>();
-				//				generateTypeInfo(type, result);
+				System.out.println("STARTING TYPE: " + type);
+				System.out.println(type.asElement());
+				HashMap<String, ArrayList<Object>> result = new HashMap<>();
+				generateTypeInfo(type, result);
 			}
 		}
 		return true;
@@ -63,6 +69,7 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 			DeclaredType sub = (DeclaredType) typeMirror;
 			if (current == null) {
 				current = new ArrayList<>();
+				System.out.println("SUB NULL: " + sub);
 				result.put(type.asElement().toString(), current);
 			}
 
