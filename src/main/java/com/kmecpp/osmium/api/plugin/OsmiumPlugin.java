@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.spongepowered.api.Sponge;
+import org.spongepowered.common.SpongeImpl;
 
 import com.google.common.base.Preconditions;
 import com.kmecpp.osmium.Osmium;
@@ -33,6 +33,7 @@ public abstract class OsmiumPlugin {
 	private Object metricsImplementation;
 	private PersistentPluginData persistentData;
 	private OsmiumPluginLogger logger = new OsmiumPluginLogger(properties.name());
+	private Path dataFolder;
 
 	private Class<?> config;
 	private ClassProcessor classProcessor;
@@ -63,6 +64,11 @@ public abstract class OsmiumPlugin {
 	@SuppressWarnings("unused")
 	private final void setupPlugin(Object pluginImpl) throws Exception {
 		this.pluginImplementation = pluginImpl;
+		if (Platform.isBukkit()) {
+			this.dataFolder = this.<JavaPlugin> getPluginImplementation().getDataFolder().toPath();
+		} else if (Platform.isSponge()) {
+			dataFolder = SpongeImpl.getPluginConfigDir() != null ? SpongeImpl.getPluginConfigDir().resolve(properties.name()) : Paths.get("");
+		}
 		this.persistentData = new PersistentPluginData(this);
 		this.classProcessor = new ClassProcessor(this, pluginImpl); //This loads the plugin's configs and persistent data
 
@@ -232,17 +238,19 @@ public abstract class OsmiumPlugin {
 	//	}
 
 	public Path getFolder() {
-		if (Platform.isBukkit() && Platform.isSponge()) {
-			return Paths.get("");//TODO: Find a better way to handle tests
-		}
-
-		if (Platform.isBukkit()) {
-			return ((JavaPlugin) pluginImplementation).getDataFolder().toPath();
-		} else if (Platform.isSponge()) {
-			return Sponge.getGame().getConfigManager().getPluginConfig(pluginImplementation).getDirectory();
-		} else {
-			return null;
-		}
+		return dataFolder;
+		//		if (Platform.isBukkit() && Platform.isSponge()) {
+		//			return Paths.get("");//TODO: Find a better way to handle tests
+		//		}
+		//
+		//		if (Platform.isBukkit()) {
+		//			return ((JavaPlugin) pluginImplementation).getDataFolder().toPath();
+		//		} else if (Platform.isSponge()) {
+		//			//			return Sponge.getGame().getConfigManager().getPluginConfig(pluginImplementation).getDirectory();
+		//			return Paths.get("Osmium");
+		//		} else {
+		//			return null;
+		//		}
 	}
 
 	public OsmiumTask getTask() {

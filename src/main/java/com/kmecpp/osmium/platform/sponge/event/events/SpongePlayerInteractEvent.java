@@ -9,6 +9,7 @@ import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerInteractEvent;
+import com.kmecpp.osmium.api.inventory.ClickType;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 
 public class SpongePlayerInteractEvent implements PlayerInteractEvent {
@@ -58,6 +59,11 @@ public class SpongePlayerInteractEvent implements PlayerInteractEvent {
 			return SpongeAccess.getItemStack(event.getItemStack().createStack());
 		}
 
+		@Override
+		public ClickType getClickType() {
+			return event instanceof InteractItemEvent.Primary ? ClickType.LEFT : ClickType.RIGHT;
+		}
+
 	}
 
 	public static class SpongePlayerInteractBlockEvent extends SpongePlayerInteractEvent implements PlayerInteractEvent.Block {
@@ -74,9 +80,14 @@ public class SpongePlayerInteractEvent implements PlayerInteractEvent {
 			return SpongeAccess.getBlock(event.getTargetBlock().getLocation().get());
 		}
 
+		@Override
+		public ClickType getClickType() {
+			return event instanceof InteractBlockEvent.Primary ? ClickType.LEFT : ClickType.RIGHT;
+		}
+
 	}
 
-	public static class SpongePlayerInteractPhysicalEvent implements PlayerInteractEvent.Block {
+	public static class SpongePlayerInteractPhysicalEvent implements PlayerInteractEvent.Physical {
 
 		private ChangeBlockEvent.Modify event;
 
@@ -129,6 +140,11 @@ public class SpongePlayerInteractEvent implements PlayerInteractEvent {
 		@Override
 		public com.kmecpp.osmium.api.entity.Entity getEntity() {
 			return SpongeAccess.getEntity(event.getTargetEntity());
+		}
+
+		@Override
+		public ClickType getClickType() {
+			return event instanceof InteractEntityEvent.Primary ? ClickType.LEFT : ClickType.RIGHT;
 		}
 
 	}

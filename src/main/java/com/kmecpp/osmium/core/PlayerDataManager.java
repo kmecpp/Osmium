@@ -21,7 +21,7 @@ public class PlayerDataManager {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getData(Player player, Class<T> dataType) {
-		//		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + data);
+		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + data);
 		return (T) data.get(player.getUniqueId()).get(dataType);
 	}
 
@@ -57,13 +57,13 @@ public class PlayerDataManager {
 
 	//This is not in core so it can't listen to events
 	public void onPlayerAuthenticate(PlayerConnectionEvent.Auth e) {
+		System.out.println("AUTHENCIATED!");
 		for (Entry<OsmiumPlugin, ArrayList<Class<?>>> entry : registeredTypes.entrySet()) {
 			for (Class<?> type : entry.getValue()) {
 				Object value = entry.getKey().getDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), e.getUniqueId());
 				//				System.out.println("VALUE: " + value);
 
 				if (value instanceof PlayerData) {
-					//					System.out.println("UPDATITNG PLAYER: " + data);
 					((PlayerData) value).updatePlayerData(e.getUniqueId(), e.getPlayerName());
 				}
 
@@ -72,7 +72,7 @@ public class PlayerDataManager {
 					data = new HashMap<>();
 					this.data.put(e.getUniqueId(), data);
 				}
-				System.out.println();
+				System.out.println("UPDATED PLAYER DATA: " + e.getPlayerName() + ", " + data);
 				data.put(type, value);
 			}
 		}

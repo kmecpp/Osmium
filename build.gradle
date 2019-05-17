@@ -73,6 +73,8 @@ publishing {
  */
 compileJava {
     options.compilerArgs += ["-proc:none"]
+    sourceCompatibility = 8
+    targetCompatibility = 8
 }
  
 processResources {
@@ -127,6 +129,12 @@ repositories {
 	//maven { url "http://repo.bstats.org/content/repositories/releases/" }
 }
 
+configurations.all {
+	resolutionStrategy {
+		force 'org.javassist:javassist:3.22.0-GA'
+	}
+}
+
 dependencies {
 	//compile files("lib/spigot-1.13.2.jar")
 	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648_DEOBF.jar")
@@ -135,12 +143,12 @@ dependencies {
 	compile "org.spongepowered:spongeapi:$sponge_version"
 	compile files("build/generated/com/kmecpp/osmium/AppInfo.class")
 	//compileOnly "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75" //Breaking builds. Find alternative for this
+	shade "org.javassist:javassist:3.22.0-GA"
 	
 	//shade "com.kmecpp:jlib:+"
 	shade "com.eclipsesource.minimal-json:minimal-json:0.9.5"
 	shade "org.spongepowered:configurate-hocon:3.5"
 	shade "org.spongepowered:plugin-meta:0.4.1"
-	shade "org.javassist:javassist:3.22.0-CR1"
 	//shade "log4j:log4j:1.2.17"
 	shade "org.yaml:snakeyaml:1.21"
 	//shade "org.bstats:bstats-bukkit:1.2"
@@ -177,8 +185,8 @@ jar {
 						
     configurations.shade.each { dep ->
     	print dep
-        from(project.zipTree(dep)){
-            exclude 'META-INF', 'META-INF/**'
+        from(project.zipTree(dep)) {
+            exclude 'META-INF', 'META-INF/**', "module-info.class"
         }
     }
 }

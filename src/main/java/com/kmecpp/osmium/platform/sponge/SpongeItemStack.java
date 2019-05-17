@@ -1,10 +1,15 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.SpongeAccess;
+import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.util.Reflection;
@@ -54,6 +59,26 @@ public class SpongeItemStack implements ItemStack {
 	@Override
 	public void setDisplayName(String name) {
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of(name));
+	}
+
+	@Override
+	public void setDescription(String description) {
+		ArrayList<String> lines = Chat.styleLines(description);
+		Text[] text = new Text[lines.size()];
+		for (int i = 0; i < text.length; i++) {
+			text[i] = SpongeAccess.getText(lines.get(i));
+		}
+		itemStack.offer(Keys.ITEM_LORE, Arrays.asList(text));
+	}
+
+	@Override
+	public List<String> getDescription() {
+		List<Text> textList = itemStack.get(Keys.ITEM_LORE).orElse(new ArrayList<>());
+		ArrayList<String> result = new ArrayList<>();
+		for (Text text : textList) {
+			result.add(text.toString());
+		}
+		return result;
 	}
 
 	@Override

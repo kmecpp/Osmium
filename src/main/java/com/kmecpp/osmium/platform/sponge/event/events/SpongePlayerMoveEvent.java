@@ -1,6 +1,8 @@
 package com.kmecpp.osmium.platform.sponge.event.events;
 
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
+import org.spongepowered.api.world.World;
 
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
@@ -43,6 +45,11 @@ public class SpongePlayerMoveEvent implements PlayerMoveEvent {
 	@Override
 	public Location getTo() {
 		return SpongeAccess.getLocation(event.getToTransform().getLocation());
+	}
+
+	@Override
+	public void setTo(Location location) {
+		event.setToTransform(new Transform<World>(location.<org.spongepowered.api.world.Location<World>> getImplementation()));
 	}
 
 	@Override

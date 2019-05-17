@@ -1,2 +1,3 @@
-com.kmecpp.osmium.ap.OsmiumPluginProcessor
 com.kmecpp.osmium.ap.ConfigTypeProcessor
+com.kmecpp.osmium.ap.OsmiumPluginProcessor
+com.kmecpp.osmium.ap.OsmiumMethodAnnotationProcessor

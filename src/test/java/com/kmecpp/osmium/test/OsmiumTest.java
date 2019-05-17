@@ -1,9 +1,24 @@
 package com.kmecpp.osmium.test;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+
+import javax.annotation.processing.SupportedAnnotationTypes;
+
 import org.junit.Test;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+
+import com.kmecpp.osmium.ap.ConfigTypeProcessor;
+import com.kmecpp.osmium.ap.OsmiumMethodAnnotationProcessor;
+import com.kmecpp.osmium.ap.OsmiumPluginProcessor;
+import com.kmecpp.osmium.api.config.Setting;
+import com.kmecpp.osmium.api.event.Listener;
+import com.kmecpp.osmium.api.plugin.Plugin;
+import com.kmecpp.osmium.api.plugin.Startup;
+import com.kmecpp.osmium.api.tasks.Schedule;
 
 public class OsmiumTest {
 
@@ -15,6 +30,21 @@ public class OsmiumTest {
 		Result result = junit.run(OsmiumTestPlatform.class);
 
 		resultReport(result);
+	}
+
+	@Test
+	public void testAnnotationProcessors() throws ClassNotFoundException {
+		assertTrue(Arrays.asList(OsmiumMethodAnnotationProcessor.class.getAnnotation(SupportedAnnotationTypes.class).value())
+				.containsAll(Arrays.asList(Startup.class.getName(), Schedule.class.getName(), Listener.class.getName())));
+
+		assertTrue(Arrays.asList(ConfigTypeProcessor.class.getAnnotation(SupportedAnnotationTypes.class).value())
+				.containsAll(Arrays.asList(Setting.class.getName())));
+
+		assertTrue(Arrays.asList(OsmiumPluginProcessor.class.getAnnotation(SupportedAnnotationTypes.class).value())
+				.containsAll(Arrays.asList(Plugin.class.getName())));
+
+		Class.forName(OsmiumPluginProcessor.BUKKIT_PARENT);
+		Class.forName(OsmiumPluginProcessor.SPONGE_PARENT);
 	}
 
 	public static void resultReport(Result result) {

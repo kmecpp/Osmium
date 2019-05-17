@@ -6,13 +6,16 @@ import java.util.HashMap;
 
 import com.kmecpp.osmium.api.event.events.BlockEvent;
 import com.kmecpp.osmium.api.event.events.DateChangeEvent;
+import com.kmecpp.osmium.api.event.events.EntityDamageEvent;
 import com.kmecpp.osmium.api.event.events.InventoryEvent;
+import com.kmecpp.osmium.api.event.events.ItemDropEvent;
 import com.kmecpp.osmium.api.event.events.PlayerChatEvent;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.event.events.PlayerInteractEvent;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 import com.kmecpp.osmium.api.event.events.PlayerMovePositionEvent;
 import com.kmecpp.osmium.api.event.events.PlayerTeleportEvent;
+import com.kmecpp.osmium.api.event.events.PluginReloadEvent;
 import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
@@ -20,11 +23,13 @@ import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockBreakEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockPlaceEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitPlayerChangeBlockEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitEntityDamageEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryClickEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryCloseEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryDragEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryInteractEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryOpenEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitItemDropEvent.BukkitItemDropPlayerEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerChatEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectionEvent.BukkitPlayerAuthEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerConnectionEvent.BukkitPlayerJoinEvent;
@@ -40,15 +45,18 @@ import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumDayChangeEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumMonthChangeEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
+import com.kmecpp.osmium.platform.osmium.OsmiumPluginReloadEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumWeekChangeEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockBreakEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockPlaceEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongePlayerChangeBlockEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongeEntityDamageEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryClickEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryCloseEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryDragEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryInteractEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryOpenEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongeItemDropEvent.SpongeItemDropPlayerEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerChatEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerAuthEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerJoinEvent;
@@ -100,11 +108,15 @@ public class EventInfo {
 	 */
 	static {
 		//@formatter:off
-		register(PlayerMovePositionEvent.class,       OsmiumPlayerMovePositionEvent.class);
+		register(PluginReloadEvent.class,             OsmiumPluginReloadEvent.class);
 		register(DateChangeEvent.Day.class,           OsmiumDayChangeEvent.class);
 		register(DateChangeEvent.Week.class,          OsmiumWeekChangeEvent.class);
 		register(DateChangeEvent.Month.class,         OsmiumMonthChangeEvent.class);
-
+		register(PlayerMovePositionEvent.class,       OsmiumPlayerMovePositionEvent.class);
+		
+		register(EntityDamageEvent.class,             BukkitEntityDamageEvent.class,           SpongeEntityDamageEvent.class);
+		register(ItemDropEvent.Player.class,          BukkitItemDropPlayerEvent.class,         SpongeItemDropPlayerEvent.class);
+		
 		register(InventoryEvent.Open.class,           BukkitInventoryOpenEvent.class,          SpongeInventoryOpenEvent.class);
 		register(InventoryEvent.Close.class,          BukkitInventoryCloseEvent.class,         SpongeInventoryCloseEvent.class);
 		register(InventoryEvent.Click.class,          BukkitInventoryClickEvent.class,         SpongeInventoryClickEvent.class);
@@ -163,7 +175,10 @@ public class EventInfo {
 			//			return Reflection.cast();
 			Field[] fields = osmiumClass.getDeclaredFields();
 			for (Field field : fields) {
-				result.add(field.getType());
+				if ((Platform.isBukkit() && org.bukkit.event.Event.class.isAssignableFrom(field.getType()))
+						|| (Platform.isSponge() && org.spongepowered.api.event.Event.class.isAssignableFrom(field.getType()))) {
+					result.add(field.getType());
+				}
 			}
 			if (result.isEmpty()) {
 				result.add(osmiumClass.getDeclaredConstructors()[0].getParameterTypes()[0]);
@@ -185,6 +200,12 @@ public class EventInfo {
 
 	public Class<? extends Event> getEvent() {
 		return event;
+	}
+
+	public String getEventName() {
+		//TODO: Define this recursively for arbitrarily many enclosing classes
+		return event.getEnclosingClass() == null ? event.getSimpleName()
+				: event.getEnclosingClass().getSimpleName() + "." + event.getSimpleName();
 	}
 
 	@SuppressWarnings("unchecked")

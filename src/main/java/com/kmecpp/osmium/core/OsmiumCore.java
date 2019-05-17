@@ -2,7 +2,7 @@ package com.kmecpp.osmium.core;
 
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.api.inventory.InventoryMenu;
+import com.kmecpp.osmium.api.inventory.menu.InventoryManager;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.tasks.TimeUnit;
@@ -38,7 +38,7 @@ public class OsmiumCore extends OsmiumPlugin {
 			saveAllData();
 		}).start();
 
-		this.getClassProcessor().onEnable(InventoryMenu.class);
+		this.getClassProcessor().onEnable(InventoryManager.class);
 
 		//		if (Platform.isBukkit()) {
 		//			this.metricsImplementation = new OsmiumMetrics(getPluginImplementation());

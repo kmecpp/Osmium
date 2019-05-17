@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerInteractEvent;
+import com.kmecpp.osmium.api.inventory.ClickType;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 
 public class BukkitPlayerInteractEvent implements PlayerInteractEvent {
@@ -36,6 +37,12 @@ public class BukkitPlayerInteractEvent implements PlayerInteractEvent {
 	@Override
 	public void setCancelled(boolean cancel) {
 		event.setCancelled(cancel);
+	}
+
+	public ClickType getClickType() {
+		return event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK ? ClickType.LEFT
+				: event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK ? ClickType.RIGHT
+						: null;
 	}
 
 	public static class BukkitPlayerInteractItemEvent extends BukkitPlayerInteractEvent implements PlayerInteractEvent.Item {
@@ -129,6 +136,11 @@ public class BukkitPlayerInteractEvent implements PlayerInteractEvent {
 			} else {
 				rightClickEvent.setCancelled(cancel);
 			}
+		}
+
+		@Override
+		public ClickType getClickType() {
+			return leftClickEvent != null ? ClickType.LEFT : ClickType.RIGHT;
 		}
 
 		@Override

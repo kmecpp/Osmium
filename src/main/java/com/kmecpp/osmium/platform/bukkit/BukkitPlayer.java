@@ -52,6 +52,11 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 		return new BukkitInventory(player.getInventory());
 	}
 
+	@Override
+	public int getSelectedSlot() {
+		return player.getInventory().getHeldItemSlot();
+	}
+
 	@SuppressWarnings("deprecation")
 	@Override
 	public ItemStack getItemInMainHand() {

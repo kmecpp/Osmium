@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api.command;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public enum Chat {
@@ -74,14 +75,27 @@ public enum Chat {
 		return result != null ? result : WHITE;
 	}
 
-	//	public static void main(String[] args) {
-	//		long start = System.nanoTime();
-	//		for (int i = 0; i < 10000; i++) {
-	//			style("eewefwefweiiwechweiuciwe$cuwicahiuwecawecawceaeafwfSfwewefwefawefaefaewfawefdicksebshits");
-	//		}
-	//		long end = System.nanoTime();
-	//		System.out.println("Time Taken: " + ((end - start) / 1000000F) + "ms");
-	//	}
+	public static String strip(String str) {
+		StringBuilder sb = new StringBuilder();
+		char[] chars = str.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			if (i < chars.length - 1 && (chars[i] == '&' || chars[i] == COLOR_CHAR) && Chat.fromCode(chars[i + 1]) != null) {
+				i++;
+			} else {
+				sb.append(chars[i]);
+			}
+		}
+		return sb.toString();
+	}
+
+	public static void main(String[] args) {
+		//		long start = System.nanoTime();
+		//		for (int i = 0; i < 10000; i++) {
+		//			style("eewefwefweiiwechweiuciwe$cuwicahiuwecawecawceaeafwfSfwewefwefawefaefaewfawefdicksebshits");
+		//		}
+		//		long end = System.nanoTime();
+		//		System.out.println("Time Taken: " + ((end - start) / 1000000F) + "ms");
+	}
 
 	public static String style(String message) {
 		//		if (!message.contains("&")) {
@@ -100,6 +114,52 @@ public enum Chat {
 			}
 		}
 		return styled ? new String(chars) : message;
+	}
+
+	//	public static void main(String[] args) {
+	//		System.out.println(styleLines("&aH\n!!&b&lwefij\nhetsw"));
+	//		/*
+	//		 * &aH
+	//		 * &a!!&
+	//		 */
+	//	}
+
+	public static ArrayList<String> styleLines(String message) {
+		ArrayList<String> result = new ArrayList<>();
+		char[] currentStyle = new char[2];
+		char[] chars = message.toCharArray();
+		char[] lineStart = new char[2];
+		for (int i = 0, start = 0; i < chars.length - 1; i++) {
+			char c = chars[i];
+			if (c == '&' && Chat.fromCode(chars[i + 1]) != null) {
+				chars[i] = COLOR_CHAR;
+				currentStyle[0] = currentStyle[1];
+				currentStyle[1] = chars[i + 1];
+			}
+			if (c == '\n' || i == chars.length - 2) {
+				//Carry line style over to next line
+				int preCount = lineStart[1] != 0 ? lineStart[0] != 0 ? 4 : 2 : 0;
+				int postCount = i == chars.length - 2 ? 2 : 0;
+				char[] charResult = new char[preCount + (i - start) + postCount];
+				if (lineStart[0] != 0) {
+					charResult[0] = COLOR_CHAR;
+					charResult[1] = lineStart[0];
+				}
+				if (lineStart[1] != 0) {
+					int offset = preCount == 2 ? -2 : 0;
+					charResult[2 + offset] = COLOR_CHAR;
+					charResult[3 + offset] = lineStart[1];
+				}
+				lineStart[0] = currentStyle[0];
+				lineStart[1] = currentStyle[1];
+
+				System.arraycopy(chars, start, charResult, preCount, charResult.length - preCount);
+				result.add(new String(charResult));
+				start = i + 1;
+
+			}
+		}
+		return result;
 	}
 
 	@Override

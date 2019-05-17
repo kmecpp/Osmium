@@ -12,7 +12,7 @@ import org.spongepowered.api.scheduler.Task;
 
 import com.kmecpp.osmium.Osmium;
 
-// @Plugin added by Osmium annotation processor
+// @Plugin added by to subclass by Osmium annotation processor
 public abstract class SpongePlugin {
 
 	private final OsmiumPlugin plugin = Osmium.getPluginLoader().load(this);

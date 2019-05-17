@@ -8,6 +8,7 @@ import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.EventContext;
+import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.text.Text;
 
 import com.flowpowered.math.vector.Vector3d;
@@ -53,6 +54,11 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 	@Override
 	public Inventory getInventory() {
 		return new SpongeInventory(player.getInventory());
+	}
+
+	@Override
+	public int getSelectedSlot() {
+		return ((PlayerInventory) player.getInventory()).getHotbar().getSelectedSlotIndex();
 	}
 
 	@Override

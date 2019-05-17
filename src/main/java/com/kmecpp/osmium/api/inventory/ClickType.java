@@ -47,6 +47,14 @@ public enum ClickType {
 		}
 	}
 
+	public boolean isLeft() {
+		return this == LEFT || this == SHIFT_LEFT;
+	}
+
+	public boolean isRight() {
+		return this == RIGHT || this == SHIFT_RIGHT;
+	}
+
 	public static ClickType fromSource(Object source) {
 		return map.get(source);
 	}

@@ -76,22 +76,45 @@ public class Command extends CommandBase {
 	}
 
 	public CommandBase getArgumentMatching(String argLabel, CommandSender sender) {
-		CommandBase notAllowed = null;
+		CommandBase highestMatch = null;
+		int highestMatchCount = 0;
+		System.out.println("CUSTOM SHITS");
 		for (CommandBase arg : args) {
 			for (String alias : arg.getAliases()) {
 				//Allow aliases partitioned with '/' to be treated as individual arguments
-				for (String part : alias.split("/")) {
-					if (part.equalsIgnoreCase(argLabel)) {
-						if (sender == null || !arg.isAllowed(sender)) {
-							notAllowed = arg;
+				for (String option : alias.split("/")) {
+					int matching = 0;
+					for (int i = 0; i < argLabel.length() && i < option.length(); i++) {
+						char c1 = Character.toLowerCase(argLabel.charAt(i));
+						char c2 = Character.toLowerCase(option.charAt(i));
+						if (c1 == c2) {
+							matching++;
 						} else {
-							return arg;
+							break;
 						}
 					}
+
+					if (matching > highestMatchCount) {
+						highestMatchCount = matching;
+						highestMatch = arg;
+						System.out.println("NEW MATCH: " + arg.getPrimaryAlias());
+					} else if (matching == highestMatchCount && highestMatch != arg) {
+						highestMatch = null;
+						System.out.println("INVALIDATE MATCH: " + arg.getPrimaryAlias());
+					}
+
+					//					if (argLabel.toLowerCase().startsWith(input.toLowerCase())) {
+					//						if (sender == null || !arg.isAllowed(sender)) {
+					//							highestMatch = arg;
+					//						} else {
+					//							return arg;
+					//						}
+					//					}
 				}
 			}
 		}
-		return notAllowed;
+
+		return highestMatch; //Optional: if the highest match is not allowed, fallback to second highest? Probably not.
 		//		throw new CommandException("Unknown command! Type /" + this.getPrimaryAlias() + " for a list of commands!");
 	}
 

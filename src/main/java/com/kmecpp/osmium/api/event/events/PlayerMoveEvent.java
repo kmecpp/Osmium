@@ -18,4 +18,6 @@ public interface PlayerMoveEvent extends PlayerEvent, Cancellable {
 
 	Location getTo();
 
+	void setTo(Location location);
+
 }

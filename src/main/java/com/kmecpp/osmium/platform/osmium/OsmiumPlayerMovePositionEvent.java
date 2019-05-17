@@ -24,6 +24,11 @@ public class OsmiumPlayerMovePositionEvent implements PlayerMovePositionEvent {
 	}
 
 	@Override
+	public void setTo(Location location) {
+		event.setTo(location);
+	}
+
+	@Override
 	public Player getPlayer() {
 		return event.getPlayer();
 	}

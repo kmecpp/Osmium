@@ -23,6 +23,8 @@ public interface Player extends User, EntityLiving, CommandSender {
 
 	Inventory getInventory();
 
+	int getSelectedSlot();
+
 	void openInventory(Inventory inventory);
 
 	void closeInventory();
@@ -52,6 +54,10 @@ public interface Player extends User, EntityLiving, CommandSender {
 	default Location getHighestLocation() {
 		Location loc = this.getLocation();
 		return new Location(this.getWorld(), loc.getX(), this.getWorld().getHighestYAt(loc.getBlockX(), loc.getBlockZ()), loc.getZ());
+	}
+
+	default void sendToSpawnLocation() {
+		this.setLocation(this.getWorld().getSpawnLocation().getBlockTopCenter());
 	}
 
 }

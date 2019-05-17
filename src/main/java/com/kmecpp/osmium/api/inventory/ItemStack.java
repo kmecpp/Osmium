@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.api.inventory;
 
+import java.util.List;
+
 import org.bukkit.Material;
 import org.spongepowered.api.item.ItemTypes;
 
@@ -41,6 +43,10 @@ public interface ItemStack extends Abstraction {
 
 	void setDisplayName(String name);
 
+	void setDescription(String description);
+
+	List<String> getDescription();
+
 	int getAmount();
 
 	void setAmount(int amount);
@@ -77,19 +83,19 @@ public interface ItemStack extends Abstraction {
 					: new SpongeItemStack(org.spongepowered.api.item.inventory.ItemStack.of(ItemTypes.AIR, 1));
 		}
 
-		void type(ItemType type) {
+		public void type(ItemType type) {
 			itemStack.setType(type);
 		}
 
-		void amount(int amount) {
+		public void amount(int amount) {
 			itemStack.setAmount(amount);
 		}
 
-		void damage(int damage) {
+		public void damage(int damage) {
 			itemStack.setDamage(damage);
 		}
 
-		void name(String name) {
+		public void name(String name) {
 			itemStack.setDisplayName(Chat.style(name));
 		}
 

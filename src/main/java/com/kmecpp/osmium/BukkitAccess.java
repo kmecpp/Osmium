@@ -150,7 +150,7 @@ public class BukkitAccess {
 		for (Class<? extends org.bukkit.event.Event> bukkitEventClass : eventInfo.<org.bukkit.event.Event> getSourceClasses()) {
 			Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getPluginImplementation(), (EventPriority) order.getSource(),
 					(bukkitListener, bukkitEvent) -> consumer.accept(bukkitEvent),
-					plugin.getPluginImplementation(), true);
+					plugin.getPluginImplementation(), false);
 		}
 
 	}

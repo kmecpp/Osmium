@@ -43,4 +43,9 @@ public class BukkitPlayerMoveEvent implements PlayerMoveEvent {
 		return BukkitAccess.getLocation(event.getTo());
 	}
 
+	@Override
+	public void setTo(Location location) {
+		event.setTo(location.getImplementation());
+	}
+
 }

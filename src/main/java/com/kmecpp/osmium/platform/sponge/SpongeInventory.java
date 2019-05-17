@@ -55,4 +55,9 @@ public class SpongeInventory implements Inventory {
 		return Wrappers.convert(inventory.slots(), slot -> SpongeAccess.getItemStack(slot.peek()));
 	}
 
+	@Override
+	public void clear() {
+		inventory.clear();
+	}
+
 }

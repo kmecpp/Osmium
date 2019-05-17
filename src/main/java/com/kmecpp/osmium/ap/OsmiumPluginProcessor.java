@@ -46,6 +46,8 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 	public static final String BUKKIT_PARENT = "com.kmecpp.osmium.api.plugin.BukkitPlugin";
 	public static final String SPONGE_PARENT = "com.kmecpp.osmium.api.plugin.SpongePlugin";
 
+	//	public static final String SPONGE_PLUGIN_ANNOTATION_CLASS = "org.spongepowered.api.plugin.Plugin";
+
 	private final HashMap<String, OsmiumMetaContainer> plugins = new HashMap<>();
 
 	@Override
@@ -166,7 +168,7 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 			pool.insertClassPath(new ClassClassPath(SpongePlugin.class));
 
 			CtClass ctClassSponge = pool.makeClass(meta.getName() + Platform.SPONGE.getName());
-			ctClassSponge.setSuperclass(pool.getCtClass(SPONGE_PARENT));
+			ctClassSponge.setSuperclass(pool.getCtClass(SpongePlugin.class.getName()));
 			ClassFile classFile = ctClassSponge.getClassFile();
 			ConstPool cpool = classFile.getConstPool();
 

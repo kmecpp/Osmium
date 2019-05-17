@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.SpongeAccess;
+import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -79,6 +80,10 @@ public class EventManager {
 	}
 
 	private void registerSourceListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {
+		OsmiumLogger.debug("Registering source listener for " + plugin.getName() + ": "
+				+ listenerInstance.getClass().getName() + "." + method.getName()
+				+ "(" + eventInfo.getEventName() + ")");
+		OsmiumLogger.debug(Chat.YELLOW + "    SOURCE CLASSES: " + eventInfo.getSourceClasses());
 		for (Class<?> sourceEventClass : eventInfo.getSourceClasses()) {
 			EventKey key = new EventKey(sourceEventClass, order);
 
@@ -128,6 +133,7 @@ public class EventManager {
 				};
 
 				if (Platform.isBukkit()) {
+					//					OsmiumLogger.debug(Chat.RED + "REGISTERED LISTENER FOR " + plugin.getName() + ": " + eventInfo.getEventName());
 					BukkitAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
 				} else if (Platform.isSponge()) {
 					SpongeAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);

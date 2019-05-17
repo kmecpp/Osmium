@@ -19,6 +19,8 @@ public interface Inventory extends Abstraction, Serializable {
 
 	Collection<ItemStack> getItems();
 
+	void clear();
+
 	default boolean isEmpty() {
 		return getItemCount() == 0;
 	}

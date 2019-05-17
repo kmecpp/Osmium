@@ -53,4 +53,9 @@ public class BukkitInventory implements Inventory {
 		return Wrappers.convert(inventory.getContents(), BukkitAccess::getItemStack);
 	}
 
+	@Override
+	public void clear() {
+		inventory.clear();
+	}
+
 }

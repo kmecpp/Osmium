@@ -28,12 +28,15 @@ public class TPSTask {
 			public void run() {
 				//				Osmium.getOnlinePlayers().stream().re
 				//				double tps = TPSTask.tps;
-				double asyncTps = 1e9 / (double) (System.nanoTime() - lastTick);
+				double asyncTps = 2e9 / (double) (System.nanoTime() - lastTick);
 				if (asyncTps < 20) {
 					tps = asyncTps;
 					//					System.out.println("ASYNC: " + asyncTps);
 				}
-				//				System.out.println("ADDING TPS: " + TPSTask.tps);
+				//				else {
+				//					System.out.println("USING SYNC: " + TPSTask.tps);
+				//				}
+
 				sampleIndex = ++sampleIndex % samples.length;
 				samples[sampleIndex] = TPSTask.tps;
 			}
@@ -47,7 +50,7 @@ public class TPSTask {
 			lastTick = System.nanoTime();
 		}
 
-		double currentTps = 1e9 / (double) (System.nanoTime() - lastTick);
+		double currentTps = 2e9 / (double) (System.nanoTime() - lastTick);
 		//		System.out.println(currentTps + ", " + getRecentTPS() + ", " + getTPS() + ", " + getMinuteTPS());
 		if (currentTps < 21) {
 			tps = currentTps;

@@ -12,7 +12,7 @@ public class Hook<T> {
 
 	private T hook;
 
-	private Hook(T hook) {
+	public Hook(T hook) {
 		this.hook = hook;
 	}
 
@@ -36,14 +36,31 @@ public class Hook<T> {
 				}
 			}
 		}
-		return (T) new Hook<T>((T) result);
+		return (T) new Hook<>(result);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getFrom(String method) {
+		String[] parts = method.split("\\:");
+		if (parts.length != 2) {
+			throw new IllegalArgumentException("Expected: class:method");
+		}
+		String className = parts[0];
+		String methodName = parts[1];
+
+		try {
+			return (T) new Hook<>(Class.forName(className).getMethod(methodName).invoke(null));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return (T) new Hook<>(null);
+		}
 	}
 
 	public static <T> Hook<T> get(Callable<T> callable) {
+		System.out.println("GETTING!!!");
 		try {
 			return new Hook<T>(callable.call());
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Throwable t) {
 			return new Hook<T>(null);
 		}
 	}

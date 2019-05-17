@@ -1,5 +1,6 @@
-
 package com.kmecpp.osmium;
+
+
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -212,7 +213,6 @@ public final class Osmium {
 	//	}
 
 	public static void savePluginData(OsmiumPlugin plugin) {
-		configManager.saveAll(plugin);
 		plugin.saveData();
 	}
 

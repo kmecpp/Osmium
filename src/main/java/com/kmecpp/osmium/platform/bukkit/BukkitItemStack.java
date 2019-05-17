@@ -1,9 +1,12 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.util.Reflection;
@@ -62,6 +65,18 @@ public class BukkitItemStack implements ItemStack {
 		ItemMeta meta = itemStack.getItemMeta();
 		meta.setDisplayName(name);
 		itemStack.setItemMeta(meta);
+	}
+
+	@Override
+	public void setDescription(String description) {
+		ItemMeta meta = itemStack.getItemMeta();
+		meta.setLore(description == null ? null : Chat.styleLines(description));
+		itemStack.setItemMeta(meta);
+	}
+
+	@Override
+	public List<String> getDescription() {
+		return itemStack.getItemMeta().getLore();
 	}
 
 	@Override

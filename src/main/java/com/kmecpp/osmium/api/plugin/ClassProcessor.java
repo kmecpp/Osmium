@@ -15,6 +15,7 @@ import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.OsmiumClassLoader;
 import com.kmecpp.osmium.SpongeAccess;
+import com.kmecpp.osmium.api.HookClass;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.ConfigProperties;
 import com.kmecpp.osmium.api.database.DBTable;
@@ -63,13 +64,16 @@ public class ClassProcessor {
 				try {
 					OsmiumLogger.debug("Loading class: " + className);
 					Class<?> cls = classLoader.loadClass(className, true);
+					if (cls.isAnnotationPresent(HookClass.class)) {
+						continue;
+					}
 					//					Class<?> cls = Class.forName(className, false, classLoader);
 					cls.getDeclaredMethods(); //Verify that return types exist
 					//					cls.getFields();
 					onLoad(cls);
 					pluginClasses.add(cls);
 				} catch (ClassNotFoundException | NoClassDefFoundError e) {
-					if (e.getMessage().contains("org/spongepowered") || e.getMessage().contains("org/bukkit")) {
+					if (e.getMessage().toLowerCase().contains("spongepowered") || e.getMessage().toLowerCase().contains("bukkit")) {
 						OsmiumLogger.debug("SKIPPING: " + className);
 					} else {
 						OsmiumLogger.error("Could not load class: " + className);
@@ -112,12 +116,7 @@ public class ClassProcessor {
 			if (!Reflection.isConcrete(cls)) {
 				continue;
 			}
-			try {
-				onEnable(cls);
-			} catch (Exception e) {
-				OsmiumLogger.error("Failed to enable class: " + cls.getName());
-				e.printStackTrace();
-			}
+			onEnable(cls);
 		}
 	}
 
@@ -200,117 +199,122 @@ public class ClassProcessor {
 	}
 
 	public void onEnable(Class<?> cls) {
-		OsmiumLogger.debug("Initializing class: " + cls.getName());
+		try {
+			OsmiumLogger.debug("Initializing class: " + cls.getName());
 
-		//COMMANDS
-		if (Command.class.isAssignableFrom(cls)) {
-			Command command;
-			try {
-				command = (Command) cls.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				OsmiumLogger.warn("Cannot cannot be initialized! Class must have a default constructor!");
-				return;
-			}
-
-			commands.put(cls, command);
-
-			if (command.getAliases().length == 0) {
-				OsmiumLogger.warn("Command does not have any aliases and will not be registered: " + cls);
-				return;
-			}
-
-			if (Platform.isBukkit()) {
-				BukkitAccess.registerCommand(plugin, command);
-			} else if (Platform.isSponge()) {
-				SpongeAccess.registerCommand(plugin, command);
-			}
-		}
-
-		for (Method method : cls.getDeclaredMethods()) {
-			Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
-			Listener listenerAnnotation = method.getAnnotation(Listener.class);
-			Startup startup = method.getAnnotation(Startup.class);
-
-			if (scheduleAnnotation == null && listenerAnnotation == null && startup == null) {
-				continue;
-			}
-
-			method.setAccessible(true);
-
-			//Retrieve instance or create one if possible
-			final Object instance;
-			try {
-				Class.forName(cls.getName()); //Initialize class. This hack allows classes to register themselves in a static initializer
-
-				//THE FOLLOWING CODE IS DONE THIS WAY BECAUSE THE LISTENER INSTANCE MUST BE FINAL
-				Object temp = classInstances.get(cls);
-				if (temp != null) {
-					instance = temp;
-				} else {
-					instance = cls.newInstance();
-					classInstances.put(cls, instance);
-				}
-			} catch (IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
-				OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.provideInstance(obj)");
-				e.printStackTrace();
-				break;
-			} catch (Exception e) {
-				OsmiumLogger.error("Caught exception while trying to instantiate task/listener class: " + cls.getName());
-				e.printStackTrace();
-				break;
-			}
-
-			//STARTUP
-			if (startup != null) {
+			//COMMANDS
+			if (Command.class.isAssignableFrom(cls)) {
+				Command command;
 				try {
-					method.invoke(instance);
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					OsmiumLogger.error("Method " + cls.getSimpleName() + "." + method.getName() + " annotated with @" + Startup.class.getSimpleName()
-							+ " cannot be executed because it contains parameters!");
-					e.printStackTrace();
+					command = (Command) cls.newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					OsmiumLogger.warn("Cannot cannot be initialized! Class must have a default constructor!");
+					return;
+				}
+
+				commands.put(cls, command);
+
+				if (command.getAliases().length == 0) {
+					OsmiumLogger.warn("Command does not have any aliases and will not be registered: " + cls);
+					return;
+				}
+
+				if (Platform.isBukkit()) {
+					BukkitAccess.registerCommand(plugin, command);
+				} else if (Platform.isSponge()) {
+					SpongeAccess.registerCommand(plugin, command);
 				}
 			}
 
-			//TASKS
-			if (scheduleAnnotation != null) {
-				plugin.getTask()
-						.setAsync(scheduleAnnotation.async())
-						.setDelay(scheduleAnnotation.delay(), scheduleAnnotation.unit())
-						.setInterval(scheduleAnnotation.interval(), scheduleAnnotation.unit())
-						.setExecutor((t) -> {
-							try {
-								method.invoke(instance);
-							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-								e.printStackTrace();
-							}
-						})
-						.start();
-			}
+			for (Method method : cls.getDeclaredMethods()) {
+				Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
+				Listener listenerAnnotation = method.getAnnotation(Listener.class);
+				Startup startup = method.getAnnotation(Startup.class);
 
-			//LISTENERS
-			if (listenerAnnotation != null) {
-				if (method.getParameterCount() != 1 || !Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
-					plugin.error("Invalid listener method with signature: '" + method + "'");
-				} else {
-					Class<? extends EventAbstraction> eventClass = Reflection.cast(method.getParameterTypes()[0]);
-					EventInfo eventInfo = EventInfo.get(eventClass);
+				if (scheduleAnnotation == null && listenerAnnotation == null && startup == null) {
+					continue;
+				}
 
-					if (eventInfo == null) {
-						OsmiumLogger.error("Osmium event class has no registration: " + eventClass);
-						continue;
-					}
+				method.setAccessible(true);
 
-					if (eventInfo.isOsmiumEvent()) {
-						//Register implementation class for Osmium
-						OsmiumLogger.debug("Registering listener for " + eventInfo.getEvent() + ": " + cls.getSimpleName() + method.getName());
-						Osmium.getEventManager()
-								.registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
+				//Retrieve instance or create one if possible
+				final Object instance;
+				try {
+					Class.forName(cls.getName()); //Initialize class. This hack allows classes to register themselves in a static initializer
 
+					//THE FOLLOWING CODE IS DONE THIS WAY BECAUSE THE LISTENER INSTANCE MUST BE FINAL
+					Object temp = classInstances.get(cls);
+					if (temp != null) {
+						instance = temp;
 					} else {
-						Osmium.getEventManager().registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
+						instance = cls.newInstance();
+						classInstances.put(cls, instance);
+					}
+				} catch (IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
+					OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.provideInstance(obj)");
+					e.printStackTrace();
+					break;
+				} catch (Exception e) {
+					OsmiumLogger.error("Caught exception while trying to instantiate task/listener class: " + cls.getName());
+					e.printStackTrace();
+					break;
+				}
+
+				//STARTUP
+				if (startup != null) {
+					try {
+						method.invoke(instance);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						OsmiumLogger.error("Method " + cls.getSimpleName() + "." + method.getName() + " annotated with @" + Startup.class.getSimpleName()
+								+ " cannot be executed because it contains parameters!");
+						e.printStackTrace();
+					}
+				}
+
+				//TASKS
+				if (scheduleAnnotation != null) {
+					plugin.getTask()
+							.setAsync(scheduleAnnotation.async())
+							.setDelay(scheduleAnnotation.delay(), scheduleAnnotation.unit())
+							.setInterval(scheduleAnnotation.interval(), scheduleAnnotation.unit())
+							.setExecutor((t) -> {
+								try {
+									method.invoke(instance);
+								} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+									e.printStackTrace();
+								}
+							})
+							.start();
+				}
+
+				//LISTENERS
+				if (listenerAnnotation != null) {
+					if (method.getParameterCount() != 1 || !Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
+						plugin.error("Invalid listener method with signature: '" + method + "'");
+					} else {
+						Class<? extends EventAbstraction> eventClass = Reflection.cast(method.getParameterTypes()[0]);
+						EventInfo eventInfo = EventInfo.get(eventClass);
+
+						if (eventInfo == null) {
+							OsmiumLogger.error("Osmium event class has no registration: " + eventClass);
+							continue;
+						}
+
+						if (eventInfo.isOsmiumEvent()) {
+							//Register implementation class for Osmium
+							OsmiumLogger.debug("Registering listener for " + eventInfo.getEvent() + ": " + cls.getSimpleName() + method.getName());
+							Osmium.getEventManager()
+									.registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
+
+						} else {
+							Osmium.getEventManager().registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
+						}
 					}
 				}
 			}
+		} catch (Exception e) {
+			OsmiumLogger.error("Failed to enable class: " + cls.getName());
+			e.printStackTrace();
 		}
 	}
 
