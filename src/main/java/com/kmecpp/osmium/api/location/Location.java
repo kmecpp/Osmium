@@ -3,6 +3,7 @@ package com.kmecpp.osmium.api.location;
 import org.spongepowered.api.world.extent.Extent;
 
 import com.kmecpp.osmium.api.Block;
+import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.platform.Platform;
@@ -39,6 +40,10 @@ public class Location {
 
 	public Block getBlock() {
 		return world.getBlock(this);
+	}
+
+	public Chunk getChunk() {
+		return world.getChunk(this);
 	}
 
 	public double getX() {

@@ -17,7 +17,7 @@ public class TPSTask {
 
 	private static long lastTick;
 	private static int sampleIndex;
-	private static double[] samples = new double[60];
+	private static double[] samples = new double[60 * 20];
 	private static double tps = 20;
 
 	static {
@@ -73,7 +73,7 @@ public class TPSTask {
 	public static double getAverage(int seconds) {
 		seconds = Math.max(seconds, samples.length);
 		double sum = 0;
-		for (int i = 0; i < seconds; i++) {
+		for (int i = 0; i < seconds * 20; i++) {
 			sum += samples[Math.floorMod(sampleIndex - i, samples.length)];
 		}
 		return sum / seconds;

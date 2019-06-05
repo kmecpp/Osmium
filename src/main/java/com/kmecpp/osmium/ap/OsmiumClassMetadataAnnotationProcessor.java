@@ -11,13 +11,18 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
+import com.kmecpp.osmium.api.config.ConfigProperties;
+import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.plugin.Startup;
 import com.kmecpp.osmium.api.tasks.Schedule;
 
-@SupportedAnnotationTypes({ "com.kmecpp.osmium.api.event.Listener", "com.kmecpp.osmium.api.tasks.Schedule", "com.kmecpp.osmium.api.plugin.Startup" })
+@SupportedAnnotationTypes({ "com.kmecpp.osmium.api.database.DBTable", "com.kmecpp.osmium.api.config.ConfigProperties",
+		"com.kmecpp.osmium.api.event.Listener",
+		"com.kmecpp.osmium.api.tasks.Schedule",
+		"com.kmecpp.osmium.api.plugin.Startup" })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-public class OsmiumMethodAnnotationProcessor extends OsmiumAnnotationProcessor {
+public class OsmiumClassMetadataAnnotationProcessor extends OsmiumAnnotationProcessor {
 
 	private static final HashSet<String> classes = new HashSet<>();
 
@@ -31,6 +36,8 @@ public class OsmiumMethodAnnotationProcessor extends OsmiumAnnotationProcessor {
 		}
 
 		HashSet<Element> elements = new HashSet<>();
+		elements.addAll(roundEnv.getElementsAnnotatedWith(DBTable.class));
+		elements.addAll(roundEnv.getElementsAnnotatedWith(ConfigProperties.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(Listener.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(Schedule.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(Startup.class));
@@ -40,8 +47,12 @@ public class OsmiumMethodAnnotationProcessor extends OsmiumAnnotationProcessor {
 		}
 
 		for (Element element : elements) {
-			TypeElement cls = (TypeElement) element.getEnclosingElement();
-			classes.add(cls.getQualifiedName().toString());
+			if (element instanceof TypeElement) {
+				classes.add(((TypeElement) element).getQualifiedName().toString());
+			} else {
+				TypeElement cls = (TypeElement) element.getEnclosingElement();
+				classes.add(cls.getQualifiedName().toString());
+			}
 		}
 		return true;
 	}

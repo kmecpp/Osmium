@@ -34,9 +34,8 @@ public class InventoryManager {
 	public void on(InventoryEvent.Click e) {
 		Player player = e.getPlayer();
 		InventoryMenu menu = inventoryMenus.get(player.getUniqueId());
-		if (menu == null || e.getSlot() >= menu.getItems().length) {
+		if (menu == null || e.getSlot() >= menu.getItems().length || e.getSlot() < 0) {
 			return;
-
 		}
 
 		MenuItem item = menu.getItems()[e.getSlot()];

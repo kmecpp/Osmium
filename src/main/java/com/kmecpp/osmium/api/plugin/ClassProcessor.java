@@ -54,6 +54,29 @@ public class ClassProcessor {
 		JarFile jarFile = Directory.getJarFile(mainClass);
 		String packageName = mainClass.getPackage().getName();
 
+		//		HashSet<String> staticLoadClasses = null;
+		//		ZipEntry staticLoadFile = jarFile.getEntry("static-load-classes");
+		//		if (staticLoadFile != null) {
+		//			staticLoadClasses = new HashSet<>();
+		//			InputStream is = jarFile.getInputStream(staticLoadFile);
+		//			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		//
+		//			int read;
+		//			byte[] data = new byte[1024];
+		//
+		//			while ((read = is.read(data, 0, data.length)) != -1) {
+		//				buffer.write(data, 0, read);
+		//			}
+		//
+		//			String contents = new String(buffer.toByteArray());
+		//			for (String line : contents.split("\n")) {
+		//				staticLoadClasses.add(line);
+		//				OsmiumLogger.debug("Adding static load class: " + line);
+		//			}
+		//		} else {
+		//			OsmiumLogger.warn("LOAD FILE: " + staticLoadFile);
+		//		}
+
 		Enumeration<JarEntry> entry = jarFile.entries();
 		while (entry.hasMoreElements()) {
 			String elementName = entry.nextElement().getName().replace("/", ".");
@@ -61,6 +84,11 @@ public class ClassProcessor {
 			//Only search for elements below the parent package
 			if (elementName.startsWith(packageName) && elementName.endsWith(".class")) {
 				String className = elementName.substring(0, elementName.length() - 6);
+
+				//				if (staticLoadClasses != null && !staticLoadClasses.contains(className)) {
+				//					continue;
+				//				}
+
 				try {
 					OsmiumLogger.debug("Loading class: " + className);
 					Class<?> cls = classLoader.loadClass(className, true);

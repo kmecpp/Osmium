@@ -12,7 +12,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
 import com.kmecpp.osmium.ap.ConfigTypeProcessor;
-import com.kmecpp.osmium.ap.OsmiumMethodAnnotationProcessor;
+import com.kmecpp.osmium.ap.OsmiumClassMetadataAnnotationProcessor;
 import com.kmecpp.osmium.ap.OsmiumPluginProcessor;
 import com.kmecpp.osmium.api.config.Setting;
 import com.kmecpp.osmium.api.event.Listener;
@@ -34,7 +34,7 @@ public class OsmiumTest {
 
 	@Test
 	public void testAnnotationProcessors() throws ClassNotFoundException {
-		assertTrue(Arrays.asList(OsmiumMethodAnnotationProcessor.class.getAnnotation(SupportedAnnotationTypes.class).value())
+		assertTrue(Arrays.asList(OsmiumClassMetadataAnnotationProcessor.class.getAnnotation(SupportedAnnotationTypes.class).value())
 				.containsAll(Arrays.asList(Startup.class.getName(), Schedule.class.getName(), Listener.class.getName())));
 
 		assertTrue(Arrays.asList(ConfigTypeProcessor.class.getAnnotation(SupportedAnnotationTypes.class).value())

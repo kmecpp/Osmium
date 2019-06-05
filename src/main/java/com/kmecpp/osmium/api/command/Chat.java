@@ -95,22 +95,34 @@ public enum Chat {
 		//		}
 		//		long end = System.nanoTime();
 		//		System.out.println("Time Taken: " + ((end - start) / 1000000F) + "ms");
+		//		System.out.println(Chat.styleColor("&a&lBiojwf"));
+	}
+
+	public static String styleColor(String message) {
+		return styleImpl(message, true, false);
+	}
+
+	public static String styleFormatting(String message) {
+		return styleImpl(message, false, true);
 	}
 
 	public static String style(String message) {
-		//		if (!message.contains("&")) {
+		return styleImpl(message, true, true);
+	}
+
+	private static String styleImpl(String message, boolean color, boolean formatting) {
+		//		if (!color && !formatting) {
 		//			return message;
 		//		}
-		if (message == null) {
-			return "";
-		}
-
 		boolean styled = false;
 		char[] chars = message.toCharArray();
 		for (int i = 0; i < chars.length - 1; i++) {
-			if (chars[i] == '&' && Chat.fromCode(chars[i + 1]) != null) {
-				chars[i] = COLOR_CHAR;
-				styled = true;
+			if (chars[i] == '&') {
+				Chat code = Chat.fromCode(chars[i + 1]);
+				if (code != null && (color && !code.isFormatting() || (formatting && code.isFormatting()))) {
+					chars[i] = '\u00A7';
+					styled = true;
+				}
 			}
 		}
 		return styled ? new String(chars) : message;

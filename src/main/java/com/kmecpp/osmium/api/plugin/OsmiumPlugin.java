@@ -35,7 +35,6 @@ public abstract class OsmiumPlugin {
 	private OsmiumPluginLogger logger = new OsmiumPluginLogger(properties.name());
 	private Path dataFolder;
 
-	private Class<?> config;
 	private ClassProcessor classProcessor;
 
 	public OsmiumPlugin() {
@@ -85,13 +84,13 @@ public abstract class OsmiumPlugin {
 		return persistentData;
 	}
 
-	public void setDefaultConfig(Class<?> configClass) {
-		this.config = configClass;
-	}
-
-	public Class<?> getConfig() {
-		return config;
-	}
+	//	public void setDefaultConfig(Class<?> configClass) {
+	//		this.config = configClass;
+	//	}
+	//
+	//	public Class<?> getConfig() {
+	//		return config;
+	//	}
 
 	public void onLoad() {
 	}

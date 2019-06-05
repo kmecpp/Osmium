@@ -2,6 +2,7 @@ package com.kmecpp.osmium.platform.sponge;
 
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.flowpowered.math.vector.Vector3d;
@@ -9,6 +10,7 @@ import com.flowpowered.math.vector.Vector3i;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.WrappedCollection;
 import com.kmecpp.osmium.api.Block;
+import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.WorldType;
 import com.kmecpp.osmium.api.entity.Entity;
@@ -51,6 +53,12 @@ public class SpongeWorld implements World {
 	@Override
 	public Block getBlock(Location location) {
 		return new SpongeBlock(location.<org.spongepowered.api.world.Location<org.spongepowered.api.world.World>> getImplementation());
+	}
+
+	@Override
+	public Chunk getChunk(Location location) {
+		Optional<org.spongepowered.api.world.Chunk> optional = world.getChunkAtBlock(location.getBlockX(), location.getBlockY(), location.getBlockY());
+		return optional.isPresent() ? new SpongeChunk(optional.get()) : null;
 	}
 
 	@Override

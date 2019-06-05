@@ -33,6 +33,8 @@ public interface World extends Abstraction {
 
 	Block getBlock(Location location);
 
+	Chunk getChunk(Location location);
+
 	default Collection<Player> getPlayers() {
 		ArrayList<Player> players = new ArrayList<>();
 		for (Player player : Osmium.getOnlinePlayers()) {
