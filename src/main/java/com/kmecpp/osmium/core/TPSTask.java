@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.core;
 
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -17,10 +18,13 @@ public class TPSTask {
 
 	private static long lastTick;
 	private static int sampleIndex;
-	private static double[] samples = new double[60 * 20];
+	private static int totalTicks;
+	private static double[] samples = new double[60 * 20]; //60 seconds
 	private static double tps = 20;
 
 	static {
+		Arrays.fill(samples, 20);
+
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		executorService.scheduleAtFixedRate(new Runnable() {
 
@@ -39,9 +43,14 @@ public class TPSTask {
 
 				sampleIndex = ++sampleIndex % samples.length;
 				samples[sampleIndex] = TPSTask.tps;
+
+				totalTicks++;
+				if (totalTicks == Integer.MAX_VALUE) { //After 1242 days...
+					totalTicks = samples.length;
+				}
 			}
 
-		}, 0, 50, java.util.concurrent.TimeUnit.MILLISECONDS);
+		}, 1000, 50, java.util.concurrent.TimeUnit.MILLISECONDS);
 	}
 
 	@Schedule(delay = 5, interval = 1, unit = TimeUnit.TICK)
@@ -52,7 +61,7 @@ public class TPSTask {
 
 		double currentTps = 2e9 / (double) (System.nanoTime() - lastTick);
 		//		System.out.println(currentTps + ", " + getRecentTPS() + ", " + getTPS() + ", " + getMinuteTPS());
-		if (currentTps < 21) {
+		if (currentTps < 20.3) {
 			tps = currentTps;
 		}
 		lastTick = System.nanoTime();
@@ -71,12 +80,15 @@ public class TPSTask {
 	}
 
 	public static double getAverage(int seconds) {
-		seconds = Math.max(seconds, samples.length);
+		int ticks = Math.min(samples.length, seconds * 20);
+		if (totalTicks < ticks) {
+			ticks = totalTicks;
+		}
 		double sum = 0;
-		for (int i = 0; i < seconds * 20; i++) {
+		for (int i = 0; i < ticks; i++) {
 			sum += samples[Math.floorMod(sampleIndex - i, samples.length)];
 		}
-		return sum / seconds;
+		return sum / ticks;
 	}
 
 	//	private static float calculateAsyncTPS() {
