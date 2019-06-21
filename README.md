@@ -1,6 +1,6 @@
 # Osmium API
 
-Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the *easiest most concise way to create Minecraft plugins period!*.
+Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the *easiest most concise way to create Minecraft plugins period!*
 
 Say goodbye to registering commands or listeners! Writing code to handle configuration files or databases? NOT ANYMORE! No need to store your plugin instance anywhere. No need to write SQL code. Compile your plugin, and it will work automatically on both Bukkit/Spigot and Sponge servers!
 

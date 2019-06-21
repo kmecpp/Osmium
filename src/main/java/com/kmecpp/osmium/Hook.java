@@ -12,8 +12,16 @@ public class Hook<T> {
 
 	private T hook;
 
-	public Hook(T hook) {
+	private Hook(T hook) {
 		this.hook = hook;
+	}
+
+	public static <T> Hook<T> of(T inst) {
+		return new Hook<T>(inst);
+	}
+
+	public static <T> Hook<T> empty() {
+		return new Hook<>(null);
 	}
 
 	public boolean isLoaded() {

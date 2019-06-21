@@ -55,6 +55,14 @@ public class StringUtil {
 		return String.valueOf(bd.doubleValue());
 	}
 
+	public static String plural(String name, int count) {
+		if (name.isEmpty()) {
+			return plural(count);
+		}
+		char last = name.charAt(name.length() - 1);
+		return Character.isLetter(last) && Character.isLowerCase(last) ? name + "s" : name;
+	}
+
 	public static String plural(int n) {
 		return n == 1 ? "" : "s";
 	}

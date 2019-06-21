@@ -201,7 +201,7 @@ public class CommandEvent implements Messageable {
 			throw new CommandException("Internal command error. Tried to retrieve index: " + index);
 		} else if (index >= args.length) {
 			if (index < command.getUsageParams().length) {
-				CommandBase target = subCommand != null ? command : subCommand;
+				CommandBase target = subCommand == null ? command : subCommand;
 
 				throw new CommandException("Missing " + StringUtil.nth(index + 1) + " argument"
 						+ (target.getUsage().isEmpty() ? "!"

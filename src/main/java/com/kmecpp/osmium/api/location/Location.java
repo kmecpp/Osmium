@@ -2,6 +2,8 @@ package com.kmecpp.osmium.api.location;
 
 import org.spongepowered.api.world.extent.Extent;
 
+import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;
@@ -98,6 +100,19 @@ public class Location {
 			return (T) new org.bukkit.Location((org.bukkit.World) world.getSource(), x, y, z);
 		} else if (Platform.isSponge()) {
 			return (T) new org.spongepowered.api.world.Location<Extent>((Extent) world.getSource(), x, y, z);
+		} else {
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Location fromImplementation(Object impl) {
+		if (Platform.isBukkit()) {
+			org.bukkit.Location l = (org.bukkit.Location) impl;
+			return new Location(BukkitAccess.getWorld(l.getWorld()), l.getX(), l.getY(), l.getZ());
+		} else if (Platform.isSponge()) {
+			org.spongepowered.api.world.Location<org.spongepowered.api.world.World> l = (org.spongepowered.api.world.Location<org.spongepowered.api.world.World>) impl;
+			return new Location(SpongeAccess.getWorld(l.getExtent()), l.getX(), l.getY(), l.getZ());
 		} else {
 			return null;
 		}

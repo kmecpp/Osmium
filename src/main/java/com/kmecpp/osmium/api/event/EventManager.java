@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.SpongeAccess;
-import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -83,7 +82,7 @@ public class EventManager {
 		OsmiumLogger.debug("Registering source listener for " + plugin.getName() + ": "
 				+ listenerInstance.getClass().getName() + "." + method.getName()
 				+ "(" + eventInfo.getEventName() + ")");
-		OsmiumLogger.debug(Chat.YELLOW + "    SOURCE CLASSES: " + eventInfo.getSourceClasses());
+		//		OsmiumLogger.debug(Chat.YELLOW + "    SOURCE CLASSES: " + eventInfo.getSourceClasses());
 		for (Class<?> sourceEventClass : eventInfo.getSourceClasses()) {
 			EventKey key = new EventKey(sourceEventClass, order);
 

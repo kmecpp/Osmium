@@ -171,10 +171,11 @@ public class CommandBase {
 		int i = 0;
 		for (String param : usageParams) {
 			if (i == index) {
-				sb.append(Chat.DARK_RED + Chat.BOLD.toString() + "<" + param + ">" + Chat.RED);
+				sb.append(Chat.DARK_RED + "<" + param + ">" + Chat.RED);
 			} else {
 				sb.append("<" + param + ">");
 			}
+			sb.append(' ');
 			i++;
 		}
 		return sb.toString();

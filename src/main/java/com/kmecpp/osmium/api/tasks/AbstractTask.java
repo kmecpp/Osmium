@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.api.tasks;
 
+import java.util.HashMap;
+
 import org.bukkit.scheduler.BukkitTask;
 
 import com.kmecpp.osmium.api.platform.Platform;
@@ -16,6 +18,8 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	protected int delay;
 	protected int interval;
 	protected TaskExecutor<T> executor;
+
+	protected HashMap<String, Object> data;
 
 	public AbstractTask(OsmiumPlugin plugin) {
 		this.plugin = plugin;
@@ -93,6 +97,26 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	public AbstractTask<T> setExecutor(TaskExecutor<T> executor) {
 		this.executor = executor;
 		return this;
+	}
+
+	public <D> D getData(String key, D defaultValue) {
+		D data = getData(key);
+		return data != null ? data : defaultValue;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <D> D getData(String key) {
+		if (data == null) {
+			return null;
+		}
+		return (D) data.get(key);
+	}
+
+	public void setData(String key, Object value) {
+		if (data == null) {
+			data = new HashMap<>();
+		}
+		data.put(key, value);
 	}
 
 	public abstract T start();

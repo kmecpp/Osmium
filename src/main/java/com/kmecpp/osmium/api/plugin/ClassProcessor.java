@@ -104,8 +104,9 @@ public class ClassProcessor {
 					if (e.getMessage().toLowerCase().contains("spongepowered") || e.getMessage().toLowerCase().contains("bukkit")) {
 						OsmiumLogger.debug("SKIPPING: " + className);
 					} else {
-						OsmiumLogger.error("Could not load class: " + className);
-						e.printStackTrace();
+						OsmiumLogger.warn("Could not load class: " + className);
+						OsmiumLogger.warn(e.getMessage());
+						//						e.printStackTrace();
 					}
 					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF??)
 				} catch (Throwable t) {
