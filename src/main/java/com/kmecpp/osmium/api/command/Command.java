@@ -82,7 +82,6 @@ public class Command extends CommandBase {
 	public CommandBase getArgumentMatching(String argLabel, CommandSender sender) {
 		CommandBase highestMatch = null;
 		int highestMatchCount = 0;
-		System.out.println("CUSTOM SHITS");
 		for (CommandBase arg : args) {
 			for (String alias : arg.getAliases()) {
 				//Allow aliases partitioned with '/' to be treated as individual arguments
@@ -101,10 +100,8 @@ public class Command extends CommandBase {
 					if (matching > highestMatchCount) {
 						highestMatchCount = matching;
 						highestMatch = arg;
-						System.out.println("NEW MATCH: " + arg.getPrimaryAlias());
 					} else if (matching == highestMatchCount && highestMatch != arg) {
 						highestMatch = null;
-						System.out.println("INVALIDATE MATCH: " + arg.getPrimaryAlias());
 					}
 
 					//					if (argLabel.toLowerCase().startsWith(input.toLowerCase())) {
