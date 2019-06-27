@@ -177,4 +177,16 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 		player.setTotalExperience(exp);
 	}
 
+	@SuppressWarnings("deprecation")
+	@Override
+	public void hidePlayer(Player player) {
+		this.player.hidePlayer((org.bukkit.entity.Player) player.getSource());
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void showPlayer(Player player) {
+		this.player.showPlayer((org.bukkit.entity.Player) player.getSource());
+	}
+
 }

@@ -1,9 +1,5 @@
 package com.kmecpp.osmium.api.location;
 
-import java.util.Optional;
-
-import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.persistence.Serialization;
 
@@ -11,8 +7,6 @@ public class WorldPosition {
 
 	private Location location;
 	private Direction direction;
-
-	private String serialized;
 
 	static {
 		Serialization.register(WorldPosition.class, WorldPosition::fromString);
@@ -28,13 +22,17 @@ public class WorldPosition {
 	}
 
 	public Location getLocation() {
-		if (location == null && serialized != null) {
-			String[] parts = serialized.split(" ");
-			location = new Location(Osmium.getWorld(parts[0]).get(), Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
-			this.serialized = null;
-		}
 		return location;
 	}
+
+	//	public Location getLocation() {
+	//		if (location == null && serialized != null) {
+	//			String[] parts = serialized.split(" ");
+	//			location = new Location(Osmium.getWorld(parts[0]).get(), Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
+	//			this.serialized = null;
+	//		}
+	//		return location;
+	//	}
 
 	public Direction getDirection() {
 		return direction;
@@ -47,23 +45,24 @@ public class WorldPosition {
 
 	@Override
 	public String toString() {
-		return location == null ? serialized : (location.getWorld().getName()
+		return location.getWorldName()
 				+ "," + location.getX() + "," + location.getY() + "," + location.getZ()
-				+ "," + direction.getPitch() + "," + direction.getYaw());
+				+ "," + direction.getPitch() + "," + direction.getYaw();
 	}
 
 	public static WorldPosition fromString(String str) {
 		String[] parts = str.split(",");
+		return new WorldPosition(Location.fromParts(parts[0], parts[1], parts[2], parts[3]), Direction.fromParts(parts[4], parts[5]));
 
-		Optional<World> world = Osmium.getWorld(parts[0]);
-		WorldPosition position = new WorldPosition(null, new Direction(Float.parseFloat(parts[4]), Float.parseFloat(parts[5])));
-
-		if (world.isPresent()) {
-			position.location = new Location(Osmium.getWorld(parts[0]).get(), Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
-		} else {
-			position.serialized = str;
-		}
-		return position;
+		//		Optional<World> world = Osmium.getWorld(parts[0]);
+		//		WorldPosition position = new WorldPosition(null, new Direction(Float.parseFloat(parts[4]), Float.parseFloat(parts[5])));
+		//
+		//		if (world.isPresent()) {
+		//			position.location = new Location(Osmium.getWorld(parts[0]).get(), Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
+		//		} else {
+		//			position.serialized = str;
+		//		}
+		//		return position;
 
 	}
 

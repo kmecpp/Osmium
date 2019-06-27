@@ -34,6 +34,11 @@ public interface Entity extends Abstraction {
 		return new WorldPosition(getLocation(), getDirection());
 	}
 
+	default void setPosition(WorldPosition position) {
+		setLocation(position.getLocation());
+		setDirection(position.getDirection());
+	}
+
 	//	default SerializableLocation getBlockPosition() {
 	//		return new SerializableLocation(getLocation());
 	//	}

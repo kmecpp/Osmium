@@ -83,20 +83,24 @@ public interface ItemStack extends Abstraction {
 					: new SpongeItemStack(org.spongepowered.api.item.inventory.ItemStack.of(ItemTypes.AIR, 1));
 		}
 
-		public void type(ItemType type) {
+		public Builder type(ItemType type) {
 			itemStack.setType(type);
+			return this;
 		}
 
-		public void amount(int amount) {
+		public Builder amount(int amount) {
 			itemStack.setAmount(amount);
+			return this;
 		}
 
-		public void damage(int damage) {
+		public Builder damage(int damage) {
 			itemStack.setDamage(damage);
+			return this;
 		}
 
-		public void name(String name) {
+		public Builder name(String name) {
 			itemStack.setDisplayName(Chat.style(name));
+			return this;
 		}
 
 		public ItemStack build() {

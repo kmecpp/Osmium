@@ -435,6 +435,10 @@ public enum ItemType implements MaterialType {
 		Osmium.getItemManager().register(values(), false);
 	}
 
+	public static void setSource(ItemType type, Object source) {
+		type.source = source;
+	}
+
 	@Override
 	public Object getSource() {
 		return source;

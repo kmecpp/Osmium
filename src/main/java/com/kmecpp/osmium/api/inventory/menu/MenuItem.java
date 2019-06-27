@@ -11,30 +11,34 @@ public class MenuItem {
 	private ItemStack itemStack;
 	private ClickHandler clickHandler;
 
-	private MenuItem(ItemStack itemStack, ClickHandler clickHandler) {
+	private MenuItem(ItemStack itemStack) {
 		this.itemStack = itemStack;
-		this.clickHandler = clickHandler;
 	}
 
 	public static MenuItem of(ItemType type) {
-		return of(type, null);
+		return of(null, type);
 	}
 
-	public static MenuItem of(ItemType type, ClickHandler clickHandler) {
-		return of(null, type, clickHandler);
+	public static MenuItem of(ItemType type, int damage) {
+		return of(null, type, damage);
 	}
 
 	public static MenuItem of(String name, ItemType type) {
-		return of(name, type, null);
+		return of(name, type, 0);
 	}
 
-	public static MenuItem of(String name, ItemType type, ClickHandler clickHandler) {
+	public static MenuItem of(String name, ItemType type, int damage) {
 		ItemStack.Builder builder = ItemStack.builder();
 		builder.type(type);
+		builder.damage(damage);
 		if (name != null) {
 			builder.name(name);
 		}
-		return new MenuItem(builder.build(), clickHandler);
+		return new MenuItem(builder.build());
+	}
+
+	public static MenuItem of(ItemStack itemStack) {
+		return new MenuItem(itemStack);
 	}
 
 	public ItemStack getItemStack() {
@@ -83,7 +87,7 @@ public class MenuItem {
 
 	public static class Builder {
 
-		private MenuItem item = new MenuItem(ItemStack.of(ItemType.AIR), null);
+		private MenuItem item = new MenuItem(ItemStack.of(ItemType.AIR));
 
 		public Builder type(ItemType type) {
 			item.itemStack.setType(type);

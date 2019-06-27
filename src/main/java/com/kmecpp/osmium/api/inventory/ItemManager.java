@@ -32,12 +32,15 @@ public class ItemManager {
 		for (T type : types) {
 			try {
 				if (Platform.isBukkit()) {
-					for (Material material : Material.values()) {
-						if (material.name().equals(type.name())) {
-							sourceField.set(type, material);
-							itemTypes.put(material.toString(), type);
-							break;
+					search: {
+						for (Material material : Material.values()) {
+							if (material.name().equals(type.name())) {
+								sourceField.set(type, material);
+								itemTypes.put(material.toString(), type);
+								break search;
+							}
 						}
+						//						OsmiumLogger.warn("Could not find item type for " + type.name());
 					}
 				} else if (Platform.isSponge()) {
 					for (Field field : blocks ? BlockTypes.class.getFields() : ItemTypes.class.getFields()) {

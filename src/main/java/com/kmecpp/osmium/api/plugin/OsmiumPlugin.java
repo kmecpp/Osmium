@@ -125,6 +125,8 @@ public abstract class OsmiumPlugin {
 
 	public void saveData() {
 		persistentData.save();
+		//TODO: SAVE PLAYER DB RECORDS
+		//		database.getTables().forEach(TableProperties::get);
 	}
 
 	//	public void enableMetrics() {

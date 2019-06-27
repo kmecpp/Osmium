@@ -3,6 +3,7 @@ package com.kmecpp.osmium.api.location;
 import org.spongepowered.api.world.extent.Extent;
 
 import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
@@ -13,7 +14,9 @@ import com.kmecpp.osmium.cache.WorldList;
 
 public class Location {
 
-	private final World world;
+	private World world;
+	private String worldName;
+
 	private final double x;
 	private final double y;
 	private final double z;
@@ -23,6 +26,15 @@ public class Location {
 			throw new IllegalArgumentException("Invalid world: " + world);
 		}
 		this.world = world;
+		//		this.worldName = world.getName().intern();
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+
+	public Location(String worldName, double x, double y, double z) {
+		this.world = Osmium.getWorld(worldName).orElse(null);
+		this.worldName = worldName.intern();
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -33,19 +45,25 @@ public class Location {
 	}
 
 	public World getWorld() {
+		if (world == null) {
+			world = WorldList.getWorld(worldName);
+		}
 		return world;
 	}
 
 	public String getWorldName() {
+		if (world == null) {
+			return worldName;
+		}
 		return world.getName();
 	}
 
 	public Block getBlock() {
-		return world.getBlock(this);
+		return getWorld().getBlock(this);
 	}
 
 	public Chunk getChunk() {
-		return world.getChunk(this);
+		return getWorld().getChunk(this);
 	}
 
 	public double getX() {
@@ -73,11 +91,11 @@ public class Location {
 	}
 
 	public Location add(double x, double y, double z) {
-		return new Location(this.world, this.x + x, this.y + y, this.z + z);
+		return new Location(getWorld(), this.x + x, this.y + y, this.z + z);
 	}
 
 	public Location getBlockTopCenter() {
-		return new Location(world, ((int) x) + 0.5, y, ((int) z) + 0.5);
+		return new Location(getWorld(), ((int) x) + 0.5, y, ((int) z) + 0.5);
 	}
 
 	public double distance(Location location) {
@@ -86,20 +104,24 @@ public class Location {
 
 	public static Location fromString(String str) {
 		String[] parts = str.split(",");
-		return new Location(WorldList.getWorld(parts[0]), Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
+		return new Location(parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
+	}
+
+	public static Location fromParts(String world, String x, String y, String z) {
+		return new Location(world, Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(z));
 	}
 
 	@Override
 	public String toString() {
-		return world.getName() + "," + x + "," + y + "," + z;
+		return getWorldName() + "," + x + "," + y + "," + z;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T getImplementation() {
 		if (Platform.isBukkit()) {
-			return (T) new org.bukkit.Location((org.bukkit.World) world.getSource(), x, y, z);
+			return (T) new org.bukkit.Location((org.bukkit.World) getWorld().getSource(), x, y, z);
 		} else if (Platform.isSponge()) {
-			return (T) new org.spongepowered.api.world.Location<Extent>((Extent) world.getSource(), x, y, z);
+			return (T) new org.spongepowered.api.world.Location<Extent>((Extent) getWorld().getSource(), x, y, z);
 		} else {
 			return null;
 		}

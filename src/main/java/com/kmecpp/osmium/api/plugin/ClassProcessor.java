@@ -172,7 +172,7 @@ public class ClassProcessor {
 			plugin.getDatabase().createTable(cls);
 
 			if (PlayerData.class.isAssignableFrom(cls)) {
-				Osmium.getPlayerDataManager().registerType(plugin, cls);
+				Osmium.getPlayerDataManager().registerType(plugin, Reflection.cast(cls));
 			}
 			//			try {
 			//				ClassPool.getDefault().insertClassPath(new ClassClassPath(cls));

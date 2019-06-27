@@ -16,8 +16,8 @@ import com.kmecpp.osmium.api.util.Reflection;
 
 public class PlayerDataManager {
 
-	private final HashMap<OsmiumPlugin, ArrayList<Class<?>>> registeredTypes = new HashMap<>();
-	private final HashMap<UUID, HashMap<Class<?>, Object>> data = new HashMap<>();
+	private final HashMap<OsmiumPlugin, ArrayList<Class<? extends PlayerData>>> registeredTypes = new HashMap<>();
+	private final HashMap<UUID, HashMap<Class<? extends PlayerData>, PlayerData>> data = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	public <T> T getData(Player player, Class<T> dataType) {
@@ -25,8 +25,8 @@ public class PlayerDataManager {
 		return (T) data.get(player.getUniqueId()).get(dataType);
 	}
 
-	public void registerType(OsmiumPlugin plugin, Class<?> dataType) {
-		ArrayList<Class<?>> types = registeredTypes.get(plugin);
+	public void registerType(OsmiumPlugin plugin, Class<? extends PlayerData> dataType) {
+		ArrayList<Class<? extends PlayerData>> types = registeredTypes.get(plugin);
 		if (types == null) {
 			types = new ArrayList<>();
 			registeredTypes.put(plugin, types);
@@ -34,20 +34,20 @@ public class PlayerDataManager {
 		types.add(dataType);
 	}
 
-	public HashMap<UUID, HashMap<Class<?>, Object>> getData() {
+	public HashMap<UUID, HashMap<Class<? extends PlayerData>, PlayerData>> getData() {
 		return data;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> Set<Entry<UUID, T>> get(Class<T> type) {
 		HashMap<UUID, T> map = new HashMap<>();
-		for (Entry<UUID, HashMap<Class<?>, Object>> entry : data.entrySet()) {
+		for (Entry<UUID, HashMap<Class<? extends PlayerData>, PlayerData>> entry : data.entrySet()) {
 			map.put(entry.getKey(), (T) entry.getValue().get(type));
 		}
 		return map.entrySet();
 	}
 
-	public ArrayList<Class<?>> getRegisteredTypes(OsmiumPlugin plugin) {
+	public ArrayList<Class<? extends PlayerData>> getRegisteredTypes(OsmiumPlugin plugin) {
 		return registeredTypes.getOrDefault(plugin, new ArrayList<>());
 	}
 
@@ -58,16 +58,16 @@ public class PlayerDataManager {
 	//This is not in core so it can't listen to events
 	public void onPlayerAuthenticate(PlayerConnectionEvent.Auth e) {
 		//		System.out.println("AUTHENCIATED!");
-		for (Entry<OsmiumPlugin, ArrayList<Class<?>>> entry : registeredTypes.entrySet()) {
-			for (Class<?> type : entry.getValue()) {
-				Object value = entry.getKey().getDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), e.getUniqueId());
+		for (Entry<OsmiumPlugin, ArrayList<Class<? extends PlayerData>>> entry : registeredTypes.entrySet()) {
+			for (Class<? extends PlayerData> type : entry.getValue()) {
+				PlayerData value = entry.getKey().getDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), e.getUniqueId());
 				//				System.out.println("VALUE: " + value);
 
 				if (value instanceof PlayerData) {
 					((PlayerData) value).updatePlayerData(e.getUniqueId(), e.getPlayerName());
 				}
 
-				HashMap<Class<?>, Object> data = this.data.get(e.getUniqueId());
+				HashMap<Class<? extends PlayerData>, PlayerData> data = this.data.get(e.getUniqueId());
 				if (data == null) {
 					data = new HashMap<>();
 					this.data.put(e.getUniqueId(), data);
@@ -84,13 +84,14 @@ public class PlayerDataManager {
 	}
 
 	public void savePlayer(Player player) {
-		HashMap<Class<?>, Object> playerData = this.data.get(player.getUniqueId());
+		HashMap<Class<? extends PlayerData>, PlayerData> playerData = this.data.get(player.getUniqueId());
 		if (playerData == null) {
 			return;
 		}
 
-		for (Entry<Class<?>, Object> data : playerData.entrySet()) {
-			Osmium.getPlugin(data.getKey()).getDatabase().replaceInto(data.getKey(), data.getValue());
+		for (Entry<Class<? extends PlayerData>, PlayerData> data : playerData.entrySet()) {
+			data.getValue().save(Osmium.getPlugin(data.getKey()).getDatabase());
+			//			Osmium.getPlugin(data.getKey()).getDatabase().replaceInto(data.getKey(), data.getValue());
 		}
 	}
 

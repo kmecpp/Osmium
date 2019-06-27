@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api.database;
 
 import java.util.UUID;
 
-public abstract class PlayerData {
+public abstract class PlayerData implements Saveable {
 
 	@DBColumn(primary = true)
 	protected UUID uuid;

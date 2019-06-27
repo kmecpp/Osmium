@@ -47,6 +47,10 @@ public interface Player extends User, EntityLiving, CommandSender {
 
 	void setTotalExperience(int exp);
 
+	void hidePlayer(Player player);
+
+	void showPlayer(Player player);
+
 	default <T> T getData(Class<T> type) {
 		return Osmium.getPlayerDataManager().getData(this, type);
 	}

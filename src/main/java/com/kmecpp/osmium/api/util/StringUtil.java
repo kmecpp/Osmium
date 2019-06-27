@@ -35,6 +35,14 @@ public class StringUtil {
 		//@formatter:on
 	}
 
+	public static String formatNumber(int n) {
+		return String.format("%,d", n);
+	}
+
+	public static String formatNumber(long n) {
+		return String.format("%,d", n);
+	}
+
 	public static boolean isMathematicalInteger(String str) {
 		if (str.isEmpty()) {
 			return false;

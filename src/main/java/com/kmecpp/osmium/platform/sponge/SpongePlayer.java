@@ -184,4 +184,14 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 		player.offer(Keys.TOTAL_EXPERIENCE, exp);
 	}
 
+	@Override
+	public void hidePlayer(Player player) {
+		//TODO
+	}
+
+	@Override
+	public void showPlayer(Player player) {
+		//TODO	
+	}
+
 }

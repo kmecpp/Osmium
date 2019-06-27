@@ -15,7 +15,7 @@ public class BukkitBlock implements Block {
 	}
 
 	@Override
-	public Object getSource() {
+	public org.bukkit.block.Block getSource() {
 		return block;
 	}
 

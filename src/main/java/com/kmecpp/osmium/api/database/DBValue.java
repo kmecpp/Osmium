@@ -2,8 +2,6 @@
 //
 //import java.util.UUID;
 //
-//import com.kmecpp.osmium.api.serialization.JavaSerializer;
-//
 //public class DBValue {
 //
 //	protected final DBType type;
@@ -43,9 +41,9 @@
 //		return UUID.fromString(asString());
 //	}
 //
-//	public <T extends java.io.Serializable> T asSerializable(Class<T> serializable) {
-//		return JavaSerializer.deserialize(asString(), serializable);
-//	}
+//	//	public <T extends java.io.Serializable> T asSerializable(Class<T> serializable) {
+//	//		return JavaSerializer.deserialize(asString(), serializable);
+//	//	}
 //
 //	public boolean isNull() {
 //		return value == null;

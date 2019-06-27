@@ -83,6 +83,10 @@ public class Database {
 	}
 
 	public void replaceInto(Class<?> cls, Object obj) {
+		update(DBUtil.createReplaceInto(this, cls, obj));
+	}
+
+	public void replaceIntoAsync(Class<?> cls, Object obj) {
 		updateAsync(DBUtil.createReplaceInto(this, cls, obj));
 	}
 
@@ -140,6 +144,17 @@ public class Database {
 		//		DBResult result = query(tableClass, "SELECT * FROM " + properties.getName() + " WHERE " + DBUtil.createWhere(columns.split(","), values) + " " + orderBy);
 		//		return result.isEmpty() ? null : result.first().as(tableClass);
 		//		return orderBy(tableClass, orderBy, 1).get(0);
+	}
+
+	public int count(Class<?> tableClass) {
+		TableProperties properties = tables.get(tableClass);
+		return rawQuery("SELECT COUNT(*) FROM " + properties.getName(), r -> {
+			try {
+				return r.getInt(1);
+			} catch (SQLException e) {
+				return -1;
+			}
+		});
 	}
 
 	public <T> T getFirst(Class<T> tableClass, OrderBy orderBy) {
@@ -255,6 +270,7 @@ public class Database {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T rawQuery(String query, ResultSetProcessor processor) {
 		Connection connection = null;
 		Statement statement = null;
@@ -264,7 +280,7 @@ public class Database {
 			connection = getConnection();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
-			return processor.process(resultSet);
+			return (T) processor.process(resultSet);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to execute database query: \"" + query + "\"");
 		} finally {

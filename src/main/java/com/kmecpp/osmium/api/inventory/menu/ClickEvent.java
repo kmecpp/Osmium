@@ -1,9 +1,10 @@
 package com.kmecpp.osmium.api.inventory.menu;
 
+import com.kmecpp.osmium.api.command.Messageable;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.ClickType;
 
-public class ClickEvent {
+public class ClickEvent implements Messageable {
 
 	private final Player player;
 	private final ClickType clickType;
@@ -29,6 +30,11 @@ public class ClickEvent {
 
 	public void close() {
 		player.closeInventory();
+	}
+
+	@Override
+	public void sendMessage(String message) {
+		player.sendMessage(message);
 	}
 
 }

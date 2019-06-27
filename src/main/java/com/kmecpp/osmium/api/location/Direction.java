@@ -18,4 +18,18 @@ public class Direction {
 		return yaw;
 	}
 
+	@Override
+	public String toString() {
+		return pitch + "," + yaw;
+	}
+
+	public static Direction fromString(String str) {
+		String[] parts = str.split(",");
+		return new Direction(Float.parseFloat(parts[0]), Float.parseFloat(parts[1]));
+	}
+
+	public static Direction fromParts(String pitch, String yaw) {
+		return new Direction(Float.parseFloat(pitch), Float.parseFloat(yaw));
+	}
+
 }
