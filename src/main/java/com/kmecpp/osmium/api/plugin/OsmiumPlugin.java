@@ -3,6 +3,7 @@ package com.kmecpp.osmium.api.plugin;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.common.SpongeImpl;
@@ -102,6 +103,9 @@ public abstract class OsmiumPlugin {
 	}
 
 	public void onPostInit() {
+	}
+
+	public void onServerStarted() {
 	}
 
 	public void onReload() {
@@ -268,6 +272,17 @@ public abstract class OsmiumPlugin {
 
 	public CommandBase registerCommand(String name, String... aliases) {
 		return Osmium.getCommandManager().register(this, new Command(name, aliases));
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> HashSet<Class<? extends T>> getSubclasses(Class<T> cls) {
+		HashSet<Class<? extends T>> classes = new HashSet<>();
+		for (Class<?> c : this.classProcessor.getPluginClasses()) {
+			if (Reflection.isConcrete(c) && cls.isAssignableFrom(c) && !cls.equals(c)) {
+				classes.add((Class<T>) c);
+			}
+		}
+		return classes;
 	}
 
 }

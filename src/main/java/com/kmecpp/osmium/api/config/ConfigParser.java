@@ -278,7 +278,7 @@ public class ConfigParser {
 		//Read string
 		if (current == '\"') {
 			read();
-			while (current != '\"' && chars[index - 1] != '\\') {
+			while (current != '\"' || chars[index - 1] == '\\') {
 				read();
 			}
 			read();

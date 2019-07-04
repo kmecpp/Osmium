@@ -92,7 +92,7 @@ public class ClassProcessor {
 				try {
 					OsmiumLogger.debug("Loading class: " + className);
 					Class<?> cls = classLoader.loadClass(className, true);
-					if (cls.isAnnotationPresent(HookClass.class)) {
+					if (cls.isAnnotationPresent(HookClass.class) || cls.isAnnotationPresent(SkipProcessing.class)) {
 						continue;
 					}
 					//					Class<?> cls = Class.forName(className, false, classLoader);
@@ -118,6 +118,13 @@ public class ClassProcessor {
 		jarFile.close();
 		classLoader.close();
 
+	}
+
+	public void process(Class<?> cls) {
+		cls.getDeclaredMethods(); //Verify that return types exist
+		onLoad(cls);
+		pluginClasses.add(cls);
+		onEnable(cls);
 	}
 
 	public Class<?> getMainClass() {

@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.api.location;
 
+import org.bukkit.World;
+
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.persistence.Serialization;
 
@@ -23,6 +25,12 @@ public class WorldPosition {
 
 	public Location getLocation() {
 		return location;
+	}
+
+	public Object asBukkitLocation() {
+		return new org.bukkit.Location((World) location.getWorld().getSource(),
+				location.getX(), location.getY(), location.getZ(),
+				direction.getYaw(), direction.getPitch());
 	}
 
 	//	public Location getLocation() {

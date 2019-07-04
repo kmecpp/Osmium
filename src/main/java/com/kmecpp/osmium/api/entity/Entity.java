@@ -39,6 +39,10 @@ public interface Entity extends Abstraction {
 		setDirection(position.getDirection());
 	}
 
+	default void sendToSpawn() {
+		setLocation(getWorld().getSpawnLocation().add(0.5, 0, 0.5));
+	}
+
 	//	default SerializableLocation getBlockPosition() {
 	//		return new SerializableLocation(getLocation());
 	//	}

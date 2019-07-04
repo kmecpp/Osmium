@@ -1,9 +1,11 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
 import com.kmecpp.osmium.api.GameMode;
+import com.kmecpp.osmium.api.SoundType;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
@@ -187,6 +189,31 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 	@Override
 	public void showPlayer(Player player) {
 		this.player.showPlayer((org.bukkit.entity.Player) player.getSource());
+	}
+
+	@Override
+	public boolean getAllowFlight() {
+		return player.getAllowFlight();
+	}
+
+	@Override
+	public void setAllowFlight(boolean flight) {
+		player.setAllowFlight(flight);
+	}
+
+	@Override
+	public boolean isFlying() {
+		return player.isFlying();
+	}
+
+	@Override
+	public void setFlying(boolean flying) {
+		player.setFlying(flying);
+	}
+
+	@Override
+	public void playSound(SoundType sound, float pitch, float volume) {
+		player.playSound(player.getLocation(), (Sound) sound.getSource(), volume, pitch);
 	}
 
 }

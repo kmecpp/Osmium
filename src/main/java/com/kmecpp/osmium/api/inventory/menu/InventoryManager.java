@@ -24,7 +24,7 @@ public class InventoryManager {
 		}
 
 		MenuItem item = menu.getItems()[player.getSelectedSlot()];
-		if (item != null && item.getClickHandler() != null) {
+		if (item != null && item.getClickHandler() != null && item.getItemStack().equals(player.getItemInMainHand())) {
 			item.getClickHandler().onClick(new ClickEvent(player, e.getClickType(), item));
 			e.setCancelled(true);
 		}

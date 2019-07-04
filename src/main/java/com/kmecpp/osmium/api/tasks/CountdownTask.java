@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.spongepowered.api.scheduler.Task.Builder;
 
 import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -11,15 +12,16 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 public class CountdownTask extends AbstractTask<CountdownTask> {
 
 	private final int count;
-
-	private int remaining;
+	private volatile int remaining;
+	private volatile boolean paused;
 
 	public CountdownTask(OsmiumPlugin plugin, int count) {
 		super(plugin);
 		this.count = count;
+		this.setInterval(1, com.kmecpp.osmium.api.tasks.TimeUnit.SECOND);
 	}
 
-	public int getCount() {
+	public int getLength() {
 		return count;
 	}
 
@@ -27,18 +29,39 @@ public class CountdownTask extends AbstractTask<CountdownTask> {
 		return remaining;
 	}
 
+	public void setRemaining(int remaining) {
+		this.remaining = remaining;
+	}
+
 	public boolean isLast() {
 		return remaining <= 0;
 	}
 
+	public void pause() {
+		this.paused = true;
+	}
+
+	public void unpause() {
+		this.paused = false;
+	}
+
 	@Override
 	public CountdownTask start() {
+		super.start();
+
 		this.remaining = count;
 		if (Platform.isBukkit()) {
-			this.taskImpl = Bukkit.getScheduler().runTaskTimerAsynchronously((JavaPlugin) plugin.getPluginImplementation(), getCountdown(this), delay, interval);
+			if (async) {
+				this.taskImpl = Bukkit.getScheduler().runTaskTimerAsynchronously((JavaPlugin) plugin.getPluginImplementation(), getCountdown(this), delay, interval);
+			} else {
+				this.taskImpl = Bukkit.getScheduler().runTaskTimer((JavaPlugin) plugin.getPluginImplementation(), getCountdown(this), delay, interval);
+			}
 		} else if (Platform.isSponge()) {
-			this.taskImpl = org.spongepowered.api.scheduler.Task.builder()
-					.async()
+			Builder builder = org.spongepowered.api.scheduler.Task.builder();
+			if (async) {
+				builder.async();
+			}
+			this.taskImpl = builder
 					.delay(delay * 50, TimeUnit.MILLISECONDS)
 					.interval(interval * 50, TimeUnit.MILLISECONDS)
 					.execute(getCountdown(this))
@@ -52,11 +75,15 @@ public class CountdownTask extends AbstractTask<CountdownTask> {
 
 			@Override
 			public void run() {
-				task.remaining--;
-				task.executor.execute(task);
+				if (task.paused) {
+					return;
+				}
 				if (task.remaining <= 0) {
 					task.cancel();
 				}
+				task.executor.execute(task);
+				task.remaining--;
+
 			}
 		};
 	}

@@ -16,6 +16,8 @@ public class OsmiumTask extends AbstractTask<OsmiumTask> {
 
 	@Override
 	public OsmiumTask start() {
+		super.start();
+
 		if (Platform.isBukkit()) {
 			if (async) {
 				taskImpl = Bukkit.getScheduler().runTaskTimerAsynchronously(getPluginImplemenation(), () -> executor.execute(this), delay, interval == 0 ? -1 : interval);

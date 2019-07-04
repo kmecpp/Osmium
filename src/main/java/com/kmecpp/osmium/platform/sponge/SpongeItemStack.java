@@ -91,4 +91,9 @@ public class SpongeItemStack implements ItemStack {
 		itemStack.setQuantity(amount);
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof SpongeItemStack && itemStack.equals(((SpongeItemStack) obj).itemStack);
+	}
+
 }

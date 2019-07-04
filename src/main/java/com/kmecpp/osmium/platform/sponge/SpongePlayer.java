@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.manipulator.mutable.entity.FlyingAbilityData;
+import org.spongepowered.api.data.manipulator.mutable.entity.FlyingData;
 import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.event.cause.Cause;
@@ -13,6 +15,7 @@ import org.spongepowered.api.text.Text;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.kmecpp.osmium.api.GameMode;
+import com.kmecpp.osmium.api.SoundType;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
@@ -192,6 +195,31 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 	@Override
 	public void showPlayer(Player player) {
 		//TODO	
+	}
+
+	@Override
+	public boolean getAllowFlight() {
+		return player.get(FlyingAbilityData.class).get().canFly().get();
+	}
+
+	@Override
+	public void setAllowFlight(boolean flight) {
+		player.get(FlyingAbilityData.class).get().canFly().set(flight);
+	}
+
+	@Override
+	public void setFlying(boolean flying) {
+		player.get(FlyingData.class).get().flying().set(flying);
+	}
+
+	@Override
+	public boolean isFlying() {
+		return player.get(FlyingData.class).get().flying().get();
+	}
+
+	@Override
+	public void playSound(SoundType sound, float pitch, float volume) {
+		player.playSound((org.spongepowered.api.effect.sound.SoundType) sound.getSource(), player.getPosition(), volume, pitch);
 	}
 
 }

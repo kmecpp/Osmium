@@ -1,7 +1,5 @@
 package com.kmecpp.osmium;
 
-
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -229,6 +227,10 @@ public final class Osmium {
 	}
 
 	public static boolean reloadPlugin(OsmiumPlugin plugin) {
+		return reloadPlugin(plugin, false);
+	}
+
+	public static boolean reloadPlugin(OsmiumPlugin plugin, boolean reloadDatabase) {
 		for (Class<?> config : configManager.getPluginConfigs(plugin)) {
 			try {
 				configManager.loadWithParser(config);
@@ -237,6 +239,7 @@ public final class Osmium {
 				return false;
 			}
 		}
+		plugin.getDatabase().reload();
 		eventManager.callEvent(new OsmiumPluginReloadEvent(plugin));
 		plugin.onReload();
 		return true;

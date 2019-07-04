@@ -57,14 +57,14 @@ public class Vector2i implements Cloneable {
 		return this;
 	}
 
+	public Vector2i invert() {
+		return multiply(-1);
+	}
+
 	public double distance(Vector2i v) {
 		int dx = x - v.x;
 		int dy = y - v.y;
 		return Math.sqrt(dx * dx + dy * dy);
-	}
-
-	public Vector2i invert() {
-		return multiply(-1);
 	}
 
 	public double magnitudeSquared() {

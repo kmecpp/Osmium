@@ -89,4 +89,9 @@ public class BukkitItemStack implements ItemStack {
 		itemStack.setAmount(amount);
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof BukkitItemStack && itemStack.equals(((BukkitItemStack) obj).itemStack);
+	}
+
 }

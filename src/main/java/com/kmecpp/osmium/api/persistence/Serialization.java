@@ -1,6 +1,9 @@
 package com.kmecpp.osmium.api.persistence;
 
+import java.io.File;
 import java.lang.reflect.Array;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
@@ -9,6 +12,7 @@ import java.util.function.Function;
 import com.kmecpp.osmium.api.database.DBType;
 import com.kmecpp.osmium.api.util.Reflection;
 
+@SuppressWarnings("unchecked")
 public class Serialization {
 
 	private static final HashMap<Class<?>, SerializationData<?>> types = new HashMap<>();
@@ -44,9 +48,23 @@ public class Serialization {
 
 		//Not default type
 		register(UUID.class, UUID::fromString);
+		register(File.class, f -> f.getAbsolutePath(), File::new);
+
+		//Path is weird because Paths.get() returns an OS specific subclass
+		register((Class<Path>) Paths.get("").getClass(), p -> p.toAbsolutePath().toString(), Paths::get);
+		register(Path.class, p -> p.toAbsolutePath().toString(), Paths::get);
+
+		//Class is weird because it throws an exception
+		register(Class.class, str -> {
+			try {
+				return Class.forName(str);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+				return null;
+			}
+		});
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T, C> T get(Class<C> componentType, String str, Function<String, C> deserializer) {
 		String[] parts = str.split(",");
 		Object[] result = (Object[]) Array.newInstance(componentType, parts.length);
@@ -56,17 +74,16 @@ public class Serialization {
 		return (T) result;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> SerializationData<T> getData(Class<T> cls) {
 		return (SerializationData<T>) types.get(cls);
 	}
 
 	private static <T> void registerDefaultType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
-		types.put(cls, new SerializationData<>(false, String::valueOf, deserializer));
+		types.put(cls, new SerializationData<>(type, false, String::valueOf, deserializer));
 	}
 
 	private static <T> void registerDefaultType(DBType type, Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
-		types.put(cls, new SerializationData<>(false, serializer, deserializer));
+		types.put(cls, new SerializationData<>(type, false, serializer, deserializer));
 	}
 
 	public static <T> void register(Class<T> cls, Deserializer<T> deserializer) {
@@ -85,13 +102,11 @@ public class Serialization {
 		types.put(cls, new SerializationData<>(type, true, serializer, deserializer));
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> Deserializer<T> getDeserializer(Class<T> type) {
 		SerializationData<T> data = (SerializationData<T>) types.get(type);
 		return data != null ? data.getDeserializer() : null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> String serialize(T obj) {
 		if (obj == null) {
 			return "null";
@@ -105,7 +120,6 @@ public class Serialization {
 		//		throw new IllegalArgumentException("Cannot serialize unknown class: " + obj.getClass().getName());
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> T deserialize(Class<T> type, String str) {
 		Reflection.initialize(type); //Make sure the class is loaded (they possibly registered it in a static initializer)
 

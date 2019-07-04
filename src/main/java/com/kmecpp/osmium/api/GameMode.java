@@ -18,12 +18,20 @@ public enum GameMode {
 			SURVIVAL.source = org.bukkit.GameMode.SURVIVAL;
 			CREATIVE.source = org.bukkit.GameMode.CREATIVE;
 			ADVENTURE.source = org.bukkit.GameMode.ADVENTURE;
-			SPECTATOR.source = org.bukkit.GameMode.SPECTATOR;
+			try {
+				SPECTATOR.source = org.bukkit.GameMode.SPECTATOR;
+			} catch (Throwable t) {
+				//1.7.10
+			}
 		} else if (Platform.isSponge()) {
 			SURVIVAL.source = GameModes.SURVIVAL;
 			CREATIVE.source = GameModes.CREATIVE;
 			ADVENTURE.source = GameModes.ADVENTURE;
-			SPECTATOR.source = GameModes.SPECTATOR;
+			try {
+				SPECTATOR.source = GameModes.SPECTATOR;
+			} catch (Throwable t) {
+				//1.7.10
+			}
 		}
 	}
 

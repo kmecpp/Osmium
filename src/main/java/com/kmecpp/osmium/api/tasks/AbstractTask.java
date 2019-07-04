@@ -19,6 +19,8 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	protected int interval;
 	protected TaskExecutor<T> executor;
 
+	protected boolean running;
+
 	protected HashMap<String, Object> data;
 
 	public AbstractTask(OsmiumPlugin plugin) {
@@ -79,9 +81,9 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return async;
 	}
 
-	public AbstractTask<T> setAsync(boolean async) {
+	public T setAsync(boolean async) {
 		this.async = async;
-		return this;
+		return getInstance();
 	}
 
 	public AbstractTask<T> setTime(int delay, int interval, TimeUnit unit) {
@@ -94,9 +96,9 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return executor;
 	}
 
-	public AbstractTask<T> setExecutor(TaskExecutor<T> executor) {
+	public T setExecutor(TaskExecutor<T> executor) {
 		this.executor = executor;
-		return this;
+		return getInstance();
 	}
 
 	public <D> D getData(String key, D defaultValue) {
@@ -119,9 +121,23 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		data.put(key, value);
 	}
 
-	public abstract T start();
+	public boolean isRunning() {
+		return running;
+	}
+
+	public T start() {
+		if (running) {
+			throw new IllegalStateException("Already running!");
+		}
+		running = true;
+		return getInstance();
+	}
 
 	public void cancel() {
+		if (!running) {
+			throw new IllegalStateException("Not running!");
+		}
+		running = false;
 		if (Platform.isBukkit()) {
 			this.<BukkitTask> getTaskImplementation().cancel();
 		} else if (Platform.isSponge()) {

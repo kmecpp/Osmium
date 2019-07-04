@@ -59,7 +59,7 @@ public class Hook<T> {
 		try {
 			return (T) new Hook<>(Class.forName(className).getMethod(methodName).invoke(null));
 		} catch (Exception e) {
-			e.printStackTrace();
+			//			e.printStackTrace();
 			return (T) new Hook<>(null);
 		}
 	}
