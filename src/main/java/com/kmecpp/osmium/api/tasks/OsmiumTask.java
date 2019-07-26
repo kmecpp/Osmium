@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.spongepowered.api.scheduler.Task.Builder;
 
-import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public class OsmiumTask extends AbstractTask<OsmiumTask> {

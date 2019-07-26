@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.effect.sound.SoundTypes;
 
-import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.Platform;
 
 public enum SoundType {
 

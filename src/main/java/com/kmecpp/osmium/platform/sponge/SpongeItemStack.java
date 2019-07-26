@@ -1,7 +1,6 @@
 package com.kmecpp.osmium.platform.sponge;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.spongepowered.api.data.key.Keys;
@@ -51,24 +50,14 @@ public class SpongeItemStack implements ItemStack {
 	}
 
 	@Override
-	public String getDisplayName() {
+	public String getName() {
 		return itemStack.get(Keys.DISPLAY_NAME).get().toString();
 		//		return itemStack.get(DisplayNameData.class).get().displayName().get().toString();
 	}
 
 	@Override
-	public void setDisplayName(String name) {
+	public void setName(String name) {
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of(name));
-	}
-
-	@Override
-	public void setDescription(String description) {
-		ArrayList<String> lines = Chat.styleLines(description);
-		Text[] text = new Text[lines.size()];
-		for (int i = 0; i < text.length; i++) {
-			text[i] = SpongeAccess.getText(lines.get(i));
-		}
-		itemStack.offer(Keys.ITEM_LORE, Arrays.asList(text));
 	}
 
 	@Override
@@ -79,6 +68,45 @@ public class SpongeItemStack implements ItemStack {
 			result.add(text.toString());
 		}
 		return result;
+	}
+
+	//	@Override
+	//	public void setDescriptionFormatted(String description) {
+	//		ArrayList<String> lines = Chat.styleLines(description);
+	//		ArrayList<Text> text = new ArrayList<>(lines.size());
+	//		for (String line : lines) {
+	//			text.add(SpongeAccess.getText(line));
+	//		}
+	//		itemStack.offer(Keys.ITEM_LORE, text);
+	//	}
+	//
+	//	@Override
+	//	public void setDescriptionFormatted(List<String> description) {
+	//		ArrayList<Text> text = new ArrayList<>(description.size());
+	//		for (String line : description) {
+	//			text.add(SpongeAccess.getText(Chat.style(line)));
+	//		}
+	//		itemStack.offer(Keys.ITEM_LORE, text);;
+	//	}
+
+	@Override
+	public void setDescription(List<String> description) {
+		ArrayList<Text> text = new ArrayList<>(description.size());
+		for (String line : description) {
+			text.add(SpongeAccess.getText(line));
+		}
+		itemStack.offer(Keys.ITEM_LORE, text);;
+	}
+
+	@Override
+	public void setLastDescriptionLine(String line) {
+		List<Text> textList = itemStack.get(Keys.ITEM_LORE).orElse(new ArrayList<>());
+		if (textList.isEmpty()) {
+			textList.add(Text.of(Chat.style(line)));
+		} else {
+			textList.set(textList.size() - 1, Text.of(Chat.style(line)));
+		}
+		itemStack.offer(Keys.ITEM_LORE, textList);
 	}
 
 	@Override

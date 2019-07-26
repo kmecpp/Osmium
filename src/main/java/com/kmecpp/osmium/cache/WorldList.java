@@ -7,9 +7,9 @@ import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.spongepowered.api.Sponge;
 
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
-import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.platform.bukkit.BukkitWorld;
 import com.kmecpp.osmium.platform.sponge.SpongeWorld;
 

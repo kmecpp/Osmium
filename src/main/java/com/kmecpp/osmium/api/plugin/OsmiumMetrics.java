@@ -21,8 +21,8 @@ import org.bukkit.Bukkit;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
-import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.core.CoreOsmiumConfig;
 
 public class OsmiumMetrics {

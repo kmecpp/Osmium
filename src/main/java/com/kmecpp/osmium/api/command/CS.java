@@ -110,8 +110,8 @@ public class CS {
 		}
 		return new CS(
 				Chat.fromCodeElseWhite(str.charAt(0)),
-				Chat.fromCodeElseWhite(str.charAt(0)),
-				Chat.fromCodeElseWhite(str.charAt(0)));
+				Chat.fromCodeElseWhite(str.charAt(1)),
+				Chat.fromCodeElseWhite(str.charAt(2)));
 	}
 
 	static {

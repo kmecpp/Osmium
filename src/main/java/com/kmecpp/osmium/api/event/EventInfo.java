@@ -4,11 +4,13 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.event.events.BlockEvent;
 import com.kmecpp.osmium.api.event.events.DateChangeEvent;
 import com.kmecpp.osmium.api.event.events.EntityDamageEvent;
 import com.kmecpp.osmium.api.event.events.InventoryEvent;
 import com.kmecpp.osmium.api.event.events.ItemDropEvent;
+import com.kmecpp.osmium.api.event.events.PlayerChangedWorldEvent;
 import com.kmecpp.osmium.api.event.events.PlayerChatEvent;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.event.events.PlayerInteractEvent;
@@ -18,12 +20,12 @@ import com.kmecpp.osmium.api.event.events.PlayerTeleportEvent;
 import com.kmecpp.osmium.api.event.events.PluginReloadEvent;
 import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
-import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockBreakEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockPlaceEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitPlayerChangeBlockEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitEntityDamageEvent;
+import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerChangedWorldEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryClickEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryCloseEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitInventoryEvent.BukkitInventoryDragEvent;
@@ -57,6 +59,7 @@ import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.Spong
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryInteractEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeInventoryEvent.SpongeInventoryOpenEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeItemDropEvent.SpongeItemDropPlayerEvent;
+import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerChangedWorldEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerChatEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerAuthEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongePlayerConnectEvent.SpongePlayerJoinEvent;
@@ -131,6 +134,7 @@ public class EventInfo {
 		register(PlayerChatEvent.class,               BukkitPlayerChatEvent.class,             SpongePlayerChatEvent.class);
 		register(PlayerMoveEvent.class,               BukkitPlayerMoveEvent.class,             SpongePlayerMoveEvent.class);
 		register(PlayerTeleportEvent.class,           BukkitPlayerTeleportEvent.class,         SpongePlayerTeleportEvent.class);
+		register(PlayerChangedWorldEvent.class,       BukkitPlayerChangedWorldEvent.class,     SpongePlayerChangedWorldEvent.class);
 		                    
 		register(ServerListPingEvent.class,           BukkitServerListPingEvent.class,         SpongeServerListPingEvent.class);
 		register(PlayerConnectionEvent.Auth.class,    BukkitPlayerAuthEvent.class,             SpongePlayerAuthEvent.class);

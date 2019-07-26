@@ -6,8 +6,6 @@ import org.bukkit.Bukkit;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 
-import com.kmecpp.osmium.api.platform.Platform;
-
 public class Hook<T> {
 
 	private T hook;

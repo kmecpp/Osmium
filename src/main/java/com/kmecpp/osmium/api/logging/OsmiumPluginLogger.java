@@ -8,8 +8,8 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.command.Chat;
-import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.core.CoreOsmiumConfig;
 
 public class OsmiumPluginLogger {

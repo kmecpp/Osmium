@@ -1,9 +1,15 @@
 package com.kmecpp.osmium.api.location;
 
+import com.kmecpp.osmium.api.persistence.Serialization;
+
 public class Position extends Vector3d {
 
 	private float pitch;
 	private float yaw;
+
+	static {
+		Serialization.register(Position.class, Position::fromString);
+	}
 
 	public Position(double x, double y, double z, float pitch, float yaw) {
 		super(x, y, z);

@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.bukkit.scheduler.BukkitTask;
 
-import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public abstract class AbstractTask<T extends AbstractTask<T>> {

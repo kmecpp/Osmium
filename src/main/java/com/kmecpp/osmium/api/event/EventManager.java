@@ -9,9 +9,9 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 
 import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
-import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
 

@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.user.UserStorageService;
+import org.spongepowered.common.SpongeImpl;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonValue;
@@ -23,9 +24,10 @@ import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.config.ConfigManager;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.EventManager;
+import com.kmecpp.osmium.api.inventory.BlockType;
 import com.kmecpp.osmium.api.inventory.ItemManager;
+import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
-import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMetrics;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.PluginLoader;
@@ -70,6 +72,14 @@ public final class Osmium {
 	 */
 
 	static {
+		if (!Platform.isDev()) {
+			try {
+				Class.forName(BlockType.class.getName());
+				Class.forName(ItemType.class.getName());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 		OsmiumLogger.info("Osmium API v" + AppInfo.VERSION + " initialized");
 	}
 
@@ -344,6 +354,27 @@ public final class Osmium {
 		} else {
 			return false;
 		}
+	}
+
+	public static String mcVersion;
+
+	public static String getMinecraftVersion() {
+		if (mcVersion == null) {
+			try {
+				if (Platform.isBukkit()) {
+					//				mcVersion = Bukkit.getServer().getClass().getPackage().getName().substring(23);
+					mcVersion = Bukkit.getVersion().substring(Bukkit.getVersion().indexOf(':') + 2, Bukkit.getVersion().length() - 1);
+				} else if (Platform.isSponge()) {
+					mcVersion = SpongeImpl.MINECRAFT_VERSION.getName();
+				}
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+			if (mcVersion == null) {
+				mcVersion = "UNKNOWN";
+			}
+		}
+		return mcVersion;
 	}
 
 	private static OsmiumPlugin getInvokingPlugin() {

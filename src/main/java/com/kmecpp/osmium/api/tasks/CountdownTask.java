@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.api.scheduler.Task.Builder;
 
-import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public class CountdownTask extends AbstractTask<CountdownTask> {

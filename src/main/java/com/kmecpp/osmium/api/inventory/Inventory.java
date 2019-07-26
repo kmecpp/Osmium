@@ -9,6 +9,8 @@ public interface Inventory extends Abstraction, Serializable {
 
 	String getName();
 
+	InventoryType getType();
+
 	int getSize();
 
 	int getItemCount();
@@ -16,6 +18,12 @@ public interface Inventory extends Abstraction, Serializable {
 	ItemStack getItem(int index);
 
 	void setItem(int index, ItemStack itemStack);
+
+	boolean containsAtLeast(ItemStack itemStack, int amount);
+
+	void addItem(ItemStack itemStack);
+
+	boolean take(ItemType type, int amount);
 
 	Collection<ItemStack> getItems();
 

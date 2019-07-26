@@ -9,7 +9,6 @@ import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.item.inventory.InventoryArchetype;
 
 import com.kmecpp.osmium.api.Abstraction;
-import com.kmecpp.osmium.api.platform.Platform;
 
 public class OsmiumRegistry {
 

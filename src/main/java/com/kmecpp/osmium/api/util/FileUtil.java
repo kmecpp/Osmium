@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.HashSet;
 
 public abstract class FileUtil {
 
@@ -51,6 +52,57 @@ public abstract class FileUtil {
 						File srcFile = new File(source, file);
 						File destFile = new File(destination, file);
 						copy(srcFile, destFile);
+					}
+				}
+			} else {
+				try (FileChannel in = new FileInputStream(source).getChannel(); FileChannel out = new FileOutputStream(destination).getChannel()) {
+					out.transferFrom(in, 0, in.size());
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Copies the specified file or folder to the new directory
+	 * 
+	 * @param source
+	 *            the source file to copy
+	 * @param destination
+	 *            the destination to copy the file to
+	 */
+	public static void copyExcluding(File source, File destination, String... excludes) {
+		HashSet<String> excludeSet = new HashSet<>();
+		for (String exclude : excludes) {
+			excludeSet.add(exclude);
+		}
+		copyExcluding(source, destination, excludeSet);
+	}
+
+	/**
+	 * Copies the specified file or folder to the new directory
+	 * 
+	 * @param source
+	 *            the source file to copy
+	 * @param destination
+	 *            the destination to copy the file to
+	 */
+	public static void copyExcluding(File source, File destination, HashSet<String> excludes) {
+		try {
+			if (source.isDirectory()) {
+				if (!destination.exists()) {
+					destination.mkdirs();
+				}
+				String files[] = source.list();
+				if (files != null) {
+					for (String file : files) {
+						if (excludes.contains(file)) {
+							continue;
+						}
+						File srcFile = new File(source, file);
+						File destFile = new File(destination, file);
+						copyExcluding(srcFile, destFile);
 					}
 				}
 			} else {

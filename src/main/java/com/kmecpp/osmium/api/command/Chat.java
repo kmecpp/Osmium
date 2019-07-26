@@ -174,6 +174,12 @@ public enum Chat {
 		return result;
 	}
 
+	/*
+	 * 80 spaces
+	 * a-e: 52
+	 * f: 63
+	 */
+
 	@Override
 	public String toString() {
 		return string;

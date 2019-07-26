@@ -2,13 +2,14 @@ package com.kmecpp.osmium.api.inventory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.item.inventory.InventoryArchetype;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.Abstraction;
-import com.kmecpp.osmium.api.platform.Platform;
 
 public enum InventoryType implements Abstraction {
 
@@ -103,6 +104,7 @@ public enum InventoryType implements Abstraction {
 	UNKNOWN;
 
 	private Object source;
+	private static HashMap<?, InventoryType> sourceMap = new HashMap<>();
 
 	@Override
 	public Object getSource() {
@@ -142,6 +144,10 @@ public enum InventoryType implements Abstraction {
 				}
 			}
 		}
+	}
+
+	public static InventoryType fromSource(Object source) {
+		return sourceMap.get(source);
 	}
 
 }

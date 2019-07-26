@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.platform;
+package com.kmecpp.osmium;
 
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
@@ -53,6 +53,10 @@ public enum Platform {
 			return BUKKIT;
 		}
 		return null;
+	}
+
+	public static boolean isDev() {
+		return isBukkit() && isSponge();
 	}
 
 	public static void execute(Runnable sponge, Runnable bukkit) {

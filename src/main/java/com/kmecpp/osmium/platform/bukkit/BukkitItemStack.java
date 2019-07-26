@@ -17,8 +17,13 @@ public class BukkitItemStack implements ItemStack {
 	private org.bukkit.inventory.ItemStack itemStack;
 
 	public BukkitItemStack(org.bukkit.inventory.ItemStack itemStack) {
-		this.itemStack = itemStack != null ? itemStack : new org.bukkit.inventory.ItemStack(Material.AIR);
-		this.type = BukkitAccess.getItemType(itemStack);
+		if (itemStack == null) {
+			this.type = ItemType.AIR;
+			this.itemStack = new org.bukkit.inventory.ItemStack(Material.AIR);
+		} else {
+			this.type = BukkitAccess.getItemType(itemStack);
+			this.itemStack = itemStack;
+		}
 	}
 
 	@Override
@@ -56,21 +61,60 @@ public class BukkitItemStack implements ItemStack {
 	}
 
 	@Override
-	public String getDisplayName() {
-		return itemStack.getItemMeta().getDisplayName();
+	public String getName() {
+		return BukkitUtil.getItemName(itemStack);
+		//		return itemStack.getItemMeta().getDisplayName();
 	}
 
+	//	@Override
+	//	public void setNameFormatted(String name) {
+	//		ItemMeta meta = itemStack.getItemMeta();
+	//		meta.setDisplayName(Chat.style(name));
+	//		itemStack.setItemMeta(meta);
+	//	}
+
 	@Override
-	public void setDisplayName(String name) {
+	public void setName(String name) {
 		ItemMeta meta = itemStack.getItemMeta();
 		meta.setDisplayName(name);
 		itemStack.setItemMeta(meta);
 	}
 
+	//	@Override
+	//	public void setDescriptionFormatted(String description) {
+	//		ItemMeta meta = itemStack.getItemMeta();
+	//		meta.setLore(description == null ? null : Chat.styleLines(description));
+	//		itemStack.setItemMeta(meta);
+	//	}
+	//
+	//	@Override
+	//	public void setDescriptionFormatted(List<String> description) {
+	//		ItemMeta meta = itemStack.getItemMeta();
+	//		ArrayList<String> lore = new ArrayList<>(description.size());
+	//		for (String line : description) {
+	//			lore.add(Chat.style(line));
+	//		}
+	//		meta.setLore(description == null ? null : lore);
+	//		itemStack.setItemMeta(meta);
+	//	}
+
 	@Override
-	public void setDescription(String description) {
+	public void setDescription(List<String> description) {
 		ItemMeta meta = itemStack.getItemMeta();
-		meta.setLore(description == null ? null : Chat.styleLines(description));
+		meta.setLore(description == null ? null : description);
+		itemStack.setItemMeta(meta);
+	}
+
+	@Override
+	public void setLastDescriptionLine(String line) {
+		ItemMeta meta = itemStack.getItemMeta();
+		List<String> lore = meta.getLore();
+		if (lore.isEmpty()) {
+			lore.add(Chat.style(line));
+		} else {
+			lore.set(lore.size() - 1, Chat.style(line));
+		}
+		meta.setLore(lore);
 		itemStack.setItemMeta(meta);
 	}
 

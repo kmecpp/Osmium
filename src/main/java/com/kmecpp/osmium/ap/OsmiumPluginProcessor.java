@@ -20,7 +20,7 @@ import org.spongepowered.plugin.meta.PluginDependency;
 import org.spongepowered.plugin.meta.PluginDependency.LoadOrder;
 import org.spongepowered.plugin.meta.PluginMetadata;
 
-import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumMetaContainer;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.plugin.SpongePlugin;

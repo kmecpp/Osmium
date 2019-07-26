@@ -3,8 +3,8 @@ package com.kmecpp.osmium.cache;
 import java.util.Collection;
 import java.util.HashMap;
 
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.entity.Player;
-import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.platform.UnsupportedPlatformException;
 import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
 import com.kmecpp.osmium.platform.sponge.SpongePlayer;

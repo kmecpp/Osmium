@@ -612,7 +612,7 @@ public class StringUtil {
 	 * @return an array of the string's lines
 	 */
 	public static String[] getLines(String str) {
-		return str.split("\n");
+		return str.isEmpty() ? new String[0] : str.split("\n");
 	}
 
 	/**
@@ -625,7 +625,7 @@ public class StringUtil {
 	 * @return an array of the string's lines
 	 */
 	public static String[] getSystemLines(String str) {
-		return str.split(System.lineSeparator());
+		return str.isEmpty() ? new String[0] : str.split(System.lineSeparator());
 	}
 
 	/**

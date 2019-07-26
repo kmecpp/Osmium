@@ -3,7 +3,7 @@ package com.kmecpp.osmium.api.logging;
 import org.bukkit.ChatColor;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.Platform;
 
 public enum LogLevel {
 

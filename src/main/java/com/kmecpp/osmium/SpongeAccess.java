@@ -58,7 +58,7 @@ public class SpongeAccess {
 	}
 
 	public static ItemType getItemType(org.spongepowered.api.item.inventory.ItemStack itemStack) {
-		return Osmium.getItemManager().getItemType(itemStack.getType().getKey().getValue());
+		return Osmium.getItemManager().getItemType(itemStack.getType());
 	}
 
 	public static Inventory getInventory(org.spongepowered.api.item.inventory.Inventory inventory) {

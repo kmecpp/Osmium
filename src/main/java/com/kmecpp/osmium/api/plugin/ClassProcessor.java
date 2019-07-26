@@ -14,6 +14,7 @@ import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.OsmiumClassLoader;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.HookClass;
 import com.kmecpp.osmium.api.command.Command;
@@ -28,7 +29,6 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Persistent;
 import com.kmecpp.osmium.api.persistence.PersistentField;
 import com.kmecpp.osmium.api.persistence.PersistentPluginData;
-import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.tasks.Schedule;
 import com.kmecpp.osmium.api.util.Reflection;
 

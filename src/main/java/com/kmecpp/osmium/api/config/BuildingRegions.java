@@ -45,7 +45,7 @@ public class BuildingRegions {
 		}
 
 		public static Region create(Player player) {
-			WorldPosition pos = player.getPosition();
+			WorldPosition pos = player.getWorldPosition();
 			Region region = new Region(player.getName(), player.getUniqueId(), new HashSet<>(), pos, pos.getLocation().getBlockX(), pos.getLocation().getBlockZ());
 			regions.add(region);
 			return region;

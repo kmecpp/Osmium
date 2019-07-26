@@ -3,7 +3,7 @@ package com.kmecpp.osmium.api;
 import org.bukkit.World.Environment;
 import org.spongepowered.api.world.DimensionTypes;
 
-import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.Platform;
 
 public enum WorldType {
 

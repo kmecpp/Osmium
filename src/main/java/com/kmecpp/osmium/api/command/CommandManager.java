@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
-import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public final class CommandManager {

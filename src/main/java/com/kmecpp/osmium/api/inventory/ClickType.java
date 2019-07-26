@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 
-import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.Platform;
 
 public enum ClickType {
 

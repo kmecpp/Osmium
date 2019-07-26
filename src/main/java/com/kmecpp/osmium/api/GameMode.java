@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api;
 
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
-import com.kmecpp.osmium.api.platform.Platform;
+import com.kmecpp.osmium.Platform;
 
 public enum GameMode {
 

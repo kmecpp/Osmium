@@ -6,6 +6,7 @@ import com.kmecpp.osmium.api.Abstraction;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
+import com.kmecpp.osmium.api.location.Position;
 import com.kmecpp.osmium.api.location.WorldPosition;
 
 public interface Entity extends Abstraction {
@@ -30,8 +31,14 @@ public interface Entity extends Abstraction {
 
 	EntityType getType();
 
-	default WorldPosition getPosition() {
+	default WorldPosition getWorldPosition() {
 		return new WorldPosition(getLocation(), getDirection());
+	}
+
+	default Position getPosition() {
+		Location location = getLocation();
+		Direction direction = getDirection();
+		return new Position(location.getX(), location.getY(), location.getZ(), direction.getPitch(), direction.getYaw());
 	}
 
 	default void setPosition(WorldPosition position) {

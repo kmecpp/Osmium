@@ -4,9 +4,9 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.Villager;
 
 import com.kmecpp.osmium.api.entity.entities.EntityVillager;
-import com.kmecpp.osmium.platform.sponge.SpongeEntity;
+import com.kmecpp.osmium.platform.sponge.SpongeEntityLiving;
 
-public class SpongeVillager extends SpongeEntity implements EntityVillager {
+public class SpongeVillager extends SpongeEntityLiving implements EntityVillager {
 
 	private Villager villager;
 

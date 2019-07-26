@@ -51,7 +51,7 @@ public class BukkitAccess {
 	}
 
 	public static ItemType getItemType(org.bukkit.inventory.ItemStack itemStack) {
-		return Osmium.getItemManager().getItemType(itemStack.getType().toString());
+		return Osmium.getItemManager().getItemType(itemStack.getType());
 	}
 
 	public static Inventory getInventory(org.bukkit.inventory.Inventory inventory) {

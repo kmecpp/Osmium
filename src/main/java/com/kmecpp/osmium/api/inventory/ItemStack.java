@@ -5,9 +5,9 @@ import java.util.List;
 import org.bukkit.Material;
 import org.spongepowered.api.item.ItemTypes;
 
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.Abstraction;
 import com.kmecpp.osmium.api.command.Chat;
-import com.kmecpp.osmium.api.platform.Platform;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.BukkitItemStack;
 import com.kmecpp.osmium.platform.sponge.SpongeItemStack;
@@ -39,11 +39,17 @@ public interface ItemStack extends Abstraction {
 
 	void setDamage(int damage);
 
-	String getDisplayName();
+	String getName();
 
-	void setDisplayName(String name);
+	void setName(String name);
 
-	void setDescription(String description);
+	//	void setDescriptionFormatted(String description);
+	//
+	//	void setDescriptionFormatted(List<String> description);
+
+	void setDescription(List<String> description);
+
+	void setLastDescriptionLine(String line);
 
 	List<String> getDescription();
 
@@ -55,9 +61,9 @@ public interface ItemStack extends Abstraction {
 		return getType() == ItemType.AIR;
 	}
 
-	default boolean isEmpty() {
-		return getAmount() == 0;
-	}
+	//	default boolean isEmpty() {
+	//		return getAmount() == 0;
+	//	}
 
 	public static Builder builder() {
 		return new Builder();
@@ -84,7 +90,12 @@ public interface ItemStack extends Abstraction {
 		}
 
 		public Builder type(ItemType type) {
-			itemStack.setType(type);
+			if (type.source != null) {
+				itemStack.setType(type);
+			} else {
+				new IllegalArgumentException(type.name() + " does not have a valid source on this platform! Defaulting to STONE").printStackTrace();
+				itemStack.setType(ItemType.STONE);
+			}
 			return this;
 		}
 
@@ -99,7 +110,7 @@ public interface ItemStack extends Abstraction {
 		}
 
 		public Builder name(String name) {
-			itemStack.setDisplayName(Chat.style(name));
+			itemStack.setName(Chat.style(name));
 			return this;
 		}
 

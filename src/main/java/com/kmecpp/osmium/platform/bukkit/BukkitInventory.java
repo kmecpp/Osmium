@@ -2,11 +2,14 @@ package com.kmecpp.osmium.platform.bukkit;
 
 import java.util.Collection;
 
+import org.bukkit.Material;
+
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Wrappers;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.api.inventory.InventoryType;
 import com.kmecpp.osmium.api.inventory.ItemStack;
-import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.api.inventory.ItemType;
 
 public class BukkitInventory implements Inventory {
 
@@ -44,8 +47,39 @@ public class BukkitInventory implements Inventory {
 	}
 
 	@Override
+	public boolean containsAtLeast(ItemStack itemStack, int amount) {
+		return inventory.containsAtLeast((org.bukkit.inventory.ItemStack) itemStack.getSource(), amount);
+	}
+
+	@Override
 	public void setItem(int index, ItemStack itemStack) {
-		inventory.setItem(index, Reflection.cast(itemStack.getSource()));
+		inventory.setItem(index, itemStack == null ? null : (org.bukkit.inventory.ItemStack) itemStack.getSource());
+	}
+
+	@Override
+	public void addItem(ItemStack itemStack) {
+		inventory.addItem((org.bukkit.inventory.ItemStack) itemStack.getSource());
+	}
+
+	@Override
+	public boolean take(ItemType type, int amount) {
+		Material bukkitType = (Material) type.getSource();
+		org.bukkit.inventory.ItemStack[] contents = inventory.getContents();
+		for (int i = 0; i < contents.length; i++) {
+			org.bukkit.inventory.ItemStack itemStack = contents[i];
+			if (itemStack != null) {
+				if (itemStack.getType() == bukkitType) {
+					int take = Math.min(itemStack.getAmount(), amount);
+					itemStack.setAmount(itemStack.getAmount() - take);
+					inventory.setItem(i, itemStack);
+					amount -= take;
+					if (amount <= 0) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -56,6 +90,11 @@ public class BukkitInventory implements Inventory {
 	@Override
 	public void clear() {
 		inventory.clear();
+	}
+
+	@Override
+	public InventoryType getType() {
+		return InventoryType.fromSource(inventory.getType());
 	}
 
 }

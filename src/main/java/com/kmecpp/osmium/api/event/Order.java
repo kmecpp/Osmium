@@ -2,8 +2,8 @@ package com.kmecpp.osmium.api.event;
 
 import org.bukkit.event.EventPriority;
 
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.Abstraction;
-import com.kmecpp.osmium.api.platform.Platform;
 
 public enum Order implements Abstraction {
 

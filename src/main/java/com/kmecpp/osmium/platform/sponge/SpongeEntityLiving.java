@@ -1,6 +1,9 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import org.spongepowered.api.entity.projectile.Projectile;
+
 import com.kmecpp.osmium.api.entity.EntityLiving;
+import com.kmecpp.osmium.api.location.Direction;
 
 public class SpongeEntityLiving extends SpongeEntity implements EntityLiving {
 
@@ -23,6 +26,18 @@ public class SpongeEntityLiving extends SpongeEntity implements EntityLiving {
 	@Override
 	public double getMaxHealth() {
 		return entity.maxHealth().get();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void launch(Class<? extends com.kmecpp.osmium.api.Projectile> projectile) {
+		entity.launchProjectile((Class<? extends Projectile>) projectile);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void launch(Class<? extends com.kmecpp.osmium.api.Projectile> projectile, Direction direction) {
+		entity.launchProjectile((Class<? extends Projectile>) projectile, direction.toSpongeVector());
 	}
 
 }
