@@ -16,40 +16,37 @@ public class TPSTask {
 	//	private static float[] samples = new float[20 * 30];
 	//	private static boolean samplesFilled;
 
-	private static long lastTick;
+	private static double tps = 20;
+	private static long lastTick = System.nanoTime();
+
+	private static double[] samples = new double[60 * 20]; //60 seconds
 	private static int sampleIndex;
 	private static int totalTicks;
-	private static double[] samples = new double[60 * 20]; //60 seconds
-	private static double tps = 20;
 
 	static {
 		Arrays.fill(samples, 20);
 
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		executorService.scheduleAtFixedRate(new Runnable() {
-
-			@Override
-			public void run() {
-				//				Osmium.getOnlinePlayers().stream().re
-				//				double tps = TPSTask.tps;
-				double asyncTps = 2e9 / (double) (System.nanoTime() - lastTick);
-				if (asyncTps < 20) {
-					tps = asyncTps;
-					//					System.out.println("ASYNC: " + asyncTps);
-				}
-				//				else {
-				//					System.out.println("USING SYNC: " + TPSTask.tps);
-				//				}
-
-				sampleIndex = ++sampleIndex % samples.length;
-				samples[sampleIndex] = TPSTask.tps;
-
-				totalTicks++;
-				if (totalTicks == Integer.MAX_VALUE) { //After 1242 days...
-					totalTicks = samples.length;
-				}
+		executorService.scheduleAtFixedRate(() -> {
+			//				Osmium.getOnlinePlayers().stream().re
+			//				double tps = TPSTask.tps;
+			double asyncTps = 2e9 / (double) (System.nanoTime() - lastTick);
+			if (asyncTps < 20) {
+				TPSTask.tps = asyncTps;
+				//				System.out.println("ASYNC TIME: " + ((System.nanoTime() - lastTick) / 1000F));
+				//					System.out.println("ASYNC: " + asyncTps);
 			}
+			//				else {
+			//					System.out.println("USING SYNC: " + TPSTask.tps);
+			//				}
 
+			sampleIndex = ++sampleIndex % samples.length;
+			samples[sampleIndex] = TPSTask.tps;
+
+			totalTicks++;
+			if (totalTicks == Integer.MAX_VALUE) { //After 1242 days...
+				totalTicks = samples.length;
+			}
 		}, 1000, 50, java.util.concurrent.TimeUnit.MILLISECONDS);
 	}
 
