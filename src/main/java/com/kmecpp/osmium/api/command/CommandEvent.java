@@ -44,8 +44,8 @@ public class CommandEvent implements Messageable {
 		}
 	}
 
-	public boolean isNotOp() {
-		return !sender.isOp();
+	public boolean isOp() {
+		return sender.isOp();
 	}
 
 	public CommandSender getSender() {
