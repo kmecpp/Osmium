@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
@@ -134,11 +135,12 @@ public class Database {
 		update("UPDATE " + getTableName(tableClass) + " SET " + DBUtil.getColumnName(column) + "='" + value + "'");
 	}
 
-	public <T> T getFirst(Class<T> tableClass, OrderBy orderBy, String columns, Object... values) {
+	public <T> Optional<T> getFirst(Class<T> tableClass, OrderBy orderBy, String columns, Object... values) {
 		TableProperties properties = tables.get(tableClass);
-		return this.<T> query("SELECT * FROM " + properties.getName()
+		ArrayList<T> result = this.<T> query("SELECT * FROM " + properties.getName()
 				+ " WHERE " + DBUtil.createWhere(columns.split(","), values)
-				+ " " + orderBy + " LIMIT 1", properties).get(0);
+				+ " " + orderBy + " LIMIT 1", properties);
+		return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
 
 		//		TableProperties properties = tables.get(tableClass);
 		//		DBResult result = query(tableClass, "SELECT * FROM " + properties.getName() + " WHERE " + DBUtil.createWhere(columns.split(","), values) + " " + orderBy);
