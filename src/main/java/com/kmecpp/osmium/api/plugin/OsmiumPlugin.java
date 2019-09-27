@@ -71,6 +71,7 @@ public abstract class OsmiumPlugin {
 		}
 		this.persistentData = new PersistentPluginData(this);
 		this.classProcessor = new ClassProcessor(this, pluginImpl); //This loads the plugin's configs and persistent data
+		onConstruct();
 
 		//		if (!database.getTables().isEmpty()) {
 		//			database.start();
@@ -92,6 +93,9 @@ public abstract class OsmiumPlugin {
 	//	public Class<?> getConfig() {
 	//		return config;
 	//	}
+
+	public void onConstruct() {
+	}
 
 	public void onLoad() {
 	}

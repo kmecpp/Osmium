@@ -30,6 +30,11 @@ public abstract class SpongePlugin {
 		}
 
 		pluginContainer = Sponge.getPluginManager().getPlugin(plugin.getId()).get();
+		try {
+			plugin.getClassProcessor().loadAll();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		plugin.onLoad();
 	}
 

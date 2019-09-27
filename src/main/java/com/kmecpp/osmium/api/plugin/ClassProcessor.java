@@ -13,7 +13,6 @@ import java.util.jar.JarFile;
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.OsmiumClassLoader;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.HookClass;
@@ -43,13 +42,16 @@ public class ClassProcessor {
 
 	private final HashMap<Class<?>, Object> classInstances = new HashMap<>();
 	private final HashMap<Class<?>, Command> commands = new HashMap<>();
+	private final HashSet<String> skipClasses = new HashSet<>();
 
-	protected ClassProcessor(OsmiumPlugin plugin, Object pluginImpl) throws Exception {
+	protected ClassProcessor(OsmiumPlugin plugin, Object pluginImpl) {
 		this.plugin = plugin;
 		this.mainClass = plugin.getClass();
 		this.mainClassImpl = pluginImpl.getClass();
+	}
 
-		OsmiumClassLoader classLoader = new OsmiumClassLoader(mainClassImpl.getClassLoader());
+	public void loadAll() throws Exception {
+		//		OsmiumClassLoader classLoader = new OsmiumClassLoader(mainClassImpl.getClassLoader());
 
 		JarFile jarFile = Directory.getJarFile(mainClass);
 		String packageName = mainClass.getPackage().getName();
@@ -90,8 +92,12 @@ public class ClassProcessor {
 				//				}
 
 				try {
+					if (skipClasses.contains(className)) {
+						continue;
+					}
 					OsmiumLogger.debug("Loading class: " + className);
-					Class<?> cls = classLoader.loadClass(className, true);
+					//					Class<?> cls = classLoader.loadClass(className, true);
+					Class<?> cls = plugin.getPluginImplementation().getClass().getClassLoader().loadClass(className);
 					if (cls.isAnnotationPresent(HookClass.class) || cls.isAnnotationPresent(SkipProcessing.class)) {
 						continue;
 					}
@@ -116,8 +122,11 @@ public class ClassProcessor {
 			}
 		}
 		jarFile.close();
-		classLoader.close();
+		//		classLoader.close();
+	}
 
+	public void skip(Class<?> cls) {
+		skipClasses.add(cls.getName());
 	}
 
 	public void process(Class<?> cls) {
@@ -149,9 +158,10 @@ public class ClassProcessor {
 
 	protected void initializeClasses() {
 		for (Class<?> cls : pluginClasses) {
-			if (!Reflection.isConcrete(cls)) {
+			if (!Reflection.isConcrete(cls) || skipClasses.contains(cls.getName())) {
 				continue;
 			}
+
 			onEnable(cls);
 		}
 	}

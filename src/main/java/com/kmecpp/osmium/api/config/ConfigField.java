@@ -101,7 +101,7 @@ public class ConfigField {
 			return value;
 		} catch (InstantiationException e) {
 			return null;
-		} catch (IllegalArgumentException | IllegalAccessException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}

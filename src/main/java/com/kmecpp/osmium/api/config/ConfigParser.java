@@ -188,7 +188,7 @@ public class ConfigParser {
 				//Create default collection if user didn't set a default value
 				try {
 					list = (Collection<Object>) currentType.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
+				} catch (Exception e) {
 					throw getError("Failed to initialize collection", e);
 				}
 				//				}
