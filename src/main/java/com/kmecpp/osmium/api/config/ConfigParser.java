@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.kmecpp.osmium.Osmium;
@@ -168,7 +169,7 @@ public class ConfigParser {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private Object parseValue(ConfigField field, Object defaultValue, Class<?>[] componentTypes, int typeIndex) {
 		Class<?> currentType = typeIndex == -1 || componentTypes.length == 0 ? field.getType() : componentTypes[typeIndex];
 		Object value;
@@ -230,7 +231,7 @@ public class ConfigParser {
 		else if (current == '{') {
 			read();
 			skipWhitespaceAndComments();
-			HashMap<String, ConfigField> fields = new HashMap<>();
+			LinkedHashMap<String, ConfigField> fields = new LinkedHashMap<>(); //Order shouldn't be changed
 			Object typeInstance = Reflection.createInstance(currentType);
 			for (Field dataField : currentType.getDeclaredFields()) {
 				fields.put(ConfigManager.getKey(dataField.getName()), new ConfigField(dataField));

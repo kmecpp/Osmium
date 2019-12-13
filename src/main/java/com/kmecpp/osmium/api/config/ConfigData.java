@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.api.config;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class ConfigData {
 
@@ -8,13 +9,13 @@ public class ConfigData {
 	private Class<?> configClass;
 	private ConfigProperties properties;
 
-	private HashMap<String, ConfigField> fields;
+	private LinkedHashMap<String, ConfigField> fields;
 
 	public ConfigData(Class<?> configClass, ConfigProperties properties) {
 		this.root = new Block("root", 0, "");
 		this.configClass = configClass;
 		this.properties = properties;
-		this.fields = new HashMap<>();
+		this.fields = new LinkedHashMap<>();
 	}
 
 	public Block getRoot() {

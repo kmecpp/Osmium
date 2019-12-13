@@ -90,6 +90,7 @@ public class ConfigField {
 		return getValue(null);
 	}
 
+	@SuppressWarnings("deprecation")
 	public Object getValue(Object fieldInstance) {
 		try {
 			Object value = field.get(fieldInstance);
