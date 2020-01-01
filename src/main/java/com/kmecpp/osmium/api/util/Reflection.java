@@ -46,7 +46,7 @@ public class Reflection {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public static <T> T createInstance(Class<T> cls) {
 		try {
 			return cls.newInstance();

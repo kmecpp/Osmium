@@ -251,6 +251,14 @@ public class CommandEvent implements Messageable {
 		send("&cError: " + t.getMessage());
 	}
 
+	public void error(String message) {
+		throw new CommandException(message);
+	}
+
+	public void usageError() {
+		throw CommandException.USAGE_ERROR;
+	}
+
 	public CommandException notFound(String expectedLabel, String input) {
 		return new CommandException("Could find " + expectedLabel + ": '" + input + "'");
 	}

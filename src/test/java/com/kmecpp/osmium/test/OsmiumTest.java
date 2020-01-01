@@ -11,6 +11,8 @@ import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.kmecpp.osmium.ap.ConfigTypeProcessor;
 import com.kmecpp.osmium.ap.OsmiumClassMetadataAnnotationProcessor;
 import com.kmecpp.osmium.ap.OsmiumPluginProcessor;
@@ -21,6 +23,12 @@ import com.kmecpp.osmium.api.plugin.Startup;
 import com.kmecpp.osmium.api.tasks.Schedule;
 
 public class OsmiumTest {
+
+	public static void main(String[] args) {
+		JsonArray arr = Json.array("t console hi");
+		String s = arr.toString();
+		System.out.println(Json.parse(s));
+	}
 
 	@Test
 	public void testDisable() {

@@ -244,6 +244,7 @@ public class ClassProcessor {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void onEnable(Class<?> cls) {
 		try {
 			OsmiumLogger.debug("Initializing class: " + cls.getName());

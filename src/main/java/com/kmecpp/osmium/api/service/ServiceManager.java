@@ -33,6 +33,7 @@ public class ServiceManager {
 				continue;
 			}
 			try {
+				@SuppressWarnings("deprecation")
 				Service service = (Service) cls.newInstance();
 				//				Osmium.getEventManager().registerEvents(service);
 				services.add(service);
