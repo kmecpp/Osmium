@@ -111,7 +111,7 @@ public class ClassProcessor {
 						OsmiumLogger.debug("SKIPPING: " + className);
 					} else {
 						OsmiumLogger.warn("Could not load class: " + className);
-						OsmiumLogger.warn(e.getMessage());
+						OsmiumLogger.warn(e.getLocalizedMessage());
 						//						e.printStackTrace();
 					}
 					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF??)
@@ -348,7 +348,7 @@ public class ClassProcessor {
 
 						if (eventInfo.isOsmiumEvent()) {
 							//Register implementation class for Osmium
-							OsmiumLogger.debug("Registering listener for " + eventInfo.getEvent() + ": " + cls.getSimpleName() + method.getName());
+							OsmiumLogger.debug("Registering listener for " + eventInfo.getEvent().getSimpleName() + ": " + cls.getSimpleName() + "." + method.getName());
 							Osmium.getEventManager()
 									.registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
 

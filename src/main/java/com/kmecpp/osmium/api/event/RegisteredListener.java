@@ -42,4 +42,22 @@ public class RegisteredListener implements Comparable<RegisteredListener> {
 		return order.ordinal() - l.order.ordinal();
 	}
 
+	@Override
+	public int hashCode() {
+		return method.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof RegisteredListener) {
+			return method.equals(((RegisteredListener) obj).method);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return instance.getClass().getName() + "." + method.getName();
+	}
+
 }

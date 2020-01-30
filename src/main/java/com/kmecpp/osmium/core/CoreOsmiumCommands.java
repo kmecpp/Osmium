@@ -35,6 +35,14 @@ public class CoreOsmiumCommands extends Command {
 					e.send("&aLast Tick: &b" + StringUtil.round(TPSTask.getLastTickSpeed(), 1));
 				});
 
+		add("debug")
+				.setDescription("Toggles debug mode")
+				.setExecutor((e) -> {
+					boolean result = CoreOsmiumConfig.debug = !CoreOsmiumConfig.debug;
+					Osmium.saveConfig(CoreOsmiumConfig.class);
+					e.send("&eOsmium debug mode: " + (result ? "&aenabled" : "&cdisabled"));
+				});
+
 		add("reload")
 				.setAdmin(true)
 				.setExecutor((e) -> {

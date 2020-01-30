@@ -3,9 +3,9 @@ package com.kmecpp.osmium.api.event;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.TreeSet;
 import java.util.function.Consumer;
 
 import com.kmecpp.osmium.BukkitAccess;
@@ -21,7 +21,7 @@ public class EventManager {
 	private final HashMap<EventKey, HashMap<Object, ArrayList<Method>>> listeners = new HashMap<>();
 
 	//Only for Osmium events
-	private final HashMap<Class<? extends EventAbstraction>, TreeSet<RegisteredListener>> events = new HashMap<>();
+	private final HashMap<Class<? extends EventAbstraction>, ArrayList<RegisteredListener>> events = new HashMap<>();
 
 	public void registerListener(Class<? extends EventAbstraction> eventClass, Order order, Object listenerInstance, Method listener) {
 		listener.setAccessible(true);
@@ -34,9 +34,9 @@ public class EventManager {
 			return;
 		}
 
-		TreeSet<RegisteredListener> listeners = events.get(eventClass);
+		ArrayList<RegisteredListener> listeners = events.get(eventClass);
 		if (listeners == null) {
-			events.put(eventClass, (listeners = new TreeSet<>()));
+			events.put(eventClass, (listeners = new ArrayList<>()));
 		}
 		listeners.add(new RegisteredListener(listenerInstance, listener, order));
 	}
@@ -48,13 +48,14 @@ public class EventManager {
 	}
 
 	public void callEvent(Event event) {
-		TreeSet<RegisteredListener> listeners = events.get(event.getClass());
+		ArrayList<RegisteredListener> listeners = events.get(event.getClass());
+		//		System.out.println("CALLING: " + event + " :: " + listeners);
 		if (listeners == null) {
 			return;
 		}
 
-		//		listeners.sort(Comparator.comparing(RegisteredListener::getOrder));
-		for (RegisteredListener listener : listeners) {
+		Collections.sort(listeners);
+		for (RegisteredListener listener : listeners) { //Listeners are kept in priority order by the TreeSet
 			listener.call(event);
 		}
 	}
