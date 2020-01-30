@@ -18,6 +18,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	protected int delay;
 	protected int interval;
 	protected TaskExecutor<T> executor;
+	protected boolean cancelOnError;
 
 	protected boolean running;
 
@@ -123,6 +124,11 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 
 	public boolean isRunning() {
 		return running;
+	}
+
+	public T setCancelOnError() {
+		this.cancelOnError = true;
+		return getInstance();
 	}
 
 	public T start() {

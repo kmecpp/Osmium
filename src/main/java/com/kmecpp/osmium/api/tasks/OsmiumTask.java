@@ -34,7 +34,17 @@ public class OsmiumTask extends AbstractTask<OsmiumTask> {
 			}
 			taskImpl = builder.delay(delay * 50, TimeUnit.MILLISECONDS)
 					.interval(interval * 50, TimeUnit.MILLISECONDS)
-					.execute((t) -> executor.execute(this))
+					.execute((t) -> {
+						if (cancelOnError) {
+							try {
+								executor.execute(this);
+							} catch (Throwable throwable) {
+								t.cancel();
+							}
+						} else {
+							executor.execute(this);
+						}
+					})
 					.submit(getPluginImplemenation());
 		}
 		return this;

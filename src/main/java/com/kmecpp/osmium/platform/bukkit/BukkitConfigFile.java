@@ -7,47 +7,41 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
-public abstract class BukkitConfigFile {
+public abstract class BukkitConfigFile extends YamlConfiguration {
 
 	private static final HashMap<Class<?>, BukkitConfigFile> configs = new HashMap<>();
 
 	private OsmiumPlugin plugin;
 	private Path path;
 	private boolean resource;
-	private YamlConfiguration config;
 
 	public BukkitConfigFile(String path) {
 		this(path, false);
 	}
 
 	public BukkitConfigFile(String path, boolean resource) {
-		this(Osmium.getPlugin().getFolder().resolve(path));
+		this.plugin = Osmium.getPlugin(this.getClass());
+		this.path = plugin.getFolder().resolve(path);
 		this.resource = resource;
-	}
-
-	public BukkitConfigFile(Path path) {
-		this.plugin = Osmium.getPlugin();
-		this.path = path;
 		configs.put(this.getClass(), this);
 	}
 
-	protected void onLoad(Configuration config) {
+	protected void onLoad(BukkitConfigFile config) {
 	}
 
-	protected void onSave(Configuration config) {
+	protected void onSave(BukkitConfigFile config) {
 	}
 
 	public final void load() {
 		try {
 			File file = path.toFile();
-			System.out.println("LOAD: " + file.getAbsolutePath());
 			path.getParent().toFile().mkdirs();
 			boolean exists = file.exists();
 			if (!exists) {
@@ -57,22 +51,23 @@ public abstract class BukkitConfigFile {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-				} else {
-					file.createNewFile();
-					save();
 				}
+			} else {
+				this.load(file);
 			}
-			config = YamlConfiguration.loadConfiguration(file);
-			onLoad(config);
-		} catch (IOException e) {
+			onLoad(this);
+			if (!exists) {
+				save();
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public final void save() {
 		try {
-			onSave(config);
-			config.save(path.toFile());
+			onSave(this);
+			this.save(path.toFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -80,6 +75,53 @@ public abstract class BukkitConfigFile {
 
 	public final Path getPath() {
 		return path;
+	}
+
+	// PERSISTENT VALUES
+	public String getPersistentString(String path, String def) {
+		return getPersistentObject(path, def);
+	}
+
+	public List<String> getPersistentStringList(String path, List<String> def) {
+		return getPersistentObject(path, def);
+	}
+
+	public int getPersistentInt(String path, int def) {
+		return getPersistentObject(path, def);
+	}
+
+	public float getPersistentFloat(String path, float def) {
+		return getPersistentObject(path, def);
+	}
+
+	public double getPersistentDouble(String path, double def) {
+		return getPersistentObject(path, def);
+	}
+
+	public boolean getPersistentBoolean(String path, boolean def) {
+		return getPersistentObject(path, def);
+	}
+
+	public <T> T getPersistentObject(String path, T def) {
+		return getPersistentObject(path, def, false);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getPersistentObject(String path, T def, boolean save) { //The existing method this.get(path, def) will not set the default value, only return it
+		if (this.contains(path)) {
+			Object val = this.get(path);
+			if (val.getClass().isAssignableFrom(def.getClass())) {
+				return (T) val;
+			} else {
+				throw new RuntimeException("Invalid data type! Expected: '" + def.getClass().getSimpleName() + "' found: " + val.getClass().getSimpleName());
+			}
+		} else {
+			this.set(path, def);
+			if (save) {
+				this.save();
+			}
+			return def;
+		}
 	}
 
 	public static BukkitConfigFile get(Class<?> cls) {
