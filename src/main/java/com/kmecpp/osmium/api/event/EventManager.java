@@ -18,9 +18,11 @@ import com.kmecpp.osmium.api.util.Reflection;
 public class EventManager {
 
 	//Event key is combination of event class and order 
-	private final HashMap<EventKey, HashMap<Object, ArrayList<Method>>> listeners = new HashMap<>();
+	//Order doesn't have to be maintained here because we're simply passing the source order to the platform specific registerListener method
+	private final HashMap<EventKey, HashMap<Object, ArrayList<Method>>> proxyListeners = new HashMap<>();
 
 	//Only for Osmium events
+	//The Listener event list must be kept in sorted order (by priority)
 	private final HashMap<Class<? extends EventAbstraction>, ArrayList<RegisteredListener>> events = new HashMap<>();
 
 	public void registerListener(Class<? extends EventAbstraction> eventClass, Order order, Object listenerInstance, Method listener) {
@@ -38,7 +40,13 @@ public class EventManager {
 		if (listeners == null) {
 			events.put(eventClass, (listeners = new ArrayList<>()));
 		}
-		listeners.add(new RegisteredListener(listenerInstance, listener, order));
+
+		RegisteredListener registeredListener = new RegisteredListener(listenerInstance, listener, order);
+		int index = Collections.binarySearch(listeners, registeredListener);
+		if (index < 0) {
+			index = -index - 1;
+		}
+		listeners.add(index, registeredListener);
 	}
 
 	private static void fail(Class<? extends EventAbstraction> eventClass, Method listener, String message) {
@@ -54,8 +62,7 @@ public class EventManager {
 			return;
 		}
 
-		Collections.sort(listeners);
-		for (RegisteredListener listener : listeners) { //Listeners are kept in priority order by the TreeSet
+		for (RegisteredListener listener : listeners) { //Listeners should be kept in priority order
 			listener.call(event);
 		}
 	}
@@ -87,10 +94,10 @@ public class EventManager {
 		for (Class<?> sourceEventClass : eventInfo.getSourceClasses()) {
 			EventKey key = new EventKey(sourceEventClass, order);
 
-			boolean firstEventRegistration = !this.listeners.containsKey(key);
-			HashMap<Object, ArrayList<Method>> listenerInstances = firstEventRegistration ? new HashMap<>() : this.listeners.get(key);
+			boolean firstEventRegistration = !this.proxyListeners.containsKey(key);
+			HashMap<Object, ArrayList<Method>> listenerInstances = firstEventRegistration ? new HashMap<>() : this.proxyListeners.get(key);
 			if (firstEventRegistration) {
-				this.listeners.put(key, listenerInstances);
+				this.proxyListeners.put(key, listenerInstances);
 			}
 
 			ArrayList<Method> listeners = listenerInstances.get(listenerInstance);

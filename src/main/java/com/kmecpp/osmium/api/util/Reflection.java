@@ -384,12 +384,13 @@ public class Reflection {
 		return methods.toArray(new Method[0]);
 	}
 
-	public static <T> T getStaticValue(Object object, Field field) {
+	public static <T> T getStaticValue(Field field) {
 		return cast(getFieldValue(null, field));
 	}
 
 	public static <T> T getFieldValue(Object object, String fieldName) {
-		return cast(getFieldValue(object, getField(object.getClass(), fieldName)));
+		Object instance = object instanceof Class ? null : object;
+		return cast(getFieldValue(instance, getField(getClass(object), fieldName)));
 	}
 
 	public static <T> T getFieldValue(Object object, Class<?> cls, String fieldName) {
