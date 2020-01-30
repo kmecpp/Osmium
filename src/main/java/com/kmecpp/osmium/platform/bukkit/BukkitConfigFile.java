@@ -28,9 +28,13 @@ public abstract class BukkitConfigFile {
 	}
 
 	public BukkitConfigFile(String path, boolean resource) {
-		this.plugin = Osmium.getPlugin();
-		this.path = plugin.getFolder().resolve(path);
+		this(Osmium.getPlugin().getFolder().resolve(path));
 		this.resource = resource;
+	}
+
+	public BukkitConfigFile(Path path) {
+		this.plugin = Osmium.getPlugin();
+		this.path = path;
 		configs.put(this.getClass(), this);
 	}
 
@@ -43,6 +47,7 @@ public abstract class BukkitConfigFile {
 	public final void load() {
 		try {
 			File file = path.toFile();
+			System.out.println("LOAD: " + file.getAbsolutePath());
 			path.getParent().toFile().mkdirs();
 			boolean exists = file.exists();
 			if (!exists) {
@@ -54,13 +59,11 @@ public abstract class BukkitConfigFile {
 					}
 				} else {
 					file.createNewFile();
+					save();
 				}
 			}
 			config = YamlConfiguration.loadConfiguration(file);
 			onLoad(config);
-			if (!exists) {
-				save();
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

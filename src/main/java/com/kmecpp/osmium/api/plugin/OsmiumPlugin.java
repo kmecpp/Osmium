@@ -37,6 +37,7 @@ public abstract class OsmiumPlugin {
 	private Path dataFolder;
 
 	private ClassProcessor classProcessor;
+	boolean startComplete;
 
 	public OsmiumPlugin() {
 		Preconditions.checkNotNull(properties, "Osmium plugins must be annotated with @OsmiumMeta");
@@ -118,10 +119,11 @@ public abstract class OsmiumPlugin {
 	public void onFullReload() {
 	}
 
-	public void onConfigure(boolean full) {
+	public void onDisable() {
 	}
 
-	public void onDisable() {
+	public boolean isStartComplete() {
+		return startComplete;
 	}
 
 	public <T> T provideInstance(T instance) {

@@ -888,7 +888,6 @@ public class StringUtil {
 	 *            the object to convert to a string
 	 * @return a string representation of the object
 	 */
-	@SuppressWarnings("deprecation")
 	public static String toString(Object object) {
 		StringBuilder sb = new StringBuilder("[");
 		for (Field field : object.getClass().getDeclaredFields()) {

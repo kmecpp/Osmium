@@ -169,7 +169,7 @@ public class ConfigParser {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings({ "unchecked" })
 	private Object parseValue(ConfigField field, Object defaultValue, Class<?>[] componentTypes, int typeIndex) {
 		Class<?> currentType = typeIndex == -1 || componentTypes.length == 0 ? field.getType() : componentTypes[typeIndex];
 		Object value;

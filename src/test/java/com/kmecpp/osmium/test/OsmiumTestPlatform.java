@@ -17,7 +17,7 @@ import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.event.events.PlayerInteractEvent;
-import com.kmecpp.osmium.api.event.events.PlayerMovePositionEvent;
+import com.kmecpp.osmium.api.event.events.osmium.PlayerMovePositionEvent;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;

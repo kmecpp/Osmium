@@ -255,7 +255,6 @@ public class Database {
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
 			while (resultSet.next()) {
-				@SuppressWarnings("deprecation")
 				T obj = properties.<T> getTableClass().newInstance();
 
 				for (int i = 0; i < fields.length; i++) {

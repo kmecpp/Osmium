@@ -23,7 +23,7 @@ public abstract class SpongePlugin {
 	}
 
 	@Listener
-	public void onGameConstructionEvent(GameConstructionEvent e) {
+	public void on(GameConstructionEvent e) {
 		if (plugin == null) {
 			disable();
 			return;
@@ -39,24 +39,25 @@ public abstract class SpongePlugin {
 	}
 
 	@Listener
-	public void onGamePreInitialization(GamePreInitializationEvent e) {
-		plugin.onConfigure(true);
+	public void on(GamePreInitializationEvent e) {
 		plugin.onPreInit();
 	}
 
 	@Listener
-	public void onGameInitialization(GameInitializationEvent e) {
+	public void on(GameInitializationEvent e) {
 		plugin.onInit();
 		plugin.getClassProcessor().initializeClasses();
 	}
 
 	@Listener
-	public void onGamePostInitialization(GamePostInitializationEvent e) {
+	public void on(GamePostInitializationEvent e) {
 		plugin.onPostInit();
+		Osmium.reloadPlugin(plugin);
+		plugin.startComplete = true;
 	}
 
 	@Listener
-	public void onGamePostInitialization(GameStoppingEvent e) {
+	public void on(GameStoppingEvent e) {
 		plugin.saveData();
 		plugin.onDisable();
 	}

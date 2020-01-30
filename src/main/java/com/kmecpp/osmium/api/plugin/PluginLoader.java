@@ -29,7 +29,6 @@ public class PluginLoader {
 				ClassLoader pluginClassLoader = pluginImpl.getClass().getClassLoader();
 				Class<? extends OsmiumPlugin> main = pluginClassLoader.loadClass(mainClassName).asSubclass(OsmiumPlugin.class);
 
-				@SuppressWarnings("deprecation")
 				OsmiumPlugin plugin = main.newInstance();
 				OsmiumLogger.info("Loading plugin: " + plugin.getName() + " v" + plugin.getVersion());
 

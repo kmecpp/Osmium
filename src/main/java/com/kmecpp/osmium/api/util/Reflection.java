@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -46,7 +45,7 @@ public class Reflection {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings({ "unchecked" })
 	public static <T> T createInstance(Class<T> cls) {
 		try {
 			return cls.newInstance();
@@ -385,29 +384,34 @@ public class Reflection {
 		return methods.toArray(new Method[0]);
 	}
 
-	public static Object getStaticValue(Object object, Field field) {
-		return getFieldValue(null, field);
+	public static <T> T getStaticValue(Object object, Field field) {
+		return cast(getFieldValue(null, field));
 	}
 
-	public static Object getFieldValue(Object object, String fieldName) {
-		return getFieldValue(object, getField(object.getClass(), fieldName));
+	public static <T> T getFieldValue(Object object, String fieldName) {
+		return cast(getFieldValue(object, getField(object.getClass(), fieldName)));
 	}
 
-	public static Object getFieldValue(Object object, Class<?> cls, String fieldName) {
+	public static <T> T getFieldValue(Object object, Class<?> cls, String fieldName) {
 		return getFieldValue(object, getField(cls, fieldName));
 	}
 
-	public static Object getFieldValue(Object object, Field field) {
-		return getFieldValue(object, field, Object.class);
-	}
-
-	public static <T> T getFieldValue(Object object, Field field, Class<T> cast) {
+	public static <T> T getFieldValue(Object object, Field field) {
+		//		return cast(getFieldValue(object, field, Object.class));
 		try {
-			return cast.cast(field.get(object));
+			return cast(field.get(object));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
+
+	//	public static <T> T getFieldValue(Object object, Field field, Class<T> cast) {
+	//		try {
+	//			return cast.cast(field.get(object));
+	//		} catch (Exception e) {
+	//			throw new RuntimeException(e);
+	//		}
+	//	}
 
 	//	public static Field getFieldOrNull(Object obj, String fieldName) {
 	//		try {
@@ -648,13 +652,12 @@ public class Reflection {
 	 *            the fully qualified class name
 	 * @return the class
 	 */
-	public static Optional<Class<?>> loadClass(String className) {
+	public static Class<?> loadClass(String className) {
 		try {
-			return Optional.of(Class.forName(className));
+			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
-			return Optional.empty();
+			return null;
 		}
-
 	}
 
 }

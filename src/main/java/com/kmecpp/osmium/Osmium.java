@@ -38,7 +38,6 @@ import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.core.PlayerDataManager;
 import com.kmecpp.osmium.core.TPSTask;
 import com.kmecpp.osmium.platform.bukkit.BukkitUser;
-import com.kmecpp.osmium.platform.osmium.OsmiumPluginConfigureEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginReloadEvent;
 import com.kmecpp.osmium.platform.sponge.SpongeUser;
 
@@ -248,12 +247,8 @@ public final class Osmium {
 				return false;
 			}
 		}
-
-		plugin.onConfigure(reloadDatabase);
-		eventManager.callEvent(new OsmiumPluginConfigureEvent(plugin, reloadDatabase));
-
 		plugin.onReload();
-		eventManager.callEvent(new OsmiumPluginReloadEvent(plugin));
+		eventManager.callEvent(new OsmiumPluginReloadEvent(plugin, reloadDatabase));
 		if (reloadDatabase) {
 			plugin.onFullReload();
 			plugin.getDatabase().reload();

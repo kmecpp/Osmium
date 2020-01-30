@@ -244,7 +244,6 @@ public class ClassProcessor {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public void onEnable(Class<?> cls) {
 		try {
 			OsmiumLogger.debug("Initializing class: " + cls.getName());
@@ -343,7 +342,7 @@ public class ClassProcessor {
 						EventInfo eventInfo = EventInfo.get(eventClass);
 
 						if (eventInfo == null) {
-							OsmiumLogger.error("Osmium event class has no registration: " + eventClass);
+							OsmiumLogger.error("Osmium event class has no registered implementation: " + eventClass.getName());
 							continue;
 						}
 

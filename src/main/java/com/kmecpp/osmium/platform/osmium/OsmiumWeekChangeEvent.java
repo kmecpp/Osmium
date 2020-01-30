@@ -1,6 +1,6 @@
 package com.kmecpp.osmium.platform.osmium;
 
-import com.kmecpp.osmium.api.event.events.DateChangeEvent;
+import com.kmecpp.osmium.api.event.events.osmium.DateChangeEvent;
 
 public class OsmiumWeekChangeEvent implements DateChangeEvent.Week {
 
