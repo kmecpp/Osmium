@@ -27,7 +27,6 @@ import com.kmecpp.osmium.api.event.EventManager;
 import com.kmecpp.osmium.api.inventory.BlockType;
 import com.kmecpp.osmium.api.inventory.ItemManager;
 import com.kmecpp.osmium.api.inventory.ItemType;
-import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumMetrics;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.PluginLoader;
@@ -39,6 +38,7 @@ import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.core.PlayerDataManager;
 import com.kmecpp.osmium.core.TPSTask;
 import com.kmecpp.osmium.platform.bukkit.BukkitUser;
+import com.kmecpp.osmium.platform.osmium.OsmiumPluginConfigureEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginReloadEvent;
 import com.kmecpp.osmium.platform.sponge.SpongeUser;
 
@@ -80,7 +80,6 @@ public final class Osmium {
 				e.printStackTrace();
 			}
 		}
-		OsmiumLogger.info("Osmium API v" + AppInfo.VERSION + " initialized");
 	}
 
 	//	public static void main(String[] args) throws IOException {
@@ -249,9 +248,17 @@ public final class Osmium {
 				return false;
 			}
 		}
-		plugin.getDatabase().reload();
-		eventManager.callEvent(new OsmiumPluginReloadEvent(plugin));
+
+		plugin.onConfigure(reloadDatabase);
+		eventManager.callEvent(new OsmiumPluginConfigureEvent(plugin, reloadDatabase));
+
 		plugin.onReload();
+		eventManager.callEvent(new OsmiumPluginReloadEvent(plugin));
+		if (reloadDatabase) {
+			plugin.onFullReload();
+			plugin.getDatabase().reload();
+		}
+
 		return true;
 	}
 

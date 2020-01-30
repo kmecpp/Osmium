@@ -115,6 +115,12 @@ public abstract class OsmiumPlugin {
 	public void onReload() {
 	}
 
+	public void onFullReload() {
+	}
+
+	public void onConfigure(boolean full) {
+	}
+
 	public void onDisable() {
 	}
 

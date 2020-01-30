@@ -19,6 +19,7 @@ import com.kmecpp.osmium.api.event.events.PlayerMovePositionEvent;
 import com.kmecpp.osmium.api.event.events.PlayerTeleportEvent;
 import com.kmecpp.osmium.api.event.events.PluginReloadEvent;
 import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
+import com.kmecpp.osmium.api.event.events.osmium.PluginConfigureEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockBreakEvent;
@@ -47,6 +48,7 @@ import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumDayChangeEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumMonthChangeEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
+import com.kmecpp.osmium.platform.osmium.OsmiumPluginConfigureEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginReloadEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumWeekChangeEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockBreakEvent;
@@ -112,6 +114,7 @@ public class EventInfo {
 	static {
 		//@formatter:off
 		register(PluginReloadEvent.class,             OsmiumPluginReloadEvent.class);
+		register(PluginConfigureEvent.class,          OsmiumPluginConfigureEvent.class);
 		register(DateChangeEvent.Day.class,           OsmiumDayChangeEvent.class);
 		register(DateChangeEvent.Week.class,          OsmiumWeekChangeEvent.class);
 		register(DateChangeEvent.Month.class,         OsmiumMonthChangeEvent.class);

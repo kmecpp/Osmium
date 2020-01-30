@@ -21,7 +21,7 @@ public class PlayerDataManager {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getData(Player player, Class<T> dataType) {
-		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + data.get(player.getUniqueId()));
+		//		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + data.get(player.getUniqueId()));
 		return (T) data.get(player.getUniqueId()).get(dataType);
 	}
 

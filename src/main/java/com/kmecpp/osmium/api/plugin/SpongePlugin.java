@@ -40,6 +40,7 @@ public abstract class SpongePlugin {
 
 	@Listener
 	public void onGamePreInitialization(GamePreInitializationEvent e) {
+		plugin.onConfigure(true);
 		plugin.onPreInit();
 	}
 

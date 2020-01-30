@@ -150,7 +150,7 @@ dependencies {
 	shade "org.spongepowered:configurate-hocon:3.5"
 	shade "org.spongepowered:plugin-meta:0.4.1"
 	//shade "log4j:log4j:1.2.17"
-	shade "org.yaml:snakeyaml:1.21"
+	shade "org.yaml:snakeyaml:1.25"
 	//shade "org.bstats:bstats-bukkit:1.2"
 	//shade "org.bstats:bstats-sponge:1.2"
 	shade "com.zaxxer:HikariCP:3.1.0"
