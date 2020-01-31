@@ -118,6 +118,12 @@ public final class Osmium {
 		commandManager.processConsoleCommand(command);
 	}
 
+	public static void executeOnServerThread(String command) {
+		Osmium.getTask().setExecutor(t -> {
+			commandManager.processConsoleCommand(command);
+		}).start();
+	}
+
 	public static ConfigManager getConfigManager() {
 		return configManager;
 	}
