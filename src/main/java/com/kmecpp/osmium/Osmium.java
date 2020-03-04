@@ -20,6 +20,7 @@ import com.eclipsesource.json.JsonValue;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Chat;
+import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.config.ConfigManager;
 import com.kmecpp.osmium.api.entity.Player;
@@ -208,10 +209,10 @@ public final class Osmium {
 		return getInvokingPlugin().countdown(count);
 	}
 
-	//	public static SimpleCommand registerCommand(String name, String... aliases) {
-	//		return registerCommand(getInvokingPlugin(), name, aliases);
-	//	}
-	//
+	public static Command registerCommand(String name, String... aliases) {
+		return getCommandManager().register(getInvokingPlugin(), name, aliases);
+	}
+
 	//	public static SimpleCommand registerCommand(OsmiumPlugin plugin, String name, String... aliases) {
 	//		return commandManager.register(plugin, new Command(name, aliases));
 	//	}
@@ -257,9 +258,10 @@ public final class Osmium {
 		eventManager.callEvent(new OsmiumPluginReloadEvent(plugin, reloadDatabase));
 		if (reloadDatabase) {
 			plugin.onFullReload();
-			plugin.getDatabase().reload();
+			if (plugin.getDatabase() != null) {
+				plugin.getDatabase().reload();
+			}
 		}
-
 		return true;
 	}
 

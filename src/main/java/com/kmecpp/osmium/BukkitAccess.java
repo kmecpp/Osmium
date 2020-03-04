@@ -140,7 +140,6 @@ public class BukkitAccess {
 				}
 
 			});
-			Osmium.getCommandManager().register(plugin, command);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

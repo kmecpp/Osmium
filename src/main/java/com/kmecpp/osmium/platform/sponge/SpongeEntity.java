@@ -71,6 +71,16 @@ public class SpongeEntity implements Entity {
 	}
 
 	@Override
+	public void setVelocity(int x, int y, int z) {
+		entity.setVelocity(new Vector3d(x, y, z));
+	}
+
+	@Override
+	public void setVelocity(double x, double y, double z) {
+		entity.setVelocity(new Vector3d(x, y, z));
+	}
+
+	@Override
 	public EntityType getType() {
 		return SpongeAccess.getEntityType(entity.getType());
 	}

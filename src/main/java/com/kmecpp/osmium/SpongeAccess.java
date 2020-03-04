@@ -129,7 +129,6 @@ public class SpongeAccess {
 		if (optionalMapping.isPresent()) {
 			CommandMapping mapping = optionalMapping.get();
 			command.setPrimaryAlias(mapping.getPrimaryAlias());
-			Osmium.getCommandManager().register(plugin, command);
 		} else {
 			CommandManager.sendFailedRegistrationMessage(plugin, command);
 		}

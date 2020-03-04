@@ -45,6 +45,11 @@ public class Reflection {
 		}
 	}
 
+	public static String getPackageName(Class<?> cls) {
+		String name = cls.getName();
+		return name.substring(0, name.lastIndexOf('.'));
+	}
+
 	@SuppressWarnings({ "unchecked" })
 	public static <T> T createInstance(Class<T> cls) {
 		try {

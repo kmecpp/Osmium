@@ -14,7 +14,6 @@ public class CoreOsmiumCommands extends Command {
 
 	public CoreOsmiumCommands() {
 		super("osmium", "os", "om", "o");
-
 		setDescription("Base command for interacting with the Osmium API");
 
 		add("info")

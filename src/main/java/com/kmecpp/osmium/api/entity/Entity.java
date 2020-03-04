@@ -29,6 +29,10 @@ public interface Entity extends Abstraction {
 
 	void setDirection(Direction direction);
 
+	void setVelocity(int x, int y, int z);
+
+	void setVelocity(double x, double y, double z);
+
 	EntityType getType();
 
 	default WorldPosition getWorldPosition() {

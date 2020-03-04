@@ -10,11 +10,8 @@ import java.util.HashSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.Platform;
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.HookClass;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.ConfigProperties;
@@ -41,7 +38,7 @@ public class ClassProcessor {
 	private final HashSet<Class<?>> pluginClasses = new HashSet<Class<?>>();
 
 	private final HashMap<Class<?>, Object> classInstances = new HashMap<>();
-	private final HashMap<Class<?>, Command> commands = new HashMap<>();
+	//	private final HashMap<Class<?>, Command> commands = new HashMap<>();
 	private final HashSet<String> skipClasses = new HashSet<>();
 
 	protected ClassProcessor(OsmiumPlugin plugin, Object pluginImpl) {
@@ -54,7 +51,7 @@ public class ClassProcessor {
 		//		OsmiumClassLoader classLoader = new OsmiumClassLoader(mainClassImpl.getClassLoader());
 
 		JarFile jarFile = Directory.getJarFile(mainClass);
-		String packageName = mainClass.getPackage().getName();
+		String packageName = Reflection.getPackageName(mainClass); //For some reason mainClass.getPackage() started returning null
 
 		//		HashSet<String> staticLoadClasses = null;
 		//		ZipEntry staticLoadFile = jarFile.getEntry("static-load-classes");
@@ -258,18 +255,14 @@ public class ClassProcessor {
 					return;
 				}
 
-				commands.put(cls, command);
+				//				commands.put(cls, command);
 
 				if (command.getAliases().length == 0) {
 					OsmiumLogger.warn("Command does not have any aliases and will not be registered: " + cls);
 					return;
 				}
 
-				if (Platform.isBukkit()) {
-					BukkitAccess.registerCommand(plugin, command);
-				} else if (Platform.isSponge()) {
-					SpongeAccess.registerCommand(plugin, command);
-				}
+				Osmium.getCommandManager().register(plugin, command);
 			}
 
 			for (Method method : cls.getDeclaredMethods()) {

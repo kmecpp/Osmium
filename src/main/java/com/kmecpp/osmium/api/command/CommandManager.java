@@ -14,11 +14,20 @@ public final class CommandManager {
 	//	private HashMap<OsmiumPlugin, Boolean> defaultAllowConsole = new HashMap<>();
 	private HashMap<OsmiumPlugin, ArrayList<Command>> commands = new HashMap<>();
 
+	public Command register(OsmiumPlugin plugin, String name, String... aliases) {
+		return register(plugin, new Command(name, aliases));
+	}
+
 	public Command register(OsmiumPlugin plugin, Command command) {
 		ArrayList<Command> pluginCommands = getCommands(plugin);
 		pluginCommands.add(command);
 		commands.put(plugin, pluginCommands);
-		OsmiumLogger.debug("Registered Osmium command: /" + command.getPrimaryAlias());
+		plugin.debug("Registered command: /" + command.getPrimaryAlias());
+		if (Platform.isBukkit()) {
+			BukkitAccess.registerCommand(plugin, command);
+		} else if (Platform.isSponge()) {
+			SpongeAccess.registerCommand(plugin, command);
+		}
 		return command;
 	}
 
@@ -132,7 +141,7 @@ public final class CommandManager {
 		}
 	}
 
-	public static void sendFailedRegistrationMessage(OsmiumPlugin plugin, Command command) {
+	public static void sendFailedRegistrationMessage(OsmiumPlugin plugin, CommandBase command) {
 		OsmiumLogger.warn("Unable to register /" + command.getPrimaryAlias() + " for plugin: " + plugin.getName() + " because its aliases are unavailable!");
 		OsmiumLogger.warn("To correct this issue, create a command rewrite rule in the osmium config");
 		OsmiumLogger.warn("commands." + command.getPrimaryAlias() + "={alternate}");

@@ -2,6 +2,8 @@ package com.kmecpp.osmium.platform.bukkit;
 
 import java.util.UUID;
 
+import org.bukkit.util.Vector;
+
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Entity;
@@ -70,6 +72,16 @@ public class BukkitEntity implements Entity {
 		org.bukkit.Location l = (org.bukkit.Location) location.getImplementation();
 		l.setDirection(entity.getLocation().getDirection()); //Revert direction back to original
 		return entity.teleport(l);
+	}
+
+	@Override
+	public void setVelocity(int x, int y, int z) {
+		entity.setVelocity(new Vector(x, y, z));
+	}
+
+	@Override
+	public void setVelocity(double x, double y, double z) {
+		entity.setVelocity(new Vector(x, y, z));
 	}
 
 	@Override

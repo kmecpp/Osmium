@@ -22,13 +22,9 @@ public class Command extends CommandBase {
 	}
 
 	public void configure() {
-
 	}
 
 	public void validate(CommandEvent event) {
-	}
-
-	public void execute(CommandEvent event) {
 	}
 
 	public void finalize(CommandEvent event) {

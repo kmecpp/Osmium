@@ -12,7 +12,6 @@ import com.google.common.base.Preconditions;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.command.Command;
-import com.kmecpp.osmium.api.command.CommandBase;
 import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.logging.OsmiumPluginLogger;
@@ -118,6 +117,9 @@ public abstract class OsmiumPlugin {
 
 	public void onFullReload() {
 	}
+
+	//	public void onFinalize() {
+	//	}
 
 	public void onDisable() {
 	}
@@ -282,7 +284,7 @@ public abstract class OsmiumPlugin {
 		Osmium.reloadPlugin(this);
 	}
 
-	public CommandBase registerCommand(String name, String... aliases) {
+	public Command registerCommand(String name, String... aliases) {
 		return Osmium.getCommandManager().register(this, new Command(name, aliases));
 	}
 
