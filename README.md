@@ -143,10 +143,13 @@ Notice the setConsole() method.
 Alternatively you can move the command into its own class. The same command would look like this
 
 ```
-@CommandProperties(aliases = { "kill", "destroy"}, 
-	description = "Teleport to the spawn point of your current world", 
-	permission = "myplugin.spawn", console = true)
 public class KillCommand extends Command {
+
+	public KillCommand() {
+		super("kill", "destroy");
+		setDescription("Kills everyone in the current world");
+		setPermission("myplugin.kill");
+	}
 
 	@Override
 	public void execute(CommandEvent e) {
@@ -171,14 +174,13 @@ Ex:
 - /kill player <player> - Kills all players in a specific world
 
 ```
-@Command(aliases = { "kill", "sp"},
-	description = "Teleport to the spawn point of your current world",
-	permission = "myplugin.spawn",
-	admin = true)
-public class KillCommands extends OsmiumCommand {
+public class KillCommands extends Command {
 
-	@Override
-	public void configure(){
+	public KillCommand() {
+		super("kill", "destroy");
+		setDescription("Kills everyone in the current world");
+		setPermission("myplugin.kill");
+		
 		add("all").setExecutor(e) -> {
 			Osmium.getOnlinePlayers().stream().filter(p -> !p.isOp()).forEach(Player::kill);
 			e.sendMessage(C.GREEN + "You have killed everyone!");
@@ -191,9 +193,8 @@ public class KillCommands extends OsmiumCommand {
 		});
 		
 		add("player").setExecutor(e) -> {
-			Player player = e.getPlayer(0); //Gets the argument at index 0 and parses it as a Player
-			if(player.getName().equals(
-			e.sendMessage(C.GREEN + "You have killed everyone in " + world.getName());
+			e.getPlayer(0).kill(); //Gets the argument at index 0 and parses it as a Player
+			e.sendMessage(C.GREEN + "You have killed " + player.getName());
 		});
 	}
 
