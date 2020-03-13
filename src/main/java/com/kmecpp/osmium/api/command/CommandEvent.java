@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.command;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.User;
@@ -158,6 +159,19 @@ public class CommandEvent implements Messageable {
 
 	public Player getPlayer(int index, Player def) {
 		return index < args.length ? getPlayer(index) : def;
+	}
+
+	public UUID getId(int index) {
+		String input = getString(index);
+		try {
+			return UUID.fromString(input);
+		} catch (IllegalArgumentException e) {
+			throw new CommandException("Invalid UUID: " + input);
+		}
+	}
+
+	public UUID getId(int index, UUID def) {
+		return index < args.length ? getId(index) : def;
 	}
 
 	public World getWorld(int index) {
