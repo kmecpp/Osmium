@@ -268,7 +268,7 @@ public class ClassProcessor {
 			for (Method method : cls.getDeclaredMethods()) {
 				Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
 				Listener listenerAnnotation = method.getAnnotation(Listener.class);
-				Startup startup = method.getAnnotation(Startup.class);
+				Initializer startup = method.getAnnotation(Initializer.class);
 
 				if (scheduleAnnotation == null && listenerAnnotation == null && startup == null) {
 					continue;
@@ -304,7 +304,7 @@ public class ClassProcessor {
 					try {
 						method.invoke(instance);
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						OsmiumLogger.error("Method " + cls.getSimpleName() + "." + method.getName() + " annotated with @" + Startup.class.getSimpleName()
+						OsmiumLogger.error("Method " + cls.getSimpleName() + "." + method.getName() + " annotated with @" + Initializer.class.getSimpleName()
 								+ " cannot be executed because it contains parameters!");
 						e.printStackTrace();
 					}

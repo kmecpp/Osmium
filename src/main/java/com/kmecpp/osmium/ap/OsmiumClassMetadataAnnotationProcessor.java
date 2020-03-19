@@ -14,7 +14,7 @@ import javax.lang.model.element.TypeElement;
 import com.kmecpp.osmium.api.config.ConfigProperties;
 import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.event.Listener;
-import com.kmecpp.osmium.api.plugin.Startup;
+import com.kmecpp.osmium.api.plugin.Initializer;
 import com.kmecpp.osmium.api.tasks.Schedule;
 
 @SupportedAnnotationTypes({ "com.kmecpp.osmium.api.database.DBTable", "com.kmecpp.osmium.api.config.ConfigProperties",
@@ -40,7 +40,7 @@ public class OsmiumClassMetadataAnnotationProcessor extends OsmiumAnnotationProc
 		elements.addAll(roundEnv.getElementsAnnotatedWith(ConfigProperties.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(Listener.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(Schedule.class));
-		elements.addAll(roundEnv.getElementsAnnotatedWith(Startup.class));
+		elements.addAll(roundEnv.getElementsAnnotatedWith(Initializer.class));
 
 		if (elements.size() == 0) {
 			return false;

@@ -19,7 +19,7 @@ import com.kmecpp.osmium.ap.OsmiumPluginProcessor;
 import com.kmecpp.osmium.api.config.Setting;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.plugin.Plugin;
-import com.kmecpp.osmium.api.plugin.Startup;
+import com.kmecpp.osmium.api.plugin.Initializer;
 import com.kmecpp.osmium.api.tasks.Schedule;
 
 public class OsmiumTest {
@@ -43,7 +43,7 @@ public class OsmiumTest {
 	@Test
 	public void testAnnotationProcessors() throws ClassNotFoundException {
 		assertTrue(Arrays.asList(OsmiumClassMetadataAnnotationProcessor.class.getAnnotation(SupportedAnnotationTypes.class).value())
-				.containsAll(Arrays.asList(Startup.class.getName(), Schedule.class.getName(), Listener.class.getName())));
+				.containsAll(Arrays.asList(Initializer.class.getName(), Schedule.class.getName(), Listener.class.getName())));
 
 		assertTrue(Arrays.asList(ConfigTypeProcessor.class.getAnnotation(SupportedAnnotationTypes.class).value())
 				.containsAll(Arrays.asList(Setting.class.getName())));
