@@ -61,32 +61,33 @@ public class Hook<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T get(String pluginName) {
+	public static <T> Hook<T> get(String accessor) {
 		OsmiumPlugin callingPlugin = Osmium.getPlugin(Reflection.getInvokingClass(1));
-		if (!StringUtil.contains(pluginName, callingPlugin.getDependencies())) {
-			OsmiumLogger.warn(callingPlugin.getName() + " is attempting to hook into " + pluginName + " but it is not specified as a dependency");
+		if (!StringUtil.contains(accessor, callingPlugin.getDependencies())) {
+			OsmiumLogger.warn(callingPlugin.getName() + " is attempting to hook into " + accessor + " but it is not specified as a dependency");
 		}
 
-		return (T) new Hook<>(() -> {
+		Hook<T> pluginHook = (Hook<T>) new Hook<>(() -> {
 			if (Platform.isBukkit()) {
-				return Bukkit.getPluginManager().getPlugin(pluginName);
+				return Bukkit.getPluginManager().getPlugin(accessor);
 			} else if (Platform.isSponge()) {
 				for (PluginContainer pluginContainer : Sponge.getPluginManager().getPlugins()) {
-					if (pluginContainer.getName().equalsIgnoreCase(pluginName) || pluginContainer.getId().equalsIgnoreCase(pluginName)) {
+					if (pluginContainer.getName().equalsIgnoreCase(accessor) || pluginContainer.getId().equalsIgnoreCase(accessor)) {
 						return pluginContainer.getInstance().orElse(null);
 					}
 				}
 			}
 			return null;
 		});
-	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T getFrom(String method) {
-		return (T) new Hook<>(() -> {
-			String[] parts = method.split("\\:");
+		if (pluginHook.isLoaded()) {
+			return pluginHook;
+		}
+
+		return (Hook<T>) new Hook<>(() -> {
+			String[] parts = accessor.split("\\:\\:");
 			if (parts.length != 2) {
-				throw new IllegalArgumentException("Expected: class:method");
+				throw new IllegalArgumentException("Unable to load dependency: ");
 			}
 			String className = parts[0];
 			String methodName = parts[1];
@@ -99,5 +100,10 @@ public class Hook<T> {
 			}
 		});
 	}
+
+	//	@SuppressWarnings("unchecked")
+	//	public static <T> T getFrom(String method) {
+	//
+	//	}
 
 }

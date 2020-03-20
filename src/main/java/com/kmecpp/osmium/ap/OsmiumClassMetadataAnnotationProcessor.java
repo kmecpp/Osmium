@@ -20,7 +20,7 @@ import com.kmecpp.osmium.api.tasks.Schedule;
 @SupportedAnnotationTypes({ "com.kmecpp.osmium.api.database.DBTable", "com.kmecpp.osmium.api.config.ConfigProperties",
 		"com.kmecpp.osmium.api.event.Listener",
 		"com.kmecpp.osmium.api.tasks.Schedule",
-		"com.kmecpp.osmium.api.plugin.Startup" })
+		"com.kmecpp.osmium.api.plugin.Initializer" })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class OsmiumClassMetadataAnnotationProcessor extends OsmiumAnnotationProcessor {
 

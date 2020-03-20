@@ -268,9 +268,9 @@ public class ClassProcessor {
 			for (Method method : cls.getDeclaredMethods()) {
 				Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
 				Listener listenerAnnotation = method.getAnnotation(Listener.class);
-				Initializer startup = method.getAnnotation(Initializer.class);
+				Initializer Initializer = method.getAnnotation(Initializer.class);
 
-				if (scheduleAnnotation == null && listenerAnnotation == null && startup == null) {
+				if (scheduleAnnotation == null && listenerAnnotation == null && Initializer == null) {
 					continue;
 				}
 
@@ -286,7 +286,7 @@ public class ClassProcessor {
 					if (temp != null) {
 						instance = temp;
 					} else {
-						instance = cls.newInstance();
+						instance = cls.newInstance(); //WE DON'T INITIALIZE THE CLASS UNTIL DOWN HERE BECAUSE WE ONLY WANT TO INITIALIZE IF IT HAS AN ANNOTATION 
 						classInstances.put(cls, instance);
 					}
 				} catch (IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
@@ -300,7 +300,7 @@ public class ClassProcessor {
 				}
 
 				//STARTUP
-				if (startup != null) {
+				if (Initializer != null) {
 					try {
 						method.invoke(instance);
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
