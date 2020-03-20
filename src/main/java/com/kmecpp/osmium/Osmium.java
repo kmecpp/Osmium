@@ -165,8 +165,6 @@ public final class Osmium {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T getInstance(Class<T> cls) {
-		System.out.println(getInvokingPlugin().getName());
-		System.out.println(getInvokingPlugin().getClassProcessor().getClassInstances());
 		return (T) getInvokingPlugin().getClassProcessor().getClassInstances().get(cls);
 	}
 
