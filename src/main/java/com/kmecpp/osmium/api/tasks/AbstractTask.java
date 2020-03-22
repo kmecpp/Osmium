@@ -20,6 +20,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	protected TaskExecutor<T> executor;
 	protected boolean cancelOnError;
 
+	protected int counter;
 	protected boolean running;
 
 	protected HashMap<String, Object> data;
@@ -39,6 +40,10 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	@SuppressWarnings("unchecked")
 	public <I> I getTaskImplementation() {
 		return (I) taskImpl;
+	}
+
+	public int getCounter() {
+		return counter;
 	}
 
 	public String getName() {

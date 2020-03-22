@@ -20,9 +20,9 @@ public class OsmiumTask extends AbstractTask<OsmiumTask> {
 
 		if (Platform.isBukkit()) {
 			if (async) {
-				taskImpl = Bukkit.getScheduler().runTaskTimerAsynchronously(getSource(), () -> executor.execute(this), delay, interval == 0 ? -1 : interval);
+				taskImpl = Bukkit.getScheduler().runTaskTimerAsynchronously(getSource(), this::doExecute, delay, interval == 0 ? -1 : interval);
 			} else {
-				taskImpl = Bukkit.getScheduler().runTaskTimer(getSource(), () -> executor.execute(this), delay, interval == 0 ? -1 : interval);
+				taskImpl = Bukkit.getScheduler().runTaskTimer(getSource(), this::doExecute, delay, interval == 0 ? -1 : interval);
 			}
 		} else if (Platform.isSponge()) {
 			Builder builder = org.spongepowered.api.scheduler.Task.builder();
@@ -37,17 +37,22 @@ public class OsmiumTask extends AbstractTask<OsmiumTask> {
 					.execute((t) -> {
 						if (cancelOnError) {
 							try {
-								executor.execute(this);
+								doExecute();
 							} catch (Throwable throwable) {
 								t.cancel();
 							}
 						} else {
-							executor.execute(this);
+							doExecute();
 						}
 					})
 					.submit(getSource());
 		}
 		return this;
+	}
+
+	private void doExecute() {
+		executor.execute(this);
+		this.counter++;
 	}
 
 }
