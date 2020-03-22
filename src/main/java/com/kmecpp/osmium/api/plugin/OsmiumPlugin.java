@@ -65,7 +65,7 @@ public abstract class OsmiumPlugin {
 	private final void setupPlugin(Object pluginImpl) throws Exception {
 		this.pluginImplementation = pluginImpl;
 		if (Platform.isBukkit()) {
-			this.dataFolder = this.<JavaPlugin> getPluginImplementation().getDataFolder().toPath();
+			this.dataFolder = this.<JavaPlugin> getSource().getDataFolder().toPath();
 		} else if (Platform.isSponge()) {
 			dataFolder = SpongeImpl.getPluginConfigDir() != null ? SpongeImpl.getPluginConfigDir().resolve(properties.name()) : Paths.get("");
 		}
@@ -167,7 +167,7 @@ public abstract class OsmiumPlugin {
 	//	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getPluginImplementation() {
+	public <T> T getSource() {
 		return (T) pluginImplementation;
 	}
 

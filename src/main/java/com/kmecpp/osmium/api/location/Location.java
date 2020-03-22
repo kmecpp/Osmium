@@ -117,7 +117,7 @@ public class Location {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getImplementation() {
+	public <T> T getSource() {
 		if (Platform.isBukkit()) {
 			return (T) new org.bukkit.Location((org.bukkit.World) getWorld().getSource(), x, y, z);
 		} else if (Platform.isSponge()) {

@@ -94,7 +94,7 @@ public class ClassProcessor {
 					}
 					OsmiumLogger.debug("Loading class: " + className);
 					//					Class<?> cls = classLoader.loadClass(className, true);
-					Class<?> cls = plugin.getPluginImplementation().getClass().getClassLoader().loadClass(className);
+					Class<?> cls = plugin.getSource().getClass().getClassLoader().loadClass(className);
 					if (cls.isAnnotationPresent(HookClass.class) || cls.isAnnotationPresent(SkipProcessing.class)) {
 						continue;
 					}

@@ -25,7 +25,7 @@ public class BukkitPlayerTeleportEvent implements PlayerTeleportEvent {
 
 	//	@Override
 	//	public void setFrom(Location location) {
-	//		event.setFrom(location.getImplementation());
+	//		event.setFrom(location.getSource());
 	//	}
 
 	@Override
@@ -35,7 +35,7 @@ public class BukkitPlayerTeleportEvent implements PlayerTeleportEvent {
 
 	@Override
 	public void setTo(Location location) {
-		event.setTo(location.getImplementation());
+		event.setTo(location.getSource());
 	}
 
 	@Override

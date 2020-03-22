@@ -57,7 +57,7 @@ public class SpongeEntity implements Entity {
 
 	@Override
 	public boolean setLocation(Location location) {
-		return entity.setLocation(location.getImplementation());
+		return entity.setLocation(location.getSource());
 	}
 
 	@Override

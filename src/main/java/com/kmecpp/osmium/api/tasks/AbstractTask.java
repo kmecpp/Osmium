@@ -32,8 +32,8 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return plugin;
 	}
 
-	public <I> I getPluginImplemenation() {
-		return plugin.getPluginImplementation();
+	public <I> I getSource() {
+		return plugin.getSource();
 	}
 
 	@SuppressWarnings("unchecked")

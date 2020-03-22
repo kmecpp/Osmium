@@ -52,7 +52,7 @@ public class SpongeWorld implements World {
 
 	@Override
 	public Block getBlock(Location location) {
-		return new SpongeBlock(location.<org.spongepowered.api.world.Location<org.spongepowered.api.world.World>> getImplementation());
+		return new SpongeBlock(location.<org.spongepowered.api.world.Location<org.spongepowered.api.world.World>> getSource());
 	}
 
 	@Override

@@ -125,7 +125,7 @@ public class SpongeAccess {
 				})
 				.build();
 
-		Optional<CommandMapping> optionalMapping = Sponge.getCommandManager().register(plugin.getPluginImplementation(), spec, command.getAliases());
+		Optional<CommandMapping> optionalMapping = Sponge.getCommandManager().register(plugin.getSource(), spec, command.getAliases());
 		if (optionalMapping.isPresent()) {
 			CommandMapping mapping = optionalMapping.get();
 			command.setPrimaryAlias(mapping.getPrimaryAlias());
@@ -136,7 +136,7 @@ public class SpongeAccess {
 
 	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> consumer) {
 		for (Class<Event> sourceClass : eventInfo.<Event> getSourceClasses()) {
-			Sponge.getEventManager().registerListener(plugin.getPluginImplementation(), sourceClass,
+			Sponge.getEventManager().registerListener(plugin.getSource(), sourceClass,
 					(org.spongepowered.api.event.Order) order.getSource(), false,
 					(spongeEvent) -> consumer.accept(spongeEvent));
 		}

@@ -49,7 +49,7 @@ public class SpongePlayerMoveEvent implements PlayerMoveEvent {
 
 	@Override
 	public void setTo(Location location) {
-		event.setToTransform(new Transform<World>(location.<org.spongepowered.api.world.Location<World>> getImplementation()));
+		event.setToTransform(new Transform<World>(location.<org.spongepowered.api.world.Location<World>> getSource()));
 	}
 
 	@Override

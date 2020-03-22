@@ -304,7 +304,7 @@ public final class BukkitPlayerUtil {
 			final double pitch = Double.parseDouble(parts[2]);
 			long delay = Long.parseLong(parts[3]);
 
-			Bukkit.getScheduler().runTaskLater(OsmiumCore.getPlugin().getPluginImplementation(), new Runnable() {
+			Bukkit.getScheduler().runTaskLater(OsmiumCore.getPlugin().getSource(), new Runnable() {
 
 				@Override
 				public void run() {

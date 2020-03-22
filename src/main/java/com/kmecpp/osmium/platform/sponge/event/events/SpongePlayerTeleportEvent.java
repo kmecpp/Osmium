@@ -50,7 +50,7 @@ public class SpongePlayerTeleportEvent implements PlayerTeleportEvent {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setTo(Location location) {
-		event.setToTransform(new Transform<World>((org.spongepowered.api.world.Location<World>) location.getImplementation()));
+		event.setToTransform(new Transform<World>((org.spongepowered.api.world.Location<World>) location.getSource()));
 	}
 
 	@Override

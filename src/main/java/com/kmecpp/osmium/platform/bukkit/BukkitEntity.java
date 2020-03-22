@@ -69,7 +69,7 @@ public class BukkitEntity implements Entity {
 
 	@Override
 	public boolean setLocation(Location location) {
-		org.bukkit.Location l = (org.bukkit.Location) location.getImplementation();
+		org.bukkit.Location l = (org.bukkit.Location) location.getSource();
 		l.setDirection(entity.getLocation().getDirection()); //Revert direction back to original
 		return entity.teleport(l);
 	}

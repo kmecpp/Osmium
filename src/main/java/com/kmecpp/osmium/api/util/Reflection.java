@@ -666,4 +666,18 @@ public class Reflection {
 		}
 	}
 
+	private static String[] getSimpleNames(Class<?>[] classes) {
+		String[] names = new String[classes.length];
+		for (int i = 0; i < classes.length; i++) {
+			names[i] = classes[i].getSimpleName();
+		}
+		return names;
+	}
+
+	public static void printMethods(Class<?> cls) {
+		for (Method method : cls.getDeclaredMethods()) {
+			System.out.println(method.getReturnType().getName() + " " + method.getName() + "(" + String.join(", ", getSimpleNames(method.getParameterTypes())) + ")");
+		}
+	}
+
 }

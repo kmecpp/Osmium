@@ -49,7 +49,7 @@ public class BukkitWorld implements World {
 
 	@Override
 	public Block getBlock(Location location) {
-		return new BukkitBlock(location.<org.bukkit.Location> getImplementation().getBlock());
+		return new BukkitBlock(location.<org.bukkit.Location> getSource().getBlock());
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class BukkitWorld implements World {
 
 	@Override
 	public void spawnEntity(Location location, EntityType type) {
-		world.spawnEntity(location.getImplementation(), (org.bukkit.entity.EntityType) type.getSource());
+		world.spawnEntity(location.getSource(), (org.bukkit.entity.EntityType) type.getSource());
 	}
 
 	@Override

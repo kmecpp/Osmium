@@ -147,9 +147,9 @@ public class BukkitAccess {
 
 	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> consumer) {
 		for (Class<? extends org.bukkit.event.Event> bukkitEventClass : eventInfo.<org.bukkit.event.Event> getSourceClasses()) {
-			Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getPluginImplementation(), (EventPriority) order.getSource(),
+			Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getSource(), (EventPriority) order.getSource(),
 					(bukkitListener, bukkitEvent) -> consumer.accept(bukkitEvent),
-					plugin.getPluginImplementation(), false);
+					plugin.getSource(), false);
 		}
 
 	}

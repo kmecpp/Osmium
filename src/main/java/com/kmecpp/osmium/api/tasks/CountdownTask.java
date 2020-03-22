@@ -52,9 +52,9 @@ public class CountdownTask extends AbstractTask<CountdownTask> {
 		this.remaining = count;
 		if (Platform.isBukkit()) {
 			if (async) {
-				this.taskImpl = Bukkit.getScheduler().runTaskTimerAsynchronously((JavaPlugin) plugin.getPluginImplementation(), getCountdown(this), delay, interval);
+				this.taskImpl = Bukkit.getScheduler().runTaskTimerAsynchronously((JavaPlugin) plugin.getSource(), getCountdown(this), delay, interval);
 			} else {
-				this.taskImpl = Bukkit.getScheduler().runTaskTimer((JavaPlugin) plugin.getPluginImplementation(), getCountdown(this), delay, interval);
+				this.taskImpl = Bukkit.getScheduler().runTaskTimer((JavaPlugin) plugin.getSource(), getCountdown(this), delay, interval);
 			}
 		} else if (Platform.isSponge()) {
 			Builder builder = org.spongepowered.api.scheduler.Task.builder();
@@ -65,7 +65,7 @@ public class CountdownTask extends AbstractTask<CountdownTask> {
 					.delay(delay * 50, TimeUnit.MILLISECONDS)
 					.interval(interval * 50, TimeUnit.MILLISECONDS)
 					.execute(getCountdown(this))
-					.submit(plugin.getPluginImplementation());
+					.submit(plugin.getSource());
 		}
 		return this;
 	}
