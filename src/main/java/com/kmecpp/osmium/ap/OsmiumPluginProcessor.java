@@ -82,7 +82,7 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 				if (!plugins.containsKey(id)) {
 					plugins.put(id, new OsmiumMetaContainer(((TypeElement) e).getQualifiedName().toString(),
 							annotation.name(), annotation.version(), annotation.description(), annotation.url(),
-							annotation.authors(), annotation.dependencies()));
+							annotation.authors(), annotation.dependencies(), annotation.loadBefore()));
 				} else {
 					error("Plugin with id '" + id + "' already exists!");
 				}
@@ -124,6 +124,9 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 		for (String dependency : meta.getSpongeDependencies()) {
 			modinfo.addDependency(new PluginDependency(LoadOrder.BEFORE, dependency.toLowerCase(), "", false));
 		}
+		for (String loadBeforePlugin : meta.getLoadBeforePlugins()) {
+			modinfo.addDependency(new PluginDependency(LoadOrder.AFTER, loadBeforePlugin.toLowerCase(), "", false));
+		}
 		try {
 			McModInfo.builder().build().write(getWriter(Platform.SPONGE.getMetaFile()), modinfo);
 		} catch (IOException e) {
@@ -149,7 +152,9 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 				.append("description: " + meta.getDescription() + "\n")
 				.append("website: " + meta.getUrl() + "\n")
 				.append("authors: " + Arrays.toString(meta.getAuthors()) + "\n")
-				.append("softdepend: " + Arrays.toString(meta.getBukkitDependencies()) + "\n");
+				.append("softdepend: " + Arrays.toString(meta.getBukkitDependencies()) + "\n")
+				.append("loadbefore: " + Arrays.toString(meta.getLoadBeforePlugins()) + "\n");
+		//				.append("load: STARTUP");
 		writeRawFile(Platform.BUKKIT.getMetaFile(), pluginYml.toString());
 
 		StringBuilder osmiumYml = new StringBuilder().append("main: " + meta.getSourceClass() + "\n").append("name: " + meta.getName());

@@ -21,4 +21,6 @@ public @interface Plugin {
 
 	String[] dependencies() default {};
 
+	String[] loadBefore() default {};
+
 }
