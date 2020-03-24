@@ -1,9 +1,6 @@
 package com.kmecpp.osmium.api.logging;
 
-import org.bukkit.ChatColor;
-import org.spongepowered.api.text.format.TextColors;
-
-import com.kmecpp.osmium.Platform;
+import com.kmecpp.osmium.api.command.Chat;
 
 public enum LogLevel {
 
@@ -14,20 +11,24 @@ public enum LogLevel {
 
 	;
 
-	private Object colorImpl;
+	private Chat color;
 
 	static {
-		if (Platform.isBukkit()) {
-			DEBUG.colorImpl = ChatColor.WHITE;
-			INFO.colorImpl = ChatColor.GREEN;
-			WARN.colorImpl = ChatColor.YELLOW;
-			ERROR.colorImpl = ChatColor.RED;
-		} else if (Platform.isSponge()) {
-			DEBUG.colorImpl = TextColors.WHITE;
-			INFO.colorImpl = TextColors.GREEN;
-			WARN.colorImpl = TextColors.YELLOW;
-			ERROR.colorImpl = TextColors.RED;
-		}
+		DEBUG.color = Chat.WHITE;
+		INFO.color = Chat.GREEN;
+		WARN.color = Chat.YELLOW;
+		ERROR.color = Chat.RED;
+		//		if (Platform.isBukkit()) {
+		//			DEBUG.colorImpl = ChatColor.WHITE;
+		//			INFO.colorImpl = ChatColor.GREEN;
+		//			WARN.colorImpl = ChatColor.YELLOW;
+		//			ERROR.colorImpl = ChatColor.RED;
+		//		} else if (Platform.isSponge()) {
+		//			DEBUG.colorImpl = TextColors.WHITE;
+		//			INFO.colorImpl = TextColors.GREEN;
+		//			WARN.colorImpl = TextColors.YELLOW;
+		//			ERROR.colorImpl = TextColors.RED;
+		//		}
 	}
 
 	public boolean isDebug() {
@@ -46,9 +47,8 @@ public enum LogLevel {
 		return this == ERROR;
 	}
 
-
-	public Object getColorImplementation() {
-		return colorImpl;
+	public Chat getColor() {
+		return color;
 	}
 
 	public java.util.logging.Level getLevel() {

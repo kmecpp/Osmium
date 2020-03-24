@@ -3,6 +3,9 @@ package com.kmecpp.osmium.api.command;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.Ansi.Attribute;
+
 public enum Chat {
 
 	BLACK('0'),
@@ -35,6 +38,7 @@ public enum Chat {
 
 	private final char code;
 	private final boolean formatting;
+	private String ansi;
 
 	private final String string;
 
@@ -42,6 +46,29 @@ public enum Chat {
 		for (Chat chat : values()) {
 			chars.put(chat.code, chat);
 		}
+
+		Chat.DARK_BLUE.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).boldOff().toString();
+		Chat.DARK_BLUE.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).boldOff().toString();
+		Chat.DARK_GREEN.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).boldOff().toString();
+		Chat.DARK_AQUA.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.CYAN).boldOff().toString();
+		Chat.DARK_RED.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.RED).boldOff().toString();
+		Chat.DARK_PURPLE.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.MAGENTA).boldOff().toString();
+		Chat.GOLD.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.YELLOW).boldOff().toString();
+		Chat.GRAY.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.WHITE).boldOff().toString();
+		Chat.DARK_GRAY.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).bold().toString();
+		Chat.BLUE.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).bold().toString();
+		Chat.GREEN.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).bold().toString();
+		Chat.AQUA.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.CYAN).bold().toString();
+		Chat.RED.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.RED).bold().toString();
+		Chat.LIGHT_PURPLE.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.MAGENTA).bold().toString();
+		Chat.YELLOW.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.YELLOW).bold().toString();
+		Chat.WHITE.ansi = Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.WHITE).bold().toString();
+		Chat.MAGIC.ansi = Ansi.ansi().a(Attribute.BLINK_SLOW).toString();
+		Chat.BOLD.ansi = Ansi.ansi().a(Attribute.UNDERLINE_DOUBLE).toString();
+		Chat.STRIKETHROUGH.ansi = Ansi.ansi().a(Attribute.STRIKETHROUGH_ON).toString();
+		Chat.UNDERLINE.ansi = Ansi.ansi().a(Attribute.UNDERLINE).toString();
+		Chat.ITALIC.ansi = Ansi.ansi().a(Attribute.ITALIC).toString();
+		Chat.RESET.ansi = Ansi.ansi().a(Attribute.RESET).toString();
 	}
 
 	private Chat(char code) {
@@ -60,6 +87,10 @@ public enum Chat {
 
 	public char getCode() {
 		return code;
+	}
+
+	public String ansi() {
+		return ansi;
 	}
 
 	public boolean isFormatting() {

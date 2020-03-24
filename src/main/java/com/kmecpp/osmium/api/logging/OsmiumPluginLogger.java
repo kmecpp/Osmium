@@ -1,7 +1,6 @@
 package com.kmecpp.osmium.api.logging;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Sponge;
@@ -14,45 +13,45 @@ import com.kmecpp.osmium.core.CoreOsmiumConfig;
 
 public class OsmiumPluginLogger {
 
-	private final String NAME;
-	private final Logger LOGGER;
-	private final String PREFIX;
+	private final String name;
+	private final Logger logger;
+	//	private final String prefix;
 
 	public OsmiumPluginLogger(String name) {
-		this.NAME = name;
-		this.LOGGER = LoggerFactory.getLogger(NAME);
-		this.PREFIX = Chat.DARK_AQUA + "[" + Chat.AQUA + NAME + "%L" + Chat.DARK_AQUA + "] ";
+		this.name = name;
+		this.logger = LoggerFactory.getLogger(name);
+		//		this.PREFIX = Chat.DARK_AQUA + "[" + Chat.AQUA + NAME + "%L" + Chat.DARK_AQUA + "] ";
 	}
 
 	public final void debug(String message) {
 		if (CoreOsmiumConfig.coloredConsole) {
-			log(LogLevel.DEBUG, NAME, message);
+			log(LogLevel.DEBUG, this.name, message);
 		} else {
-			LOGGER.debug(message);
+			logger.debug(message);
 		}
 	}
 
 	public final void info(String message) {
 		if (CoreOsmiumConfig.coloredConsole) {
-			log(LogLevel.INFO, NAME, message);
+			log(LogLevel.INFO, this.name, message);
 		} else {
-			LOGGER.info(message);
+			logger.info(message);
 		}
 	}
 
 	public final void warn(String message) {
 		if (CoreOsmiumConfig.coloredConsole) {
-			log(LogLevel.WARN, NAME, message);
+			log(LogLevel.WARN, this.name, message);
 		} else {
-			LOGGER.warn(message);
+			logger.warn(message);
 		}
 	}
 
 	public final void error(String message) {
 		if (CoreOsmiumConfig.coloredConsole) {
-			log(LogLevel.ERROR, NAME, message);
+			log(LogLevel.ERROR, this.name, message);
 		} else {
-			LOGGER.error(message);
+			logger.error(message);
 		}
 	}
 
@@ -71,23 +70,27 @@ public class OsmiumPluginLogger {
 			return;
 		}
 
-		boolean displayLevel = level != LogLevel.DEBUG && level != LogLevel.INFO;
 		if (Platform.isBukkit()) {
 			if (Bukkit.getServer() == null) {
 				printDefault(level, message);
 			} else {
-				if (Bukkit.getConsoleSender() != null) { //This seems to only be an issue on legacy servers during startup
-					String start = PREFIX.replace("%L", (displayLevel ? ChatColor.DARK_AQUA + "|" + level.getColorImplementation() + level : ""));
-					Bukkit.getConsoleSender().sendMessage(start + level.getColorImplementation() + message);
-				} else {
-					Bukkit.getLogger().log(level.getLevel(), "[" + prefix + "] " + message);
-				}
+				//				if (Bukkit.getConsoleSender() != null) { //This seems to only be an issue on legacy servers during startup
+				//					//					String start = PREFIX.replace("%L", (displayLevel ? ChatColor.DARK_AQUA + "|" + level.getColorImplementation() + level : ""));
+				//					//					Bukkit.getConsoleSender().sendMessage(start + level.getColorImplementation() + message);
+				//					Bukkit.getLogger().log(level.getLevel(), level.getColor().getAnsi() + "[" + prefix + "] " + message + Chat.RESET.getAnsi());
+				//				} else {
+				//					Bukkit.getLogger().log(level.getLevel(), "[" + prefix + "] " + message);
+				//				}
+				Bukkit.getLogger().log(level.getLevel(), Chat.DARK_AQUA.ansi() + "[" + Chat.AQUA.ansi() + prefix + Chat.DARK_AQUA.ansi() + "] "
+						+ level.getColor().ansi() + message + Chat.RESET.ansi());
 			}
 		} else if (Platform.isSponge()) {
+			//TODO: Rewrite to use ANSI
+			boolean displayLevel = level != LogLevel.DEBUG && level != LogLevel.INFO;
 			Sponge.getServer().getConsole().sendMessage(Text.of(
 					TextColors.DARK_AQUA, "[", TextColors.AQUA, prefix,
-					(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColorImplementation(), level) : Text.empty()),
-					TextColors.DARK_AQUA, "] ", level.getColorImplementation(), message));
+					(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColor(), level) : Text.empty()),
+					TextColors.DARK_AQUA, "] ", level.getColor(), message));
 		} else {
 			printDefault(level, message);
 		}
