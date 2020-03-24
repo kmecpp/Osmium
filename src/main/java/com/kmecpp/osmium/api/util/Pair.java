@@ -37,4 +37,9 @@ public class Pair<X, Y> {
 		return false;
 	}
 
+	@Override
+	public String toString() {
+		return "<" + first + ", " + second + ">";
+	}
+
 }
