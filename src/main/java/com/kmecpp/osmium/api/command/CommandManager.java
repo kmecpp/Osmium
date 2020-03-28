@@ -90,7 +90,7 @@ public final class CommandManager {
 			//Commands with registered arguments
 			else {
 				if (args.length == 0) {
-					command.sendHelp(event);
+					command.execute(event);
 				} else {
 					CommandBase arg = command.getArgumentMatching(args[0]);
 					if (arg == null) {

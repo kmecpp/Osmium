@@ -47,7 +47,8 @@ public class Command extends CommandBase {
 		this.title = title;
 	}
 
-	public void sendHelp(CommandEvent event) {
+	@Override
+	public void execute(CommandEvent event) {
 		event.send("");
 		event.send(title);
 		event.send("&e&m----------------------------------------");
