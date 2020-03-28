@@ -24,7 +24,9 @@ import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
+import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
+import com.kmecpp.osmium.api.location.WorldPosition;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
@@ -60,6 +62,14 @@ public class BukkitAccess {
 
 	public static Location getLocation(org.bukkit.Location location) {
 		return new Location(getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ());
+	}
+
+	public static Direction getDirection(org.bukkit.Location location) {
+		return new Direction(location.getPitch(), location.getYaw());
+	}
+
+	public static WorldPosition getPosition(org.bukkit.Location location) {
+		return new WorldPosition(getLocation(location), getDirection(location));
 	}
 
 	public static Chunk getChunk(org.bukkit.Chunk chunk) {
