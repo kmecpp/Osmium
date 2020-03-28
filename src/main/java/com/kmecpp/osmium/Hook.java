@@ -87,7 +87,7 @@ public class Hook<T> {
 		return (Hook<T>) new Hook<>(() -> {
 			String[] parts = accessor.split("\\:\\:");
 			if (parts.length != 2) {
-				throw new IllegalArgumentException("Unable to load dependency: ");
+				throw new IllegalArgumentException("Unable to load dependency: " + accessor);
 			}
 			String className = parts[0];
 			String methodName = parts[1];
