@@ -52,7 +52,7 @@ public abstract class SpongePlugin {
 	@Listener
 	public void on(GamePostInitializationEvent e) {
 		plugin.onPostInit();
-		Osmium.reloadPlugin(plugin);
+		plugin.onRefresh();
 		plugin.startComplete = true;
 	}
 

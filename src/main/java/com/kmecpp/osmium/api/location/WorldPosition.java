@@ -23,6 +23,10 @@ public class WorldPosition {
 		this.direction = direction;
 	}
 
+	public WorldPosition(com.kmecpp.osmium.api.World world, double x, double y, double z, float pitch, float yaw) {
+		this(new Location(world, x, y, z), new Direction(pitch, yaw));
+	}
+
 	public Location getLocation() {
 		return location;
 	}

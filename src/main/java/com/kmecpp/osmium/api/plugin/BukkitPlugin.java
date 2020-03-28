@@ -47,7 +47,7 @@ public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 			Bukkit.getPluginManager().registerEvents(this, this);
 			plugin.getClassProcessor().initializeClasses();
 			plugin.onPostInit();
-			Osmium.reloadPlugin(plugin);
+			plugin.onRefresh();
 			plugin.startComplete = true;
 		}
 	}

@@ -118,6 +118,12 @@ public abstract class OsmiumPlugin {
 	public void onFullReload() {
 	}
 
+	/**
+	 * Called every time onReload and onEnable is called
+	 */
+	public void onRefresh() {
+	}
+
 	//	public void onFinalize() {
 	//	}
 
