@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 
 /**
  * Plugin's main Bukkit class. Osmium plugins will automatically subclass this
@@ -48,6 +49,7 @@ public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 			plugin.getClassProcessor().initializeClasses();
 			plugin.onPostInit();
 			plugin.onRefresh();
+			Osmium.getEventManager().callEvent(new OsmiumPluginRefreshEvent(plugin));
 			plugin.startComplete = true;
 		}
 	}
