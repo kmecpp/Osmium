@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.config;
+package com.kmecpp.osmium.api.persistence;
 
 import java.io.IOException;
 import java.nio.file.Path;

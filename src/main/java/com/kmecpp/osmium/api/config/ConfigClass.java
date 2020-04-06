@@ -7,5 +7,18 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConfigType {
+public @interface ConfigClass {
+
+	String path();
+
+	String header() default "";
+
+	ConfigFormat format() default ConfigFormat.HOCON;
+
+	boolean allowKeyRemoval() default false;
+
+	boolean loadLate() default false;
+
+	boolean manualLoad() default false;
+
 }

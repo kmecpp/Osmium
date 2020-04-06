@@ -680,4 +680,10 @@ public class Reflection {
 		}
 	}
 
+	public static void printFields(Class<?> cls) {
+		for (Field field : cls.getDeclaredFields()) {
+			System.out.println(field.getType().getSimpleName() + " " + field.getName());
+		}
+	}
+
 }

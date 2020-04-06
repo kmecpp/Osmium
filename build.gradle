@@ -72,7 +72,7 @@ publishing {
  * COMPILIATION
  */
 compileJava {
-    options.compilerArgs += ["-proc:none"]
+    //options.compilerArgs += ["-proc:none"]
     sourceCompatibility = 8
     targetCompatibility = 8
 }
@@ -147,7 +147,7 @@ dependencies {
 	
 	//shade "com.kmecpp:jlib:+"
 	shade "com.eclipsesource.minimal-json:minimal-json:0.9.5"
-	shade "org.spongepowered:configurate-hocon:3.5"
+	shade "org.spongepowered:configurate-hocon:3.6.1"
 	shade "org.spongepowered:plugin-meta:0.4.1"
 	//shade "log4j:log4j:1.2.17"
 	shade "org.yaml:snakeyaml:1.25"

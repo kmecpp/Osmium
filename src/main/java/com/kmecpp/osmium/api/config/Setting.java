@@ -9,14 +9,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Setting {
 
-	//	String parent() default "";
-
 	String name() default "";
 
 	String comment() default "";
 
 	boolean deletable() default false;
-
-	Class<?>[] type() default {};//Object.class
 
 }

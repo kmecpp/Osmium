@@ -11,13 +11,13 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-import com.kmecpp.osmium.api.config.ConfigProperties;
+import com.kmecpp.osmium.api.config.ConfigClass;
 import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.plugin.Initializer;
 import com.kmecpp.osmium.api.tasks.Schedule;
 
-@SupportedAnnotationTypes({ "com.kmecpp.osmium.api.database.DBTable", "com.kmecpp.osmium.api.config.ConfigProperties",
+@SupportedAnnotationTypes({ "com.kmecpp.osmium.api.database.DBTable", "com.kmecpp.osmium.api.config.ConfigClass",
 		"com.kmecpp.osmium.api.event.Listener",
 		"com.kmecpp.osmium.api.tasks.Schedule",
 		"com.kmecpp.osmium.api.plugin.Initializer" })
@@ -37,7 +37,7 @@ public class OsmiumClassMetadataAnnotationProcessor extends OsmiumAnnotationProc
 
 		HashSet<Element> elements = new HashSet<>();
 		elements.addAll(roundEnv.getElementsAnnotatedWith(DBTable.class));
-		elements.addAll(roundEnv.getElementsAnnotatedWith(ConfigProperties.class));
+		elements.addAll(roundEnv.getElementsAnnotatedWith(ConfigClass.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(Listener.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(Schedule.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(Initializer.class));

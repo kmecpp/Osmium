@@ -1,51 +1,67 @@
 package com.kmecpp.osmium.api.config;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
-public class ConfigData {
+import com.typesafe.config.ConfigRenderOptions;
 
-	private Block root;
-	private Class<?> configClass;
-	private ConfigProperties properties;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-	private LinkedHashMap<String, ConfigField> fields;
+public class ConfigData extends ConfigClassData {
 
-	public ConfigData(Class<?> configClass, ConfigProperties properties) {
-		this.root = new Block("root", 0, "");
-		this.configClass = configClass;
-		this.properties = properties;
-		this.fields = new LinkedHashMap<>();
+	private ConfigurationLoader<CommentedConfigurationNode> loader;
+	private CommentedConfigurationNode root;
+
+	ConfigData(Class<?> configClass, ConfigClass configProperties, Path path, HashMap<String, FieldData> fieldData) {
+		super(configClass, configProperties, path, fieldData);
 	}
 
-	public Block getRoot() {
-		return root;
+	public void load() throws IOException {
+		Files.createDirectories(path.getParent());
+		loader = HoconConfigurationLoader.builder().setRenderOptions(ConfigRenderOptions.defaults()).setPath(path).build();
+
+		if (!Files.exists(path)) {
+			root = loader.createEmptyNode();
+			save();
+		} else {
+			root = loader.load();
+		}
+
+		for (Entry<String, FieldData> entry : fieldData.entrySet()) {
+			Object[] virtualPath = entry.getKey().split("\\.");
+
+			FieldData data = entry.getValue();
+			TypeData typeData = data.getTypeData();
+
+			CommentedConfigurationNode node = root.getNode(virtualPath);
+			System.out.println("VALUE: " + node.getValue());
+
+			try {
+				Object value = typeData.convert(node.getValue());
+				data.setValue(value);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
-	public Class<?> getConfigClass() {
-		return configClass;
-	}
+	public void save() throws IOException {
+		for (Entry<String, FieldData> entry : fieldData.entrySet()) {
+			Object[] virtualPath = entry.getKey().split("\\.");
+			FieldData data = entry.getValue();
 
-	public ConfigProperties getProperties() {
-		return properties;
+			Object value = data.getFieldValue();
+			if (value == null) {
+				value = ConfigSerialization.getDefaultFor(data.getType());
+			}
+			root.getNode(virtualPath).setValue(value);
+		}
+		loader.save(root);
 	}
-
-	public ConfigField getField(String path) {
-		return fields.get(path);
-	}
-
-	public HashMap<String, ConfigField> getFields() {
-		return fields;
-	}
-
-	//	public HashMap<String, Object> getValues() {
-	//		if (values == null) {
-	//			values = new HashMap<>();
-	//			for (Entry<String, ConfigField> entry : fields.entrySet()) {
-	//				values.put(entry.getKey(), entry.getValue().getValue());
-	//			}
-	//		}
-	//		return values;
-	//	}
 
 }

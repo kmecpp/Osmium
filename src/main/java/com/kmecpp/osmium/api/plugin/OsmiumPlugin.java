@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.command.Command;
+import com.kmecpp.osmium.api.config.PluginConfigTypeData;
 import com.kmecpp.osmium.api.database.Database;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.logging.OsmiumPluginLogger;
@@ -36,6 +37,8 @@ public abstract class OsmiumPlugin {
 	private Path dataFolder;
 
 	private ClassProcessor classProcessor;
+	private PluginConfigTypeData configTypeData;
+
 	boolean startComplete;
 
 	public OsmiumPlugin() {
@@ -62,7 +65,7 @@ public abstract class OsmiumPlugin {
 	 * order to hide these steps from the end user
 	 */
 	@SuppressWarnings("unused")
-	private final void setupPlugin(Object pluginImpl) throws Exception {
+	private final void setupPlugin(Object pluginImpl, PluginConfigTypeData configTypeData) throws Exception {
 		this.pluginImplementation = pluginImpl;
 		if (Platform.isBukkit()) {
 			this.dataFolder = this.<JavaPlugin> getSource().getDataFolder().toPath();
@@ -71,6 +74,7 @@ public abstract class OsmiumPlugin {
 		}
 		this.persistentData = new PersistentPluginData(this);
 		this.classProcessor = new ClassProcessor(this, pluginImpl); //This loads the plugin's configs and persistent data
+		this.configTypeData = configTypeData;
 		onConstruct();
 
 		//		if (!database.getTables().isEmpty()) {
@@ -276,6 +280,10 @@ public abstract class OsmiumPlugin {
 		//		} else {
 		//			return null;
 		//		}
+	}
+
+	public PluginConfigTypeData getConfigTypeData() {
+		return configTypeData;
 	}
 
 	public OsmiumTask getTask() {

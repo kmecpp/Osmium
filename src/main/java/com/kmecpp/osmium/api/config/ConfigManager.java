@@ -1,281 +1,188 @@
 package com.kmecpp.osmium.api.config;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
-
-import org.bukkit.configuration.InvalidConfigurationException;
+import java.util.function.Consumer;
 
 import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.api.config.ConfigFormatWriter.ConfigFormat;
-import com.kmecpp.osmium.api.logging.OsmiumLogger;
-import com.kmecpp.osmium.api.persistence.Deserializer;
-import com.kmecpp.osmium.api.persistence.Serialization;
-import com.kmecpp.osmium.api.persistence.Serializer;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
-import com.kmecpp.osmium.api.util.StringUtil;
-import com.kmecpp.osmium.core.CoreOsmiumConfig;
+import com.kmecpp.osmium.api.util.IOUtil;
 
 public class ConfigManager {
 
-	private final HashMap<OsmiumPlugin, HashSet<Class<?>>> plugins = new HashMap<>();
-	private final HashMap<Class<?>, ConfigData> configs = new HashMap<>();
+	private static final HashMap<OsmiumPlugin, HashSet<Class<?>>> pluginConfigs = new HashMap<>();
+	private static final HashMap<Class<?>, ConfigData> configs = new HashMap<>();
 
-	public static void main(String[] args) throws IOException, InvalidConfigurationException {
-		ConfigManager m = new ConfigManager();
+	//	public static void main(String[] args) throws Exception {
+	//		//		TypeData.parse("java.util.ArrayList<java.lang.String>");
+	//		//		TypeData.parse("java.util.HashMap<java.lang.String,java.lang.String>");
+	//		//		TypeData data = TypeData.parse("java.util.HashMap<java.util.HashMap<java.lang.String,java.lang.String>,java.util.ArrayList<java.util.HashSet<java.lang.String>>>");
+	//		//		TypeData data = TypeData.parse("java.util.HashMap<java.lang.String,java.lang.Integer>");
+	//		//		TypeData data = TypeData.parse("int");
+	//		//		System.out.println("FINAL RESULT: " + data);
+	//		//		walk(Config.class, s -> {
+	//		//			System.out.println(s);
+	//		//		});
+	//
+	//		//		PluginConfigTypeData data = PluginConfigTypeData.parse(IOUtil.readLines(Paths.get("CONFIG_TYPES").toFile()));
+	//		//		System.out.println(data.get(Config.class));
+	//		//		walk(CoreOsmiumConfig.class);
+	//		//		ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setPath(Paths.get("test.conf")).build();
+	//		//		CommentedConfigurationNode root = loader.load();
+	//		//		root.getValue("regions");
+	//		//		System.out.println(root.getNode("regions").getValue().getClass());
+	//		//		System.out.println(root);
+	//
+	//		//		System.out.println(getConfigData(ConfigReal.class));
+	//		ConfigManager m = new ConfigManager();
+	//		m.load(ConfigReal.class);
+	//	}
 
-		ConfigData data = m.getConfigData(BuildingRegions.class);
-		new ConfigParser(data, new File("test.conf")).load();
-
-		//		new ConfigWriter(data, new File("config.yml")).write(); //File handling is done by the writer
-		//		ConfigFormat format = ConfigFormats.HOCON;
-		//		ConfigFormatWriter w = new ConfigFormatWriter(m.getConfigData(CoreOsmiumConfig.class), new File("config.conf"), format);
-		//		w.write();
-		//		//		VirtualConfig v = m.load(Paths.get("config.yml"), ConfigFormats.YAML);
-		//		long start = System.currentTimeMillis();
-		//		w.write();
-		//		//		v.save();
-		//		//		System.out.println(data.getRoot().getBlocks());
-		//		//		System.out.println(data.getRoot().getFields());
-		//
-		//		//		new ConfigParser(data, new File("config.yml")).load();
-		//
-		//		//		YamlConfiguration yml = new YamlConfiguration();
-		//		//		yml.load(new File("config.yml"));
-		//		//		System.out.println(yml.get("test"));
-		//
-		//		//		yml.save(new File("config.yml"));
-		//
-		//		//		HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
-		//		//				.setPath(Paths.get("config.yml"))
-		//		//				.build();
-		//		//
-		//		//		loader.load();
-		//
-		//		//		m.load(Paths.get("config.yml"));
-		//		//		new ConfigParser(data, new File("config.conf")).load();
-		//		System.out.println("Write: " + (System.currentTimeMillis() - start) + "ms");
-		//		start = System.currentTimeMillis();
-		//		new ConfigParser(data, new File("config.yml")).load();
-		//		System.out.println("Read: " + (System.currentTimeMillis() - start) + "ms");
-	}
-
-	public void lateInit() {
-		for (Entry<Class<?>, ConfigData> entry : configs.entrySet()) {
-			if (entry.getValue().getProperties().loadLate()) {
-				Osmium.reloadConfig(entry.getKey());
-			}
-		}
-	}
-
-	public void initialize(Class<?> config) {
-		getConfigData(config);
-		registerConfig(Osmium.getPlugin(config), config);
-	}
-
-	public void registerConfig(OsmiumPlugin plugin, Class<?> config) {
-		//		plugins.putIfAbsent(plugin, new HashSet<>());
-		//		plugins.get(plugin).add(config);
-
-		HashSet<Class<?>> configs = plugins.get(plugin);
-		if (configs == null) {
-			configs = new HashSet<>();
-			plugins.put(plugin, configs);
-		}
-		configs.add(config);
+	public void register(OsmiumPlugin plugin, Class<?> configClass) {
+		pluginConfigs.computeIfAbsent(plugin, p -> new HashSet<>()).add(configClass);
 	}
 
 	public HashSet<Class<?>> getPluginConfigs(OsmiumPlugin plugin) {
-		return plugins.getOrDefault(plugin, new HashSet<>());
+		return pluginConfigs.getOrDefault(plugin, new HashSet<>());
 	}
 
-	public ConfigFormat getFormat() {
-		if (StringUtil.equalsIgnoreCase(CoreOsmiumConfig.configFormat, "YAML", "YML")) {
-			return ConfigFormats.YAML;
+	public void lateInit() {
+		pluginConfigs.entrySet().stream()
+				.flatMap(e -> e.getValue().stream())
+				.map(configs::get)
+				.filter(ConfigData::isLoadLate)
+				.forEach(configData -> {
+					try {
+						load(configData.configClass);
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
+				});
+	}
+
+	private ConfigData getConfigData(Class<?> configClass) {
+		ConfigData data = configs.get(configClass);
+		if (data != null) {
+			return data;
 		}
-		return ConfigFormats.HOCON;
-	}
 
-	//	private VirtualConfig load(Path path) throws IOException {
-	//		return this.load(path, getFormat());
-	//	}
-	//
-	//	private VirtualConfig load(Path path, ConfigFormat format) throws IOException {
-	//		if (format == ConfigFormats.HOCON) {
-	//			HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
-	//					.setPath(path)
-	//					.build();
-	//			return new VirtualConfig(path, loader, loader.load());
-	//		} else if (format == ConfigFormats.YAML) {
-	//			YAMLConfigurationLoader loader = YAMLConfigurationLoader.builder()
-	//					.setPath(path)
-	//					.build();
-	//
-	//			return new VirtualConfig(path, loader, loader.load());
-	//		} else {
-	//			throw new IllegalArgumentException();
-	//		}
-	//	}
-	//
-	//	public void load(Class<?> config) throws IOException {
-	//		ConfigData data = getConfigData(config);
-	//		OsmiumPlugin plugin = Osmium.getPlugin(config);
-	//		VirtualConfig c = this.load(plugin.getFolder().resolve(data.getProperties().path()));
-	//		for (Entry<String, ConfigField> entry : data.getFields().entrySet()) {
-	//			ConfigField field = entry.getValue();
-	//			ConfigurationNode node = c.getNode(entry.getKey());
-	//			Object value = loadValue(plugin, field, node);
-	//			field.setValue(value);
-	//		}
-	//
-	//		registerConfig(plugin, config);
-	//	}
-	//
-	//	private Object loadValue(OsmiumPlugin plugin, ConfigField field, ConfigurationNode node) {
-	//		Class<?> type = field.getType();
-	//		Object value = node.getValue();
-	//		if (value instanceof String) {
-	//
-	//			Deserializer<?> d = ConfigTypes.getDeserializer(type);
-	//			if (d != null) {
-	//				return d.deserialize((String) value);
-	//			}
-	//		} else if (node.isVirtual()) {
-	//			if (!field.getSetting().deletable()) {
-	//				plugin.warn("Missing config setting: " + field.getJavaPath());
-	//			}
-	//			return null;
-	//		} else if (Collection.class.isAssignableFrom(field.getType())) {
-	//			@SuppressWarnings("unchecked")
-	//			Collection<Object> collection = (Collection<Object>) field.getValue();
-	//			for (Object e : (Collection<?>) value) {
-	//				collection.add(e);
-	//			}
-	//			return collection;
-	//		}
-	//		return null;
-	//	}
-	//	public void save(Class<?> config) throws IOException {
-	//		ConfigData data = getConfigData(config);
-	//		File file = Osmium.getPlugin(config).getFolder().resolve(data.getProperties().path()).toFile();
-	//		new ConfigWriter(data, file).write(); //File handling is done by the writer
-	//	}
+		HashMap<String, TypeData> fieldTypeMap = getFieldTypeMap(configClass);
 
-	public void loadWithParser(Class<?> config) throws IOException {
-		ConfigData data = getConfigData(config);
-		OsmiumPlugin plugin = Osmium.getPlugin(config);
-		OsmiumLogger.debug("Loading configuration file: " + plugin.getName() + File.separator + data.getProperties().path());
+		ConfigClass configProperties = configClass.getDeclaredAnnotation(ConfigClass.class);
+		Path configPath = Paths.get(configProperties.path());
+		HashMap<String, FieldData> fieldDataMap = new HashMap<>();
 
-		registerConfig(plugin, config);
-		File file = plugin.getFolder().resolve(data.getProperties().path()).toFile();
-		if (!new ConfigParser(data, file).load()) {
-			//If the file is missing settings
-			if (!data.getProperties().allowKeyRemoval()) {
-				new ConfigFormatWriter(data, file, getFormat()).write();
-			}
-		}
-	}
+		int truncate = configClass.getName().length() + 1;
+		walk(configClass, (field) -> {
+			String enclosingPath = field.getDeclaringClass().getName().replace('$', '.') + ".";
 
-	public void save(Class<?> config) throws IOException {
-		saveWithFormatter(config, getFormat());
-	}
+			Setting setting = field.getAnnotation(Setting.class);
+			String name = getName(field, setting);
+			String virtualPath = (enclosingPath + name).substring(truncate); //Truncate must come last
+			String physicalPath = (enclosingPath + field.getName()).substring(truncate); //Truncate must come last
 
-	public void saveWithFormatter(Class<?> config, ConfigFormat format) throws IOException {
-		ConfigData data = getConfigData(config);
-		File file = Osmium.getPlugin(config).getFolder().resolve(data.getProperties().path()).toFile();
-		new ConfigFormatWriter(data, file, format).write(); //File handling is done by the writer
-	}
+			FieldData fieldData = new FieldData(field, name, setting, fieldTypeMap.get(physicalPath));
+			fieldDataMap.put(virtualPath, fieldData);
+		});
 
-	public void saveAll(OsmiumPlugin plugin) {
-		HashSet<Class<?>> configs = plugins.get(plugin);
-		if (configs == null) {
-			return;
-		}
-		for (Class<?> config : configs) {
-			try {
-				saveWithFormatter(config, getFormat());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public ConfigData getConfigData(Class<?> config) {
-		ConfigData data = configs.get(config);
-		if (data == null) {
-			ConfigProperties properties = config.getAnnotation(ConfigProperties.class);
-			if (properties == null) {
-				throw new IllegalArgumentException("Configuration class must be annotated with @" + ConfigProperties.class.getSimpleName());
-			}
-			data = new ConfigData(config, properties);
-			loadFields(data.getRoot(), config.getDeclaredFields(), config.getDeclaredClasses(), data.getFields());
-			configs.put(config, data);
-		}
+		data = new ConfigData(configClass, configProperties, configPath, fieldDataMap);
+		configs.put(configClass, data);
 		return data;
 	}
 
-	private void loadFields(Block block, Field[] declaredFields, Class<?>[] declaredClasses, HashMap<String, ConfigField> fields) {
-		for (Field field : declaredFields) {
-			field.setAccessible(true);
-			//			Setting setting = field.getAnnotation(Setting.class);
-			//			if (setting == null) {
-			//				continue;
-			//			} else
-
-			if (field.isAnnotationPresent(Transient.class) || Modifier.isFinal(field.getModifiers())) {
-				continue;
-			} else if (!Modifier.isStatic(field.getModifiers())) {
-				OsmiumLogger.warn("Invalid configuration setting! Must be declared static: " + field);
-				continue;
+	private static HashMap<String, TypeData> getFieldTypeMap(Class<?> configClass) {
+		if (Platform.isDev()) {
+			try {
+				return PluginConfigTypeData.parse(IOUtil.readLines(Paths.get("CONFIG_TYPES").toFile())).get(configClass);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
-
-			ConfigField configField = new ConfigField(field, field.getAnnotation(Setting.class));
-			String rawKey = block.getPath().isEmpty() ? configField.getName() : block.getPath() + "." + configField.getName();
-			fields.put(getKey(rawKey), configField);
-			block.addField(configField);
 		}
-
-		for (Class<?> nested : declaredClasses) {
-			if (nested.isAnnotationPresent(Transient.class) || nested.isAnnotationPresent(ConfigType.class)) {
-				continue;
-			}
-			Field[] nestedFields = nested.getDeclaredFields();
-			Class<?>[] nestedClasses = nested.getDeclaredClasses();
-			loadFields(block.createChild(getKey(nested.getSimpleName())), nestedFields, nestedClasses, fields);
+		OsmiumPlugin plugin = Osmium.getPlugin(configClass);
+		HashMap<String, TypeData> fieldTypeMap;
+		try {
+			fieldTypeMap = plugin.getConfigTypeData().get(configClass);
+			return fieldTypeMap;
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
-	public <T> void registerType(Class<T> cls, Deserializer<T> deserializer) {
-		Serialization.register(cls, deserializer);
+	public void load(Class<?> configClass) throws IOException {
+		getConfigData(configClass).load();
 	}
 
-	public <T> void registerType(Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
-		Serialization.register(cls, serializer, deserializer);
+	public void save(Class<?> configClass) throws IOException {
+		getConfigData(configClass).save();
 	}
 
-	private static final StringBuilder sb = new StringBuilder();
+	//	@ConfigClass(path = "hub/entity-portals.conf")
+	//	public static class ConfigReal {
+	//
+	//		@Setting
+	//		public static HashMap<String, WorldPosition> position = new HashMap<>();
+	//
+	//		public static float b;
+	//		public static int a;
+	//
+	//		public static class Config2 {
+	//
+	//			public static ArrayList<String> camelCaseList;
+	//
+	//			@Setting(name = "SET")
+	//			public static HashSet<Integer> set;
+	//
+	//			public static int Config3 = 3;
+	//
+	//			public static class Config3 {
+	//
+	//				public static HashMap<String, ArrayList<HashSet<String>>> map = new HashMap<>();
+	//
+	//				public static HashSet<Integer> set;
+	//
+	//			}
+	//
+	//		}
+	//
+	//	}
 
-	public static String getKey(String key) {
-		sb.setLength(0);
-		writeKey(sb, key);
-		return sb.toString();
+	private static void walk(Class<?> cls, Consumer<Field> processor) {
+		for (Field field : cls.getDeclaredFields()) {
+			if (field.isAnnotationPresent(Transient.class)) {
+				continue;
+			}
+
+			processor.accept(field);
+		}
+
+		for (Class<?> nestedClass : cls.getDeclaredClasses()) {
+			walk(nestedClass, processor);
+		}
 	}
 
-	public static void writeKey(StringBuilder sb, String key) {
-		for (int i = 0; i < key.length(); i++) {
-			char c = key.charAt(i);
-			if (Character.isUpperCase(c)) {
-				if (i > 0) {
-					sb.append('-');
+	private static String getName(Field field, Setting setting) {
+		if (setting == null || setting.name().isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+
+			boolean prev = false;
+			String name = field.getName();
+			for (int i = 0; i < name.length(); i++) {
+				char c = name.charAt(i);
+				char lower = Character.toLowerCase(c);
+				if (i > 0 && c != lower && !prev) {
+					sb.append('_');
 				}
-				sb.append(Character.toLowerCase(c));
-			} else {
-				sb.append(c);
+				sb.append(lower);
+				prev = c != lower;
 			}
+			return sb.toString();
+		} else {
+			return setting.name();
 		}
 	}
 

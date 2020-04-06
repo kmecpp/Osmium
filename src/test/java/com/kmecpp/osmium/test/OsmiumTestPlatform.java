@@ -11,7 +11,8 @@ import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.command.CS;
 import com.kmecpp.osmium.api.command.Chat;
-import com.kmecpp.osmium.api.config.ConfigProperties;
+import com.kmecpp.osmium.api.config.ConfigClass;
+import com.kmecpp.osmium.api.config.PluginConfigTypeData;
 import com.kmecpp.osmium.api.config.Setting;
 import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Listener;
@@ -31,7 +32,7 @@ public class OsmiumTestPlatform extends TestCase {
 		assertEquals("osmium", AppInfo.ID);
 	}
 
-	@ConfigProperties(path = "src/test/resources/test.config", header = "Config!")
+	@ConfigClass(path = "src/test/resources/test.config", header = "Config!")
 	public static class Config {
 
 		@Setting(comment = " comment!")
@@ -102,7 +103,7 @@ public class OsmiumTestPlatform extends TestCase {
 	@Test
 	public void testPlugins() throws NoSuchMethodException, SecurityException {
 		OsmiumTestPlugin plugin = new OsmiumTestPlugin();
-		Method method = plugin.getClass().getSuperclass().getDeclaredMethod("setupPlugin", Object.class);
+		Method method = plugin.getClass().getSuperclass().getDeclaredMethod("setupPlugin", Object.class, PluginConfigTypeData.class);
 		method.setAccessible(true);
 		//		try {
 		//			method.invoke(plugin, new SpongePlugin() {});

@@ -249,7 +249,7 @@ public final class Osmium {
 	public static boolean reloadPlugin(OsmiumPlugin plugin, boolean reloadDatabase) {
 		for (Class<?> config : configManager.getPluginConfigs(plugin)) {
 			try {
-				configManager.loadWithParser(config);
+				configManager.load(config);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
@@ -273,7 +273,7 @@ public final class Osmium {
 
 	public static boolean reloadConfig(Class<?> cls) {
 		try {
-			configManager.loadWithParser(cls);
+			configManager.load(cls);
 			return true;
 		} catch (IOException e) {
 			return false;

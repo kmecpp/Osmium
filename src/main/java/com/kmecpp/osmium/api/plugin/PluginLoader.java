@@ -9,8 +9,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import com.kmecpp.osmium.Directory;
+import com.kmecpp.osmium.api.config.PluginConfigTypeData;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.IOUtil;
 
@@ -32,6 +34,9 @@ public class PluginLoader {
 				OsmiumPlugin plugin = main.newInstance();
 				OsmiumLogger.info("Loading plugin: " + plugin.getName() + " v" + plugin.getVersion());
 
+				ZipEntry configTypes = jar.getEntry("CONFIG_TYPES");
+				PluginConfigTypeData configTypeData = PluginConfigTypeData.parse(configTypes == null ? new String[0] : IOUtil.readLines(jar.getInputStream(configTypes)));
+
 				for (Field field : plugin.getClass().getDeclaredFields()) {
 					if (field.isAnnotationPresent(PluginInstance.class)
 							&& Modifier.isStatic(field.getModifiers())
@@ -47,9 +52,9 @@ public class PluginLoader {
 				plugins.put(main, plugin);
 				pluginFiles.put(jarFilePath, plugin);
 
-				Method method = OsmiumPlugin.class.getDeclaredMethod("setupPlugin", Object.class);
+				Method method = OsmiumPlugin.class.getDeclaredMethod("setupPlugin", Object.class, PluginConfigTypeData.class);
 				method.setAccessible(true);
-				method.invoke(plugin, pluginImpl);
+				method.invoke(plugin, pluginImpl, configTypeData);
 				//				Reflection.invokeMethod(OsmiumPlugin.class, plugin, "setupPlugin", pluginImpl);//Setup plugin after everything else
 
 				//				OsmiumLogger.info("Successfully loaded Osmium plugin: " + plugin.getName() + " v" + plugin.getVersion());

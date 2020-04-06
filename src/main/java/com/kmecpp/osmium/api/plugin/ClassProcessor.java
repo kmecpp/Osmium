@@ -14,7 +14,7 @@ import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.HookClass;
 import com.kmecpp.osmium.api.command.Command;
-import com.kmecpp.osmium.api.config.ConfigProperties;
+import com.kmecpp.osmium.api.config.ConfigClass;
 import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.event.Event;
@@ -165,10 +165,10 @@ public class ClassProcessor {
 
 	public void onLoad(Class<?> cls) {
 		//CONFIGURATIONS
-		ConfigProperties configuration = cls.getAnnotation(ConfigProperties.class);
+		ConfigClass configuration = cls.getAnnotation(ConfigClass.class);
 		if (configuration != null) {
-			Osmium.getConfigManager().initialize(cls);
-			if (!configuration.loadLate()) {
+			Osmium.getConfigManager().register(plugin, cls);
+			if (!configuration.manualLoad()) {
 				Osmium.reloadConfig(cls);
 			}
 		}

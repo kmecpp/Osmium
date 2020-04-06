@@ -16,10 +16,10 @@ import com.eclipsesource.json.JsonArray;
 import com.kmecpp.osmium.ap.ConfigTypeProcessor;
 import com.kmecpp.osmium.ap.OsmiumClassMetadataAnnotationProcessor;
 import com.kmecpp.osmium.ap.OsmiumPluginProcessor;
-import com.kmecpp.osmium.api.config.Setting;
+import com.kmecpp.osmium.api.config.ConfigClass;
 import com.kmecpp.osmium.api.event.Listener;
-import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.plugin.Initializer;
+import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.tasks.Schedule;
 
 public class OsmiumTest {
@@ -46,7 +46,7 @@ public class OsmiumTest {
 				.containsAll(Arrays.asList(Initializer.class.getName(), Schedule.class.getName(), Listener.class.getName())));
 
 		assertTrue(Arrays.asList(ConfigTypeProcessor.class.getAnnotation(SupportedAnnotationTypes.class).value())
-				.containsAll(Arrays.asList(Setting.class.getName())));
+				.containsAll(Arrays.asList(ConfigClass.class.getName())));
 
 		assertTrue(Arrays.asList(OsmiumPluginProcessor.class.getAnnotation(SupportedAnnotationTypes.class).value())
 				.containsAll(Arrays.asList(Plugin.class.getName())));

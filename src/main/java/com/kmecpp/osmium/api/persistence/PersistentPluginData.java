@@ -3,7 +3,6 @@ package com.kmecpp.osmium.api.persistence;
 import java.io.IOException;
 import java.util.HashSet;
 
-import com.kmecpp.osmium.api.config.DataFile;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
