@@ -122,6 +122,11 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 			modinfo.addAuthor(author);
 		}
 		for (String dependency : meta.getSpongeDependencies()) {
+			//			for (String loadBefore : meta.getLoadBeforePlugins()) {
+			//				if (loadBefore.equalsIgnoreCase(dependency)) {
+			//					continue outer;
+			//				}
+			//			}
 			modinfo.addDependency(new PluginDependency(LoadOrder.BEFORE, dependency.toLowerCase(), "", false));
 		}
 		for (String loadBeforePlugin : meta.getLoadBeforePlugins()) {

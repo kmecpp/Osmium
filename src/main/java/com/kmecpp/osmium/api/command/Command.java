@@ -94,7 +94,9 @@ public class Command extends CommandBase {
 						}
 					}
 
-					if (matching > highestMatchCount) {
+					if (matching == option.length()) {
+						return arg;
+					} else if (matching > highestMatchCount) {
 						highestMatchCount = matching;
 						highestMatch = arg;
 					} else if (matching == highestMatchCount && highestMatch != arg) {
