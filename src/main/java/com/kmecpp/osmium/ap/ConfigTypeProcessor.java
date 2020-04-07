@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.ap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.RoundEnvironment;
@@ -9,14 +11,24 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 
 import com.kmecpp.osmium.api.config.ConfigClass;
+import com.kmecpp.osmium.api.config.Transient;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes({ "com.kmecpp.osmium.api.config.ConfigClass" })
 public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 
 	private static StringBuilder data = new StringBuilder();
+
+	public void finish() {
+		if (data.length() > 0) {
+			writeRawFile("CONFIG_TYPES", data.toString());
+		}
+	}
 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -36,8 +48,7 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 			if (data.length() > 0) {
 				data.append('\n');
 			}
-			String path = element.toString();
-			data.append(path + ":\n");
+			data.append(getPath(element) + ":\n");
 			process(element);
 		}
 		return true;
@@ -48,15 +59,12 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 
 		for (ElementKind kind : kinds) {
 			for (Element enclosed : parent.getEnclosedElements()) {
-				if (enclosed.getKind() != kind) {
+				if (enclosed.getKind() != kind || enclosed.getAnnotation(Transient.class) != null) {
 					continue;
 				}
-				String location = enclosed.getEnclosingElement().toString() + "." + enclosed.getSimpleName();
-				//				String subpath = location.substring(start);
 				if (enclosed.getKind().isField()) {
-					data.append(location + "=" + enclosed.asType() + "\n");
+					data.append(getPath(enclosed) + "=" + getType(enclosed.asType()) + "\n");
 				} else {
-					//					data.append(location + ":\n");
 					process(enclosed);
 				}
 			}
@@ -64,10 +72,51 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 
 	}
 
-	public void finish() {
-		if (data.length() > 0) {
-			writeRawFile("CONFIG_TYPES", data.toString());
+	/*
+	 * getPath() and getType() get the fully qualified class names of their
+	 * respective objects. This is needed because Class.forName() expects $ as
+	 * the delimiter for nested classes in the name
+	 */
+	private static String getPath(Element element) {
+		ArrayList<String> parts = new ArrayList<>();
+		Element current = element;
+		while (true) {
+			if (current.getKind() == ElementKind.PACKAGE) {
+				parts.add(0, current.toString());
+				break;
+			}
+
+			boolean nestedClass = current.getKind() == ElementKind.CLASS && current.getEnclosingElement().getKind() == ElementKind.CLASS;
+			parts.add(0, current.getSimpleName().toString());
+			parts.add(0, nestedClass ? "$" : ".");
+			current = current.getEnclosingElement();
 		}
+		return String.join("", parts);
+	}
+
+	private static String getType(TypeMirror typeMirror) {
+		if (typeMirror.getKind() != TypeKind.DECLARED) {
+			return typeMirror.toString();
+		}
+		DeclaredType type = (DeclaredType) typeMirror;
+		StringBuilder sb = new StringBuilder();
+
+		String baseType = getPath(type.asElement());
+		sb.append(baseType);
+
+		List<? extends TypeMirror> arguments = type.getTypeArguments();
+		if (!arguments.isEmpty()) {
+			sb.append('<');
+			for (int i = 0; i < arguments.size(); i++) {
+				TypeMirror arg = arguments.get(i);
+				sb.append(getType(arg));
+				if (i < arguments.size() - 1) {
+					sb.append(',');
+				}
+			}
+			sb.append('>');
+		}
+		return sb.toString();
 	}
 
 }

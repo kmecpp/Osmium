@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.persistence;
 
 import java.io.File;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -115,8 +116,10 @@ public class Serialization {
 		SerializationData<T> data = (SerializationData<T>) types.get(obj.getClass());
 		if (data != null) {
 			return data.isCustomType() ? "\"" + data.serialize(obj) + "\"" : data.serialize(obj);
+		} else {
+			return String.valueOf(obj);
 		}
-		throw new IllegalArgumentException("Cannot serialize unregistered config type: " + obj.getClass());
+		//		throw new IllegalArgumentException("Cannot serialize unregistered config type: " + obj.getClass());
 		//		throw new IllegalArgumentException("Cannot serialize unknown class: " + obj.getClass().getName());
 	}
 
@@ -131,6 +134,13 @@ public class Serialization {
 		if (data != null) {
 			return data.deserialize(str); //The parser will remove the quotations from custom types
 			//			return data.deserialize(data.isCustomType() ? str.substring(1, str.length() - 1) : str);
+		} else {
+			try {
+				Method method = type.getDeclaredMethod("fromString", String.class);
+				return (T) method.invoke(null, str);
+			} catch (Throwable t) {
+				//Ignore
+			}
 		}
 		throw new IllegalArgumentException("Cannot parse unregistered config type: " + type.getName());
 	}

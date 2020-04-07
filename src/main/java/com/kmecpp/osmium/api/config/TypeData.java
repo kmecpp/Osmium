@@ -2,17 +2,21 @@ package com.kmecpp.osmium.api.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import com.kmecpp.osmium.api.persistence.Serialization;
+
 public class TypeData {
 
 	private Class<?> type;
-	private ArrayList<TypeData> generics;
+	private List<TypeData> generics;
 
 	//	private TypeToken<?> typeToken;
 
@@ -29,7 +33,7 @@ public class TypeData {
 		primitives.put("char", char.class);
 	}
 
-	public TypeData(Class<?> type, ArrayList<TypeData> generics) {
+	public TypeData(Class<?> type, List<TypeData> generics) {
 		this.type = type;
 		this.generics = generics;
 	}
@@ -51,7 +55,7 @@ public class TypeData {
 	//		return typeToken;
 	//	}
 
-	public ArrayList<TypeData> getGenerics() {
+	public List<TypeData> getGenerics() {
 		return generics;
 	}
 
@@ -102,7 +106,7 @@ public class TypeData {
 		String typeName = sb.toString();
 		Class<?> type = primitives.get(typeName);
 		type = type != null ? type : Class.forName(typeName); //Can't use getOrDefault because Class.forName() with throw and error
-		return new TypeData(type, new ArrayList<>()); //Simple type
+		return new TypeData(type, Collections.emptyList()); //Simple type
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -122,6 +126,10 @@ public class TypeData {
 			result.addAll(convertedList);
 			return result;
 		} else if (Map.class.isAssignableFrom(loadedValue.getClass())) {
+			if (!Map.class.isAssignableFrom(type)) {
+				return ObjectSerialization.deserialize((Map) loadedValue, type);
+			}
+
 			HashMap convertedMap = new HashMap();
 			for (Entry entry : (Set<Entry>) ((Map) loadedValue).entrySet()) {
 				if (generics.size() >= 2) {
@@ -131,6 +139,8 @@ public class TypeData {
 			Map result = (Map) ConfigSerialization.getDefaultFor(type);
 			result.putAll(convertedMap);
 			return result;
+		} else if (loadedValue instanceof String) { //type can't be string because java.lang is handled already
+			return Serialization.deserialize(type, (String) loadedValue);
 		} else {
 			throw new IllegalArgumentException("Don't know how to map type: " + this);
 		}

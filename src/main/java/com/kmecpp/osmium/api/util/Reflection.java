@@ -54,8 +54,7 @@ public class Reflection {
 	public static <T> T createInstance(Class<T> cls) {
 		try {
 			return cls.newInstance();
-		} catch (Exception e) {
-		}
+		} catch (Exception e) {}
 		Constructor<T> c = (Constructor<T>) cls.getDeclaredConstructors()[0];
 		c.setAccessible(true);
 		Class<?>[] paramClasses = c.getParameterTypes();

@@ -21,6 +21,9 @@ public class FieldData {
 		this.name = name;
 		this.setting = setting;
 		this.typeData = typeData;
+		if (typeData == null) {
+			throw new IllegalArgumentException("Missing type data for: " + field.getDeclaringClass().getName() + "." + name);
+		}
 
 		this.field.setAccessible(true);
 	}

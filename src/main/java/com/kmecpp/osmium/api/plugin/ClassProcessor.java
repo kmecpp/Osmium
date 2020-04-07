@@ -169,7 +169,7 @@ public class ClassProcessor {
 		if (configuration != null) {
 			Osmium.getConfigManager().register(plugin, cls);
 			if (!configuration.manualLoad()) {
-				Osmium.reloadConfig(cls);
+				Osmium.loadConfig(cls);
 			}
 		}
 

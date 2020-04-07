@@ -14,10 +14,10 @@ public class PluginConfigTypeData {
 	public HashMap<String, TypeData> get(Class<?> cls) throws ClassNotFoundException {
 		HashMap<String, TypeData> result = data.get(cls);
 		if (result == null) {
-			String className = cls.getName().replace('$', '.');
+			String className = cls.getName();
 			HashMap<String, String> text = parsed.get(className);
 			if (text == null) {
-				throw new IllegalArgumentException("Missing type data for class: " + className);
+				throw new IllegalArgumentException("Missing config type data for class: " + className);
 			}
 			result = new HashMap<>();
 			for (Entry<String, String> entry : text.entrySet()) {

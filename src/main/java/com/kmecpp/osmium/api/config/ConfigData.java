@@ -3,7 +3,9 @@ package com.kmecpp.osmium.api.config;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.typesafe.config.ConfigRenderOptions;
@@ -39,7 +41,6 @@ public class ConfigData extends ConfigClassData {
 			TypeData typeData = data.getTypeData();
 
 			CommentedConfigurationNode node = root.getNode(virtualPath);
-			System.out.println("VALUE: " + node.getValue());
 
 			try {
 				Object value = typeData.convert(node.getValue());
@@ -59,7 +60,13 @@ public class ConfigData extends ConfigClassData {
 			if (value == null) {
 				value = ConfigSerialization.getDefaultFor(data.getType());
 			}
-			root.getNode(virtualPath).setValue(value);
+			CommentedConfigurationNode node = root.getNode(virtualPath);
+
+			if (value == null || value.getClass().getPackage().getName().startsWith("java.lang") || value instanceof Map || value instanceof Collection) {
+				node.setValue(value);
+			} else {
+				node.setValue(ObjectSerialization.serialize(value));
+			}
 		}
 		loader.save(root);
 	}

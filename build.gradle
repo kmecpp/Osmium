@@ -72,7 +72,9 @@ publishing {
  * COMPILIATION
  */
 compileJava {
-    //options.compilerArgs += ["-proc:none"]
+    options.compilerArgs += ["-proc:none"]
+//    options.compilerArgs += ["-processor", "com.kmecpp.osmium.ap.ConfigTypeProcessor"]
+//    compileJava.options.compilerArgs.addAll(["-processor", "com.kmecpp.osmium.ap.ConfigTypeProcessor"])
     sourceCompatibility = 8
     targetCompatibility = 8
 }
@@ -136,6 +138,7 @@ configurations.all {
 }
 
 dependencies {
+	//annotationProcessor("com.kmecpp:osmium:1.0.0-SNAPSHOT")
 	//compile files("lib/spigot-1.13.2.jar")
 	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648_DEOBF.jar")
 	compile files("lib/spongevanilla-1.12.2-8.0.0-BETA-448.jar");

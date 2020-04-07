@@ -230,16 +230,25 @@ public final class Osmium {
 		plugin.saveData();
 	}
 
+	public static final Platform getPlatform() {
+		return Platform.getPlatform();
+	}
+
+	public static boolean loadConfig(Class<?> cls) {
+		try {
+			configManager.load(cls);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
 	public static void saveConfig(Class<?> config) {
 		try {
 			configManager.save(config);
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to save configuration class: " + config.getName());
 		}
-	}
-
-	public static final Platform getPlatform() {
-		return Platform.getPlatform();
 	}
 
 	public static boolean reloadPlugin(OsmiumPlugin plugin) {
@@ -269,15 +278,6 @@ public final class Osmium {
 			}
 		}
 		return true;
-	}
-
-	public static boolean reloadConfig(Class<?> cls) {
-		try {
-			configManager.load(cls);
-			return true;
-		} catch (IOException e) {
-			return false;
-		}
 	}
 
 	public static void on(Platform platform, Runnable runnable) {
