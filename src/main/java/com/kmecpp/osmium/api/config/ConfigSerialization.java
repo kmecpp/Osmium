@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 
 public class ConfigSerialization {
 
-	public static final HashMap<Class<?>, ConfigSerializer> serializers = new HashMap<>();
 	private static final HashMap<Class<?>, Supplier<?>> defaults = new HashMap<>();
 
 	private static final Supplier<?> ZERO = () -> 0;
@@ -85,10 +84,6 @@ public class ConfigSerialization {
 	public static Object getDefaultFor(Class<?> cls) {
 		Supplier<?> def = defaults.get(cls);
 		return def != null ? def.get() : null;
-	}
-
-	public static void register() {
-
 	}
 
 }

@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -66,6 +67,30 @@ public class Serialization {
 		});
 	}
 
+	private static final HashSet<Class<?>> serializableClasses = new HashSet<>();
+
+	public static boolean isSerializable(Class<?> cls) {
+		if (serializableClasses.contains(cls)) {
+			return true;
+		}
+		boolean serializable = getData(cls) != null;
+
+		if (!serializable) {
+			//Check if it has a fromString method
+			try {
+				cls.getDeclaredMethod("fromString", String.class);
+				serializable = true;
+			} catch (Throwable t) {}
+		}
+
+		//Cache this result
+		if (serializable) {
+			serializableClasses.add(cls);
+		}
+
+		return serializable;
+	}
+
 	public static <T, C> T get(Class<C> componentType, String str, Function<String, C> deserializer) {
 		String[] parts = str.split(",");
 		Object[] result = (Object[]) Array.newInstance(componentType, parts.length);
@@ -115,7 +140,8 @@ public class Serialization {
 
 		SerializationData<T> data = (SerializationData<T>) types.get(obj.getClass());
 		if (data != null) {
-			return data.isCustomType() ? "\"" + data.serialize(obj) + "\"" : data.serialize(obj);
+			return data.serialize(obj);
+			//			return data.isCustomType() ? "\"" + data.serialize(obj) + "\"" : data.serialize(obj);
 		} else {
 			return String.valueOf(obj);
 		}

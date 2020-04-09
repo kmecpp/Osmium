@@ -247,7 +247,7 @@ public final class Osmium {
 		try {
 			configManager.save(config);
 		} catch (IOException e) {
-			throw new RuntimeException("Failed to save configuration class: " + config.getName());
+			throw new RuntimeException("Failed to save configuration class: " + config.getName(), e);
 		}
 	}
 

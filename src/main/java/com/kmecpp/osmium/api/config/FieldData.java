@@ -37,15 +37,19 @@ public class FieldData {
 	}
 
 	public void load(Object loadedValue) {
-		typeData.convert(loadedValue);
+		typeData.convertToActualType(loadedValue);
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public Setting getSetting() {
-		return setting;
+	public String getComment() {
+		if (setting != null) {
+			String comment = setting.comment();
+			return comment != null && !comment.isEmpty() ? comment : null;
+		}
+		return null;
 	}
 
 	public Field getField() {

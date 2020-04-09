@@ -3,12 +3,8 @@ package com.kmecpp.osmium.api.config;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
-
-import com.typesafe.config.ConfigRenderOptions;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -24,10 +20,10 @@ public class ConfigData extends ConfigClassData {
 	}
 
 	public void load() throws IOException {
-		Files.createDirectories(path.getParent());
-		loader = HoconConfigurationLoader.builder().setRenderOptions(ConfigRenderOptions.defaults()).setPath(path).build();
+		loader = HoconConfigurationLoader.builder().setPath(path).build();
 
 		if (!Files.exists(path)) {
+			Files.createDirectories(path.getParent());
 			root = loader.createEmptyNode();
 			save();
 		} else {
@@ -37,14 +33,15 @@ public class ConfigData extends ConfigClassData {
 		for (Entry<String, FieldData> entry : fieldData.entrySet()) {
 			Object[] virtualPath = entry.getKey().split("\\.");
 
-			FieldData data = entry.getValue();
-			TypeData typeData = data.getTypeData();
+			FieldData fieldData = entry.getValue();
+			TypeData typeData = fieldData.getTypeData();
+
+			System.out.println("LOADING PATH: " + entry.getKey());
 
 			CommentedConfigurationNode node = root.getNode(virtualPath);
 
 			try {
-				Object value = typeData.convert(node.getValue());
-				data.setValue(value);
+				fieldData.setValue(typeData.convertToActualType(node.getValue()));
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
@@ -52,21 +49,32 @@ public class ConfigData extends ConfigClassData {
 	}
 
 	public void save() throws IOException {
+		if (root == null) {
+			load();
+		}
+
 		for (Entry<String, FieldData> entry : fieldData.entrySet()) {
 			Object[] virtualPath = entry.getKey().split("\\.");
-			FieldData data = entry.getValue();
+			FieldData fieldData = entry.getValue();
 
-			Object value = data.getFieldValue();
+			Object value = fieldData.getFieldValue();
 			if (value == null) {
-				value = ConfigSerialization.getDefaultFor(data.getType());
+				value = ConfigSerialization.getDefaultFor(fieldData.getType());
 			}
 			CommentedConfigurationNode node = root.getNode(virtualPath);
 
-			if (value == null || value.getClass().getPackage().getName().startsWith("java.lang") || value instanceof Map || value instanceof Collection) {
-				node.setValue(value);
-			} else {
-				node.setValue(ObjectSerialization.serialize(value));
-			}
+			TypeData typeData = fieldData.getTypeData();
+			node.setComment(fieldData.getComment());
+			node.setValue(typeData.convertToConfigurateType(value));
+
+			//			Object value = typeData.convertToActualType(node.getValue());
+			//			fieldData.setValue(value);
+			//			if (value == null || value.getClass().getPackage().getName().startsWith("java.lang")
+			//					|| value instanceof Map || value instanceof Collection) {
+			//				node.setValue(value);
+			//			} else {
+			//				node.setValue(ObjectMapSerialization.serialize(value));
+			//			}
 		}
 		loader.save(root);
 	}

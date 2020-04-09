@@ -52,6 +52,9 @@ public class Reflection {
 
 	@SuppressWarnings({ "unchecked" })
 	public static <T> T createInstance(Class<T> cls) {
+		if (cls.isPrimitive()) {
+			return (T) getDefaultValue(cls);
+		}
 		try {
 			return cls.newInstance();
 		} catch (Exception e) {}

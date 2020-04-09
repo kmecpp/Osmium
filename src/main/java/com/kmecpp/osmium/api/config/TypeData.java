@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api.config;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.api.persistence.Serialization;
+import com.kmecpp.osmium.api.util.Reflection;
 
 public class TypeData {
 
@@ -36,6 +38,20 @@ public class TypeData {
 	public TypeData(Class<?> type, List<TypeData> generics) {
 		this.type = type;
 		this.generics = generics;
+
+		//		if (!ConfigSerialization.isConfigurateSerializable(type)) {
+		//			TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(type), new TypeSerializer() {
+		//
+		//				@Override
+		//				public Object deserialize(@NonNull TypeToken type, @NonNull ConfigurationNode value) throws ObjectMappingException {
+		//					return null;
+		//				}
+		//
+		//				@Override
+		//				public void serialize(@NonNull TypeToken type, Object obj, @NonNull ConfigurationNode value) throws ObjectMappingException {
+		//				}
+		//			});
+		//		}
 	}
 
 	public Class<?> getType() {
@@ -110,7 +126,10 @@ public class TypeData {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Object convert(Object loadedValue) {
+	public Object convertToActualType(Object loadedValue) {
+		System.out.println("CONVERT TO " + type.getName() + ": " + loadedValue + " :: " + (loadedValue != null ? loadedValue.getClass() : ""));
+		System.out.println(type.getPackage() == null ? "NULL" : type.getPackage().getName());
+
 		if (loadedValue == null) {
 			return ConfigSerialization.getDefaultFor(type);
 		} else if (type.isPrimitive() || type.getPackage().getName().startsWith("java.lang")) {
@@ -119,21 +138,23 @@ public class TypeData {
 			ArrayList convertedList = new ArrayList<>();
 			for (Object o : (Collection) loadedValue) {
 				if (generics.size() >= 1) {
-					convertedList.add(generics.get(0).convert(o));
+					convertedList.add(generics.get(0).convertToActualType(o));
 				}
 			}
 			Collection result = (Collection) ConfigSerialization.getDefaultFor(type);
 			result.addAll(convertedList);
 			return result;
 		} else if (Map.class.isAssignableFrom(loadedValue.getClass())) {
-			if (!Map.class.isAssignableFrom(type)) {
-				return ObjectSerialization.deserialize((Map) loadedValue, type);
+			if (!Map.class.isAssignableFrom(type)) { //If the original type was not a Map we did our own map serialization on it
+				this.deserializeFromConfigurateMap((Map) loadedValue);
+				//				return ObjectMapSerialization.deserialize((Map) loadedValue, type);
 			}
 
 			HashMap convertedMap = new HashMap();
+
 			for (Entry entry : (Set<Entry>) ((Map) loadedValue).entrySet()) {
 				if (generics.size() >= 2) {
-					convertedMap.put(generics.get(0).convert(entry.getKey()), generics.get(1).convert(entry.getValue()));
+					convertedMap.put(generics.get(0).convertToActualType(entry.getKey()), generics.get(1).convertToActualType(entry.getValue()));
 				}
 			}
 			Map result = (Map) ConfigSerialization.getDefaultFor(type);
@@ -143,6 +164,70 @@ public class TypeData {
 			return Serialization.deserialize(type, (String) loadedValue);
 		} else {
 			throw new IllegalArgumentException("Don't know how to map type: " + this);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Object convertToConfigurateType(Object actualValue) {
+		if (actualValue == null || actualValue.getClass().getPackage().getName().startsWith("java.lang")) {
+			return actualValue;
+		} else if (actualValue instanceof Collection) {
+			ArrayList converted = new ArrayList();
+
+			for (Object obj : (Collection) actualValue) {
+				converted.add(generics.get(0).convertToConfigurateType(obj));
+			}
+			return converted;
+		} else if (actualValue instanceof Map) {
+			HashMap converted = new HashMap();
+
+			for (Entry entry : (Set<Entry>) ((Map) actualValue).entrySet()) {
+				converted.put(generics.get(0).convertToConfigurateType(entry.getKey()), generics.get(1).convertToConfigurateType(entry.getValue()));
+			}
+			return converted;
+		} else if (Serialization.isSerializable(actualValue.getClass())) {
+			return Serialization.serialize(actualValue);
+		} else {
+			return serializeAsConfigurateMap(actualValue);
+			//			return ObjectMapSerialization.serialize(actualValue);
+		}
+	}
+
+	public HashMap<String, Object> serializeAsConfigurateMap(Object object) {
+		HashMap<String, Object> result = new HashMap<>();
+		if (object == null) {
+			return result;
+		}
+		try {
+			for (Field field : object.getClass().getDeclaredFields()) {
+				if (field.isAnnotationPresent(Transient.class)) {
+					continue;
+				}
+				field.setAccessible(true);
+				result.put(field.getName(), convertToConfigurateType(field.get(object)));
+			}
+			return result;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Object deserializeFromConfigurateMap(Map<String, Object> map) {
+		System.out.println("DESERIALIZING FROM MAP : " + type);
+		try {
+			Object result = Reflection.createInstance(type);
+			for (Field field : type.getDeclaredFields()) {
+				if (field.isAnnotationPresent(Transient.class)) {
+					continue;
+				}
+				field.setAccessible(true);
+				
+				//TODO: This should be getType(field).convertToActual(map.get()))
+				field.set(result, convertToActualType(map.get(field.getName())));
+			}
+			return result;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 

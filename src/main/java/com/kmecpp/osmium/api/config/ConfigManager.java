@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,8 +65,8 @@ public class ConfigManager {
 				.forEach(configData -> {
 					try {
 						load(configData.configClass);
-					} catch (IOException ex) {
-						ex.printStackTrace();
+					} catch (Throwable t) {
+						t.printStackTrace();
 					}
 				});
 	}
@@ -76,6 +78,10 @@ public class ConfigManager {
 		}
 
 		ConfigClass configProperties = configClass.getDeclaredAnnotation(ConfigClass.class);
+
+		if (configProperties == null) {
+			throw new IllegalArgumentException("Class is not annotated with @" + ConfigClass.class.getSimpleName() + ": " + configClass);
+		}
 
 		//GET PLUGIN SPECIFIC DATA
 		HashMap<String, TypeData> fieldTypeMap;
@@ -98,21 +104,22 @@ public class ConfigManager {
 
 		}
 
-		HashMap<String, FieldData> fieldDataMap = new HashMap<>();
+		//		System.out.println("FIELD TYPE MAP: " + fieldTypeMap);
 
+		HashMap<String, FieldData> fieldDataMap = new HashMap<>();
 		int truncate = configClass.getName().length() + 1;
 		walk(configClass, (field) -> {
-			String enclosingPath = field.getDeclaringClass().getName().replace('$', '.').toLowerCase() + ".";
-
 			Setting setting = field.getAnnotation(Setting.class);
 			String name = getName(field, setting);
-			String virtualPath = (enclosingPath + name).substring(truncate); //Truncate must come last
-			String physicalPath = (enclosingPath + field.getName()).substring(truncate); //Truncate must come last
+			String virtualPath = getVirtualPath(field, name);
 
+			String physicalPath = (field.getDeclaringClass().getName() + "." + field.getName()).substring(truncate); //Truncate must come last
 			TypeData typeData = fieldTypeMap.get(physicalPath);
 			if (typeData == null) {
+				//This is normal if the type isn't supposed to have generics
 				typeData = new TypeData(field.getType(), Collections.emptyList());
 			}
+			//			System.out.println("LOADED TYPE DATA FOR " + physicalPath + " == " + typeData);
 			FieldData fieldData = new FieldData(field, name, setting, typeData);
 			fieldDataMap.put(virtualPath, fieldData);
 		});
@@ -177,25 +184,39 @@ public class ConfigManager {
 		}
 	}
 
+	public static String getVirtualPath(Field field, String name) {
+		Class<?> current = field.getDeclaringClass();
+		ArrayList<String> list = new ArrayList<>(Arrays.asList(name));
+		while (!current.isAnnotationPresent(ConfigClass.class)) {
+			list.add(0, normalizeName(current.getSimpleName()));
+			current = current.getEnclosingClass();
+		}
+
+		//		(enclosingPath + "." + field.getName()).replace('$', '.').substring(truncate).toLowerCase();
+		return String.join(".", list).toLowerCase();
+	}
+
 	private static String getName(Field field, Setting setting) {
 		if (setting == null || setting.name().isEmpty()) {
-			StringBuilder sb = new StringBuilder();
-
-			boolean prev = false;
-			String name = field.getName();
-			for (int i = 0; i < name.length(); i++) {
-				char c = name.charAt(i);
-				char lower = Character.toLowerCase(c);
-				if (i > 0 && c != lower && !prev) {
-					sb.append('-');
-				}
-				sb.append(lower);
-				prev = c != lower;
-			}
-			return sb.toString();
+			return normalizeName(field.getName());
 		} else {
 			return setting.name();
 		}
+	}
+
+	private static String normalizeName(String name) {
+		StringBuilder sb = new StringBuilder();
+		boolean prev = false;
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			char lower = Character.toLowerCase(c);
+			if (i > 0 && c != lower && !prev) {
+				sb.append('-');
+			}
+			sb.append(lower);
+			prev = c != lower;
+		}
+		return sb.toString();
 	}
 
 }

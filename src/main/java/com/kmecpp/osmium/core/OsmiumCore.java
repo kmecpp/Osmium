@@ -30,6 +30,8 @@ public class OsmiumCore extends OsmiumPlugin {
 	public void onInit() {
 		enableMetrics();
 
+		Osmium.getPlayerDataManager().start();
+
 		Osmium.getTask().setTime(0, 1, TimeUnit.MINUTE).setExecutor((t) -> {
 			OsmiumData.update();
 		}).start();

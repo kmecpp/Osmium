@@ -19,7 +19,9 @@ public class PluginConfigTypeData {
 			if (text == null) {
 				throw new IllegalArgumentException("Missing config type data for class: " + className);
 			}
+
 			result = new HashMap<>();
+			//			ConfigManager.getVirtualPath(enclosingPath, name, truncate)
 			for (Entry<String, String> entry : text.entrySet()) {
 				result.put(entry.getKey(), TypeData.parse(entry.getValue()));
 			}
@@ -39,11 +41,11 @@ public class PluginConfigTypeData {
 				continue;
 			}
 			if (line.endsWith(":")) {
-				if (currentConfig == null || !line.startsWith(currentConfig)) {
-					currentConfig = line.substring(0, line.length() - 1);
+				if (currentConfig != null) {
 					data.parsed.put(currentConfig, current);
 					current = new HashMap<>();
 				}
+				currentConfig = line.substring(0, line.length() - 1);
 				continue;
 			} else {
 				String[] parts = line.split("=");

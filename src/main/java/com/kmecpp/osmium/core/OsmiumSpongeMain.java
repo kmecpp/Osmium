@@ -17,11 +17,6 @@ import com.kmecpp.osmium.platform.sponge.SpongeWorld;
 		authors = { AppInfo.AUTHOR }, description = AppInfo.DESCRIPTION, url = AppInfo.URL)
 public class OsmiumSpongeMain extends SpongePlugin {
 
-	//	@Listener(order = Order.PRE)
-	//	public void onGameInitialization(GameInitializationEvent e) {
-	//		Sponge.getEventManager().registerListeners(this, this);
-	//	}
-
 	@Listener(order = Order.PRE)
 	public void onPlayerLogin(ClientConnectionEvent.Join e) {
 		PlayerList.addPlayer(e.getTargetEntity());

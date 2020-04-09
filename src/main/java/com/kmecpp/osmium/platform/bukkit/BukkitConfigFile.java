@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -28,21 +29,21 @@ public abstract class BukkitConfigFile extends YamlConfiguration {
 
 	public BukkitConfigFile(String path, boolean resource) {
 		this.plugin = Osmium.getPlugin(this.getClass());
-		this.path = plugin.getFolder().resolve(path);
+		this.path = plugin != null ? plugin.getFolder().resolve(path) : Paths.get(path).toAbsolutePath();
 		this.resource = resource;
 		configs.put(this.getClass(), this);
 	}
 
-	protected void onLoad(BukkitConfigFile config) {
+	protected void onLoad() {
 	}
 
-	protected void onSave(BukkitConfigFile config) {
+	protected void onSave() {
 	}
 
 	public final void load() {
 		try {
 			File file = path.toFile();
-			path.getParent().toFile().mkdirs();
+			Files.createDirectories(path.getParent());
 			boolean exists = file.exists();
 			if (!exists) {
 				if (this.resource) {
@@ -55,7 +56,7 @@ public abstract class BukkitConfigFile extends YamlConfiguration {
 			} else {
 				this.load(file);
 			}
-			onLoad(this);
+			this.onLoad();
 			if (!exists) {
 				save();
 			}
@@ -66,7 +67,7 @@ public abstract class BukkitConfigFile extends YamlConfiguration {
 
 	public final void save() {
 		try {
-			onSave(this);
+			this.onSave();
 			this.save(path.toFile());
 		} catch (IOException e) {
 			e.printStackTrace();

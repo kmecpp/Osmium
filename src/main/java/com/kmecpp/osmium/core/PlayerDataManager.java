@@ -2,22 +2,37 @@ package com.kmecpp.osmium.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.tasks.TimeUnit;
 import com.kmecpp.osmium.api.util.Reflection;
 
 public class PlayerDataManager {
 
 	private final HashMap<OsmiumPlugin, ArrayList<Class<? extends PlayerData>>> registeredTypes = new HashMap<>();
 	private final HashMap<UUID, HashMap<Class<? extends PlayerData>, PlayerData>> data = new HashMap<>();
+
+	void start() {
+		//Safely remove offline players
+		Osmium.getTask().setInterval(30, TimeUnit.SECOND).setExecutor(t -> {
+			Set<UUID> onlineIds = new HashSet<>(Osmium.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet()));
+			for (UUID uuid : onlineIds) {
+				if (!onlineIds.contains(uuid)) {
+					Osmium.getPlayerDataManager().data.remove(uuid);
+				}
+			}
+		}).start();
+	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T getData(Player player, Class<T> dataType) {
@@ -80,7 +95,6 @@ public class PlayerDataManager {
 
 	public void onPlayerQuit(PlayerConnectionEvent.Quit e) {
 		savePlayer(e.getPlayer());
-		data.remove(e.getUniqueId());
 	}
 
 	public void savePlayer(Player player) {
