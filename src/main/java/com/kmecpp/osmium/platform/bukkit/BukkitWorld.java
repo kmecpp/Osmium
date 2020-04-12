@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.UUID;
 
 import com.kmecpp.osmium.BukkitAccess;
-import com.kmecpp.osmium.WrappedCollection;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;
@@ -13,6 +12,7 @@ import com.kmecpp.osmium.api.WorldType;
 import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.EntityType;
 import com.kmecpp.osmium.api.location.Location;
+import com.kmecpp.osmium.api.util.lib.WrappedCollection;
 
 public class BukkitWorld implements World {
 

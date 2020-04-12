@@ -1,4 +1,4 @@
-package com.kmecpp.osmium;
+package com.kmecpp.osmium.api.util.lib;
 
 import java.util.Collection;
 import java.util.Iterator;

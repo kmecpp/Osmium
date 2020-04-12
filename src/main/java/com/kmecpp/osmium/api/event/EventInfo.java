@@ -20,6 +20,8 @@ import com.kmecpp.osmium.api.event.events.osmium.DateChangeEvent;
 import com.kmecpp.osmium.api.event.events.osmium.PlayerMovePositionEvent;
 import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
 import com.kmecpp.osmium.api.event.events.osmium.PluginReloadEvent;
+import com.kmecpp.osmium.api.event.events.osmium.ServerShutdownEvent;
+import com.kmecpp.osmium.api.event.events.osmium.ServerStartedEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitBlockEvent.BukkitBlockBreakEvent;
@@ -50,6 +52,8 @@ import com.kmecpp.osmium.platform.osmium.OsmiumMonthChangeEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginReloadEvent;
+import com.kmecpp.osmium.platform.osmium.OsmiumServerShutdownEvent;
+import com.kmecpp.osmium.platform.osmium.OsmiumServerStartedEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumWeekChangeEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockBreakEvent;
 import com.kmecpp.osmium.platform.sponge.event.events.SpongeBlockEvent.SpongeBlockPlaceEvent;
@@ -113,6 +117,8 @@ public class EventInfo {
 	 */
 	static {
 		//@formatter:off
+		register(ServerStartedEvent.class,            OsmiumServerStartedEvent.class);
+		register(ServerShutdownEvent.class,           OsmiumServerShutdownEvent.class);
 		register(PluginReloadEvent.class,             OsmiumPluginReloadEvent.class);
 		register(PluginRefreshEvent.class,            OsmiumPluginRefreshEvent.class);
 		register(DateChangeEvent.Day.class,           OsmiumDayChangeEvent.class);

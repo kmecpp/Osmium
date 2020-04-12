@@ -7,6 +7,8 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.tasks.TimeUnit;
 import com.kmecpp.osmium.api.util.TimeUtil;
+import com.kmecpp.osmium.platform.osmium.OsmiumServerShutdownEvent;
+import com.kmecpp.osmium.platform.osmium.OsmiumServerStartedEvent;
 
 @Plugin(name = AppInfo.NAME, version = AppInfo.VERSION, authors = { AppInfo.AUTHOR }, url = AppInfo.URL)
 public class OsmiumCore extends OsmiumPlugin {
@@ -40,6 +42,11 @@ public class OsmiumCore extends OsmiumPlugin {
 			saveAllData();
 		}).start();
 
+		//This wont actually get run until the server has completely started
+		Osmium.getTask().setExecutor(task -> {
+			Osmium.getEventManager().callEvent(new OsmiumServerStartedEvent());
+		}).start();
+
 		this.getClassProcessor().onEnable(InventoryManager.class);
 
 		//		if (Platform.isBukkit()) {
@@ -60,6 +67,8 @@ public class OsmiumCore extends OsmiumPlugin {
 	@Override
 	public void onDisable() {
 		saveAllData();
+
+		Osmium.getEventManager().callEvent(new OsmiumServerShutdownEvent());
 	}
 
 	private static void saveAllData() {
