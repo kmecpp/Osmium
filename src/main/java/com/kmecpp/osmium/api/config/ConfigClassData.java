@@ -5,12 +5,14 @@ import java.util.HashMap;
 
 public class ConfigClassData {
 
+	protected final PluginConfigTypeData pluginData;
 	protected final Class<?> configClass;
 	protected final ConfigClass properties;
 	protected final Path path;
 	protected final HashMap<String, FieldData> fieldData;
 
-	protected ConfigClassData(Class<?> configClass, ConfigClass configProperties, Path path, HashMap<String, FieldData> fieldData) {
+	protected ConfigClassData(PluginConfigTypeData pluginData, Class<?> configClass, ConfigClass configProperties, Path path, HashMap<String, FieldData> fieldData) {
+		this.pluginData = pluginData;
 		this.configClass = configClass;
 		this.properties = configProperties;
 		this.path = path;

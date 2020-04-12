@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.ap;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,15 +17,21 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import com.kmecpp.osmium.api.config.ConfigClass;
+import com.kmecpp.osmium.api.config.ConfigSerializable;
 import com.kmecpp.osmium.api.config.Transient;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedAnnotationTypes({ "com.kmecpp.osmium.api.config.ConfigClass" })
+@SupportedAnnotationTypes({ "com.kmecpp.osmium.api.config.ConfigClass",
+		"com.kmecpp.osmium.api.config.ConfigSerializable" })
 public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 
 	private static StringBuilder data = new StringBuilder();
 
+	private static HashSet<Element> mapSerialzableElements = new HashSet<>();
+
 	public void finish() {
+		process(mapSerialzableElements);
+
 		if (data.length() > 0) {
 			writeRawFile("CONFIG_TYPES", data.toString());
 		}
@@ -39,19 +46,27 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 			return true;
 		}
 
-		Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(ConfigClass.class);
-		if (elements.size() == 0) {
+		Set<? extends Element> mapSerializable = roundEnv.getElementsAnnotatedWith(ConfigSerializable.class);
+		mapSerialzableElements.addAll(mapSerializable);
+
+		Set<? extends Element> configElements = roundEnv.getElementsAnnotatedWith(ConfigClass.class);
+		if (configElements.size() == 0) {
 			return false;
 		}
 
-		for (Element element : elements) {
+		process(configElements);
+
+		return true;
+	}
+
+	public static void process(Set<? extends Element> configs) {
+		for (Element element : configs) {
 			if (data.length() > 0) {
 				data.append('\n');
 			}
 			data.append(getPath(element) + ":\n");
 			process(element);
 		}
-		return true;
 	}
 
 	public static void process(Element parent) {
@@ -63,7 +78,9 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 					continue;
 				}
 				if (enclosed.getKind().isField()) {
-					data.append(getPath(enclosed) + "=" + getType(enclosed.asType()) + "\n");
+					if (enclosed.asType() instanceof DeclaredType && !((DeclaredType) enclosed.asType()).getTypeArguments().isEmpty()) {
+						data.append(getPath(enclosed) + "=" + getType(enclosed.asType()) + "\n");
+					}
 				} else {
 					process(enclosed);
 				}
@@ -98,6 +115,7 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 		if (typeMirror.getKind() != TypeKind.DECLARED) {
 			return typeMirror.toString();
 		}
+
 		DeclaredType type = (DeclaredType) typeMirror;
 		StringBuilder sb = new StringBuilder();
 

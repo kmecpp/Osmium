@@ -15,8 +15,8 @@ public class ConfigData extends ConfigClassData {
 	private ConfigurationLoader<CommentedConfigurationNode> loader;
 	private CommentedConfigurationNode root;
 
-	ConfigData(Class<?> configClass, ConfigClass configProperties, Path path, HashMap<String, FieldData> fieldData) {
-		super(configClass, configProperties, path, fieldData);
+	ConfigData(PluginConfigTypeData pluginData, Class<?> configClass, ConfigClass configProperties, Path path, HashMap<String, FieldData> fieldData) {
+		super(pluginData, configClass, configProperties, path, fieldData);
 	}
 
 	public void load() throws IOException {
@@ -36,12 +36,12 @@ public class ConfigData extends ConfigClassData {
 			FieldData fieldData = entry.getValue();
 			TypeData typeData = fieldData.getTypeData();
 
-			System.out.println("LOADING PATH: " + entry.getKey());
+			//			System.out.println("LOADING PATH: " + entry.getKey());
 
 			CommentedConfigurationNode node = root.getNode(virtualPath);
 
 			try {
-				fieldData.setValue(typeData.convertToActualType(node.getValue()));
+				fieldData.setValue(typeData.convertToActualType(node.getValue(), pluginData));
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}

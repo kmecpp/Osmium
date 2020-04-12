@@ -11,10 +11,10 @@ public class PluginConfigTypeData {
 	private PluginConfigTypeData() {
 	}
 
-	public HashMap<String, TypeData> get(Class<?> cls) throws ClassNotFoundException {
+	public ClassTypeData getForConfigClass(Class<?> cls) throws ClassNotFoundException {
 		HashMap<String, TypeData> result = data.get(cls);
 		if (result == null) {
-			String className = cls.getName();
+			String className = cls.getName(); //Full path
 			HashMap<String, String> text = parsed.get(className);
 			if (text == null) {
 				throw new IllegalArgumentException("Missing config type data for class: " + className);
@@ -23,11 +23,26 @@ public class PluginConfigTypeData {
 			result = new HashMap<>();
 			//			ConfigManager.getVirtualPath(enclosingPath, name, truncate)
 			for (Entry<String, String> entry : text.entrySet()) {
-				result.put(entry.getKey(), TypeData.parse(entry.getValue()));
+				TypeData typeData = TypeData.parse(entry.getValue());
+				result.put(entry.getKey(), typeData);
+
+				//Visit all sub types
+				//				typeData.walk(data -> {
+				//					if (data.getType().isAnnotationPresent(ConfigSerializable.class)) {
+				//						String name = typeData.getType().getName();
+				//						TypeData configSerializableTypeData = TypeData.parse(name);
+				//						if (configSerializableTypeData != null) {
+				//							result.put(name, configSerializableTypeData);
+				//						} else {
+				//							OsmiumLogger.warn("@" + ConfigSerializable.class.getSimpleName() + " " + name + " class type data not found in CONFIG_TYPES resource");
+				//						}
+				//					}
+				//				});
+
 			}
 			data.put(cls, result);
 		}
-		return result;
+		return new ClassTypeData(cls, result);
 	}
 
 	public static PluginConfigTypeData parse(String[] configTypesFile) {

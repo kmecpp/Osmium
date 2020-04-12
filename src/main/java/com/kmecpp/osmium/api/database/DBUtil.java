@@ -57,6 +57,13 @@ public class DBUtil {
 		for (Field field : properties.getFields()) {
 			DBColumn column = field.getAnnotation(DBColumn.class);
 
+			try {
+				if (!field.getType().isPrimitive()) {
+					Class.forName(field.getType().getName()); //Call static initializer					
+				}
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 			SerializationData<?> serializationData = Serialization.getData(field.getType());
 			if (serializationData == null) {
 				throw new IllegalArgumentException("Cannot create database table with unregistered type: " + field.getType());
@@ -102,7 +109,7 @@ public class DBUtil {
 			columns.add(DBUtil.getColumnName(field));
 
 			Object value = Reflection.getFieldValue(obj, field);
-			values.add(value == null ? null : Serialization.serialize(value));
+			values.add(value == null ? null : Serialization.serializeAndQuote(value));
 		}
 
 		return "REPLACE INTO " + info.getName()

@@ -36,8 +36,8 @@ public class FieldData {
 		}
 	}
 
-	public void load(Object loadedValue) {
-		typeData.convertToActualType(loadedValue);
+	public void load(Object loadedValue, PluginConfigTypeData pluginData) {
+		typeData.convertToActualType(loadedValue, pluginData);
 	}
 
 	public String getName() {

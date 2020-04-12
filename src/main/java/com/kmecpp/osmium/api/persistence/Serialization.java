@@ -149,6 +149,19 @@ public class Serialization {
 		//		throw new IllegalArgumentException("Cannot serialize unknown class: " + obj.getClass().getName());
 	}
 
+	public static <T> String serializeAndQuote(T obj) {
+		if (obj == null) {
+			return "null";
+		}
+
+		SerializationData<T> data = (SerializationData<T>) types.get(obj.getClass());
+		if (data != null) {
+			return data.isCustomType() ? "\"" + data.serialize(obj) + "\"" : data.serialize(obj);
+		} else {
+			return String.valueOf(obj);
+		}
+	}
+
 	public static <T> T deserialize(Class<T> type, String str) {
 		Reflection.initialize(type); //Make sure the class is loaded (they possibly registered it in a static initializer)
 

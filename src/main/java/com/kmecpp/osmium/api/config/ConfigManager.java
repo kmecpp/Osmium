@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
@@ -84,47 +83,45 @@ public class ConfigManager {
 		}
 
 		//GET PLUGIN SPECIFIC DATA
-		HashMap<String, TypeData> fieldTypeMap;
+		PluginConfigTypeData pluginData;
 		Path configPath;
 		if (Platform.isDev()) {
 			try {
-				fieldTypeMap = PluginConfigTypeData.parse(IOUtil.readLines(Paths.get("CONFIG_TYPES").toFile())).get(configClass);
+				pluginData = PluginConfigTypeData.parse(IOUtil.readLines(Paths.get("CONFIG_TYPES").toFile()));
 				configPath = Paths.get(configProperties.path());
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		} else {
 			OsmiumPlugin plugin = Osmium.getPlugin(configClass);
-			try {
-				fieldTypeMap = plugin.getConfigTypeData().get(configClass);
-				configPath = Osmium.getPlugin(configClass).getFolder().resolve(configProperties.path());
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
-			}
+			pluginData = plugin.getConfigTypeData();
+			configPath = Osmium.getPlugin(configClass).getFolder().resolve(configProperties.path());
 
 		}
 
-		//		System.out.println("FIELD TYPE MAP: " + fieldTypeMap);
+		ClassTypeData configTypeData;
+		try {
+			configTypeData = pluginData.getForConfigClass(configClass);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+
+		//		System.out.println("CONFIG CLASS: " + configClass);
+		//		System.out.println("FIELD TYPE MAP: " + configTypeData);
 
 		HashMap<String, FieldData> fieldDataMap = new HashMap<>();
-		int truncate = configClass.getName().length() + 1;
 		walk(configClass, (field) -> {
 			Setting setting = field.getAnnotation(Setting.class);
 			String name = getName(field, setting);
 			String virtualPath = getVirtualPath(field, name);
 
-			String physicalPath = (field.getDeclaringClass().getName() + "." + field.getName()).substring(truncate); //Truncate must come last
-			TypeData typeData = fieldTypeMap.get(physicalPath);
-			if (typeData == null) {
-				//This is normal if the type isn't supposed to have generics
-				typeData = new TypeData(field.getType(), Collections.emptyList());
-			}
+			TypeData typeData = configTypeData.get(field);
 			//			System.out.println("LOADED TYPE DATA FOR " + physicalPath + " == " + typeData);
 			FieldData fieldData = new FieldData(field, name, setting, typeData);
 			fieldDataMap.put(virtualPath, fieldData);
 		});
 
-		data = new ConfigData(configClass, configProperties, configPath, fieldDataMap);
+		data = new ConfigData(pluginData, configClass, configProperties, configPath, fieldDataMap);
 		configData.put(configClass, data);
 		return data;
 	}
@@ -184,6 +181,14 @@ public class ConfigManager {
 		}
 	}
 
+	public static String getPhysicalPath(Field field, int truncate) {
+		return getFullPath(field).substring(truncate); //Truncate must come last
+	}
+
+	public static String getFullPath(Field field) {
+		return field.getDeclaringClass().getName() + "." + field.getName();
+	}
+
 	public static String getVirtualPath(Field field, String name) {
 		Class<?> current = field.getDeclaringClass();
 		ArrayList<String> list = new ArrayList<>(Arrays.asList(name));
@@ -196,7 +201,11 @@ public class ConfigManager {
 		return String.join(".", list).toLowerCase();
 	}
 
-	private static String getName(Field field, Setting setting) {
+	public static String getName(Field field) {
+		return getName(field, field.getAnnotation(Setting.class));
+	}
+
+	public static String getName(Field field, Setting setting) {
 		if (setting == null || setting.name().isEmpty()) {
 			return normalizeName(field.getName());
 		} else {
