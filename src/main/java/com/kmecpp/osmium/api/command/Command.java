@@ -83,8 +83,12 @@ public class Command extends CommandBase {
 			for (String alias : arg.getAliases()) {
 				//Allow aliases partitioned with '/' to be treated as individual arguments
 				for (String option : alias.split("/")) {
+					if (argLabel.length() > option.length()) {
+						continue;
+					}
+
 					int matching = 0;
-					for (int i = 0; i < argLabel.length() && i < option.length(); i++) {
+					for (int i = 0; i < argLabel.length(); i++) {
 						char c1 = Character.toLowerCase(argLabel.charAt(i));
 						char c2 = Character.toLowerCase(option.charAt(i));
 						if (c1 == c2) {
@@ -94,6 +98,7 @@ public class Command extends CommandBase {
 						}
 					}
 
+					System.out.println("MATCH: " + alias + " = " + matching);
 					if (matching == option.length()) {
 						return arg;
 					} else if (matching > highestMatchCount) {
