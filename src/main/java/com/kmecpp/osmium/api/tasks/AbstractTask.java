@@ -103,8 +103,9 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return maxRuns;
 	}
 
-	public void setMaxRuns(int maxRuns) {
+	public T setMaxRuns(int maxRuns) {
 		this.maxRuns = maxRuns;
+		return getInstance();
 	}
 
 	public TaskExecutor<T> getExecutor() {
