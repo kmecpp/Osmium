@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.kmecpp.osmium.api.database.DBType;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Reflection;
 
 @SuppressWarnings("unchecked")
@@ -75,14 +76,6 @@ public class Serialization {
 		}
 		boolean serializable = getData(cls) != null;
 
-		if (!serializable) {
-			//Check if it has a fromString method
-			try {
-				cls.getDeclaredMethod("fromString", String.class);
-				serializable = true;
-			} catch (Throwable t) {}
-		}
-
 		//Cache this result
 		if (serializable) {
 			serializableClasses.add(cls);
@@ -101,7 +94,23 @@ public class Serialization {
 	}
 
 	public static <T> SerializationData<T> getData(Class<T> cls) {
-		return (SerializationData<T>) types.get(cls);
+		SerializationData<T> data = (SerializationData<T>) types.get(cls);
+		if (data == null) {
+			try {
+				register(cls, cls.getDeclaredMethod("fromString", String.class));
+				OsmiumLogger.info("Registering default serialization for " + cls.getName());
+			} catch (Exception e) {
+				if (cls.isEnum()) {
+					try {
+						OsmiumLogger.info("Registering default enum serialization for " + cls.getName());
+						register(cls, cls.getMethod("valueOf", String.class));
+					} catch (Exception ex) {}
+				}
+			}
+			return (SerializationData<T>) types.get(cls);
+		}
+
+		return data;
 	}
 
 	private static <T> void registerDefaultType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
@@ -110,6 +119,17 @@ public class Serialization {
 
 	private static <T> void registerDefaultType(DBType type, Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
 		types.put(cls, new SerializationData<>(type, false, serializer, deserializer));
+	}
+
+	private static <T> void register(Class<T> cls, Method deserializationMethod) {
+		register(cls, s -> {
+			try {
+				return (T) deserializationMethod.invoke(s);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		});
 	}
 
 	public static <T> void register(Class<T> cls, Deserializer<T> deserializer) {
