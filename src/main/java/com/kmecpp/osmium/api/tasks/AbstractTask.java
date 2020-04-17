@@ -19,6 +19,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	protected int interval;
 	protected TaskExecutor<T> executor;
 	protected boolean cancelOnError;
+	protected int maxRuns;
 
 	protected int counter;
 	protected boolean running;
@@ -96,6 +97,14 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		this.delay = delay * unit.getTickValue();
 		this.interval = interval * unit.getTickValue();
 		return getInstance();
+	}
+
+	public int getMaxRuns() {
+		return maxRuns;
+	}
+
+	public void setMaxRuns(int maxRuns) {
+		this.maxRuns = maxRuns;
 	}
 
 	public TaskExecutor<T> getExecutor() {

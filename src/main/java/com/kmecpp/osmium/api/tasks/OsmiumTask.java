@@ -52,7 +52,10 @@ public class OsmiumTask extends AbstractTask<OsmiumTask> {
 
 	private void doExecute() {
 		executor.execute(this);
-		this.counter++;
+		counter++;
+		if (maxRuns > 0 && counter >= maxRuns) {
+			cancel();
+		}
 	}
 
 }
