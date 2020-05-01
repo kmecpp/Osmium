@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.channels.FileChannel;
 
 public class IOUtil {
 
@@ -72,8 +71,8 @@ public class IOUtil {
 				}
 			}
 		} else {
-			try (FileChannel in = new FileInputStream(source).getChannel(); FileChannel out = new FileOutputStream(destination).getChannel()) {
-				out.transferFrom(in, 0, in.size());
+			try (FileInputStream in = new FileInputStream(source); FileOutputStream out = new FileOutputStream(destination)) {
+				out.getChannel().transferFrom(in.getChannel(), 0, in.getChannel().size());
 			}
 		}
 	}

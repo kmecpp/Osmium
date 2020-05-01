@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.HashSet;
 
 public abstract class FileUtil {
@@ -55,8 +54,8 @@ public abstract class FileUtil {
 					}
 				}
 			} else {
-				try (FileChannel in = new FileInputStream(source).getChannel(); FileChannel out = new FileOutputStream(destination).getChannel()) {
-					out.transferFrom(in, 0, in.size());
+				try (FileInputStream in = new FileInputStream(source); FileOutputStream out = new FileOutputStream(destination)) {
+					out.getChannel().transferFrom(in.getChannel(), 0, in.getChannel().size());
 				}
 			}
 		} catch (Exception e) {
@@ -106,8 +105,8 @@ public abstract class FileUtil {
 					}
 				}
 			} else {
-				try (FileChannel in = new FileInputStream(source).getChannel(); FileChannel out = new FileOutputStream(destination).getChannel()) {
-					out.transferFrom(in, 0, in.size());
+				try (FileInputStream in = new FileInputStream(source); FileOutputStream out = new FileOutputStream(destination)) {
+					out.getChannel().transferFrom(in.getChannel(), 0, in.getChannel().size());
 				}
 			}
 		} catch (Exception e) {
