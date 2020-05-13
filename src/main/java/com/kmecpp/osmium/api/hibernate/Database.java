@@ -23,13 +23,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
 import org.hibernate.type.AbstractSingleColumnStandardBasicType;
-import org.hibernate.type.descriptor.WrapperOptions;
-import org.hibernate.type.descriptor.java.AbstractTypeDescriptor;
-import org.hibernate.type.descriptor.java.JavaTypeDescriptor;
-import org.hibernate.type.descriptor.sql.VarcharTypeDescriptor;
 
-import com.kmecpp.osmium.api.persistence.Deserializer;
-import com.kmecpp.osmium.api.persistence.Serializer;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public class Database {
@@ -111,42 +105,42 @@ public class Database {
 		tables.add(cls);
 	}
 
-	public <T> void registerType(Class<T> typeClass, String key, Serializer<T> serializer, Deserializer<T> deserializer) {
-		JavaTypeDescriptor<T> javaTypeDescriptor = new AbstractTypeDescriptor<T>(typeClass) {
-
-			private static final long serialVersionUID = -505731604660159178L;
-
-			@Override
-			public T fromString(String string) {
-				return deserializer.deserialize(string);
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public <X> X unwrap(T value, Class<X> type, WrapperOptions options) {
-				return (X) serializer.serialize(value);
-			}
-
-			@Override
-			public <X> T wrap(X value, WrapperOptions options) {
-				return deserializer.deserialize((String) value);
-			}
-
-		};
-
-		types.add(new AbstractSingleColumnStandardBasicType<T>(VarcharTypeDescriptor.INSTANCE, javaTypeDescriptor) {
-
-			private static final long serialVersionUID = -7835848990623858505L;
-
-			@Override
-			public String getName() {
-				return plugin.getName() + "_" + key;
-			}
-
-		});
-		typeKeys.put(typeClass, key);
-		//		needsUpdate = true;
-	}
+	//	public <T> void registerType(Class<T> typeClass, String key, Serializer<T> serializer, Deserializer<T> deserializer) {
+	//		JavaTypeDescriptor<T> javaTypeDescriptor = new AbstractTypeDescriptor<T>(typeClass) {
+	//
+	//			private static final long serialVersionUID = -505731604660159178L;
+	//
+	//			@Override
+	//			public T fromString(String string) {
+	//				return deserializer.deserialize(string);
+	//			}
+	//
+	//			@SuppressWarnings("unchecked")
+	//			@Override
+	//			public <X> X unwrap(T value, Class<X> type, WrapperOptions options) {
+	//				return (X) serializer.serialize(value);
+	//			}
+	//
+	//			@Override
+	//			public <X> T wrap(X value, WrapperOptions options) {
+	//				return deserializer.deserialize((String) value);
+	//			}
+	//
+	//		};
+	//
+	//		types.add(new AbstractSingleColumnStandardBasicType<T>(VarcharTypeDescriptor.INSTANCE, javaTypeDescriptor) {
+	//
+	//			private static final long serialVersionUID = -7835848990623858505L;
+	//
+	//			@Override
+	//			public String getName() {
+	//				return plugin.getName() + "_" + key;
+	//			}
+	//
+	//		});
+	//		typeKeys.put(typeClass, key);
+	//		//		needsUpdate = true;
+	//	}
 
 	public String getTypeKey(Class<?> cls) {
 		return typeKeys.get(cls);
