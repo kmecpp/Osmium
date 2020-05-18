@@ -83,24 +83,19 @@ public void onPlayerJoin(PlayerJoinEvent e){
 Creating a configuration file is as easy as defining a class with the settings that you need. 
 
 ```
-@ConfigProperties(path = "plugin.conf", header="Awsome plugin by kmecpp")
+@ConfigClass(path = "plugin.conf", header="Awesome plugin by kmecpp")
 public class Config {
 
 	@Setting(comment = "Enable debug logging")
 	public static boolean debug;
 
-	@Setting(type = Integer.class) //When using a generic class you must specify the type
 	public static HashSet<Integer> bannedItems;
 	
-	@Setting(type = Integer.class) //For maps, use string as the key and specify the value type. Nested types are not supported yet
 	public static HashMap<String, Integer> worldBorders;
 	
 	public static class WebApp {
 	
-		@Setting
-		public static String apiKey;
-		
-		@Setting
+		public static String apiKey;		
 		public static int timeout = 3000; //Three thousand is the default value
 		
 	}
@@ -112,7 +107,13 @@ Thats it. There's no need to get involved with file handling, config loading or 
 
 Then, to access or modify the config, all you need to do is modify the fields of the config class.
 
-To reload or save the config, use Osmium.reloadConfig(Config.class) or Osmium.saveConfig(Config.class).
+To reload or save the config:
+
+```
+    Osmium.loadConfig(Config.class);
+    Config.debug = true;
+    Osmium.saveConfig(Config.class);
+````
 
 **Performance Comparison (Lower is Better)**
 
