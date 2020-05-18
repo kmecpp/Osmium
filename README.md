@@ -110,9 +110,10 @@ Then, to access or modify the config, all you need to do is modify the fields of
 To reload or save the config:
 
 ```
-    Osmium.loadConfig(Config.class);
+    Osmium.loadConfig(Config.class); //Configs are loaded on startup automatically so this is generally only necessary to reload a config 
     Config.debug = true;
-    Osmium.saveConfig(Config.class);
+    Config.bannedItems.add(7);
+    Osmium.saveConfig(Config.class); //Entire class is serialized to a human readable config format such as HOCON or YAML and saved to disk
 ````
 
 **Performance Comparison (Lower is Better)**
