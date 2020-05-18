@@ -72,7 +72,7 @@ Registering listeners is as easy as adding an `@Listener` annotation to a valid 
 
 ```
 @Listener
-public void onPlayerJoin(PlayerJoinEvent e){
+public void onPlayerJoin(PlayerJoinEvent e) {
 	//Listener will work without any additional code needed
 }
 ```
@@ -242,9 +242,9 @@ Osmium has many features in place to allow you to use platform specific code, fo
 For example:
 
 ```
-if (Platform.isBukkit()){
+if (Platform.isBukkit()) {
 	//Bukkit code
-} else if(Platform.isSponge()){
+} else if(Platform.isSponge()) {
 	//Sponge code
 }
 ```
@@ -256,7 +256,7 @@ This class will only loaded on Bukkit:
 public class BukkitListener {
 	
 	@EventHandler
-	public void on(BlockBreakEvent e){
+	public void on(BlockBreakEvent e) {
 		//Do some fancy Bukkit only stuff
 	}
 	
