@@ -25,6 +25,10 @@ public class Command extends CommandBase {
 	}
 
 	public void validate(CommandEvent event) {
+		String[] usage = getUsageParams();
+		if (event.size() < usage.length) {
+			event.checkIndex(event.size());
+		}
 	}
 
 	public void finalize(CommandEvent event) {
@@ -49,15 +53,19 @@ public class Command extends CommandBase {
 
 	@Override
 	public void execute(CommandEvent event) {
-		event.send("");
-		event.send(title);
-		event.send("&e&m----------------------------------------");
-		event.send("");
-		for (CommandBase arg : args) {
-			if (arg.isAllowed(event.getSender())) {
-				event.send("&b/" + event.getBaseLabel() + " " + arg.getPrimaryAlias()
-						+ (arg.hasUsage() ? " " + arg.getUsage() : "")
-						+ (arg.hasDescription() ? "&e - &b" + arg.getDescription() : ""));
+		if (getExecutor() != null) {
+			super.execute(event);
+		} else {
+			event.send("");
+			event.send(title);
+			event.send("&e&m----------------------------------------");
+			event.send("");
+			for (CommandBase arg : args) {
+				if (arg.isAllowed(event.getSender())) {
+					event.send("&b/" + event.getBaseLabel() + " " + arg.getPrimaryAlias()
+							+ (arg.hasUsage() ? " " + arg.getUsage() : "")
+							+ (arg.hasDescription() ? "&e - &b" + arg.getDescription() : ""));
+				}
 			}
 		}
 	}

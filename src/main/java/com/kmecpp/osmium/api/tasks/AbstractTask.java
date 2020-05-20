@@ -18,6 +18,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	protected int delay;
 	protected int interval;
 	protected TaskExecutor<T> executor;
+	protected TaskExecutor<T> finalizer;
 	protected boolean cancelOnError;
 	protected int maxRuns;
 
@@ -108,13 +109,26 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return getInstance();
 	}
 
-	public TaskExecutor<T> getExecutor() {
-		return executor;
+	public boolean isLastRun() {
+		return counter == maxRuns - 1; //Counter gets updated after we are run
+	}
+
+	public T setFinalizer(TaskExecutor<T> finalizer) {
+		this.finalizer = finalizer;
+		return getInstance();
+	}
+
+	public TaskExecutor<T> getFinalizer() {
+		return finalizer;
 	}
 
 	public T setExecutor(TaskExecutor<T> executor) {
 		this.executor = executor;
 		return getInstance();
+	}
+
+	public TaskExecutor<T> getExecutor() {
+		return executor;
 	}
 
 	public <D> D getData(String key, D defaultValue) {

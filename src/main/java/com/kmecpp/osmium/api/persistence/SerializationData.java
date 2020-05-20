@@ -18,7 +18,6 @@ public class SerializationData<T> {
 		this.customType = customType;
 		this.serializer = serializer;
 		this.deserializer = deserializer;
-
 	}
 
 	public Serializer<T> getSerializer() {

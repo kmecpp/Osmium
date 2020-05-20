@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.UUID;
 import java.util.function.Function;
 
+import com.kmecpp.osmium.api.config.ConfigSerialization;
 import com.kmecpp.osmium.api.database.DBType;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Reflection;
@@ -27,7 +28,7 @@ public class Serialization {
 		registerDefaultType(DBType.INTEGER, long.class, Long::parseLong);
 		registerDefaultType(DBType.FLOAT, float.class, Float::parseFloat);
 		registerDefaultType(DBType.DOUBLE, double.class, Double::parseDouble);
-		registerDefaultType(DBType.BOOLEAN, boolean.class, Boolean::parseBoolean);
+		registerDefaultType(DBType.BOOLEAN, boolean.class, b -> String.valueOf(b ? 1 : 0), s -> s.equals("1") ? true : false);
 
 		registerDefaultType(DBType.INTEGER, Byte.class, Byte::parseByte);
 		registerDefaultType(DBType.INTEGER, Short.class, Short::parseShort);
@@ -35,7 +36,7 @@ public class Serialization {
 		registerDefaultType(DBType.INTEGER, Long.class, Long::parseLong);
 		registerDefaultType(DBType.FLOAT, Float.class, Float::parseFloat);
 		registerDefaultType(DBType.DOUBLE, Double.class, Double::parseDouble);
-		registerDefaultType(DBType.BOOLEAN, Boolean.class, Boolean::parseBoolean);
+		registerDefaultType(DBType.BOOLEAN, Boolean.class, b -> String.valueOf(b ? 1 : 0), s -> s.equals("1") ? true : false);
 
 		registerDefaultType(DBType.SERIALIZABLE, byte[].class, Arrays::toString, (s) -> get(byte.class, s, Byte::parseByte));
 		registerDefaultType(DBType.SERIALIZABLE, short[].class, Arrays::toString, (s) -> get(short.class, s, Short::parseShort));
@@ -174,7 +175,7 @@ public class Serialization {
 			return "null";
 		}
 
-		SerializationData<T> data = (SerializationData<T>) types.get(obj.getClass());
+		SerializationData<T> data = (SerializationData<T>) Serialization.getData(obj.getClass());
 		if (data != null) {
 			return data.isCustomType() ? "\"" + data.serialize(obj) + "\"" : data.serialize(obj);
 		} else {
@@ -187,6 +188,8 @@ public class Serialization {
 
 		if (str == null || str.equals("null")) {
 			return null;
+		} else if (str.isEmpty()) {
+			return ConfigSerialization.getDefaultFor(type);
 		}
 
 		SerializationData<T> data = (SerializationData<T>) types.get(type);

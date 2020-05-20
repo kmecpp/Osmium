@@ -1,16 +1,19 @@
 package com.kmecpp.osmium.api.database;
 
+import com.kmecpp.osmium.Osmium;
+
 public interface Saveable {
 
-	default void save(Database db) {
-		save(db, false);
+	default void save() {
+		save(false);
 	}
 
-	default void save(Database db, boolean flush) {
+	default void save(boolean flush) {
+		Database database = Osmium.getPlugin(this.getClass()).getDatabase();
 		if (flush) {
-			db.replaceInto(this.getClass(), this);
+			database.replaceInto(this.getClass(), this);
 		} else {
-			db.replaceIntoAsync(this.getClass(), this);
+			database.replaceIntoAsync(this.getClass(), this);
 		}
 	}
 

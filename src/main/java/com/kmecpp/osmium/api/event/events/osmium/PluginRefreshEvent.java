@@ -7,4 +7,6 @@ public interface PluginRefreshEvent extends Event {
 
 	OsmiumPlugin getPlugin();
 
+	boolean isDatabase();
+
 }

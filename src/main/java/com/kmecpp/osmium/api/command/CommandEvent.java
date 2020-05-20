@@ -124,9 +124,9 @@ public class CommandEvent implements Messageable {
 
 	public boolean getBoolean(int index) {
 		String input = get(index);
-		if (StringUtil.startsWithIgnoreCase(input, "true", "1", "yes")) {
+		if (StringUtil.startsWithIgnoreCase(input, "true", "1", "yes", "enable")) {
 			return true;
-		} else if (StringUtil.startsWithIgnoreCase(input, "false", "0", "no")) {
+		} else if (StringUtil.startsWithIgnoreCase(input, "false", "0", "no", "disable")) {
 			return false;
 		} else {
 			throw new CommandException("Expected a boolean but got: '" + input + "'");
@@ -214,7 +214,7 @@ public class CommandEvent implements Messageable {
 		return args[index];
 	}
 
-	private void checkIndex(int index) {
+	public void checkIndex(int index) {
 		if (index < 0) {
 			throw new CommandException("Internal command error. Tried to retrieve index: " + index);
 		} else if (index >= args.length) {

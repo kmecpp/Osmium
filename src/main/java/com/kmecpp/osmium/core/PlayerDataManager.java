@@ -35,7 +35,7 @@ public class PlayerDataManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getData(Player player, Class<T> dataType) {
+	public <T extends PlayerData> T getData(Player player, Class<T> dataType) {
 		//		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + data.get(player.getUniqueId()));
 		return (T) data.get(player.getUniqueId()).get(dataType);
 	}
@@ -104,7 +104,7 @@ public class PlayerDataManager {
 		}
 
 		for (Entry<Class<? extends PlayerData>, PlayerData> data : playerData.entrySet()) {
-			data.getValue().save(Osmium.getPlugin(data.getKey()).getDatabase());
+			data.getValue().save();
 			//			Osmium.getPlugin(data.getKey()).getDatabase().replaceInto(data.getKey(), data.getValue());
 		}
 	}

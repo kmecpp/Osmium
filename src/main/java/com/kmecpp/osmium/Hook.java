@@ -16,6 +16,7 @@ public class Hook<T> {
 	private T hook;
 	private Callable<T> loader;
 	private boolean loaded;
+	private Throwable error;
 
 	private Hook(T hook) {
 		this.hook = hook;
@@ -40,7 +41,7 @@ public class Hook<T> {
 				this.hook = loader.call();
 				this.loader = null;
 			} catch (Throwable t) {
-				t.printStackTrace();
+				error = t;
 			}
 			loaded = true;
 		}
@@ -53,6 +54,9 @@ public class Hook<T> {
 
 	public T get() {
 		ensureLoaded();
+		if (error != null) {
+			error.printStackTrace();
+		}
 		return hook;
 	}
 

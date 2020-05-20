@@ -23,6 +23,7 @@ import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.config.ConfigManager;
+import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.EventManager;
 import com.kmecpp.osmium.api.inventory.BlockType;
@@ -140,6 +141,10 @@ public final class Osmium {
 
 	public static PlayerDataManager getPlayerDataManager() {
 		return playerDataManager;
+	}
+
+	public static <T extends PlayerData> T getPlayerData(Player player, Class<T> playerDataClass) {
+		return playerDataManager.getData(player, playerDataClass);
 	}
 
 	public static ItemManager getItemManager() {
@@ -266,7 +271,7 @@ public final class Osmium {
 		}
 
 		plugin.onRefresh();
-		eventManager.callEvent(new OsmiumPluginRefreshEvent(plugin));
+		eventManager.callEvent(new OsmiumPluginRefreshEvent(plugin, reloadDatabase));
 
 		plugin.onReload();
 		eventManager.callEvent(new OsmiumPluginReloadEvent(plugin, reloadDatabase));

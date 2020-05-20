@@ -70,6 +70,8 @@ public class OsmiumPluginLogger {
 			return;
 		}
 
+		message = Chat.strip(message);
+
 		if (Platform.isBukkit()) {
 			if (Bukkit.getServer() == null) {
 				printDefault(level, message);

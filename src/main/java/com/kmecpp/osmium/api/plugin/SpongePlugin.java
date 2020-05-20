@@ -46,15 +46,19 @@ public abstract class SpongePlugin {
 
 	@Listener
 	public void on(GameInitializationEvent e) {
+		try {
+			plugin.getClassProcessor().initializeClasses();
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
 		plugin.onInit();
-		plugin.getClassProcessor().initializeClasses();
 	}
 
 	@Listener
 	public void on(GamePostInitializationEvent e) {
 		plugin.onPostInit();
 		plugin.onRefresh();
-		Osmium.getEventManager().callEvent(new OsmiumPluginRefreshEvent(plugin));
+		Osmium.getEventManager().callEvent(new OsmiumPluginRefreshEvent(plugin, true));
 		plugin.startComplete = true;
 	}
 

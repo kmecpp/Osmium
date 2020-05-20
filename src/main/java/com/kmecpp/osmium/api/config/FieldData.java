@@ -64,6 +64,10 @@ public class FieldData {
 		return typeData;
 	}
 
+	public boolean isDeletable() {
+		return setting != null && setting.deletable();
+	}
+
 	public void setValue(Object value) throws IllegalArgumentException, IllegalAccessException {
 		field.set(null, value);
 	}

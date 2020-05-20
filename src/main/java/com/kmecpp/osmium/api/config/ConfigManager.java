@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.IOUtil;
 
@@ -127,10 +128,12 @@ public class ConfigManager {
 	}
 
 	public void load(Class<?> configClass) throws IOException {
+		OsmiumLogger.info("Loading config: " + configClass.getName());
 		getConfigData(configClass).load();
 	}
 
 	public void save(Class<?> configClass) throws IOException {
+		OsmiumLogger.info("Saving config: " + configClass.getName());
 		getConfigData(configClass).save();
 	}
 

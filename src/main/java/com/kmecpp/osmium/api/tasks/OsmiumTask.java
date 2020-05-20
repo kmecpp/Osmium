@@ -51,10 +51,22 @@ public class OsmiumTask extends AbstractTask<OsmiumTask> {
 	}
 
 	private void doExecute() {
-		executor.execute(this);
+		try {
+			executor.execute(this);
+		} catch (Throwable t) {
+			doFinalize();
+			throw new RuntimeException(t);
+		}
 		counter++;
 		if (maxRuns > 0 && counter >= maxRuns) {
-			cancel();
+			cancel(); //Cancel should be called first to ensure that if the finalizer errors we still exit
+			doFinalize();
+		}
+	}
+
+	private void doFinalize() {
+		if (finalizer != null) {
+			finalizer.execute(this);;
 		}
 	}
 

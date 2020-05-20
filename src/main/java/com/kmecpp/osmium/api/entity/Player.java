@@ -5,6 +5,7 @@ import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.SoundType;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.command.CommandSender;
+import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Location;
@@ -62,7 +63,7 @@ public interface Player extends User, EntityLiving, CommandSender {
 
 	void playSound(SoundType sound, float pitch, float volume);
 
-	default <T> T getData(Class<T> type) {
+	default <T extends PlayerData> T getData(Class<T> type) {
 		return Osmium.getPlayerDataManager().getData(this, type);
 	}
 

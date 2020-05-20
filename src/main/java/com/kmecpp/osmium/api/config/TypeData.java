@@ -138,6 +138,9 @@ public class TypeData {
 		if (loadedValue == null) {
 			return ConfigSerialization.getDefaultFor(type);
 		} else if (type.isPrimitive() || type.getPackage().getName().startsWith("java.lang")) {
+			if (type != String.class && loadedValue instanceof String) {
+				return Serialization.deserialize(type, (String) loadedValue);
+			}
 			return loadedValue;
 		} else if (Collection.class.isAssignableFrom(loadedValue.getClass())) {
 			ArrayList convertedList = new ArrayList<>();

@@ -81,8 +81,9 @@ public class ConfigSerialization {
 		defaults.put(UUID.class, UUID::randomUUID);
 	}
 
-	public static Object getDefaultFor(Class<?> cls) {
-		Supplier<?> def = defaults.get(cls);
+	@SuppressWarnings("unchecked")
+	public static <T> T getDefaultFor(Class<T> cls) {
+		Supplier<T> def = (Supplier<T>) defaults.get(cls);
 		return def != null ? def.get() : null;
 	}
 

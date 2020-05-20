@@ -19,9 +19,8 @@ public final class CommandManager {
 	}
 
 	public Command register(OsmiumPlugin plugin, Command command) {
-		ArrayList<Command> pluginCommands = getCommands(plugin);
-		pluginCommands.add(command);
-		commands.put(plugin, pluginCommands);
+		commands.computeIfAbsent(plugin, k -> new ArrayList<>()).add(command);
+
 		plugin.debug("Registered command: /" + command.getPrimaryAlias());
 		if (Platform.isBukkit()) {
 			BukkitAccess.registerCommand(plugin, command);

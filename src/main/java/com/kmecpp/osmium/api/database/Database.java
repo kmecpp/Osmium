@@ -17,6 +17,7 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.IOUtil;
+import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.core.CoreOsmiumConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -58,7 +59,7 @@ public class Database {
 				config.setDriverClassName("org.sqlite.JDBC");
 				config.setConnectionTestQuery("SELECT 1");
 			}
-			config.setMinimumIdle(3);
+			config.setMinimumIdle(2);
 			config.setMaximumPoolSize(10);
 			config.setConnectionTimeout(3000L);
 			source = new HikariDataSource(config);
@@ -255,7 +256,7 @@ public class Database {
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
 			while (resultSet.next()) {
-				T obj = properties.<T> getTableClass().newInstance();
+				T obj = Reflection.createInstance(properties.<T> getTableClass());
 
 				for (int i = 0; i < fields.length; i++) {
 					fields[i].set(obj, Serialization.deserialize(properties.getFields()[i].getType(), (resultSet.getString(i + 1))));

@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.api.command;
 
+import java.util.List;
+
 import org.bukkit.ChatColor;
 
 public interface Messageable {
@@ -19,6 +21,17 @@ public interface Messageable {
 		send(colors.getPrimary() + ChatColor.BOLD.toString() + title);
 		send(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
 		send("");
+	}
+
+	default void sendList(String title, List<?> list) {
+		sendList(CS.XEA, title, list);
+	}
+
+	default void sendList(CS colors, String title, List<?> list) {
+		sendTitle(colors, title);
+		for (Object item : list) {
+			sendMessage(colors.getSecondary() + " - " + colors.getPrimary() + item);
+		}
 	}
 
 }
