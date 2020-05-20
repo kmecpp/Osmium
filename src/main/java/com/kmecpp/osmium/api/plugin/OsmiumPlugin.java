@@ -82,6 +82,23 @@ public abstract class OsmiumPlugin {
 		//		}
 	}
 
+	public void saveResource(String path) {
+		saveResource(path, false);
+	}
+
+	public void saveResource(String path, boolean replace) {
+		Path savePath = getFolder().resolve(path);
+		try {
+			if (Platform.isBukkit()) {
+				this.<JavaPlugin> getSource().saveResource(path, replace);
+			} else if (Platform.isSponge()) {
+				this.<org.spongepowered.api.plugin.PluginContainer> getSource().getAsset(path).get().copyToFile(savePath);
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+	}
+
 	public ClassProcessor getClassProcessor() {
 		return classProcessor;
 	}
