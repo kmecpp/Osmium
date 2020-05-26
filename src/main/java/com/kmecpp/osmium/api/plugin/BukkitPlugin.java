@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 
 /**
@@ -52,8 +53,9 @@ public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 			}
 			plugin.onInit();
 			plugin.onPostInit();
-			plugin.onRefresh();
-			Osmium.getEventManager().callEvent(new OsmiumPluginRefreshEvent(plugin, true));
+			PluginRefreshEvent refreshEvent = new OsmiumPluginRefreshEvent(plugin, true);
+			plugin.onRefresh(refreshEvent);
+			Osmium.getEventManager().callEvent(refreshEvent);
 			plugin.startComplete = true;
 		}
 	}

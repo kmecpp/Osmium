@@ -14,6 +14,8 @@ import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.PluginConfigTypeData;
 import com.kmecpp.osmium.api.database.Database;
+import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
+import com.kmecpp.osmium.api.event.events.osmium.PluginReloadEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.logging.OsmiumPluginLogger;
 import com.kmecpp.osmium.api.persistence.PersistentPluginData;
@@ -92,7 +94,7 @@ public abstract class OsmiumPlugin {
 			if (Platform.isBukkit()) {
 				this.<JavaPlugin> getSource().saveResource(path, replace);
 			} else if (Platform.isSponge()) {
-				this.<org.spongepowered.api.plugin.PluginContainer> getSource().getAsset(path).get().copyToFile(savePath);
+				this.<org.spongepowered.api.plugin.PluginContainer> getSource().getAsset(path).get().copyToFile(savePath, replace);
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -133,16 +135,13 @@ public abstract class OsmiumPlugin {
 	public void onServerStarted() {
 	}
 
-	public void onReload() {
-	}
-
-	public void onFullReload() {
+	public void onReload(PluginReloadEvent e) {
 	}
 
 	/**
 	 * Called every time onReload and onEnable is called
 	 */
-	public void onRefresh() {
+	public void onRefresh(PluginRefreshEvent e) {
 	}
 
 	//	public void onFinalize() {

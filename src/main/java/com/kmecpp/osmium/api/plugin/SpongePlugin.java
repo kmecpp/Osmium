@@ -11,6 +11,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 
 // @Plugin added by to subclass by Osmium annotation processor
@@ -57,8 +58,9 @@ public abstract class SpongePlugin {
 	@Listener
 	public void on(GamePostInitializationEvent e) {
 		plugin.onPostInit();
-		plugin.onRefresh();
-		Osmium.getEventManager().callEvent(new OsmiumPluginRefreshEvent(plugin, true));
+		PluginRefreshEvent refreshEvent = new OsmiumPluginRefreshEvent(plugin, true);
+		plugin.onRefresh(refreshEvent);
+		Osmium.getEventManager().callEvent(refreshEvent);
 		plugin.startComplete = true;
 	}
 

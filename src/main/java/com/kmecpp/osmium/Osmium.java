@@ -26,6 +26,8 @@ import com.kmecpp.osmium.api.config.ConfigManager;
 import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.EventManager;
+import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
+import com.kmecpp.osmium.api.event.events.osmium.PluginReloadEvent;
 import com.kmecpp.osmium.api.inventory.BlockType;
 import com.kmecpp.osmium.api.inventory.ItemManager;
 import com.kmecpp.osmium.api.inventory.ItemType;
@@ -270,14 +272,15 @@ public final class Osmium {
 			}
 		}
 
-		plugin.onRefresh();
-		eventManager.callEvent(new OsmiumPluginRefreshEvent(plugin, reloadDatabase));
+		PluginRefreshEvent refreshEvent = new OsmiumPluginRefreshEvent(plugin, reloadDatabase);
+		plugin.onRefresh(refreshEvent);
+		eventManager.callEvent(refreshEvent);
 
-		plugin.onReload();
-		eventManager.callEvent(new OsmiumPluginReloadEvent(plugin, reloadDatabase));
+		PluginReloadEvent reloadEvent = new OsmiumPluginReloadEvent(plugin, reloadDatabase);
+		plugin.onReload(reloadEvent);
+		eventManager.callEvent(reloadEvent);
 
 		if (reloadDatabase) {
-			plugin.onFullReload();
 			if (plugin.getDatabase() != null) {
 				plugin.getDatabase().reload();
 			}
