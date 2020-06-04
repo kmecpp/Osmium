@@ -18,6 +18,7 @@ public class Command extends CommandBase {
 
 	public Command(String name, String... aliases) {
 		super(name, aliases);
+		setPermission("osmium.commands." + Osmium.getPlugin(this.getClass()).getName().toLowerCase()); //Default permission
 		configure();
 	}
 
