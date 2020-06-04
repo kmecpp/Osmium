@@ -3,11 +3,11 @@ package com.kmecpp.osmium;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.event.EventPriority;
 
 import com.kmecpp.osmium.api.Block;
@@ -129,7 +129,7 @@ public class BukkitAccess {
 				}
 			}
 
-			commandMap.register(command.getPrimaryAlias(), new BukkitCommand(command.getPrimaryAlias(),
+			org.bukkit.command.Command bukkitCommand = new org.bukkit.command.Command(command.getPrimaryAlias(),
 					command.getDescription(), command.getUsage(), aliases) { // Usage message cannot be null or else stuff will break
 
 				@Override
@@ -149,7 +149,16 @@ public class BukkitAccess {
 					}
 				}
 
-			});
+			};
+
+			commandMap.register(command.getPrimaryAlias(), bukkitCommand);
+			if (command.isOverride()) {
+				Map<String, org.bukkit.command.Command> map = Reflection.getFieldValue(commandMap, "knownCommands");
+				org.bukkit.command.Command existing = map.put(command.getPrimaryAlias(), bukkitCommand);
+				if (existing != bukkitCommand) {
+					OsmiumLogger.info("Overriding command: " + existing);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

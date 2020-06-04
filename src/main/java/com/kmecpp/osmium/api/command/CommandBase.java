@@ -9,6 +9,7 @@ public class CommandBase {
 	private String usage = "";
 	private String[] usageParams = new String[0];
 	private boolean admin;
+	private boolean override;
 	private CommandExecutor executor;
 
 	private String primaryAlias;
@@ -114,6 +115,14 @@ public class CommandBase {
 	public CommandBase setAdmin(boolean admin) {
 		this.admin = admin;
 		return this;
+	}
+
+	public boolean isOverride() {
+		return override;
+	}
+
+	public void setOverride(boolean override) {
+		this.override = override;
 	}
 
 	public void setExecutor(CommandExecutor executor) {
