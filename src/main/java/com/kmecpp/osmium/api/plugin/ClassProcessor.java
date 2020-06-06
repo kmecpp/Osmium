@@ -159,7 +159,13 @@ public class ClassProcessor {
 				continue;
 			}
 
-			onEnable(cls);
+			try {
+				onEnable(cls);
+			} catch (Throwable t) {
+				OsmiumLogger.error("Failed to enable class: " + cls.getName());
+				t.printStackTrace();
+			}
+
 		}
 	}
 
@@ -242,118 +248,113 @@ public class ClassProcessor {
 	}
 
 	public void onEnable(Class<?> cls) {
-		try {
-			OsmiumLogger.debug("Initializing class: " + cls.getName());
+		OsmiumLogger.debug("Initializing class: " + cls.getName());
 
-			//COMMANDS
-			if (Command.class.isAssignableFrom(cls)) {
-				Command command;
-				try {
-					command = (Command) cls.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					OsmiumLogger.warn("Cannot cannot be initialized! Class must have a default constructor!");
-					return;
-				}
-
-				//				commands.put(cls, command);
-
-				if (command.getAliases().length == 0) {
-					OsmiumLogger.warn("Command does not have any aliases and will not be registered: " + cls);
-					return;
-				}
-
-				Osmium.getCommandManager().register(plugin, command);
+		//COMMANDS
+		if (Command.class.isAssignableFrom(cls)) {
+			Command command;
+			try {
+				command = (Command) cls.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				OsmiumLogger.warn("Cannot cannot be initialized! Class must have a default constructor!");
+				return;
 			}
 
-			for (Method method : cls.getDeclaredMethods()) {
-				Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
-				Listener listenerAnnotation = method.getAnnotation(Listener.class);
-				Initializer Initializer = method.getAnnotation(Initializer.class);
+			//				commands.put(cls, command);
 
-				if (scheduleAnnotation == null && listenerAnnotation == null && Initializer == null) {
-					continue;
+			if (command.getAliases().length == 0) {
+				OsmiumLogger.warn("Command does not have any aliases and will not be registered: " + cls);
+				return;
+			}
+
+			Osmium.getCommandManager().register(plugin, command);
+		}
+
+		for (Method method : cls.getDeclaredMethods()) {
+			Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
+			Listener listenerAnnotation = method.getAnnotation(Listener.class);
+			Initializer Initializer = method.getAnnotation(Initializer.class);
+
+			if (scheduleAnnotation == null && listenerAnnotation == null && Initializer == null) {
+				continue;
+			}
+
+			method.setAccessible(true);
+
+			//Retrieve instance or create one if possible
+			final Object instance;
+			try {
+				Class.forName(cls.getName()); //Initialize class. This hack allows classes to register themselves in a static initializer
+
+				//THE FOLLOWING CODE IS DONE THIS WAY BECAUSE THE LISTENER INSTANCE MUST BE FINAL
+				Object temp = classInstances.get(cls);
+				if (temp != null) {
+					instance = temp;
+				} else {
+					instance = cls.newInstance(); //WE DON'T INITIALIZE THE CLASS UNTIL DOWN HERE BECAUSE WE ONLY WANT TO INITIALIZE IF IT HAS AN ANNOTATION 
+					classInstances.put(cls, instance);
 				}
+			} catch (IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
+				OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.provideInstance(obj)");
+				e.printStackTrace();
+				break;
+			} catch (Exception e) {
+				OsmiumLogger.error("Caught exception while trying to instantiate task/listener class: " + cls.getName());
+				e.printStackTrace();
+				break;
+			}
 
-				method.setAccessible(true);
-
-				//Retrieve instance or create one if possible
-				final Object instance;
+			//STARTUP
+			if (Initializer != null) {
 				try {
-					Class.forName(cls.getName()); //Initialize class. This hack allows classes to register themselves in a static initializer
-
-					//THE FOLLOWING CODE IS DONE THIS WAY BECAUSE THE LISTENER INSTANCE MUST BE FINAL
-					Object temp = classInstances.get(cls);
-					if (temp != null) {
-						instance = temp;
-					} else {
-						instance = cls.newInstance(); //WE DON'T INITIALIZE THE CLASS UNTIL DOWN HERE BECAUSE WE ONLY WANT TO INITIALIZE IF IT HAS AN ANNOTATION 
-						classInstances.put(cls, instance);
-					}
-				} catch (IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
-					OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.provideInstance(obj)");
+					method.invoke(instance);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					OsmiumLogger.error("Method " + cls.getSimpleName() + "." + method.getName() + " annotated with @" + Initializer.class.getSimpleName()
+							+ " cannot be executed because it contains parameters!");
 					e.printStackTrace();
-					break;
-				} catch (Exception e) {
-					OsmiumLogger.error("Caught exception while trying to instantiate task/listener class: " + cls.getName());
-					e.printStackTrace();
-					break;
 				}
+			}
 
-				//STARTUP
-				if (Initializer != null) {
-					try {
-						method.invoke(instance);
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						OsmiumLogger.error("Method " + cls.getSimpleName() + "." + method.getName() + " annotated with @" + Initializer.class.getSimpleName()
-								+ " cannot be executed because it contains parameters!");
-						e.printStackTrace();
+			//TASKS
+			if (scheduleAnnotation != null) {
+				plugin.getTask()
+						.setAsync(scheduleAnnotation.async())
+						.setDelay(scheduleAnnotation.delay(), scheduleAnnotation.unit())
+						.setInterval(scheduleAnnotation.interval(), scheduleAnnotation.unit())
+						.setExecutor((t) -> {
+							try {
+								method.invoke(instance);
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								e.printStackTrace();
+							}
+						})
+						.start();
+			}
+
+			//LISTENERS
+			if (listenerAnnotation != null) {
+				if (method.getParameterCount() != 1 || !Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
+					plugin.error("Invalid listener method with signature: '" + method + "'");
+				} else {
+					Class<? extends EventAbstraction> eventClass = Reflection.cast(method.getParameterTypes()[0]);
+					EventInfo eventInfo = EventInfo.get(eventClass);
+
+					if (eventInfo == null) {
+						OsmiumLogger.error("Osmium event class has no registered implementation: " + eventClass.getName());
+						continue;
 					}
-				}
 
-				//TASKS
-				if (scheduleAnnotation != null) {
-					plugin.getTask()
-							.setAsync(scheduleAnnotation.async())
-							.setDelay(scheduleAnnotation.delay(), scheduleAnnotation.unit())
-							.setInterval(scheduleAnnotation.interval(), scheduleAnnotation.unit())
-							.setExecutor((t) -> {
-								try {
-									method.invoke(instance);
-								} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-									e.printStackTrace();
-								}
-							})
-							.start();
-				}
+					if (eventInfo.isOsmiumEvent()) {
+						//Register implementation class for Osmium
+						OsmiumLogger.debug("Registering listener for " + eventInfo.getEvent().getSimpleName() + ": " + cls.getSimpleName() + "." + method.getName());
+						Osmium.getEventManager()
+								.registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
 
-				//LISTENERS
-				if (listenerAnnotation != null) {
-					if (method.getParameterCount() != 1 || !Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
-						plugin.error("Invalid listener method with signature: '" + method + "'");
 					} else {
-						Class<? extends EventAbstraction> eventClass = Reflection.cast(method.getParameterTypes()[0]);
-						EventInfo eventInfo = EventInfo.get(eventClass);
-
-						if (eventInfo == null) {
-							OsmiumLogger.error("Osmium event class has no registered implementation: " + eventClass.getName());
-							continue;
-						}
-
-						if (eventInfo.isOsmiumEvent()) {
-							//Register implementation class for Osmium
-							OsmiumLogger.debug("Registering listener for " + eventInfo.getEvent().getSimpleName() + ": " + cls.getSimpleName() + "." + method.getName());
-							Osmium.getEventManager()
-									.registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
-
-						} else {
-							Osmium.getEventManager().registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
-						}
+						Osmium.getEventManager().registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
 					}
 				}
 			}
-		} catch (Exception e) {
-			OsmiumLogger.error("Failed to enable class: " + cls.getName());
-			e.printStackTrace();
 		}
 	}
 
