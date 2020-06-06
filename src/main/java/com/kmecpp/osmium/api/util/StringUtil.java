@@ -43,28 +43,6 @@ public class StringUtil {
 		return String.format("%,d", n);
 	}
 
-	public static String formatTime(long time) {
-		final long day = 1000 * 86400;
-		final long hour = 1000 * 3600;
-		final long minute = 1000 * 60;
-		final long second = 1000;
-		String result = "";
-		if (time > day) {
-			return plural(time / day, " day");
-		} else if (time > hour) {
-			return plural(time / hour, " hour");
-		} else if (time > minute) {
-			return plural(time / minute, " minute");
-		} else if (time > second) {
-			return plural(time / second, " second");
-		}
-		return result;
-	}
-
-	private static String plural(long amount, String label) {
-		return amount + (!label.isEmpty() && amount != 1 ? label + "s" : label);
-	}
-
 	public static boolean isMathematicalInteger(String str) {
 		if (str.isEmpty()) {
 			return false;
@@ -85,12 +63,34 @@ public class StringUtil {
 		return String.valueOf(bd.doubleValue());
 	}
 
-	public static String plural(String name, int count) {
-		if (name.isEmpty()) {
-			return plural(count);
+	public static String rjust(String str, int amount) {
+		if (str.length() < amount) {
+			return StringUtil.repeat(' ', amount - str.length()) + str;
 		}
-		char last = name.charAt(name.length() - 1);
-		return count != 1 && Character.isLetter(last) && Character.isLowerCase(last) ? name + "s" : name;
+		return str;
+	}
+
+	public static String ljust(String str, int amount) {
+		if (str.length() < amount) {
+			return str + StringUtil.repeat(' ', amount - str.length());
+		}
+		return str;
+	}
+
+	public static String plural(long amount, String label) {
+		return amount + " " + pluralLabel(label, amount);
+	}
+
+	public static String plural(long amount, String label, String amountPrefix, String labelPrefix) {
+		return amountPrefix + amount + " " + labelPrefix + pluralLabel(label, amount);
+	}
+
+	public static String pluralLabel(String label, long amount) {
+		if (label.isEmpty()) {
+			return "";
+		}
+		char last = label.charAt(label.length() - 1);
+		return amount != 1 && Character.isLetter(last) && Character.isLowerCase(last) && last != 's' ? label + "s" : label;
 	}
 
 	public static String plural(int n) {
