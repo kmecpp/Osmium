@@ -11,18 +11,19 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public class CountdownTask extends AbstractTask<CountdownTask> {
 
-	private final int count;
+	private final int start;
 	private volatile int remaining;
 	private volatile boolean paused;
 
-	public CountdownTask(OsmiumPlugin plugin, int count) {
+	public CountdownTask(OsmiumPlugin plugin, int start) { //Number of times executed is start + 1
 		super(plugin);
-		this.count = count;
+		this.start = start;
 		this.setInterval(1, com.kmecpp.osmium.api.tasks.TimeUnit.SECOND);
+		this.setMaxRuns(start);
 	}
 
-	public int getLength() {
-		return count;
+	public int getStart() {
+		return start;
 	}
 
 	public int getRemaining() {
@@ -31,10 +32,6 @@ public class CountdownTask extends AbstractTask<CountdownTask> {
 
 	public void setRemaining(int remaining) {
 		this.remaining = remaining;
-	}
-
-	public boolean isLast() {
-		return remaining <= 0;
 	}
 
 	public void pause() {
@@ -46,10 +43,15 @@ public class CountdownTask extends AbstractTask<CountdownTask> {
 	}
 
 	@Override
+	public boolean isLastRun() {
+		return remaining == 0;
+	}
+
+	@Override
 	public CountdownTask start() {
 		super.start();
 
-		this.remaining = count;
+		this.remaining = start;
 		if (Platform.isBukkit()) {
 			if (async) {
 				this.taskImpl = Bukkit.getScheduler().runTaskTimerAsynchronously((JavaPlugin) plugin.getSource(), getCountdown(this), delay, interval);
@@ -78,13 +80,16 @@ public class CountdownTask extends AbstractTask<CountdownTask> {
 				if (task.paused) {
 					return;
 				}
-				if (task.remaining <= 0) {
-					task.cancel();
-				}
+
 				task.executor.execute(task);
 				task.remaining--;
+				task.counter++;
 
+				if (task.remaining < 0) {
+					task.cancel();
+				}
 			}
+
 		};
 	}
 
