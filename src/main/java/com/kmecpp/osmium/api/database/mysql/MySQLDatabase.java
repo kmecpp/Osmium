@@ -37,7 +37,7 @@ public class MySQLDatabase {
 
 			config.setMinimumIdle(2);
 			config.setMaximumPoolSize(10);
-			config.setConnectionTimeout(1000L);
+			config.setConnectionTimeout(500L);
 			source = new HikariDataSource(config);
 			OsmiumLogger.info("Successfully established connection to MySQL database: " + database);
 		} catch (PoolInitializationException ex) {

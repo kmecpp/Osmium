@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kmecpp.osmium.api.Transient;
 import com.kmecpp.osmium.api.util.Reflection;
 
 public class ConfigUtil {

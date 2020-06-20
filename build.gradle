@@ -240,4 +240,9 @@ build.doLast {
 			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path").replaceAll("%20", " ") + "\\plugins", '/Y'
 		}
 	}
+	if (project.hasProperty("server_path2")) {
+		exec {
+			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path2").replaceAll("%20", " ") + "\\plugins", '/Y'
+		}
+	}
 }

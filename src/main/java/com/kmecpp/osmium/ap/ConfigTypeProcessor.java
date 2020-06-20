@@ -16,12 +16,13 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
+import com.kmecpp.osmium.api.Transient;
 import com.kmecpp.osmium.api.config.ConfigClass;
 import com.kmecpp.osmium.api.config.ConfigSerializable;
-import com.kmecpp.osmium.api.config.Transient;
+import com.kmecpp.osmium.api.config.MapSerializable;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedAnnotationTypes({ "com.kmecpp.osmium.api.config.ConfigClass",
+@SupportedAnnotationTypes({ "com.kmecpp.osmium.api.config.ConfigClass", "com.kmecpp.osmium.api.config.MapSerializable",
 		"com.kmecpp.osmium.api.config.ConfigSerializable" })
 public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 
@@ -50,11 +51,14 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 		mapSerialzableElements.addAll(mapSerializable);
 
 		Set<? extends Element> configElements = roundEnv.getElementsAnnotatedWith(ConfigClass.class);
-		if (configElements.size() == 0) {
-			return false;
-		}
+		Set<? extends Element> dataElements = roundEnv.getElementsAnnotatedWith(MapSerializable.class);
 
 		process(configElements);
+		process(dataElements);
+
+		if (configElements.isEmpty() && dataElements.isEmpty()) {
+			return false;
+		}
 
 		return true;
 	}
