@@ -2,7 +2,6 @@ package com.kmecpp.osmium.api.config;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -10,14 +9,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
-import com.kmecpp.osmium.api.Transient;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.IOUtil;
+import com.kmecpp.osmium.api.util.Reflection;
 
 public class ConfigManager {
 
@@ -112,7 +110,7 @@ public class ConfigManager {
 		//		System.out.println("FIELD TYPE MAP: " + configTypeData);
 
 		HashMap<String, FieldData> fieldDataMap = new HashMap<>();
-		walk(configClass, (field) -> {
+		Reflection.walk(configClass, (field) -> {
 			Setting setting = field.getAnnotation(Setting.class);
 			String name = getName(field, setting);
 			String virtualPath = getVirtualPath(field, name);
@@ -167,23 +165,6 @@ public class ConfigManager {
 	//		}
 	//
 	//	}
-
-	private static void walk(Class<?> cls, Consumer<Field> processor) {
-		for (Field field : cls.getDeclaredFields()) {
-			if (field.isAnnotationPresent(Transient.class) || Modifier.isFinal(field.getModifiers()) || !Modifier.isStatic(field.getModifiers())) {
-				continue;
-			}
-
-			processor.accept(field);
-		}
-
-		for (Class<?> nestedClass : cls.getDeclaredClasses()) {
-			if (nestedClass.isAnnotationPresent(Transient.class)) {
-				continue;
-			}
-			walk(nestedClass, processor);
-		}
-	}
 
 	public static String getPhysicalPath(Field field, int truncate) {
 		return getFullPath(field).substring(truncate); //Truncate must come last

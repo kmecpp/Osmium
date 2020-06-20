@@ -14,8 +14,11 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import com.kmecpp.osmium.api.Transient;
 
 public class Reflection {
 
@@ -29,6 +32,27 @@ public class Reflection {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
 			return null;
+		}
+	}
+
+	public static void walk(Class<?> cls, Consumer<Field> processor) {
+		if (cls.getSuperclass() != Object.class) {
+			walk(cls.getSuperclass(), processor);
+		}
+
+		for (Field field : cls.getDeclaredFields()) {
+			if (field.isAnnotationPresent(Transient.class) || Modifier.isFinal(field.getModifiers()) || !Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
+
+			processor.accept(field);
+		}
+
+		for (Class<?> nestedClass : cls.getDeclaredClasses()) {
+			if (nestedClass.isAnnotationPresent(Transient.class)) {
+				continue;
+			}
+			walk(nestedClass, processor);
 		}
 	}
 
