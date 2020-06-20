@@ -101,7 +101,7 @@ public class CommandEvent implements Messageable {
 		} catch (NumberFormatException e) {
 			throw new CommandException(StringUtil.isMathematicalInteger(input)
 					? "Expected an integer but given value was too large: '" + input + "'"
-					: "Expected an integer recieved: '" + input + "'");
+					: "Expected an integer received: '" + input + "'");
 		}
 	}
 
@@ -257,6 +257,20 @@ public class CommandEvent implements Messageable {
 			}
 		}
 		return false;
+	}
+
+	public <T> T require(Optional<T> optional, String message) {
+		if (!optional.isPresent()) {
+			error(message);
+		}
+		return optional.get();
+	}
+
+	public <T> T require(T obj, String message) {
+		if (obj == null) {
+			error(message);
+		}
+		return obj;
 	}
 
 	@Override

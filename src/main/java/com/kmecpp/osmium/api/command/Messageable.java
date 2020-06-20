@@ -32,8 +32,8 @@ public interface Messageable {
 		sendNumberedList(CS.XEA, title, list);
 	}
 
-	default <T> void sendList(String title, Collection<T> list, Function<T, String> prefixer) {
-		sendList(CS.XEA, title, list, prefixer);
+	default <T> void sendList(String title, Collection<T> list, Function<T, String> serializer) {
+		sendList(CS.XEA, title, list, serializer);
 	}
 
 	default void sendList(CS colors, String title, Collection<?> list) {
@@ -43,10 +43,10 @@ public interface Messageable {
 		}
 	}
 
-	default <T> void sendList(CS colors, String title, Collection<T> list, Function<T, String> prefixer) {
+	default <T> void sendList(CS colors, String title, Collection<T> list, Function<T, String> serializer) {
 		sendTitle(colors, title);
 		for (T item : list) {
-			sendMessage(colors.getSecondary() + " - " + colors.getPrimary() + prefixer.apply(item) + item);
+			sendMessage(colors.getSecondary() + " - " + colors.getPrimary() + serializer.apply(item));
 		}
 	}
 

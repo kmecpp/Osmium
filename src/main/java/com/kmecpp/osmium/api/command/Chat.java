@@ -81,6 +81,10 @@ public enum Chat {
 		this.string = new String(new char[] { COLOR_CHAR, code });
 	}
 
+	public static Chat of(boolean bool) {
+		return bool ? Chat.GREEN : Chat.RED;
+	}
+
 	public static char getColorChar() {
 		return COLOR_CHAR;
 	}
