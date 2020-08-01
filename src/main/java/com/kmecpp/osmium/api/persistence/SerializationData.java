@@ -1,6 +1,6 @@
 package com.kmecpp.osmium.api.persistence;
 
-import com.kmecpp.osmium.api.database.DBType;
+import com.kmecpp.osmium.api.database.sqlite.DBType;
 
 public class SerializationData<T> {
 

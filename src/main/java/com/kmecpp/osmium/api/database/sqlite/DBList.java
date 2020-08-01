@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.database.sqlite;
 
 import java.util.ArrayList;
 import java.util.Iterator;

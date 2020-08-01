@@ -42,7 +42,11 @@ public abstract class SpongePlugin {
 
 	@Listener
 	public void on(GamePreInitializationEvent e) {
-		plugin.onPreInit();
+		try {
+			plugin.onPreInit();
+		} catch (Throwable t) {
+			catchError(t);
+		}
 	}
 
 	@Listener
@@ -50,14 +54,22 @@ public abstract class SpongePlugin {
 		try {
 			plugin.getClassProcessor().initializeClasses();
 		} catch (Throwable t) {
-			t.printStackTrace();
+			catchError(t);
 		}
-		plugin.onInit();
+		try {
+			plugin.onInit();
+		} catch (Throwable t) {
+			catchError(t);
+		}
 	}
 
 	@Listener
 	public void on(GamePostInitializationEvent e) {
-		plugin.onPostInit();
+		try {
+			plugin.onPostInit();
+		} catch (Throwable t) {
+			catchError(t);
+		}
 		PluginRefreshEvent refreshEvent = new OsmiumPluginRefreshEvent(plugin, true);
 		plugin.onRefresh(refreshEvent);
 		Osmium.getEventManager().callEvent(refreshEvent);
@@ -74,6 +86,11 @@ public abstract class SpongePlugin {
 		Sponge.getEventManager().unregisterPluginListeners(this);
 		Sponge.getCommandManager().getOwnedBy(this).forEach(Sponge.getCommandManager()::removeMapping);
 		Sponge.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
+	}
+
+	private void catchError(Throwable t) {
+		t.printStackTrace();
+		plugin.startError = true;
 	}
 
 }

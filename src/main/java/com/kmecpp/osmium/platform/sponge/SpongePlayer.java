@@ -14,19 +14,36 @@ import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.text.Text;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.SoundType;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
 public class SpongePlayer extends SpongeEntityLiving implements Player {
 
 	private org.spongepowered.api.entity.living.player.Player player;
+	private int id;
 
 	public SpongePlayer(org.spongepowered.api.entity.living.player.Player player) {
 		super(player);
 		this.player = player;
+		if (player.getName().startsWith("[")) {
+			this.id = -1;
+		} else {
+			Optional<Integer> optionalId = Osmium.getUserId(player.getUniqueId());
+			this.id = optionalId.orElse(-1);
+			if (!optionalId.isPresent()) {
+				OsmiumLogger.warn("Could not get user ID player: " + player.getName());
+			}
+		}
+	}
+
+	@Override
+	public int getId() {
+		return id;
 	}
 
 	@Override

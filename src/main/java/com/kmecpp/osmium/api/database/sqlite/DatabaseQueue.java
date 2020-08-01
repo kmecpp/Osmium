@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.database.sqlite;
 
 import java.lang.Thread.State;
 import java.sql.Connection;

@@ -1,14 +1,14 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.database.sqlite;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.kmecpp.osmium.api.database.DBColumn;
 import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.persistence.SerializationData;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
-import com.kmecpp.osmium.core.CoreOsmiumConfig;
 
 public class DBUtil {
 
@@ -54,6 +54,7 @@ public class DBUtil {
 		//
 		//		}
 
+		boolean autoIncrement = false;
 		for (Field field : properties.getFields()) {
 			DBColumn column = field.getAnnotation(DBColumn.class);
 
@@ -69,17 +70,23 @@ public class DBUtil {
 				throw new IllegalArgumentException("Cannot create database table with unregistered type: " + field.getType());
 			}
 
-			schema.append(getColumnName(field))
-					.append(" " + serializationData.getType().getName())
-					.append(column.notNull() ? " NOT NULL" : "")
-					.append(column.autoIncrement() ? " AUTOINCREMENT" : "")
-					.append(column.unique() ? " UNIQUE" : "")
-					.append(", ");
+			if (column.autoIncrement()) {
+				autoIncrement = true;
+				schema.append(getColumnName(field)).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
+			} else {
+				schema.append(getColumnName(field))
+						.append(" " + serializationData.getType().getName())
+						.append(column.nullable() ? "" : " NOT NULL")
+						.append(column.autoIncrement() ? " AUTOINCREMENT" : "")
+						.append(column.unique() ? " UNIQUE" : "")
+						.append(", ");
+			}
+
 		}
 
-		if (properties.getPrimaryColumns().length > 0) {
+		if (properties.getPrimaryColumns().length > 0 && !autoIncrement) {
 			schema.append("PRIMARY KEY("
-					+ StringUtil.join(CoreOsmiumConfig.Database.useMySql ? properties.getPrimaryColumnsWithLengths() : properties.getPrimaryColumns(), ", ")
+					+ StringUtil.join(properties.getPrimaryColumns(), ", ")
 					+ ")");
 		} else {
 			schema.setLength(schema.length() - 2);

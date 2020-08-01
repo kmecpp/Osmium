@@ -35,16 +35,17 @@ public class Reflection {
 		}
 	}
 
-	public static void walk(Class<?> cls, Consumer<Field> processor) {
+	public static void walk(Class<?> cls, boolean visitStatic, Consumer<Field> processor) {
 		if (cls.getSuperclass() != Object.class) {
-			walk(cls.getSuperclass(), processor);
+			walk(cls.getSuperclass(), visitStatic, processor);
 		}
 
 		for (Field field : cls.getDeclaredFields()) {
-			if (field.isAnnotationPresent(Transient.class) || Modifier.isFinal(field.getModifiers()) || !Modifier.isStatic(field.getModifiers())) {
+			if (field.isAnnotationPresent(Transient.class) || Modifier.isFinal(field.getModifiers()) || (visitStatic ^ Modifier.isStatic(field.getModifiers()))) {
 				continue;
 			}
 
+			field.setAccessible(true);
 			processor.accept(field);
 		}
 
@@ -52,7 +53,7 @@ public class Reflection {
 			if (nestedClass.isAnnotationPresent(Transient.class)) {
 				continue;
 			}
-			walk(nestedClass, processor);
+			walk(nestedClass, visitStatic, processor);
 		}
 	}
 

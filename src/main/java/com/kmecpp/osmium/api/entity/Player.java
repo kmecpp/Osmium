@@ -1,10 +1,13 @@
 package com.kmecpp.osmium.api.entity;
 
+import java.util.HashMap;
+
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.SoundType;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.command.CommandSender;
+import com.kmecpp.osmium.api.database.MultiplePlayerData;
 import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
@@ -12,6 +15,8 @@ import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.location.Vector3d;
 
 public interface Player extends User, EntityLiving, CommandSender {
+
+	int getId();
 
 	boolean respawn();
 
@@ -65,6 +70,10 @@ public interface Player extends User, EntityLiving, CommandSender {
 
 	default <T extends PlayerData> T getData(Class<T> type) {
 		return Osmium.getPlayerDataManager().getData(this, type);
+	}
+
+	default <K, V extends MultiplePlayerData<K>> HashMap<K, V> getMultipleData(Class<V> type) {
+		return Osmium.getPlayerDataManager().getAll(this, type);
 	}
 
 	default Location getHighestLocation() {

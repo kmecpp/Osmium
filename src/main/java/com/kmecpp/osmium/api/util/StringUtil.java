@@ -22,6 +22,32 @@ public class StringUtil {
 	protected StringUtil() {
 	}
 
+	public static String normalize(String str, String separator) {
+		StringBuilder sb = new StringBuilder(str.length() + 4);
+		char[] chars = str.toCharArray();
+		boolean prev = false;
+		for (int i = 0; i < chars.length; i++) {
+			char c = chars[i];
+			char lower = Character.toLowerCase(c);
+			if (i > 0 && ((c != lower && !prev) || (c == ' '))) {
+				sb.append(separator);
+			}
+			sb.append(lower);
+			prev = c != lower;
+		}
+		return sb.toString();
+	}
+
+	public static void add(StringBuilder sb, String str) {
+		if (str.isEmpty()) {
+			return;
+		}
+		if (sb.length() > 0 && sb.charAt(sb.length() - 1) != ' ') {
+			sb.append(' ');
+		}
+		sb.append(str);
+	}
+
 	public static Object parseType(String str, Class<?> cls) {
 		//@formatter:off
 		return Reflection.isAssignable(cls, String.class) ? str
@@ -755,6 +781,12 @@ public class StringUtil {
 		return sb.toString();
 	}
 
+	public static char[] array(char c, int times) {
+		char[] chars = new char[times];
+		Arrays.fill(chars, c);
+		return chars;
+	}
+
 	/**
 	 * Repeat the given character the specified number of times to create a
 	 * String
@@ -856,6 +888,17 @@ public class StringUtil {
 		Iterator<?> iterator = iterable.iterator();
 		while (iterator.hasNext()) {
 			sb.append(iterator.next() + (iterator.hasNext() ? delimiter : ""));
+		}
+		return sb.toString();
+	}
+
+	public static String join(char c, String delimiter, int times) {
+		StringBuilder sb = new StringBuilder(times * 2);
+		for (int i = 0; i < times; i++) {
+			sb.append(c);
+			if (i < times - 1) {
+				sb.append(delimiter);
+			}
 		}
 		return sb.toString();
 	}

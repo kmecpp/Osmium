@@ -1,3 +1,4 @@
+package com.kmecpp.osmium.api.database.sqlite;
 //package com.kmecpp.osmium.api.database;
 //
 //import com.kmecpp.osmium.api.persistence.Deserializer;

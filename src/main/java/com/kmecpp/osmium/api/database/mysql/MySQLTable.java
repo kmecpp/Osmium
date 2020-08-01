@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.database.mysql;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DBTable {
+public @interface MySQLTable {
 
 	String name();
 

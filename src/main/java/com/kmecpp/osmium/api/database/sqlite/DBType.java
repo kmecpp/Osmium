@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.database.sqlite;
 
 import com.kmecpp.osmium.api.util.StringUtil;
 

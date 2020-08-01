@@ -45,7 +45,7 @@ public class Command extends CommandBase {
 	}
 
 	public final void setTitle(String title) {
-		this.title = Chat.style(title);
+		this.title = Chat.GREEN + Chat.BOLD.toString() + Chat.style(title);
 	}
 
 	public final void setRawTitle(String title) {

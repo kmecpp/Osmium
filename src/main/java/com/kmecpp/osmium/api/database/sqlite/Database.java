@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.database.sqlite;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -12,7 +12,10 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
-import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
+import com.kmecpp.osmium.api.database.OrderBy;
+import com.kmecpp.osmium.api.database.ResultSetProcessor;
+import com.kmecpp.osmium.api.database.SQLDatabase;
+import com.kmecpp.osmium.api.database.sqlite.DatabaseQueue.QueueExecutor;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -23,13 +26,12 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 
-public class Database {
+public class Database extends SQLDatabase {
 
 	private OsmiumPlugin plugin;
 	private boolean usingMySql;
 
 	private DatabaseQueue queue;
-	private HikariDataSource source;
 	private CountDownLatch latch = new CountDownLatch(1);
 
 	private final HashMap<Class<?>, TableProperties> tables = new HashMap<>();
@@ -42,23 +44,23 @@ public class Database {
 		HikariConfig config = new HikariConfig();
 
 		try {
-			if (CoreOsmiumConfig.Database.useMySql) {
-				OsmiumLogger.info("Using MySQL for database storage");
-				usingMySql = true;
-
-				config.setJdbcUrl("jdbc:mysql://" + CoreOsmiumConfig.Database.host + ":" + CoreOsmiumConfig.Database.port + "/" + CoreOsmiumConfig.Database.database);
-				config.setDriverClassName("com.mysql.jdbc.Driver");
-				config.setUsername(CoreOsmiumConfig.Database.username);
-				config.setPassword(CoreOsmiumConfig.Database.password);
-				config.setConnectionTestQuery("USE " + CoreOsmiumConfig.Database.database);
-
-				source = new HikariDataSource(config);
-			} else {
-				OsmiumLogger.info("Using SQLite for database storage");
-				config.setJdbcUrl("jdbc:sqlite:" + plugin.getFolder() + File.separator + "data.db");
-				config.setDriverClassName("org.sqlite.JDBC");
-				config.setConnectionTestQuery("SELECT 1");
-			}
+			//			if (CoreOsmiumConfig.Database.useMySql) {
+			//				OsmiumLogger.info("Using MySQL for database storage");
+			//				usingMySql = true;
+			//
+			//				config.setJdbcUrl("jdbc:mysql://" + CoreOsmiumConfig.Database.host + ":" + CoreOsmiumConfig.Database.port + "/" + CoreOsmiumConfig.Database.database);
+			//				config.setDriverClassName("com.mysql.jdbc.Driver");
+			//				config.setUsername(CoreOsmiumConfig.Database.username);
+			//				config.setPassword(CoreOsmiumConfig.Database.password);
+			//				config.setConnectionTestQuery("USE " + CoreOsmiumConfig.Database.database);
+			//
+			//				source = new HikariDataSource(config);
+			//			} else {
+			OsmiumLogger.info("Using SQLite for database storage");
+			config.setJdbcUrl("jdbc:sqlite:" + plugin.getFolder() + File.separator + "data.db");
+			config.setDriverClassName("org.sqlite.JDBC");
+			config.setConnectionTestQuery("SELECT 1");
+			//			}
 			config.setMinimumIdle(2);
 			config.setMaximumPoolSize(10);
 			config.setConnectionTimeout(3000L);
@@ -113,20 +115,21 @@ public class Database {
 	 * @param update
 	 *            the SQL statement to execute
 	 */
-	public void update(String update) {
+	public int update(String update) {
 		OsmiumLogger.debug("Executing update" + (Thread.currentThread().getClass().equals(QueueExecutor.class) ? " asynchronously" : "") + ": \"" + update + "\"");
 		Connection connection = null;
 		Statement statement = null;
 		try {
 			connection = getConnection();
 			statement = connection.createStatement();
-			statement.executeUpdate(update);
+			return statement.executeUpdate(update);
 		} catch (SQLException e) {
 			OsmiumLogger.error("Failed to execute database update!");
 			if (!CoreOsmiumConfig.debug) {
 				OsmiumLogger.error("Failed update: '" + update + "'");
 			}
 			e.printStackTrace();
+			return -1;
 		} finally {
 			IOUtil.close(connection, statement);
 		}
@@ -195,7 +198,7 @@ public class Database {
 		return query(tableClass, columns.split(","), values);
 	}
 
-	private <T> ArrayList<T> query(Class<T> tableClass, String[] columns, Object... values) {
+	public <T> ArrayList<T> query(Class<T> tableClass, String[] columns, Object... values) {
 		TableProperties table = tables.get(tableClass);
 		if (columns == null) {
 			columns = table.getPrimaryColumns();
@@ -273,8 +276,7 @@ public class Database {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T rawQuery(String query, ResultSetProcessor processor) {
+	public <T> T rawQuery(String query, ResultSetProcessor<T> processor) {
 		Connection connection = null;
 		Statement statement = null;
 		ResultSet resultSet = null;
@@ -283,7 +285,7 @@ public class Database {
 			connection = getConnection();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
-			return (T) processor.process(resultSet);
+			return processor.process(resultSet);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to execute database query: \"" + query + "\"");
 		} finally {
@@ -298,7 +300,7 @@ public class Database {
 	 *            the query to execute
 	 * @return the result of the query
 	 */
-	public void query(String query, ResultSetProcessor processor) {
+	public <T> void query(String query, ResultSetProcessor<T> processor) {
 		Connection connection = null;
 		Statement statement = null;
 		ResultSet resultSet = null;

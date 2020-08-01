@@ -74,6 +74,11 @@ public class CS {
 	 */
 	public static final CS XEAB = create();
 
+	/**
+	 * YELLOW GREEN AQUA
+	 */
+	public static final CS XAEB = create();
+
 	private Chat primary = Chat.WHITE;
 	private Chat secondary = Chat.WHITE;
 	private Chat tertiary = Chat.WHITE;

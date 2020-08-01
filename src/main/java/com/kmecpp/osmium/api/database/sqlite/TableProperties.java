@@ -1,10 +1,11 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.database.sqlite;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.database.DBColumn;
 import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.util.Reflection;
 

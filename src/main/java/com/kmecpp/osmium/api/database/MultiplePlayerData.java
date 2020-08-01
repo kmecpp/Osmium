@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api.database;
 
 import java.util.UUID;
 
-public abstract class PlayerData implements Saveable {
+public abstract class MultiplePlayerData<T> implements Saveable {
 
 	@DBColumn(primary = true)
 	protected UUID uuid;
@@ -21,10 +21,10 @@ public abstract class PlayerData implements Saveable {
 	public void updatePlayerData(UUID uuid, String name) {
 		this.uuid = uuid;
 		this.name = name;
-		onLoad();
 	}
 
-	public void onLoad() {
-	}
+	public abstract T getKey();
+
+	//	public abstract T process(ResultSet rs) throws SQLException;
 
 }

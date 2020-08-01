@@ -16,6 +16,7 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.IOUtil;
 import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.api.util.StringUtil;
 
 public class ConfigManager {
 
@@ -110,7 +111,7 @@ public class ConfigManager {
 		//		System.out.println("FIELD TYPE MAP: " + configTypeData);
 
 		HashMap<String, FieldData> fieldDataMap = new HashMap<>();
-		Reflection.walk(configClass, (field) -> {
+		Reflection.walk(configClass, true, (field) -> {
 			Setting setting = field.getAnnotation(Setting.class);
 			String name = getName(field, setting);
 			String virtualPath = getVirtualPath(field, name);
@@ -199,18 +200,7 @@ public class ConfigManager {
 	}
 
 	private static String normalizeName(String name) {
-		StringBuilder sb = new StringBuilder();
-		boolean prev = false;
-		for (int i = 0; i < name.length(); i++) {
-			char c = name.charAt(i);
-			char lower = Character.toLowerCase(c);
-			if (i > 0 && c != lower && !prev) {
-				sb.append('-');
-			}
-			sb.append(lower);
-			prev = c != lower;
-		}
-		return sb.toString();
+		return StringUtil.normalize(name, "-");
 	}
 
 }

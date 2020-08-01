@@ -44,15 +44,27 @@ public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		if (plugin != null) {
-			plugin.onPreInit();
+			try {
+				plugin.onPreInit();
+			} catch (Throwable t) {
+				catchError(t);
+			}
 			Bukkit.getPluginManager().registerEvents(this, this);
 			try {
 				plugin.getClassProcessor().initializeClasses();
 			} catch (Throwable t) {
-				t.printStackTrace();
+				catchError(t);
 			}
-			plugin.onInit();
-			plugin.onPostInit();
+			try {
+				plugin.onInit();
+			} catch (Throwable t) {
+				catchError(t);
+			}
+			try {
+				plugin.onPostInit();
+			} catch (Throwable t) {
+				catchError(t);
+			}
 			PluginRefreshEvent refreshEvent = new OsmiumPluginRefreshEvent(plugin, true);
 			plugin.onRefresh(refreshEvent);
 			Osmium.getEventManager().callEvent(refreshEvent);
@@ -66,6 +78,11 @@ public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 			plugin.saveData();
 			plugin.onDisable();
 		}
+	}
+
+	private void catchError(Throwable t) {
+		t.printStackTrace();
+		plugin.startError = true;
 	}
 
 }

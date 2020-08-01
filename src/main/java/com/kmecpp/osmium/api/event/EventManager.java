@@ -36,10 +36,12 @@ public class EventManager {
 			return;
 		}
 
-		ArrayList<RegisteredListener> listeners = events.get(eventClass);
-		if (listeners == null) {
-			events.put(eventClass, (listeners = new ArrayList<>()));
-		}
+		//		OsmiumLogger.error("REGISTER LISTENER: " + eventClass + " :: " + listenerInstance);
+		ArrayList<RegisteredListener> listeners = events.computeIfAbsent(eventClass, k -> new ArrayList<>());
+		//		ArrayList<RegisteredListener> listeners = events.get(eventClass);
+		//		if (listeners == null) {
+		//			events.put(eventClass, (listeners = new ArrayList<>()));
+		//		}
 
 		RegisteredListener registeredListener = new RegisteredListener(listenerInstance, listener, order);
 		int index = Collections.binarySearch(listeners, registeredListener);
@@ -47,6 +49,7 @@ public class EventManager {
 			index = -index - 1;
 		}
 		listeners.add(index, registeredListener);
+		//		System.out.println(listeners);
 	}
 
 	private static void fail(Class<? extends EventAbstraction> eventClass, Method listener, String message) {
@@ -57,7 +60,7 @@ public class EventManager {
 
 	public void callEvent(Event event) {
 		ArrayList<RegisteredListener> listeners = events.get(event.getClass());
-		//		System.out.println("CALLING: " + event + " :: " + listeners);
+		//		OsmiumLogger.warn("CALLING: " + event + " :: " + listeners);
 		if (listeners == null) {
 			return;
 		}

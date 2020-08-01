@@ -13,7 +13,8 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.PluginConfigTypeData;
-import com.kmecpp.osmium.api.database.Database;
+import com.kmecpp.osmium.api.database.mysql.MySQLDatabase;
+import com.kmecpp.osmium.api.database.sqlite.Database;
 import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
 import com.kmecpp.osmium.api.event.events.osmium.PluginReloadEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
@@ -30,6 +31,7 @@ public abstract class OsmiumPlugin {
 
 	private final Plugin properties = this.getClass().getAnnotation(Plugin.class);
 	private final Database database = new Database(this);
+	private final MySQLDatabase mdb = new MySQLDatabase(this);
 
 	//Effectively final variables
 	private Object pluginImplementation; //This field is set on instantiation using reflection
@@ -42,6 +44,7 @@ public abstract class OsmiumPlugin {
 	private PluginConfigTypeData configTypeData;
 
 	boolean startComplete;
+	boolean startError;
 
 	public OsmiumPlugin() {
 		Preconditions.checkNotNull(properties, "Osmium plugins must be annotated with @OsmiumMeta");
@@ -272,8 +275,12 @@ public abstract class OsmiumPlugin {
 	//		this.logger = logger;
 	//	}
 
-	public Database getDatabase() {
+	public Database getSQLiteDatabase() {
 		return database;
+	}
+
+	public MySQLDatabase getMySQLDatabase() {
+		return mdb;
 	}
 
 	//	public void disable() {

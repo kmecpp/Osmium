@@ -15,8 +15,8 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.HookClass;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.ConfigClass;
-import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.database.PlayerData;
+import com.kmecpp.osmium.api.database.sqlite.DBTable;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventAbstraction;
 import com.kmecpp.osmium.api.event.EventInfo;
@@ -189,7 +189,7 @@ public class ClassProcessor {
 		DBTable entity = cls.getAnnotation(DBTable.class);
 		if (entity != null) {
 			OsmiumLogger.debug("Initializing database table: " + entity.name());
-			plugin.getDatabase().createTable(cls);
+			plugin.getSQLiteDatabase().createTable(cls);
 
 			if (PlayerData.class.isAssignableFrom(cls)) {
 				Osmium.getPlayerDataManager().registerType(plugin, Reflection.cast(cls));
@@ -347,8 +347,7 @@ public class ClassProcessor {
 					if (eventInfo.isOsmiumEvent()) {
 						//Register implementation class for Osmium
 						OsmiumLogger.debug("Registering listener for " + eventInfo.getEvent().getSimpleName() + ": " + cls.getSimpleName() + "." + method.getName());
-						Osmium.getEventManager()
-								.registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
+						Osmium.getEventManager().registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
 
 					} else {
 						Osmium.getEventManager().registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);

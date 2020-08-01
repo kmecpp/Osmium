@@ -1,6 +1,7 @@
-package com.kmecpp.osmium;
+package com.kmecpp.osmium.api.util;
 
-import com.kmecpp.osmium.api.util.TimeUtil;
+import java.util.Calendar;
+import java.util.Date;
 
 public class SimpleDate {
 
@@ -14,6 +15,20 @@ public class SimpleDate {
 
 	public SimpleDate() {
 		this(TimeUtil.getYear(), TimeUtil.getMonth(), TimeUtil.getDay());
+	}
+
+	public SimpleDate(long timeMillis) {
+		this(getCalendarFromMillis(timeMillis));
+	}
+
+	public SimpleDate(Date date) {
+		this(getCalendarFromDate(date));
+	}
+
+	public SimpleDate(Calendar calendar) {
+		this.year = calendar.get(Calendar.YEAR);
+		this.month = calendar.get(Calendar.MONTH) + 1;
+		this.day = calendar.get(Calendar.DAY_OF_MONTH);
 	}
 
 	public SimpleDate(int year, int month, int day) {
@@ -55,6 +70,10 @@ public class SimpleDate {
 		return current().equals(this);
 	}
 
+	public String toDateString() {
+		return month + "/" + day + "/" + year;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof SimpleDate) {
@@ -67,6 +86,18 @@ public class SimpleDate {
 	@Override
 	public String toString() {
 		return year + "-" + month + "-" + day;
+	}
+
+	private static Calendar getCalendarFromMillis(long timeMillis) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(timeMillis);
+		return calendar;
+	}
+
+	private static Calendar getCalendarFromDate(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		return calendar;
 	}
 
 }

@@ -23,7 +23,6 @@ import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.config.ConfigManager;
-import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.EventManager;
 import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
@@ -37,8 +36,10 @@ import com.kmecpp.osmium.api.plugin.PluginLoader;
 import com.kmecpp.osmium.api.tasks.CountdownTask;
 import com.kmecpp.osmium.api.tasks.OsmiumTask;
 import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.api.util.WebUtil;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
+import com.kmecpp.osmium.core.OsmiumListener;
 import com.kmecpp.osmium.core.PlayerDataManager;
 import com.kmecpp.osmium.core.TPSTask;
 import com.kmecpp.osmium.platform.bukkit.BukkitUser;
@@ -145,12 +146,12 @@ public final class Osmium {
 		return playerDataManager;
 	}
 
-	public static <T extends PlayerData> T getPlayerData(Player player, Class<T> playerDataClass) {
-		return playerDataManager.getData(player, playerDataClass);
-	}
-
 	public static ItemManager getItemManager() {
 		return itemManager;
+	}
+
+	public static Optional<Integer> getUserId(UUID uuid) {
+		return OsmiumListener.getUserId(uuid);
 	}
 
 	public static double getTPS() {
@@ -281,8 +282,8 @@ public final class Osmium {
 		eventManager.callEvent(reloadEvent);
 
 		if (reloadDatabase) {
-			if (plugin.getDatabase() != null) {
-				plugin.getDatabase().reload();
+			if (plugin.getSQLiteDatabase() != null) {
+				plugin.getSQLiteDatabase().reload();
 			}
 		}
 		return true;
@@ -302,6 +303,24 @@ public final class Osmium {
 		}
 	}
 
+	public static Optional<Player> getPlayer(UUID uuid) {
+		if (Platform.isBukkit()) {
+			Object bukkitPlayer = Bukkit.getPlayer(uuid);
+			return bukkitPlayer != null ? Optional.of(PlayerList.getPlayer(bukkitPlayer)) : Optional.empty();
+		} else {
+			Optional<?> spongePlayer = Sponge.getServer().getPlayer(uuid);
+			return spongePlayer.isPresent() ? Optional.of(PlayerList.getPlayer(spongePlayer.get())) : Optional.empty();
+		}
+	}
+
+	public static boolean isPlayerOnline(UUID uuid) {
+		if (Platform.isBukkit()) {
+			return Bukkit.getPlayer(uuid) != null;
+		} else {
+			return Sponge.getServer().getPlayer(uuid).isPresent();
+		}
+	}
+
 	public static Collection<Player> getOnlinePlayers() {
 		return PlayerList.getPlayers();
 	}
@@ -313,6 +332,14 @@ public final class Osmium {
 	public static Optional<UUID> getUUID(String playerName) {
 		Optional<User> user = getUser(playerName);
 		return user.isPresent() ? Optional.of(user.get().getUniqueId()) : Optional.empty();
+	}
+
+	public static Optional<UUID> lookupUUID(String playerName) {
+		try {
+			return Optional.of(WebUtil.getPlayerUUID(playerName));
+		} catch (Exception e) {
+			return Optional.empty();
+		}
 	}
 
 	public static Optional<User> getUser(UUID uuid) {

@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api.persistence;
 
 import java.util.HashMap;
 
-import com.kmecpp.osmium.api.database.DBType;
+import com.kmecpp.osmium.api.database.sqlite.DBType;
 
 public class DatabaseSerialization {
 

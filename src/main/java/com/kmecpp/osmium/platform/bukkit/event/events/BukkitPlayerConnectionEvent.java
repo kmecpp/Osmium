@@ -15,7 +15,6 @@ public abstract class BukkitPlayerConnectionEvent implements PlayerConnectionEve
 
 		public BukkitPlayerAuthEvent(org.bukkit.event.player.AsyncPlayerPreLoginEvent event) {
 			this.event = event;
-
 		}
 
 		@Override

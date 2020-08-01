@@ -2,6 +2,7 @@ package com.kmecpp.osmium.core;
 
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.inventory.menu.InventoryManager;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
@@ -22,10 +23,17 @@ public class OsmiumCore extends OsmiumPlugin {
 			throw new IllegalStateException("Plugin already constructed!");
 		}
 	}
-
+	
 	@Override
 	public void onLoad() {
 		TimeUtil.setTimeZone(CoreOsmiumConfig.timeZone);
+
+		if (CoreOsmiumConfig.Database.useMySql) {
+			this.getMySQLDatabase().initialize(CoreOsmiumConfig.Database.host, CoreOsmiumConfig.Database.port,
+					CoreOsmiumConfig.Database.database, CoreOsmiumConfig.Database.username, CoreOsmiumConfig.Database.password, "osmium");
+
+			this.getMySQLDatabase().createTable(UserTable.class);
+		}
 	}
 
 	@Override
@@ -36,6 +44,10 @@ public class OsmiumCore extends OsmiumPlugin {
 
 		Osmium.getTask().setTime(0, 1, TimeUnit.MINUTE).setExecutor((t) -> {
 			OsmiumData.update();
+		}).start();
+
+		Osmium.getTask().setTime(0, 15, TimeUnit.MINUTE).setExecutor((t) -> {
+			OsmiumListener.cleaupIds();
 		}).start();
 
 		Osmium.getTask().setAsync(true).setTime(0, 1, TimeUnit.HOUR).setExecutor(task -> {
@@ -84,6 +96,10 @@ public class OsmiumCore extends OsmiumPlugin {
 
 	public static OsmiumCore getPlugin() {
 		return instance;
+	}
+
+	public static SQLDatabase getDatabase() {
+		return CoreOsmiumConfig.Database.useMySql ? instance.getMySQLDatabase() : instance.getSQLiteDatabase();
 	}
 
 }

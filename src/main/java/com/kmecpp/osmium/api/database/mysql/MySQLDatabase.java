@@ -1,28 +1,56 @@
 package com.kmecpp.osmium.api.database.mysql;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
+import com.kmecpp.osmium.api.database.OrderBy;
+import com.kmecpp.osmium.api.database.ResultSetProcessor;
+import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Completer;
+import com.kmecpp.osmium.api.util.Reflection;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 
-public class MySQLDatabase {
+public class MySQLDatabase extends SQLDatabase {
 
 	private static final ExecutorService scheduler = Executors.newFixedThreadPool(2);
 
-	private HikariDataSource source;
+	private final HashMap<Class<?>, MDBTableData> tables = new HashMap<>();
 
-	public MySQLDatabase(String host, int port, String database, String username, String password) {
+	private OsmiumPlugin plugin;
+	private String tablePrefix;
+
+	public MySQLDatabase(OsmiumPlugin plugin) {
+		this.plugin = plugin;
+	}
+
+	public OsmiumPlugin getPlugin() {
+		return plugin;
+	}
+
+	public String getTablePrefix() {
+		return tablePrefix;
+	}
+
+	public void initialize(String host, int port, String database, String username, String password) {
+		initialize(host, port, database, username, password, "");
+	}
+
+	public void initialize(String host, int port, String database, String username, String password, String tablePrefix) {
 		HikariConfig config = new HikariConfig();
+
+		this.tablePrefix = tablePrefix;
 
 		try {
 			OsmiumLogger.info("Using MySQL for database storage");
@@ -32,8 +60,6 @@ public class MySQLDatabase {
 			config.setUsername(username);
 			config.setPassword(password);
 			config.setConnectionTestQuery("USE " + database);
-
-			source = new HikariDataSource(config);
 
 			config.setMinimumIdle(2);
 			config.setMaximumPoolSize(10);
@@ -58,18 +84,22 @@ public class MySQLDatabase {
 		source.close();
 	}
 
-	public int preparedStatement(String update, PreparedStatementBuilder builder) {
-		return preparedStatement(update, builder, null);
+	public <T> T get(String query, ResultSetProcessor<T> handler) {
+		return getOrDefault(query, null, handler);
 	}
 
-	public <T> T query(String query, Function<ResultSet, T> handler) {
+	public <T> T getOrDefault(String query, Object defaultValue, ResultSetProcessor<T> handler) {
 		if (source != null) {
 			Statement statement = null;
 			ResultSet resultSet = null;
 			try (Connection connection = source.getConnection()) {
 				statement = connection.createStatement();
 				resultSet = statement.executeQuery(query);
-				return handler.apply(resultSet);
+				if (!resultSet.isBeforeFirst()) {
+					return null;
+				}
+				resultSet.next();
+				return handler.process(resultSet);
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -80,7 +110,7 @@ public class MySQLDatabase {
 	}
 
 	public void query(String query, Consumer<ResultSet> handler) {
-		query(query, rs -> {
+		get(query, rs -> {
 			handler.accept(rs);
 			return null;
 		});
@@ -116,39 +146,189 @@ public class MySQLDatabase {
 		scheduler.submit(() -> preparedStatement(update, builder));
 	}
 
-	public int preparedStatement(String update, PreparedStatementBuilder builder, Consumer<ResultSet> handler) {
-		//		System.out.println("Executing statement: " + update);
-		if (source != null) {
-			PreparedStatement statement = null;
-			ResultSet resultSet = null;
-			try (Connection connection = source.getConnection()) {
-				statement = connection.prepareStatement(update);
-				builder.build(statement);
-				boolean result = statement.execute();
-				if (handler != null) {
-					handler.accept(statement.getResultSet());
-				}
-				return result ? 1 : -1;
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				close(statement, resultSet);
-			}
-		}
-		return -1;
+	/*
+	 * TODO:
+	 * For foreign keys need to decide what the context is. Database level? How
+	 * do we pass around database instance
+	 */
+
+	//	public static void main(String[] args) {
+	//		//		System.out.println(MDBUtil.getCreateTableUpdate(new MDBTableData(RewardClaimsTable.class)));
+	//		System.out.println(MDBUtil.getCreateTableUpdate(new MDBTableData(ProductOrder.class)));
+	//	}
+
+	public int setAll(Class<?> tableClass, String column, Object value) {
+		MDBTableData table = tables.get(tableClass);
+		return preparedStatement("update " + table.getName() + " set " + SQLDatabase.getColumnName(column) + "=?", ps -> MDBUtil.updatePreparedStatement(ps, 1, value));
 	}
 
-	private void close(AutoCloseable... close) {
-		for (AutoCloseable closeable : close) {
-			if (closeable == null) {
-				continue;
+	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit) {
+		MDBTableData table = tables.get(tableClass);
+		return query(table, "SELECT * FROM " + table.getName() + " " + orderBy + " LIMIT " + limit);
+	}
+
+	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int min, int max) {
+		MDBTableData table = tables.get(tableClass);
+		return query(table, "SELECT * FROM " + table.getName() + " " + orderBy + " LIMIT " + min + "," + max);
+	}
+
+	public <T> ArrayList<T> orderBy(Class<T> tableClass, String orderBy, int min, int max) {
+		return orderBy(tableClass, OrderBy.desc(orderBy), min, max);
+	}
+
+	public <T> Optional<T> getFirst(Class<T> tableClass, OrderBy orderBy, String columns, Object... values) {
+		MDBTableData table = tables.get(tableClass);
+		ArrayList<T> result = query(table, "SELECT * FROM " + table.getName()
+				+ " WHERE " + MDBUtil.createWhere(columns.split(","))
+				+ " " + orderBy + " LIMIT 1", values);
+		return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+	}
+
+	@Override
+	public <T> ArrayList<T> query(Class<T> tableClass, String[] columns, Object... values) {
+		MDBTableData tableData = tables.get(tableClass);
+		if (columns == null) {
+			columns = tableData.getPrimaryColumnNames();
+		}
+
+		String query = "SELECT * FROM " + tableData.getName() + " WHERE " + MDBUtil.createWhere(columns);
+		return query(tableData, query, values);
+
+		//		//		DB.get().preparedStatement("", s ->{});
+		//		//		String query = "SELECT * FROM " + tableData.getTableName() + " " + MDBUtil.createJoins(tableData) + " WHERE " + MDBUtil.createWhere(columns, values);
+		//		String query = "SELECT * FROM " + tableData.getName() + " WHERE " + MDBUtil.createWhere(columns);
+		//		OsmiumLogger.warn("EXECUTE: " + query);
+		//		ArrayList<T> results = new ArrayList<>();
+		//		this.preparedStatement(query, s -> {
+		//			for (int i = 0; i < values.length; i++) {
+		//				MDBUtil.updatePreparedStatement(s, i + 1, values[i]);
+		//			}
+		//		}, rs -> {
+		//			try {
+		//				//				if (!rs.isBeforeFirst()) {
+		//				//					//Empty
+		//				//				}
+		//				while (rs.next()) {
+		//					T obj = Reflection.createInstance(tableClass);
+		//					int index = 1;
+		//					if (rs.getMetaData().getColumnCount() != tableData.getColumnCount()) {
+		//						throw new SQLException("Column count mismatch. Database: " + rs.getMetaData().getColumnCount() + " class: " + tableData.getColumnCount());
+		//					}
+		//					for (MDBColumnData column : tableData.getColumns()) {
+		//						//						if (!column.isForeignKey()) {
+		//						MDBUtil.processResultSet(obj, rs, index, column);
+		//						//						}
+		//						index++;
+		//					}
+		//					//					for (MDBColumnData foreignKeyColumn : tableData.getForeignKeyColumns()) {
+		//					//						//TODO: Can't have foreign key to foreign key. Make this recursive?
+		//					//						for (MDBColumnData foreignObjectColumn : foreignKeyColumn.getForeignKey().getColumns()) {
+		//					//							MDBUtil.processResultSet(obj, rs, index, foreignObjectColumn);
+		//					//							index++;
+		//					//						}
+		//					//					}
+		//					results.add(obj);
+		//				}
+		//			} catch (Exception e) {
+		//				e.printStackTrace();
+		//			}
+		//		});
+		//		System.out.println("RESULTS: " + results);
+		//		return results;
+	}
+
+	public <T> ArrayList<T> query(MDBTableData table, String query, Object... values) {
+		//		MDBTableData tableData = tables.get(tableClass);
+		//		if (columns == null) {
+		//			columns = tableData.getPrimaryColumnNames();
+		//		}
+
+		OsmiumLogger.warn("EXECUTE: " + query);
+		ArrayList<T> results = new ArrayList<>();
+		this.preparedStatement(query, s -> {
+			for (int i = 0; i < values.length; i++) {
+				MDBUtil.updatePreparedStatement(s, i + 1, values[i]);
 			}
+		}, rs -> {
 			try {
-				closeable.close();
+				//				if (!rs.isBeforeFirst()) {
+				//					//Empty
+				//				}
+				while (rs.next()) {
+					T obj = Reflection.createInstance(Reflection.cast(table.getTableClass()));
+					int index = 1;
+					if (rs.getMetaData().getColumnCount() != table.getColumnCount()) {
+						throw new SQLException("Column count mismatch. Database: " + rs.getMetaData().getColumnCount() + " class: " + table.getColumnCount());
+					}
+					for (MDBColumnData column : table.getColumns()) {
+						//						if (!column.isForeignKey()) {
+						MDBUtil.processResultSet(obj, rs, index, column);
+						//						}
+						index++;
+					}
+					//					for (MDBColumnData foreignKeyColumn : tableData.getForeignKeyColumns()) {
+					//						//TODO: Can't have foreign key to foreign key. Make this recursive?
+					//						for (MDBColumnData foreignObjectColumn : foreignKeyColumn.getForeignKey().getColumns()) {
+					//							MDBUtil.processResultSet(obj, rs, index, foreignObjectColumn);
+					//							index++;
+					//						}
+					//					}
+					results.add(obj);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		});
+		System.out.println("RESULTS: " + results);
+		return results;
+	}
+
+	@Override
+	public void replaceInto(Class<?> tableClass, Object obj) {
+		MDBTableData tableData = tables.get(tableClass);
+		String update = MDBUtil.createReplaceInto(tableData);
+
+		this.preparedStatement(update, s -> {
+			try {
+				MDBColumnData[] columns = tableData.getColumns();
+				for (int i = 0; i < columns.length; i++) {
+					MDBUtil.updatePreparedStatement(s, i + 1, columns[i].getField().get(obj));
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+	}
+
+	//	public MDBTableData getParentData(Class<?> cls) {
+	//		return tables.get(cls.getSuperclass());
+	//	}
+
+	public MDBTableData getData(Class<?> cls) {
+		MDBTableData data = tables.get(cls);
+		if (data != null) {
+			return data;
 		}
+		registerTable(cls);
+		return tables.get(cls);
+	}
+
+	//	public static <T> T get(Class<T> cls) {
+	//		MDBTableData data = Require.nonNull(tables.get(cls));
+	//		DB.get().query("select * "+ data.getTableName() + , handler);
+	//	}
+
+	public void registerTable(Class<?> cls) {
+		MDBTableData data = new MDBTableData(this, cls);
+		tables.put(cls, data);
+	}
+
+	public void createTable(Class<?> cls) {
+		if (cls.getSuperclass() != Object.class && cls.getSuperclass().isAnnotationPresent(MySQLTable.class)) {
+			createTable(cls.getSuperclass()); //Create parent first if it exists
+		}
+		MDBTableData data = getData(cls);
+		this.update(MDBUtil.getCreateTableUpdate(data));
 	}
 
 }

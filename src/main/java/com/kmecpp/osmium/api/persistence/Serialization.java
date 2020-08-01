@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.kmecpp.osmium.api.config.ConfigSerialization;
-import com.kmecpp.osmium.api.database.DBType;
+import com.kmecpp.osmium.api.database.sqlite.DBType;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Reflection;
 

@@ -14,26 +14,36 @@ public interface Messageable {
 	}
 
 	default void sendTitle(String title) {
-		sendTitle(CS.XEA, title);
+		sendTitle(CS.XAEB, title, true);
+	}
+
+	default void sendTitle(String title, boolean extraLine) {
+		sendTitle(CS.XAEB, title, extraLine);
 	}
 
 	default void sendTitle(CS colors, String title) {
+		sendTitle(colors, title, true);
+	}
+
+	default void sendTitle(CS colors, String title, boolean extraLine) {
 		send("");
 		send(colors.getPrimary() + ChatColor.BOLD.toString() + title);
 		send(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
-		send("");
+		if (extraLine) {
+			send("");
+		}
 	}
 
 	default void sendList(String title, Collection<?> list) {
-		sendList(CS.XEA, title, list);
+		sendList(CS.XAEB, title, list);
 	}
 
 	default void sendNumberedList(String title, Collection<?> list) {
-		sendNumberedList(CS.XEA, title, list);
+		sendNumberedList(CS.XAEB, title, list);
 	}
 
 	default <T> void sendList(String title, Collection<T> list, Function<T, String> serializer) {
-		sendList(CS.XEA, title, list, serializer);
+		sendList(CS.XAEB, title, list, serializer);
 	}
 
 	default void sendList(CS colors, String title, Collection<?> list) {

@@ -18,21 +18,11 @@ public @interface DBColumn {
 	 */
 	boolean primary() default false;
 
-	//	/**
-	//	 * This value indicates the order of the . This value MUST be unique in context with the other columns. Duplicates will not be caught at compile time. This value is used currently just for 
-	//	 * 
-	//	 * @return the columns ID
-	//	 */
-	//	int id() default -1;
-	//
-	//	@SuppressWarnings("rawtypes")
-	//	Class<? extends Serializable> serializer() default Serializable.class;
+	boolean unique() default false;
 
-	boolean notNull() default true;
+	boolean nullable() default false;
 
 	boolean autoIncrement() default false;
-
-	boolean unique() default false;
 
 	int maxLength() default -1;
 
