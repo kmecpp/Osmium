@@ -91,6 +91,10 @@ public abstract class BukkitConfigFile extends YamlConfiguration {
 		return getPersistentObject(path, def);
 	}
 
+	public long getPersistentLong(String path, long def) {
+		return getPersistentObject(path, def);
+	}
+
 	public float getPersistentFloat(String path, float def) {
 		return getPersistentObject(path, def);
 	}
@@ -111,7 +115,9 @@ public abstract class BukkitConfigFile extends YamlConfiguration {
 	public <T> T getPersistentObject(String path, T def, boolean save) { //The existing method this.get(path, def) will not set the default value, only return it
 		if (this.contains(path)) {
 			Object val = this.get(path);
-			if (val.getClass().isAssignableFrom(def.getClass())) {
+			if (val.getClass() == Integer.class && def.getClass() == Long.class) {
+				return (T) new Long(val.toString());
+			} else if (val.getClass().isAssignableFrom(def.getClass())) {
 				return (T) val;
 			} else {
 				throw new RuntimeException("Invalid data type! Expected: '" + def.getClass().getSimpleName() + "' found: " + val.getClass().getSimpleName());

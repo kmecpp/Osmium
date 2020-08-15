@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.api.scheduler.Task.Builder;
 
 import com.kmecpp.osmium.Platform;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public class CountdownTask extends AbstractTask<CountdownTask> {
@@ -81,7 +82,15 @@ public class CountdownTask extends AbstractTask<CountdownTask> {
 					return;
 				}
 
-				task.executor.execute(task);
+				try {
+					if (task.executor != null) {
+						task.executor.execute(task);
+					} else {
+						OsmiumLogger.warn("Ran countdown task with null executor: " + task);
+					}
+				} catch (Throwable t) {
+					t.printStackTrace();
+				}
 				task.remaining--;
 				task.counter++;
 
