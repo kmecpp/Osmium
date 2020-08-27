@@ -3,8 +3,8 @@ package com.kmecpp.osmium.core;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.database.DBColumn;
+import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.database.mysql.MySQLTable;
-import com.kmecpp.osmium.api.database.sqlite.DBTable;
 
 @DBTable(name = "users")
 @MySQLTable(name = "users")

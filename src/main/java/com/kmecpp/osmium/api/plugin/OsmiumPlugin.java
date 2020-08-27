@@ -80,6 +80,7 @@ public abstract class OsmiumPlugin {
 		this.persistentData = new PersistentPluginData(this);
 		this.classProcessor = new ClassProcessor(this, pluginImpl); //This loads the plugin's configs and persistent data
 		this.configTypeData = configTypeData;
+		this.classProcessor.provideInstance(this); //Always register main class. Avoids creating a second instance later 
 		onConstruct();
 
 		//		if (!database.getTables().isEmpty()) {

@@ -23,14 +23,14 @@ public class OsmiumCore extends OsmiumPlugin {
 			throw new IllegalStateException("Plugin already constructed!");
 		}
 	}
-	
+
 	@Override
 	public void onLoad() {
-		TimeUtil.setTimeZone(CoreOsmiumConfig.timeZone);
+		TimeUtil.setTimeZone(OsmiumCoreConfig.timeZone);
 
-		if (CoreOsmiumConfig.Database.useMySql) {
-			this.getMySQLDatabase().initialize(CoreOsmiumConfig.Database.host, CoreOsmiumConfig.Database.port,
-					CoreOsmiumConfig.Database.database, CoreOsmiumConfig.Database.username, CoreOsmiumConfig.Database.password, "osmium");
+		if (OsmiumCoreConfig.Database.useMySql) {
+			this.getMySQLDatabase().initialize("osmium", OsmiumCoreConfig.Database.host, OsmiumCoreConfig.Database.port,
+					OsmiumCoreConfig.Database.database, OsmiumCoreConfig.Database.username, OsmiumCoreConfig.Database.password);
 
 			this.getMySQLDatabase().createTable(UserTable.class);
 		}
@@ -99,7 +99,7 @@ public class OsmiumCore extends OsmiumPlugin {
 	}
 
 	public static SQLDatabase getDatabase() {
-		return CoreOsmiumConfig.Database.useMySql ? instance.getMySQLDatabase() : instance.getSQLiteDatabase();
+		return OsmiumCoreConfig.Database.useMySql ? instance.getMySQLDatabase() : instance.getSQLiteDatabase();
 	}
 
 }

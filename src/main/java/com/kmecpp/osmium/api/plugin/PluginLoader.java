@@ -29,7 +29,13 @@ public class PluginLoader {
 			try {
 				String mainClassName = lines[0].split(":")[1].trim();
 				ClassLoader pluginClassLoader = pluginImpl.getClass().getClassLoader();
-				Class<? extends OsmiumPlugin> main = pluginClassLoader.loadClass(mainClassName).asSubclass(OsmiumPlugin.class);
+				Class<? extends OsmiumPlugin> main;
+				try {
+					main = pluginClassLoader.loadClass(mainClassName).asSubclass(OsmiumPlugin.class);
+				} catch (ClassCastException e) {
+					OsmiumLogger.error("Failed to load plugin: " + mainClassName + ". Does this class extend " + OsmiumPlugin.class.getSimpleName() + "?");
+					throw new RuntimeException(e);
+				}
 
 				OsmiumPlugin plugin = main.newInstance();
 				OsmiumLogger.info("Loading plugin: " + plugin.getName() + " v" + plugin.getVersion());

@@ -18,16 +18,16 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 public class BukkitPlayer extends BukkitEntityLiving implements Player {
 
 	private org.bukkit.entity.Player player;
-	private int id;
+	private int osmiumId;
 
 	public BukkitPlayer(org.bukkit.entity.Player player) {
 		super(player);
 		this.player = player;
 		if (player.getName().startsWith("[") || player.getName().contains("-")) {
-			this.id = -1;
+			this.osmiumId = -1;
 		} else {
 			Optional<Integer> optionalId = Osmium.getUserId(player.getUniqueId());
-			this.id = optionalId.orElse(-1);
+			this.osmiumId = optionalId.orElse(-1);
 			if (!optionalId.isPresent()) {
 				OsmiumLogger.warn("Could not get user ID player: " + player.getName());
 			}
@@ -35,13 +35,18 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 	}
 
 	@Override
-	public int getId() {
-		return id;
+	public int getOsmiumId() {
+		return osmiumId;
 	}
 
 	@Override
 	public org.bukkit.entity.Player getSource() {
 		return player;
+	}
+
+	@Override
+	public String getDisplayName() {
+		return player.getDisplayName();
 	}
 
 	@Override

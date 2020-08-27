@@ -15,8 +15,9 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.HookClass;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.ConfigClass;
+import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.database.PlayerData;
-import com.kmecpp.osmium.api.database.sqlite.DBTable;
+import com.kmecpp.osmium.api.database.mysql.MySQLTable;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventAbstraction;
 import com.kmecpp.osmium.api.event.EventInfo;
@@ -186,13 +187,13 @@ public class ClassProcessor {
 		//			Osmium.getDatabase(plugin).createTable(cls);
 		//			Database.isSerializable(cls);
 		//		}
-		DBTable entity = cls.getAnnotation(DBTable.class);
-		if (entity != null) {
-			OsmiumLogger.debug("Initializing database table: " + entity.name());
+		DBTable sqliteTable = cls.getAnnotation(DBTable.class);
+		if (sqliteTable != null) {
+			OsmiumLogger.debug("Initializing SQLite database table: " + sqliteTable.name());
 			plugin.getSQLiteDatabase().createTable(cls);
 
 			if (PlayerData.class.isAssignableFrom(cls)) {
-				Osmium.getPlayerDataManager().registerType(plugin, Reflection.cast(cls));
+				Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
 			}
 			//			try {
 			//				ClassPool.getDefault().insertClassPath(new ClassClassPath(cls));
@@ -213,6 +214,16 @@ public class ClassProcessor {
 			//				OsmiumLogger.error("Failed to register database table: " + cls.getName());
 			//				e.printStackTrace();
 			//			}
+		}
+
+		MySQLTable mysqlTable = cls.getAnnotation(MySQLTable.class);
+		if (mysqlTable != null) {
+			OsmiumLogger.debug("Initializing MySQL database table: " + mysqlTable.name());
+			plugin.getMySQLDatabase().createTable(cls);
+
+			if (PlayerData.class.isAssignableFrom(cls)) {
+				Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+			}
 		}
 
 		//PERSISTENT FIELDS

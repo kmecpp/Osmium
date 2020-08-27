@@ -1,9 +1,12 @@
 package com.kmecpp.osmium.api.command;
 
+import java.util.ArrayList;
+
 public class CommandBase {
 
 	private final String[] aliases;
 
+	private ArrayList<String> separateAliases;
 	private String description = "";
 	private String permission = "";
 	private String usage = "";
@@ -151,6 +154,13 @@ public class CommandBase {
 		return this.admin ? sender.isOp()
 				: this.hasPermission() ? sender.hasPermission(this.permission)
 						: true;
+	}
+
+	public void and(String separateAlias) {
+		if (separateAliases == null) {
+			separateAliases = new ArrayList<>();
+		}
+		separateAliases.add(separateAlias);
 	}
 
 	public boolean hasPermission() {

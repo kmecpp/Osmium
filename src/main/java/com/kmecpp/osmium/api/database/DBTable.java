@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database.sqlite;
+package com.kmecpp.osmium.api.database;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,5 +10,7 @@ import java.lang.annotation.Target;
 public @interface DBTable {
 
 	String name();
+
+	DatabaseType type() default DatabaseType.SQLITE;
 
 }

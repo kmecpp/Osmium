@@ -16,7 +16,7 @@ public class OsmiumListener {
 
 	@Listener(order = Order.FIRST)
 	public void on(PlayerConnectionEvent.Auth e) {
-		if (CoreOsmiumConfig.Database.useMySql) {
+		if (OsmiumCoreConfig.Database.useMySql) {
 			//			String update = "insert ignore into osmium_users(uuid, name) values (?, ?) on duplicate key update name=?";
 
 			int result = OsmiumCore.getPlugin().getMySQLDatabase()
@@ -48,8 +48,8 @@ public class OsmiumListener {
 
 		System.out.println("DONE");
 
-		getUserId(e.getUniqueId()); //Cache ID
-		Osmium.getPlayerDataManager().onPlayerAuthenticate(e);
+		getUserId(e.getUniqueId()).get(); //Cache ID
+		Osmium.getPlayerDataManager().onPlayerAuthenticate(e, Osmium.getOrCreateUser(e.getUniqueId()).get());
 	}
 
 	@Listener(order = Order.FIRST)
@@ -65,7 +65,7 @@ public class OsmiumListener {
 		Pair<Integer, Long> data = ids.get(uuid);
 		if (data == null) {
 			String query = "select id from osmium_users where uuid='" + uuid + "'";
-			Integer id = OsmiumCore.getPlugin().getMySQLDatabase().get(query, rs -> rs.getInt(1));
+			Integer id = OsmiumCore.getDatabase().get(query, rs -> rs.getInt(1));
 			if (id == null) {
 				return Optional.empty();
 			}
@@ -76,7 +76,7 @@ public class OsmiumListener {
 
 	public static void cleaupIds() {
 		long currentTime = System.currentTimeMillis();
-		ids.entrySet().removeIf(e -> currentTime - e.getValue().getSecond() > 1000 * 60 * 10); //10 Minutes
+		ids.entrySet().removeIf(e -> currentTime - e.getValue().getSecond() > 1000 * 60 * 30); //30 Minutes
 	}
 
 }

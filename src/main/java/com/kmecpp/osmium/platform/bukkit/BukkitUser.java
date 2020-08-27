@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.User;
 
 public class BukkitUser implements User {
@@ -27,6 +28,11 @@ public class BukkitUser implements User {
 	@Override
 	public String getName() {
 		return user.getName();
+	}
+
+	@Override
+	public int getOsmiumId() {
+		return Osmium.getUserId(user.getUniqueId()).orElse(-1);
 	}
 
 	@Override

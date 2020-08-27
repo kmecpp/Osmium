@@ -7,7 +7,7 @@ import com.kmecpp.osmium.api.config.ConfigClass;
 import com.kmecpp.osmium.api.config.Setting;
 
 @ConfigClass(path = "osmium.conf", header = "Osmium configuration file, author: kmecpp, website: https://github.com/kmecpp/Osmium")
-public class CoreOsmiumConfig {
+public class OsmiumCoreConfig {
 
 	//	static {
 	//		Osmium.getConfigManager().registerType(ZoneId.class, ZoneId::getId, ZoneId::of);

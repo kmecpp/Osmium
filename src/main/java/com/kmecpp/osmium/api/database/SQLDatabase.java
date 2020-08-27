@@ -3,6 +3,7 @@ package com.kmecpp.osmium.api.database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,6 +19,31 @@ public abstract class SQLDatabase {
 	private static final ExecutorService threadPool = Executors.newFixedThreadPool(3);
 
 	protected HikariDataSource source;
+
+	public <T> T get(String query, ResultSetProcessor<T> handler) {
+		return getOrDefault(query, null, handler);
+	}
+
+	public <T> T getOrDefault(String query, Object defaultValue, ResultSetProcessor<T> handler) {
+		if (source != null) {
+			Statement statement = null;
+			ResultSet resultSet = null;
+			try (Connection connection = source.getConnection()) {
+				statement = connection.createStatement();
+				resultSet = statement.executeQuery(query);
+				if (!resultSet.isBeforeFirst()) {
+					return null;
+				}
+				resultSet.next();
+				return handler.process(resultSet);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				close(statement, resultSet);
+			}
+		}
+		return null;
+	}
 
 	public <T> T get(Class<T> tableClass, Object... primaryKeys) {
 		return getOrDefault(tableClass, null, primaryKeys);
@@ -64,6 +90,23 @@ public abstract class SQLDatabase {
 
 	public void replaceIntoAsync(Class<?> tableClass, Object obj) {
 		updateAsync(() -> replaceInto(tableClass, obj));
+	}
+
+	public int update(String update) {
+		System.out.println("Executing update: " + update);
+		if (source != null) {
+			Statement statement = null;
+			ResultSet resultSet = null;
+			try (Connection connection = source.getConnection()) {
+				statement = connection.createStatement();
+				return statement.executeUpdate(update);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				close(statement, resultSet);
+			}
+		}
+		return -1;
 	}
 
 	public void updateAsync(Runnable runnable) {

@@ -21,7 +21,7 @@ import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.IOUtil;
 import com.kmecpp.osmium.api.util.Reflection;
-import com.kmecpp.osmium.core.CoreOsmiumConfig;
+import com.kmecpp.osmium.core.OsmiumCoreConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
@@ -115,6 +115,7 @@ public class Database extends SQLDatabase {
 	 * @param update
 	 *            the SQL statement to execute
 	 */
+	@Override //TODO: Move this to superclass
 	public int update(String update) {
 		OsmiumLogger.debug("Executing update" + (Thread.currentThread().getClass().equals(QueueExecutor.class) ? " asynchronously" : "") + ": \"" + update + "\"");
 		Connection connection = null;
@@ -125,7 +126,7 @@ public class Database extends SQLDatabase {
 			return statement.executeUpdate(update);
 		} catch (SQLException e) {
 			OsmiumLogger.error("Failed to execute database update!");
-			if (!CoreOsmiumConfig.debug) {
+			if (!OsmiumCoreConfig.debug) {
 				OsmiumLogger.error("Failed update: '" + update + "'");
 			}
 			e.printStackTrace();

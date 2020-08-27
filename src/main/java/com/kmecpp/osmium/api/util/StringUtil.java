@@ -104,7 +104,12 @@ public class StringUtil {
 	}
 
 	public static String plural(long amount, String label) {
-		return amount + " " + pluralLabel(label, amount);
+		if (label == null || label.isEmpty()) {
+			return "";
+		}
+		char last = label.charAt(label.length() - 1);
+		boolean plural = amount != 1 && Character.isLetter(last) && Character.isLowerCase(last) && last != 's';
+		return amount + " " + (plural ? label + "s" : label);
 	}
 
 	public static String plural(long amount, String label, String amountPrefix, String labelPrefix) {

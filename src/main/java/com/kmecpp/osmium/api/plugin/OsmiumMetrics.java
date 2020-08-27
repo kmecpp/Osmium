@@ -23,7 +23,7 @@ import com.eclipsesource.json.JsonObject;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
-import com.kmecpp.osmium.core.CoreOsmiumConfig;
+import com.kmecpp.osmium.core.OsmiumCoreConfig;
 
 public class OsmiumMetrics {
 
@@ -38,7 +38,7 @@ public class OsmiumMetrics {
 
 	public void register(OsmiumPlugin plugin) {
 		plugins.put(plugin, new ArrayList<>());
-		if (CoreOsmiumConfig.Metrics.enabled && !active) {
+		if (OsmiumCoreConfig.Metrics.enabled && !active) {
 			active = true;
 			startSubmitting();
 		}
@@ -78,7 +78,7 @@ public class OsmiumMetrics {
 				try {
 					sendData(collectData());
 				} catch (Exception e) {
-					if (CoreOsmiumConfig.Metrics.logErrors) {
+					if (OsmiumCoreConfig.Metrics.logErrors) {
 						OsmiumLogger.warn("Failed to submit Osmium plugin metrics!");
 						e.printStackTrace();
 					}
@@ -110,7 +110,7 @@ public class OsmiumMetrics {
 	private JsonObject collectData() {
 		JsonObject json = new JsonObject();
 
-		json.set("serverUUID", CoreOsmiumConfig.Metrics.serverId.toString());
+		json.set("serverUUID", OsmiumCoreConfig.Metrics.serverId.toString());
 
 		json.set("playerAmount", Osmium.getOnlinePlayers().size());
 		json.set("onlineMode", Osmium.getOnlineMode() ? 1 : 0);
@@ -243,7 +243,7 @@ public class OsmiumMetrics {
 				}
 				chart.set("data", data);
 			} catch (Throwable t) {
-				if (CoreOsmiumConfig.debug) {
+				if (OsmiumCoreConfig.debug) {
 					OsmiumLogger.debug("Failed to get data for custom chart with id " + chartId);
 					t.printStackTrace();
 				}

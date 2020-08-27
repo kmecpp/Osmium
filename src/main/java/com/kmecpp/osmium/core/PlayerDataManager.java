@@ -6,10 +6,11 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.database.MultiplePlayerData;
 import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.database.mysql.MySQLTable;
@@ -22,8 +23,11 @@ import com.kmecpp.osmium.api.util.Reflection;
 public class PlayerDataManager {
 
 	private final HashMap<OsmiumPlugin, ArrayList<Class<?>>> registeredTypes = new HashMap<>();
-	private final HashMap<UUID, HashMap<Class<? extends PlayerData>, PlayerData>> data = new HashMap<>();
+	private final HashMap<UUID, HashMap<Class<?>, Object>> data = new HashMap<>();
+	//	private final HashMap<UUID, HashMap<Class<? extends PlayerData>, PlayerData>> playerData = new HashMap<>();
 	private final HashMap<UUID, HashMap<Class<? extends MultiplePlayerData<?>>, HashMap<?, MultiplePlayerData<?>>>> multipleData = new HashMap<>();
+
+	private final HashMap<Class<?>, Function<User, ?>> loaders = new HashMap<>();
 
 	void start() {
 		//Safely remove offline players
@@ -38,10 +42,19 @@ public class PlayerDataManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends PlayerData> T getData(Player player, Class<T> dataType) {
-		//		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + data.get(player.getUniqueId()));
-		return (T) data.get(player.getUniqueId()).get(dataType);
+	public <T> T getData(Player player, Class<T> cls) {
+		return (T) data.get(player.getUniqueId()).get(cls);
 	}
+
+	public <T> void registerDataLoader(Class<T> cls, Function<User, T> loader) {
+		loaders.put(cls, loader);
+	}
+
+	//	@SuppressWarnings("unchecked")
+	//	public <T extends PlayerData> T getPlayerData(Player player, Class<T> dataType) {
+	//		//		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + data.get(player.getUniqueId()));
+	//		return (T) playerData.get(player.getUniqueId()).get(dataType);
+	//	}
 
 	public <K, V extends MultiplePlayerData<K>> HashMap<K, V> getAll(Player player, Class<V> dataType) {
 		//		System.out.println("GETTING PLAYER FOR: " + player.getName() + " :: " + data.get(player.getUniqueId()));
@@ -49,7 +62,8 @@ public class PlayerDataManager {
 		return Reflection.cast(multipleData.get(player.getUniqueId()).get(dataType));
 	}
 
-	public void registerType(OsmiumPlugin plugin, Class<?> dataType) {
+	//TODO: Phase this out in favor of an abstraction that utilizes the osmium user id
+	public void registerPlayerDataType(OsmiumPlugin plugin, Class<?> dataType) {
 		ArrayList<Class<?>> types = registeredTypes.get(plugin);
 		if (types == null) {
 			types = new ArrayList<>();
@@ -58,9 +72,10 @@ public class PlayerDataManager {
 		types.add(dataType);
 	}
 
-	public final void registerTypes(OsmiumPlugin plugin, Class<?>... types) {
+	@SafeVarargs
+	public final void registerPlayerDataTypes(OsmiumPlugin plugin, Class<?>... types) {
 		for (Class<?> cls : types) {
-			registerType(plugin, cls);
+			registerPlayerDataType(plugin, cls);
 		}
 	}
 
@@ -71,7 +86,7 @@ public class PlayerDataManager {
 	@SuppressWarnings("unchecked")
 	public <T> Set<Entry<UUID, T>> get(Class<T> type, boolean onlyOnline) {
 		HashMap<UUID, T> map = new HashMap<>();
-		for (Entry<UUID, HashMap<Class<? extends PlayerData>, PlayerData>> entry : data.entrySet()) {
+		for (Entry<UUID, HashMap<Class<?>, Object>> entry : data.entrySet()) {
 			if (!onlyOnline || (onlyOnline && Osmium.isPlayerOnline(entry.getKey()))) {
 				map.put(entry.getKey(), (T) entry.getValue().get(type));
 			}
@@ -83,17 +98,27 @@ public class PlayerDataManager {
 		return registeredTypes.getOrDefault(plugin, new ArrayList<>());
 	}
 
-	public <T> void forEach(Class<T> type, Consumer<T> consumer) {
-		//				for()
-	}
+	//	public <T> void forEach(Class<T> type, Consumer<T> consumer) {
+	//						for()
+	//	}
 
 	//This is not in core so it can't listen to events
-	public <K> void onPlayerAuthenticate(PlayerConnectionEvent.Auth e) {
+	public <K> void onPlayerAuthenticate(PlayerConnectionEvent.Auth e, User user) {
 		//		System.out.println("AUTHENCIATED!");
 		long start = System.currentTimeMillis();
+
+		loaders.entrySet().forEach(entry -> {
+			try {
+				Class<?> dataClass = entry.getKey();
+				Object data = entry.getValue().apply(user);
+				this.data.computeIfAbsent(e.getUniqueId(), k -> new HashMap<>()).put(dataClass, data);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		});
+
 		for (Entry<OsmiumPlugin, ArrayList<Class<?>>> entry : registeredTypes.entrySet()) {
 			OsmiumPlugin plugin = entry.getKey();
-
 			for (Class<?> rawType : entry.getValue()) {
 				try {
 					if (MultiplePlayerData.class.isAssignableFrom(rawType)) {
@@ -146,9 +171,13 @@ public class PlayerDataManager {
 	}
 
 	public void savePlayer(Player player) {
-		HashMap<Class<? extends PlayerData>, PlayerData> playerData = this.data.get(player.getUniqueId());
+		HashMap<Class<?>, Object> playerData = this.data.get(player.getUniqueId());
 		if (playerData != null) {
-			playerData.entrySet().forEach(e -> e.getValue().save());
+			playerData.entrySet().forEach(e -> {
+				if (e.getValue() instanceof PlayerData) {
+					((PlayerData) e.getValue()).save();
+				}
+			});
 		}
 
 		//		HashMap<Class<? extends MultiplePlayerData<?>>, HashMap<?, ArrayList<MultiplePlayerData<?>>>> multiplePlayerData = this.multipleData.get(player.getUniqueId());

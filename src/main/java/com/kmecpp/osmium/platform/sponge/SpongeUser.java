@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.User;
 
 public class SpongeUser implements User {
@@ -28,6 +29,11 @@ public class SpongeUser implements User {
 	@Override
 	public String getName() {
 		return user.getName();
+	}
+
+	@Override
+	public int getOsmiumId() {
+		return Osmium.getUserId(user.getUniqueId()).orElse(-1);
 	}
 
 	@Override

@@ -12,6 +12,8 @@ public interface User extends Abstraction {
 
 	String getName();
 
+	int getOsmiumId();
+
 	boolean isOp();
 
 	long getLastPlayed();

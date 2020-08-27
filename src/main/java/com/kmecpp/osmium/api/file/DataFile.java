@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.kmecpp.osmium.api.util.FileUtil;
-import com.kmecpp.osmium.core.CoreOsmiumConfig;
+import com.kmecpp.osmium.core.OsmiumCoreConfig;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ValueType;
@@ -26,7 +26,7 @@ public abstract class DataFile {
 		}
 
 		this.path = Paths.get(properties.path());
-		if (CoreOsmiumConfig.configFormat.equals("YAML")) {
+		if (OsmiumCoreConfig.configFormat.equals("YAML")) {
 			this.loader = YAMLConfigurationLoader.builder().setPath(path).build();
 		} else {
 			this.loader = HoconConfigurationLoader.builder().setPath(path).build();

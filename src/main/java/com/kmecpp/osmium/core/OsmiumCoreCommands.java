@@ -13,9 +13,9 @@ import com.kmecpp.osmium.api.util.StringUtil;
 
 // @CommandProperties(aliases = { "osmium", "os", "om", "o" }, description =
 // "Base command for interacting with the Osmium API")
-public class CoreOsmiumCommands extends Command {
+public class OsmiumCoreCommands extends Command {
 
-	public CoreOsmiumCommands() {
+	public OsmiumCoreCommands() {
 		super("osmium", "os", "om", "o");
 		setDescription("Base command for interacting with the Osmium API");
 
@@ -34,8 +34,8 @@ public class CoreOsmiumCommands extends Command {
 		});
 
 		add("debug").setDescription("Toggles debug mode").setExecutor((e) -> {
-			boolean result = CoreOsmiumConfig.debug = !CoreOsmiumConfig.debug;
-			Osmium.saveConfig(CoreOsmiumConfig.class);
+			boolean result = OsmiumCoreConfig.debug = !OsmiumCoreConfig.debug;
+			Osmium.saveConfig(OsmiumCoreConfig.class);
 			e.send("&eOsmium debug mode: " + (result ? "&aenabled" : "&cdisabled"));
 		});
 

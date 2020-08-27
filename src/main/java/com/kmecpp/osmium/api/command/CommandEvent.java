@@ -287,6 +287,10 @@ public class CommandEvent implements Messageable {
 		throw new CommandException(message);
 	}
 
+	public void fail(String message) {
+		throw new CommandException(message);
+	}
+
 	public void usageError() {
 		throw CommandException.USAGE_ERROR;
 	}

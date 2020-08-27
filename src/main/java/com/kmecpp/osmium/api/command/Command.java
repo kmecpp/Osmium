@@ -71,10 +71,6 @@ public class Command extends CommandBase {
 		}
 	}
 
-	public final CommandBase add(String name) {
-		return add(name, new String[0]);
-	}
-
 	public final CommandBase add(String name, String... aliases) {
 		CommandBase arg = new CommandBase(name, aliases);
 		args.add(arg);

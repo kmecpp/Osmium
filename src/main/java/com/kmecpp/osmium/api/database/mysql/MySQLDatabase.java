@@ -1,9 +1,7 @@
 package com.kmecpp.osmium.api.database.mysql;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
@@ -12,7 +10,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import com.kmecpp.osmium.api.database.OrderBy;
-import com.kmecpp.osmium.api.database.ResultSetProcessor;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -44,10 +41,10 @@ public class MySQLDatabase extends SQLDatabase {
 	}
 
 	public void initialize(String host, int port, String database, String username, String password) {
-		initialize(host, port, database, username, password, "");
+		initialize("", host, port, database, username, password);
 	}
 
-	public void initialize(String host, int port, String database, String username, String password, String tablePrefix) {
+	public void initialize(String tablePrefix, String host, int port, String database, String username, String password) {
 		HikariConfig config = new HikariConfig();
 
 		this.tablePrefix = tablePrefix;
@@ -84,53 +81,11 @@ public class MySQLDatabase extends SQLDatabase {
 		source.close();
 	}
 
-	public <T> T get(String query, ResultSetProcessor<T> handler) {
-		return getOrDefault(query, null, handler);
-	}
-
-	public <T> T getOrDefault(String query, Object defaultValue, ResultSetProcessor<T> handler) {
-		if (source != null) {
-			Statement statement = null;
-			ResultSet resultSet = null;
-			try (Connection connection = source.getConnection()) {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (!resultSet.isBeforeFirst()) {
-					return null;
-				}
-				resultSet.next();
-				return handler.process(resultSet);
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				close(statement, resultSet);
-			}
-		}
-		return null;
-	}
-
 	public void query(String query, Consumer<ResultSet> handler) {
 		get(query, rs -> {
 			handler.accept(rs);
 			return null;
 		});
-	}
-
-	public int update(String update) {
-		System.out.println("Executing update: " + update);
-		if (source != null) {
-			Statement statement = null;
-			ResultSet resultSet = null;
-			try (Connection connection = source.getConnection()) {
-				statement = connection.createStatement();
-				return statement.executeUpdate(update);
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				close(statement, resultSet);
-			}
-		}
-		return -1;
 	}
 
 	public Completer updateAsync(String update) {

@@ -342,6 +342,29 @@ public final class Osmium {
 		}
 	}
 
+	public static Optional<String> lookupName(UUID uuid) {
+		try {
+			return Optional.of(WebUtil.getPlayerName(uuid));
+		} catch (Exception e) {
+			return Optional.empty();
+		}
+	}
+
+	public static Optional<User> getOrCreateUser(UUID uuid) {
+		if (Platform.isBukkit()) {
+			OfflinePlayer user = Bukkit.getOfflinePlayer(uuid);
+			return Optional.of(new BukkitUser(user));
+		} else if (Platform.isSponge()) {
+			try {
+				org.spongepowered.api.profile.GameProfile gameProfile = Sponge.getServer().getGameProfileManager().get(uuid).get();
+				return Optional.of(new SpongeUser(Sponge.getServiceManager().provide(UserStorageService.class).get().getOrCreate(gameProfile)));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return Optional.empty();
+	}
+
 	public static Optional<User> getUser(UUID uuid) {
 		if (Platform.isBukkit()) {
 			OfflinePlayer user = Bukkit.getOfflinePlayer(uuid);
