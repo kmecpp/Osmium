@@ -38,6 +38,39 @@ public class StringUtil {
 		return sb.toString();
 	}
 
+	public static boolean isNumber(String str) {
+		if (str == null) {
+			return false;
+		}
+		boolean decimal = false;
+		char[] chars = str.toCharArray();
+
+		int index = 0;
+		if (chars.length == 0) {
+			return false;
+		}
+
+		if (chars[0] == '-') {
+			index++;
+			if (chars.length == 1) {
+				return false;
+			}
+		}
+
+		for (; index < chars.length; index++) {
+			char c = chars[index];
+			if (c == '.') {
+				if (decimal) {
+					return false;
+				}
+				decimal = true;
+			} else if (!Character.isDigit(c)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static void add(StringBuilder sb, String str) {
 		if (str.isEmpty()) {
 			return;
@@ -733,6 +766,13 @@ public class StringUtil {
 		return str.length() > 0
 				? "aeiou".indexOf(Character.toLowerCase(str.charAt(0))) >= 0
 				: false;
+	}
+
+	public static boolean isNullOrEmpty(String str) {
+		if (str == null) {
+			return true;
+		}
+		return str.isEmpty();
 	}
 
 	/**

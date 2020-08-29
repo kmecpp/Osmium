@@ -28,10 +28,12 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 
 	private static StringBuilder data = new StringBuilder();
 
-	private static HashSet<Element> mapSerialzableElements = new HashSet<>();
+	private static HashSet<Element> mapSerializableElements = new HashSet<>();
+
+	//	privaet static 
 
 	public void finish() {
-		process(mapSerialzableElements);
+		process(mapSerializableElements);
 
 		if (data.length() > 0) {
 			writeRawFile("CONFIG_TYPES", data.toString());
@@ -48,7 +50,7 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 		}
 
 		Set<? extends Element> mapSerializable = roundEnv.getElementsAnnotatedWith(ConfigSerializable.class);
-		mapSerialzableElements.addAll(mapSerializable);
+		mapSerializableElements.addAll(mapSerializable);
 
 		Set<? extends Element> configElements = roundEnv.getElementsAnnotatedWith(ConfigClass.class);
 		Set<? extends Element> dataElements = roundEnv.getElementsAnnotatedWith(MapSerializable.class);

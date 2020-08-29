@@ -1,6 +1,5 @@
 package com.kmecpp.osmium.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -22,7 +21,7 @@ import com.kmecpp.osmium.api.util.Reflection;
 
 public class PlayerDataManager {
 
-	private final HashMap<OsmiumPlugin, ArrayList<Class<?>>> registeredTypes = new HashMap<>();
+	private final HashMap<OsmiumPlugin, HashSet<Class<?>>> registeredTypes = new HashMap<>();
 	private final HashMap<UUID, HashMap<Class<?>, Object>> data = new HashMap<>();
 	//	private final HashMap<UUID, HashMap<Class<? extends PlayerData>, PlayerData>> playerData = new HashMap<>();
 	private final HashMap<UUID, HashMap<Class<? extends MultiplePlayerData<?>>, HashMap<?, MultiplePlayerData<?>>>> multipleData = new HashMap<>();
@@ -64,9 +63,9 @@ public class PlayerDataManager {
 
 	//TODO: Phase this out in favor of an abstraction that utilizes the osmium user id
 	public void registerPlayerDataType(OsmiumPlugin plugin, Class<?> dataType) {
-		ArrayList<Class<?>> types = registeredTypes.get(plugin);
+		HashSet<Class<?>> types = registeredTypes.get(plugin);
 		if (types == null) {
-			types = new ArrayList<>();
+			types = new HashSet<>();
 			registeredTypes.put(plugin, types);
 		}
 		types.add(dataType);
@@ -94,8 +93,8 @@ public class PlayerDataManager {
 		return map.entrySet();
 	}
 
-	public ArrayList<Class<?>> getRegisteredTypes(OsmiumPlugin plugin) {
-		return registeredTypes.getOrDefault(plugin, new ArrayList<>());
+	public HashSet<Class<?>> getRegisteredTypes(OsmiumPlugin plugin) {
+		return registeredTypes.getOrDefault(plugin, new HashSet<>());
 	}
 
 	//	public <T> void forEach(Class<T> type, Consumer<T> consumer) {
@@ -117,7 +116,7 @@ public class PlayerDataManager {
 			}
 		});
 
-		for (Entry<OsmiumPlugin, ArrayList<Class<?>>> entry : registeredTypes.entrySet()) {
+		for (Entry<OsmiumPlugin, HashSet<Class<?>>> entry : registeredTypes.entrySet()) {
 			OsmiumPlugin plugin = entry.getKey();
 			for (Class<?> rawType : entry.getValue()) {
 				try {

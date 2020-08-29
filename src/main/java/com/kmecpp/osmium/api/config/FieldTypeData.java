@@ -9,14 +9,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.api.persistence.Serialization;
 
-public class TypeData {
+public class FieldTypeData {
 
 	private Class<?> type;
-	private List<TypeData> args;
+	private List<FieldTypeData> args;
 
 	//	private TypeToken<?> typeToken;
 
@@ -33,7 +34,7 @@ public class TypeData {
 		primitives.put("char", char.class);
 	}
 
-	public TypeData(Class<?> type, List<TypeData> generics) {
+	public FieldTypeData(Class<?> type, List<FieldTypeData> generics) {
 		this.type = type;
 		this.args = generics;
 
@@ -69,16 +70,25 @@ public class TypeData {
 	//		return typeToken;
 	//	}
 
-	public List<TypeData> getGenerics() {
+	public List<FieldTypeData> getGenerics() {
 		return args;
 	}
 
-	//	public void walk(Consumer<TypeData> f) {
-	//		f.accept(this);
-	//		for (TypeData typeData : args) {
-	//			typeData.walk(f);
-	//		}
-	//	}
+	public List<FieldTypeData> flattenArgs() {
+		ArrayList<FieldTypeData> list = new ArrayList<>();
+		for (FieldTypeData fieldTypeData : args) {
+			list.add(fieldTypeData);
+			list.addAll(fieldTypeData.flattenArgs());
+		}
+		return list;
+	}
+
+	public void walk(Consumer<FieldTypeData> f) {
+		for (FieldTypeData typeData : args) {
+			f.accept(typeData);
+			typeData.walk(f);
+		}
+	}
 
 	/*
 	 * ArrayList<String>
@@ -87,8 +97,8 @@ public class TypeData {
 	 * java.util.ArrayList<java.util.HashSet<java.lang.String>>>
 	 */
 	//java.util.HashMap<java.util.HashMap<java.lang.String,java.lang.String>,java.util.ArrayList<java.util.HashSet<java.lang.String>>>
-	public static TypeData parse(String str) throws ClassNotFoundException {
-		Stack<TypeData> stack = new Stack<>();
+	public static FieldTypeData parse(String str) throws ClassNotFoundException {
+		Stack<FieldTypeData> stack = new Stack<>();
 		StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < str.length(); i++) {
@@ -96,15 +106,15 @@ public class TypeData {
 			if (c == ' ') {
 				continue; //There shouldn't be any strings in the actual string but this makes testing easier
 			} else if (c == '<') {
-				stack.push(new TypeData(Class.forName(sb.toString()), new ArrayList<>()));
+				stack.push(new FieldTypeData(Class.forName(sb.toString()), new ArrayList<>()));
 				sb.setLength(0);
 			} else if (c == '>') {
-				TypeData popped = stack.pop();
+				FieldTypeData popped = stack.pop();
 				//				System.out.println("POPPED: " + popped);
 
 				if (sb.length() > 0) { //Only do this if we're at the end of a type (we might not be)
 					Class<?> read = Class.forName(sb.toString());
-					popped.args.add(new TypeData(read, new ArrayList<>()));
+					popped.args.add(new FieldTypeData(read, new ArrayList<>()));
 					sb.setLength(0);
 				}
 
@@ -116,7 +126,7 @@ public class TypeData {
 			} else if (c == ',') {
 				if (sb.length() > 0) { //There may be a comma after a '>' in which case we're at the begging of a type not the end like here
 					Class<?> read = Class.forName(sb.toString());
-					stack.peek().args.add(new TypeData(read, new ArrayList<>()));
+					stack.peek().args.add(new FieldTypeData(read, new ArrayList<>()));
 					sb.setLength(0);
 				}
 			} else {
@@ -127,7 +137,7 @@ public class TypeData {
 		String typeName = sb.toString();
 		Class<?> type = primitives.get(typeName);
 		type = type != null ? type : Class.forName(typeName); //Can't use getOrDefault because Class.forName() with throw and error
-		return new TypeData(type, Collections.emptyList()); //Simple type
+		return new FieldTypeData(type, Collections.emptyList()); //Simple type
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

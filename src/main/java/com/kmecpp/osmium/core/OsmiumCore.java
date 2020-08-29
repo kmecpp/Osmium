@@ -29,7 +29,8 @@ public class OsmiumCore extends OsmiumPlugin {
 		TimeUtil.setTimeZone(OsmiumCoreConfig.timeZone);
 
 		if (OsmiumCoreConfig.Database.useMySql) {
-			this.getMySQLDatabase().initialize("osmium", OsmiumCoreConfig.Database.host, OsmiumCoreConfig.Database.port,
+			this.getMySQLDatabase().setTablePrefix("osmium");
+			this.getMySQLDatabase().initialize(OsmiumCoreConfig.Database.host, OsmiumCoreConfig.Database.port,
 					OsmiumCoreConfig.Database.database, OsmiumCoreConfig.Database.username, OsmiumCoreConfig.Database.password);
 
 			this.getMySQLDatabase().createTable(UserTable.class);

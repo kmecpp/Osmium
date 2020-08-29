@@ -15,6 +15,7 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Completer;
 import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.api.util.StringUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
@@ -36,18 +37,22 @@ public class MySQLDatabase extends SQLDatabase {
 		return plugin;
 	}
 
+	public void setTablePrefix(String tablePrefix) {
+		this.tablePrefix = tablePrefix;
+	}
+
 	public String getTablePrefix() {
 		return tablePrefix;
 	}
 
 	public void initialize(String host, int port, String database, String username, String password) {
-		initialize("", host, port, database, username, password);
-	}
-
-	public void initialize(String tablePrefix, String host, int port, String database, String username, String password) {
 		HikariConfig config = new HikariConfig();
 
-		this.tablePrefix = tablePrefix;
+		if (StringUtil.isNullOrEmpty(database)) {
+			throw new IllegalArgumentException("Cannot initializing empty database for plugin: " + plugin.getName());
+		}
+
+		//		OsmiumLogger.error("INITIALIZING MYSQL DATABASE WITH PREFIX: " + tablePrefix);
 
 		try {
 			OsmiumLogger.info("Using MySQL for database storage");

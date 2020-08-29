@@ -23,6 +23,8 @@ public class ConfigManager {
 	private static final HashMap<OsmiumPlugin, HashSet<Class<?>>> pluginConfigs = new HashMap<>();
 	private static final HashMap<Class<?>, ConfigData> configData = new HashMap<>();
 
+	private static final HashMap<Class<?>, ClassTypeData> globalTypeData = new HashMap<>();
+
 	//	public static void main(String[] args) throws Exception {
 	//		TypeData.parse("java.util.ArrayList<java.lang.String>");
 	//		TypeData.parse("java.util.HashMap<java.lang.String,java.lang.String>");
@@ -97,15 +99,24 @@ public class ConfigManager {
 			OsmiumPlugin plugin = Osmium.getPlugin(configClass);
 			pluginData = plugin.getConfigTypeData();
 			configPath = Osmium.getPlugin(configClass).getFolder().resolve(configProperties.path());
-
 		}
 
-		ClassTypeData configTypeData;
+		HashMap<Class<?>, ClassTypeData> configTypeData;
 		try {
 			configTypeData = pluginData.getForConfigClass(configClass);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+
+		//		for (Entry<Class<?>, ClassTypeData> entry : configTypeData.entrySet()) {
+		//generateFieldTypeMap(cls, classTypeData)
+		//		}
+
+		globalTypeData.putAll(configTypeData);
+		//		System.out.println("------------------------------------");
+		//		for (Entry<Class<?>, ClassTypeData> entry : configTypeData.entrySet()) {
+		//			System.out.println();
+		//		}
 
 		//		System.out.println("CONFIG CLASS: " + configClass);
 		//		System.out.println("FIELD TYPE MAP: " + configTypeData);
@@ -116,8 +127,16 @@ public class ConfigManager {
 			String name = getName(field, setting);
 			String virtualPath = getVirtualPath(field, name);
 
-			TypeData typeData = configTypeData.get(field);
-			//			System.out.println("LOADED TYPE DATA FOR " + physicalPath + " == " + typeData);
+			FieldTypeData typeData = configTypeData.get(configClass).get(field);
+
+			//			typeData.walk(subTypeData -> {
+			//				System.out.println("SUB TYPE DATA: " + subTypeData);
+			//				if (subTypeData.getClass().isAnnotationPresent(ConfigSerializable.class)) {
+			//
+			//				}
+			//			});
+			//			System.out.println();
+			//			System.out.println("LOADED TYPE DATA FOR " + virtualPath + " == " + typeData);
 			FieldData fieldData = new FieldData(field, name, setting, typeData);
 			fieldDataMap.put(virtualPath, fieldData);
 		});
@@ -127,15 +146,41 @@ public class ConfigManager {
 		return data;
 	}
 
+	//	private static HashMap<String, FieldData> generateFieldTypeMap(Class<?> cls, ClassTypeData classTypeData) {
+	//		HashMap<String, FieldData> result = new HashMap<>();
+	//		Reflection.walk(cls, true, (field) -> {
+	//			Setting setting = field.getAnnotation(Setting.class);
+	//			String name = getName(field, setting);
+	//			String virtualPath = getVirtualPath(field, name);
+	//
+	//			FieldTypeData typeData = classTypeData.get(field);
+	//
+	//			globalTypeData.putAll(configTypeData);
+	//
+	//			System.out.println("LOADED TYPE DATA FOR " + virtualPath + " == " + typeData);
+	//			FieldData fieldData = new FieldData(field, name, setting, typeData);
+	//			result.put(virtualPath, fieldData);
+	//		});
+	//		return result;
+	//	}
+
 	public void load(Class<?> configClass) throws IOException {
 		OsmiumLogger.info("Loading config: " + configClass.getName());
 		getConfigData(configClass).load();
+		if (OsmiumConfig.class.isAssignableFrom(configClass)) {
+			configInstances.computeIfAbsent(configClass, k -> Reflection.cast(Reflection.createInstance(configClass))).onLoad();
+		}
 	}
 
 	public void save(Class<?> configClass) throws IOException {
 		OsmiumLogger.info("Saving config: " + configClass.getName());
 		getConfigData(configClass).save();
+		if (OsmiumConfig.class.isAssignableFrom(configClass)) {
+			configInstances.computeIfAbsent(configClass, k -> Reflection.cast(Reflection.createInstance(configClass))).onSave();
+		}
 	}
+
+	private static HashMap<Class<?>, OsmiumConfig> configInstances = new HashMap<>();
 
 	//	@ConfigClass(path = "hub/entity-portals.conf")
 	//	public static class ConfigReal {
@@ -167,6 +212,10 @@ public class ConfigManager {
 	//
 	//	}
 
+	public static ClassTypeData getTypeData(Class<?> cls) {
+		return globalTypeData.get(cls);
+	}
+
 	public static String getPhysicalPath(Field field, int truncate) {
 		return getFullPath(field).substring(truncate); //Truncate must come last
 	}
@@ -178,12 +227,13 @@ public class ConfigManager {
 	public static String getVirtualPath(Field field, String name) {
 		Class<?> current = field.getDeclaringClass();
 		ArrayList<String> list = new ArrayList<>(Arrays.asList(name));
-		while (!current.isAnnotationPresent(ConfigClass.class)) {
+		while (!current.isAnnotationPresent(ConfigClass.class) && !current.isAnnotationPresent(ConfigSerializable.class)) {
 			list.add(0, normalizeName(current.getSimpleName()));
 			current = current.getEnclosingClass();
 		}
 
 		//		(enclosingPath + "." + field.getName()).replace('$', '.').substring(truncate).toLowerCase();
+		//		System.out.println("GET VIRTUAL PATH: " + String.join(".", list).toLowerCase());
 		return String.join(".", list).toLowerCase();
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.api.util.StringUtil;
 
 public class MDBTableData {
 
@@ -29,7 +30,7 @@ public class MDBTableData {
 			throw new IllegalArgumentException("Missing @" + MySQLTable.class.getSimpleName() + " annotation");
 		}
 
-		this.name = database.getTablePrefix() + "_" + meta.name();
+		this.name = (StringUtil.isNullOrEmpty(database.getTablePrefix()) ? "" : database.getTablePrefix() + "_") + meta.name();
 
 		//		MDBTableData parentData = manager.getParentData(cls);
 		//		if (parentData != null) {
@@ -90,6 +91,11 @@ public class MDBTableData {
 
 	public String[] getPrimaryColumnNames() {
 		return primaryColumnNames;
+	}
+
+	@Override
+	public String toString() {
+		return "TableData[name: " + name + "]";
 	}
 
 	//	public MDBColumnData[] getForeignKeyColumns() {

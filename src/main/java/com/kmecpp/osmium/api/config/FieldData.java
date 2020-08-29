@@ -7,7 +7,7 @@ public class FieldData {
 	private final Field field;
 	private final String name;
 	private final Setting setting;
-	private final TypeData typeData;
+	private final FieldTypeData typeData;
 
 	//	public FieldData(Field field, TypeData typeData) {
 	//		this.field = field;
@@ -16,7 +16,7 @@ public class FieldData {
 	//		this.typeData = typeData;
 	//	}
 
-	public FieldData(Field field, String name, Setting setting, TypeData typeData) {
+	public FieldData(Field field, String name, Setting setting, FieldTypeData typeData) {
 		this.field = field;
 		this.name = name;
 		this.setting = setting;
@@ -60,7 +60,7 @@ public class FieldData {
 		return typeData.getType();
 	}
 
-	public TypeData getTypeData() {
+	public FieldTypeData getTypeData() {
 		return typeData;
 	}
 

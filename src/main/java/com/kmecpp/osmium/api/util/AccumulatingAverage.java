@@ -53,7 +53,7 @@ public class AccumulatingAverage {
 
 	@Override
 	public String toString() {
-		return average.toString();
+		return average + "|" + amount;
 	}
 
 }

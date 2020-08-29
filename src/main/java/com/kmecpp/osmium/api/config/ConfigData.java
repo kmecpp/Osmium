@@ -14,11 +14,13 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class ConfigData extends ConfigClassData {
 
+	protected final Path path;
 	private ConfigurationLoader<CommentedConfigurationNode> loader;
 	private CommentedConfigurationNode root;
 
 	ConfigData(PluginConfigTypeData pluginData, Class<?> configClass, ConfigClass configProperties, Path path, HashMap<String, FieldData> fieldData) {
-		super(pluginData, configClass, configProperties, path, fieldData);
+		super(pluginData, configClass, configProperties, fieldData);
+		this.path = path;
 	}
 
 	public void load() throws IOException {
@@ -42,7 +44,7 @@ public class ConfigData extends ConfigClassData {
 			Object[] virtualPath = entry.getKey().split("\\.");
 
 			FieldData fieldData = entry.getValue();
-			TypeData typeData = fieldData.getTypeData();
+			FieldTypeData typeData = fieldData.getTypeData();
 
 			//			System.out.println("LOADING PATH: " + entry.getKey());
 
@@ -88,7 +90,7 @@ public class ConfigData extends ConfigClassData {
 			}
 			CommentedConfigurationNode node = root.getNode(virtualPath);
 
-			TypeData typeData = fieldData.getTypeData();
+			FieldTypeData typeData = fieldData.getTypeData();
 			node.setComment(fieldData.getComment());
 			node.setValue(typeData.convertToConfigurateType(value));
 

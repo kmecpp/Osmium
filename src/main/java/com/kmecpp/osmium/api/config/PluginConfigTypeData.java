@@ -5,44 +5,60 @@ import java.util.Map.Entry;
 
 public class PluginConfigTypeData {
 
-	private HashMap<Class<?>, HashMap<String, TypeData>> data = new HashMap<>(); //<ConfigClass, <FieldPath, TypeData>>
-	private HashMap<String, HashMap<String, String>> parsed = new HashMap<>(); //<ConfigClass, <FieldPath, TypeData>>
+	private HashMap<String, HashMap<String, String>> unloadedData = new HashMap<>(); //<ConfigClass, <FieldPath, TypeData>>
+	private HashMap<Class<?>, HashMap<String, FieldTypeData>> loadedData = new HashMap<>(); //<ConfigClass, <FieldPath, TypeData>>
 
-	private PluginConfigTypeData() {
-	}
-
-	public ClassTypeData getForConfigClass(Class<?> cls) throws ClassNotFoundException {
-		HashMap<String, TypeData> result = data.get(cls);
-		if (result == null) {
+	public HashMap<Class<?>, ClassTypeData> getForConfigClass(Class<?> cls) throws ClassNotFoundException {
+		HashMap<Class<?>, ClassTypeData> result = new HashMap<>();
+		HashMap<String, FieldTypeData> fieldTypeMap = loadedData.get(cls);
+		if (fieldTypeMap == null) {
 			String className = cls.getName(); //Full path
-			HashMap<String, String> text = parsed.get(className);
+			HashMap<String, String> text = unloadedData.get(className);
 			if (text == null) {
 				throw new IllegalArgumentException("Missing config type data for class: " + className);
 			}
 
-			result = new HashMap<>();
+			fieldTypeMap = new HashMap<>();
 			//			ConfigManager.getVirtualPath(enclosingPath, name, truncate)
 			for (Entry<String, String> entry : text.entrySet()) {
-				TypeData typeData = TypeData.parse(entry.getValue());
-				result.put(entry.getKey(), typeData);
+				FieldTypeData typeData = FieldTypeData.parse(entry.getValue());
+				fieldTypeMap.put(entry.getKey(), typeData);
 
 				//Visit all sub types
-				//				typeData.walk(data -> {
-				//					if (data.getType().isAnnotationPresent(ConfigSerializable.class)) {
-				//						String name = typeData.getType().getName();
-				//						TypeData configSerializableTypeData = TypeData.parse(name);
-				//						if (configSerializableTypeData != null) {
-				//							result.put(name, configSerializableTypeData);
-				//						} else {
-				//							OsmiumLogger.warn("@" + ConfigSerializable.class.getSimpleName() + " " + name + " class type data not found in CONFIG_TYPES resource");
-				//						}
-				//					}
-				//				});
+				HashMap<String, FieldTypeData> subTypes = new HashMap<>();
+				for (FieldTypeData subTypeData : typeData.flattenArgs()) {
+					if (subTypeData.getType().isAnnotationPresent(ConfigSerializable.class)) {
+						result.putAll(getForConfigClass(subTypeData.getType()));
+						//						try {
+						//							String name = subTypeData.getType().getName();
+						//							System.out.println("TYPE NAME: " + name);
+						//							FieldTypeData configSerializableTypeData = FieldTypeData.parse(name);
+						//							if (configSerializableTypeData != null) {
+						//								OsmiumLogger.warn("Putting " + name + " AS " + configSerializableTypeData);
+						//								subTypes.put(name, configSerializableTypeData);
+						//							} else {
+						//								OsmiumLogger.warn("@" + ConfigSerializable.class.getSimpleName() + " " + name + " class type data not found in CONFIG_TYPES resource");
+						//							}
+						//						} catch (ClassNotFoundException e) {
+						//							e.printStackTrace();
+						//						}
+					}
+				}
+				fieldTypeMap.putAll(subTypes);
 
 			}
-			data.put(cls, result);
+			loadedData.put(cls, fieldTypeMap);
 		}
-		return new ClassTypeData(cls, result);
+
+		//		for (Entry<Class<?>, HashMap<String, FieldTypeData>> e1 : loadedData.entrySet()) {
+		//			System.out.println(e1.getKey().getName());
+		//			for (Entry<String, FieldTypeData> e2 : e1.getValue().entrySet()) {
+		//				System.out.println("  " + e2.getKey() + ": " + e2.getValue());
+		//			}
+		//			System.out.println("----");
+		//		}
+		result.put(cls, new ClassTypeData(cls, fieldTypeMap));
+		return result;
 	}
 
 	public static PluginConfigTypeData parse(String[] configTypesFile) {
@@ -57,7 +73,7 @@ public class PluginConfigTypeData {
 			}
 			if (line.endsWith(":")) {
 				if (currentConfig != null) {
-					data.parsed.put(currentConfig, current);
+					data.unloadedData.put(currentConfig, current);
 					current = new HashMap<>();
 				}
 				currentConfig = line.substring(0, line.length() - 1);
@@ -67,7 +83,7 @@ public class PluginConfigTypeData {
 				current.put(parts[0].substring(currentConfig.length() + 1), parts[1]);
 			}
 		}
-		data.parsed.put(currentConfig, current);
+		data.unloadedData.put(currentConfig, current);
 
 		return data;
 	}

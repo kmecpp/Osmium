@@ -5,30 +5,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.kmecpp.osmium.api.Transient;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Reflection;
 
 public class ConfigUtil {
 
-	public static HashMap<String, Object> serializeAsConfigurateMap(Object object, TypeData typeData) {
+	public static HashMap<String, Object> serializeAsConfigurateMap(Object object, FieldTypeData typeData) {
 		HashMap<String, Object> result = new HashMap<>();
 		if (object == null) {
 			return result;
 		}
+		ClassTypeData classTypeData = ConfigManager.getTypeData(object.getClass());
 		try {
 			for (Field field : object.getClass().getDeclaredFields()) {
 				if (field.isAnnotationPresent(Transient.class)) {
 					continue;
 				}
 				field.setAccessible(true);
-				result.put(field.getName(), typeData.convertToConfigurateType(field.get(object)));
+				FieldTypeData fieldTypeData = classTypeData.get(field);
+				result.put(field.getName(), fieldTypeData.convertToConfigurateType(field.get(object)));
 			}
 			return result;
 		} catch (Exception e) {
+			OsmiumLogger.warn("An error occurred while trying to serialize " + object.getClass().getName() + " to the following type: " + typeData);
 			throw new RuntimeException(e);
 		}
 	}
 
-	public static Object deserializeFromConfigurateMap(Map<String, Object> map, TypeData typeData, PluginConfigTypeData pluginData) {
+	public static Object deserializeFromConfigurateMap(Map<String, Object> map, FieldTypeData typeData, PluginConfigTypeData pluginData) {
 		//		System.out.println("DESERIALIZING FROM MAP : " + typeData.getType());
 		try {
 			Object result = Reflection.createInstance(typeData.getType());
@@ -38,9 +42,9 @@ public class ConfigUtil {
 				}
 				field.setAccessible(true);
 
-				ClassTypeData classTypeData = pluginData.getForConfigClass(typeData.getType());
+				HashMap<Class<?>, ClassTypeData> classTypeData = pluginData.getForConfigClass(typeData.getType());
 				//				System.out.println("CLASS TYPE DATA: " + classTypeData);
-				TypeData fieldTypeData = classTypeData.get(field);
+				FieldTypeData fieldTypeData = classTypeData.get(typeData.getType()).get(field);
 
 				field.set(result, fieldTypeData.convertToActualType(map.get(field.getName()), pluginData));
 			}

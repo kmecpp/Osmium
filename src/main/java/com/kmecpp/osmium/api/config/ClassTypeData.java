@@ -6,29 +6,29 @@ import java.util.HashMap;
 
 public class ClassTypeData {
 
-	private Class<?> rootClass;
-	private HashMap<String, TypeData> fieldTypeMap;
+	private Class<?> cls;
+	private HashMap<String, FieldTypeData> fieldTypeMap;
 
-	public ClassTypeData(Class<?> rootClass, HashMap<String, TypeData> fieldTypeMap) {
-		this.rootClass = rootClass;
+	public ClassTypeData(Class<?> cls, HashMap<String, FieldTypeData> fieldTypeMap) {
+		this.cls = cls;
 		this.fieldTypeMap = fieldTypeMap;
 	}
 
-	public TypeData get(Field field) {
-		int truncate = rootClass.getName().length() + 1;
+	public FieldTypeData get(Field field) {
+		int truncate = cls.getName().length() + 1;
 		String physicalPath = ConfigManager.getPhysicalPath(field, truncate);
 
-		TypeData typeData = fieldTypeMap.get(physicalPath);
+		FieldTypeData typeData = fieldTypeMap.get(physicalPath);
 		if (typeData == null) {
 			//This is normal if the type isn't supposed to have generics
-			typeData = new TypeData(field.getType(), Collections.emptyList());
+			typeData = new FieldTypeData(field.getType(), Collections.emptyList());
 		}
 		return typeData;
 	}
 
 	@Override
 	public String toString() {
-		return rootClass + ": " + String.valueOf(fieldTypeMap);
+		return cls + ": " + String.valueOf(fieldTypeMap);
 	}
 
 }
