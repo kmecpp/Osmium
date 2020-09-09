@@ -59,6 +59,8 @@ public final class Osmium {
 	private static final ItemManager itemManager = new ItemManager();
 	private static final OsmiumMetrics metrics = new OsmiumMetrics();
 
+	//	private static final ExecutorService genericThreadPool = Executors.newFixedThreadPool(3);
+
 	protected static boolean shuttingDown;
 
 	/*
@@ -149,6 +151,10 @@ public final class Osmium {
 	public static ItemManager getItemManager() {
 		return itemManager;
 	}
+
+	//	public static ExecutorService getGenericThreadpool() {
+	//		return genericThreadPool;
+	//	}
 
 	public static Optional<Integer> getUserId(UUID uuid) {
 		return OsmiumListener.getUserId(uuid);

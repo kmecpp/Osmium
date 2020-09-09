@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.kmecpp.osmium.Platform;
+import com.kmecpp.osmium.api.TickTimeUnit;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
 public abstract class AbstractTask<T extends AbstractTask<T>> {
@@ -20,7 +21,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	protected TaskExecutor<T> executor;
 	protected TaskExecutor<T> finalizer;
 	protected boolean cancelOnError;
-	protected int maxRuns;
+	protected int lastRun;
 
 	protected int counter;
 	protected boolean running;
@@ -66,7 +67,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return getInstance();
 	}
 
-	public T setDelay(int delay, TimeUnit unit) {
+	public T setDelay(int delay, TickTimeUnit unit) {
 		this.delay = delay * unit.getTickValue();
 		return getInstance();
 	}
@@ -80,7 +81,7 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return getInstance();
 	}
 
-	public T setInterval(int interval, TimeUnit unit) {
+	public T setInterval(int interval, TickTimeUnit unit) {
 		this.interval = interval * unit.getTickValue();
 		return getInstance();
 	}
@@ -94,23 +95,23 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return getInstance();
 	}
 
-	public AbstractTask<T> setTime(int delay, int interval, TimeUnit unit) {
+	public AbstractTask<T> setTime(int delay, int interval, TickTimeUnit unit) {
 		this.delay = delay * unit.getTickValue();
 		this.interval = interval * unit.getTickValue();
 		return getInstance();
 	}
 
-	public int getMaxRuns() {
-		return maxRuns;
+	public int getLastRun() {
+		return lastRun;
 	}
 
-	public T setMaxRuns(int maxRuns) {
-		this.maxRuns = maxRuns;
+	public T setLastRun(int lastRun) {
+		this.lastRun = lastRun;
 		return getInstance();
 	}
 
 	public boolean isLastRun() {
-		return counter == maxRuns - 1; //Counter gets updated after we are run
+		return counter == lastRun; //Counter gets updated after we are run
 	}
 
 	public T setFinalizer(TaskExecutor<T> finalizer) {

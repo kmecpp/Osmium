@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.TickTimeUnit;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.database.MultiplePlayerData;
 import com.kmecpp.osmium.api.database.PlayerData;
@@ -16,7 +17,6 @@ import com.kmecpp.osmium.api.database.mysql.MySQLTable;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
-import com.kmecpp.osmium.api.tasks.TimeUnit;
 import com.kmecpp.osmium.api.util.Reflection;
 
 public class PlayerDataManager {
@@ -30,7 +30,7 @@ public class PlayerDataManager {
 
 	void start() {
 		//Safely remove offline players
-		Osmium.getTask().setInterval(30, TimeUnit.SECOND).setExecutor(t -> {
+		Osmium.getTask().setInterval(30, TickTimeUnit.SECOND).setExecutor(t -> {
 			Set<UUID> onlineIds = new HashSet<>(Osmium.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet()));
 			for (UUID uuid : onlineIds) {
 				if (!onlineIds.contains(uuid)) {

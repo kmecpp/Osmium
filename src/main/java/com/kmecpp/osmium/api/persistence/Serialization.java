@@ -201,6 +201,11 @@ public class Serialization {
 				Method method = type.getDeclaredMethod("fromString", String.class);
 				return (T) method.invoke(null, str);
 			} catch (Throwable t) {
+				if (type.isEnum()) {
+					Deserializer<T> deserializer = (s) -> Reflection.cast(Enum.valueOf(Reflection.cast(type), s.toUpperCase()));
+					register(type, deserializer);
+					return deserializer.deserialize(str);
+				}
 				//Ignore
 			}
 		}

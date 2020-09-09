@@ -137,12 +137,16 @@ public class StringUtil {
 	}
 
 	public static String plural(long amount, String label) {
+		return plural(amount, "", label);
+	}
+
+	public static String plural(long amount, String labelPrefix, String label) {
 		if (label == null || label.isEmpty()) {
 			return "";
 		}
 		char last = label.charAt(label.length() - 1);
 		boolean plural = amount != 1 && Character.isLetter(last) && Character.isLowerCase(last) && last != 's';
-		return amount + " " + (plural ? label + "s" : label);
+		return amount + " " + labelPrefix + (plural ? label + "s" : label);
 	}
 
 	public static String plural(long amount, String label, String amountPrefix, String labelPrefix) {
@@ -768,11 +772,16 @@ public class StringUtil {
 				: false;
 	}
 
-	public static boolean isNullOrEmpty(String str) {
-		if (str == null) {
+	public static boolean isNullOrEmpty(String... strings) {
+		if (strings == null) {
 			return true;
 		}
-		return str.isEmpty();
+		for (String str : strings) {
+			if (str == null || str.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

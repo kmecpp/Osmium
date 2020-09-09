@@ -26,7 +26,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 
-public class Database extends SQLDatabase {
+public class SQLiteDatabase extends SQLDatabase {
 
 	private OsmiumPlugin plugin;
 	private boolean usingMySql;
@@ -36,7 +36,7 @@ public class Database extends SQLDatabase {
 
 	private final HashMap<Class<?>, TableProperties> tables = new HashMap<>();
 
-	public Database(OsmiumPlugin plugin) {
+	public SQLiteDatabase(OsmiumPlugin plugin) {
 		this.plugin = plugin;
 	}
 

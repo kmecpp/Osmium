@@ -21,7 +21,10 @@ public abstract class SQLDatabase {
 	protected HikariDataSource source;
 
 	public <T> T get(String query, ResultSetProcessor<T> handler) {
-		return getOrDefault(query, null, handler);
+		return getOrDefault(query, null, rs -> {
+			rs.next();
+			return handler.process(rs);
+		});
 	}
 
 	public <T> T getOrDefault(String query, Object defaultValue, ResultSetProcessor<T> handler) {
@@ -34,7 +37,6 @@ public abstract class SQLDatabase {
 				if (!resultSet.isBeforeFirst()) {
 					return null;
 				}
-				resultSet.next();
 				return handler.process(resultSet);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -93,18 +95,23 @@ public abstract class SQLDatabase {
 	}
 
 	public int update(String update) {
-		System.out.println("Executing update: " + update);
-		if (source != null) {
-			Statement statement = null;
-			ResultSet resultSet = null;
-			try (Connection connection = source.getConnection()) {
-				statement = connection.createStatement();
-				return statement.executeUpdate(update);
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				close(statement, resultSet);
+		if (source == null) {
+			OsmiumLogger.error("Failed to run update on closed database: " + update);
+			for (StackTraceElement e : Thread.currentThread().getStackTrace()) {
+				OsmiumLogger.error("    " + e);
 			}
+			return -1;
+		}
+		OsmiumLogger.debug("Executing raw update: " + update);
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try (Connection connection = source.getConnection()) {
+			statement = connection.createStatement();
+			return statement.executeUpdate(update);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close(statement, resultSet);
 		}
 		return -1;
 	}

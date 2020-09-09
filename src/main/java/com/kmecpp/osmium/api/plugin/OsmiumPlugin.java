@@ -14,7 +14,7 @@ import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.PluginConfigTypeData;
 import com.kmecpp.osmium.api.database.mysql.MySQLDatabase;
-import com.kmecpp.osmium.api.database.sqlite.Database;
+import com.kmecpp.osmium.api.database.sqlite.SQLiteDatabase;
 import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
 import com.kmecpp.osmium.api.event.events.osmium.PluginReloadEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
@@ -30,7 +30,7 @@ import com.kmecpp.osmium.api.util.Reflection;
 public abstract class OsmiumPlugin {
 
 	private final Plugin properties = this.getClass().getAnnotation(Plugin.class);
-	private final Database database = new Database(this);
+	private final SQLiteDatabase database = new SQLiteDatabase(this);
 	private final MySQLDatabase mdb = new MySQLDatabase(this);
 
 	//Effectively final variables
@@ -276,7 +276,7 @@ public abstract class OsmiumPlugin {
 	//		this.logger = logger;
 	//	}
 
-	public Database getSQLiteDatabase() {
+	public SQLiteDatabase getSQLiteDatabase() {
 		return database;
 	}
 

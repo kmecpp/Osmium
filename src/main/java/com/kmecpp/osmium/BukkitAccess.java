@@ -120,7 +120,7 @@ public class BukkitAccess {
 				for (int i = 0; i < command.getAliases().length; i++) {
 					String alias = command.getAliases()[i];
 					if (commandMap.getCommand(alias) == null) {
-						OsmiumLogger.debug("Modified primary alias: " + name + " -> " + alias);
+						OsmiumLogger.debug("Remapped primary alias: " + name + " -> " + alias);
 						command.setPrimaryAlias(alias);
 						break;
 					} else if (i == command.getAliases().length) {

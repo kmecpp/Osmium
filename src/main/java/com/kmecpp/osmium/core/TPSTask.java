@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import com.kmecpp.osmium.api.TickTimeUnit;
 import com.kmecpp.osmium.api.tasks.Schedule;
-import com.kmecpp.osmium.api.tasks.TimeUnit;
 
 public class TPSTask {
 
@@ -50,7 +50,7 @@ public class TPSTask {
 		}, 1000, 50, java.util.concurrent.TimeUnit.MILLISECONDS);
 	}
 
-	@Schedule(delay = 5, interval = 1, unit = TimeUnit.TICK)
+	@Schedule(delay = 5, interval = 1, unit = TickTimeUnit.TICK)
 	public static void run() {
 		if (lastTick == 0) {
 			lastTick = System.nanoTime();

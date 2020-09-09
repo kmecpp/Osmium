@@ -13,6 +13,18 @@ public interface Messageable {
 		sendMessage(Chat.style(message));
 	}
 
+	default void sendNotification(String message) {
+		sendNotification(CS.XAE, message);
+	}
+
+	default void sendNotification(CS colors, String message) {
+		sendMessage(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "-------------------------------------------"); //43
+		sendMessage("");
+		sendMessage(colors.getPrimary() + message);
+		sendMessage("");
+		sendMessage(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "-------------------------------------------");
+	}
+
 	default void sendTitle(String title) {
 		sendTitle(CS.XAEB, title, true);
 	}

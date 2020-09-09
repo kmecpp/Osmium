@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.kmecpp.osmium.api.TickTimeUnit;
+
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Schedule {
@@ -15,6 +17,6 @@ public @interface Schedule {
 
 	boolean async() default false;
 
-	TimeUnit unit() default TimeUnit.TICK;
+	TickTimeUnit unit() default TickTimeUnit.TICK;
 
 }

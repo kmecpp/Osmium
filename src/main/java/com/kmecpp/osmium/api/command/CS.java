@@ -30,6 +30,11 @@ public class CS {
 	public static final CS XF = create();
 
 	/**
+	 * RED YELLOW
+	 */
+	public static final CS XCE = create();
+
+	/**
 	 * GOLD GREEN
 	 */
 	public static final CS X6A = create();

@@ -21,6 +21,8 @@ public class CommandEvent implements Messageable {
 	private String argLabel;
 	private String[] args;
 
+	private boolean cooldownActivated;
+
 	public CommandEvent(Command command, CommandSender sender, String baseLabel, String argLabel, String[] args) {
 		this.command = command;
 		this.sender = sender;
@@ -29,12 +31,24 @@ public class CommandEvent implements Messageable {
 		this.args = args;
 	}
 
+	public void setCooldownActivated(boolean cooldownActivated) {
+		this.cooldownActivated = cooldownActivated;
+	}
+
+	public boolean isCooldownActivated() {
+		return cooldownActivated;
+	}
+
 	void setSubCommand(CommandBase subCommand) {
 		this.subCommand = subCommand;
 	}
 
 	public Command getCommand() {
 		return command;
+	}
+
+	public boolean isPlayer() {
+		return sender instanceof Player;
 	}
 
 	public Player getPlayer() {
@@ -99,9 +113,15 @@ public class CommandEvent implements Messageable {
 		try {
 			return Integer.parseInt(input);
 		} catch (NumberFormatException e) {
-			throw new CommandException(StringUtil.isMathematicalInteger(input)
-					? "Expected an integer but given value was too large: '" + input + "'"
-					: "Expected an integer received: '" + input + "'");
+			if (StringUtil.isMathematicalInteger(input)) {
+				throw new CommandException("Expected an integer but given value was too large: '" + input + "'");
+			} else {
+				if (index >= 0 && index < command.getUsageParams().length) {
+					throw new CommandException("Expected an integer " + Chat.DARK_RED + "<" + command.getUsageParams()[index] + ">" + Chat.RED + " received: '" + input + "'");
+				} else {
+					throw new CommandException("Expected an integer received: '" + input + "'");
+				}
+			}
 		}
 	}
 
@@ -141,12 +161,32 @@ public class CommandEvent implements Messageable {
 		return index < args.length;
 	}
 
+	public boolean getBoolean(int index, String trueString, String falseString) {
+		String input = getString(index);
+		if (input.equalsIgnoreCase(trueString)) {
+			return true;
+		} else if (input.equalsIgnoreCase(falseString)) {
+			return false;
+		} else {
+			throw new CommandException("Expected '" + trueString + "' or '" + falseString + "'. Got: '" + input + "'");
+		}
+	}
+
 	public String getString(int index) {
 		return get(index);
 	}
 
 	public String getString(int index, String def) {
 		return index < args.length ? getString(index) : def;
+	}
+
+	public boolean contains(String parameter) {
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equalsIgnoreCase(parameter)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public User getUser(int index) {
@@ -205,6 +245,9 @@ public class CommandEvent implements Messageable {
 	}
 
 	public String getRemainingJoined(int index) {
+		if (args.length == index) {
+			return "";
+		}
 		checkIndex(index);
 		return String.join(" ", Arrays.copyOfRange(args, index, args.length));
 	}
@@ -259,14 +302,14 @@ public class CommandEvent implements Messageable {
 		return false;
 	}
 
-	public <T> T require(Optional<T> optional, String message) {
+	public <T> T getOptional(Optional<T> optional, String message) {
 		if (!optional.isPresent()) {
 			error(message);
 		}
 		return optional.get();
 	}
 
-	public <T> T require(T obj, String message) {
+	public <T> T getNonNull(T obj, String message) {
 		if (obj == null) {
 			error(message);
 		}

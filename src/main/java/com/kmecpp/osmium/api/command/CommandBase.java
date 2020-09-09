@@ -2,6 +2,8 @@ package com.kmecpp.osmium.api.command;
 
 import java.util.ArrayList;
 
+import com.kmecpp.osmium.api.MilliTimeUnit;
+
 public class CommandBase {
 
 	private final String[] aliases;
@@ -17,6 +19,7 @@ public class CommandBase {
 
 	private String primaryAlias;
 	private String shortestAlias;
+	private long cooldown;
 
 	public CommandBase(String name, String... aliases) {
 		if (name == null || name.isEmpty()) {
@@ -169,6 +172,19 @@ public class CommandBase {
 
 	public String getPermission() {
 		return permission;
+	}
+
+	public CommandBase setCooldown(long cooldown) {
+		return setCooldown(cooldown, MilliTimeUnit.MILLISECOND);
+	}
+
+	public CommandBase setCooldown(long cooldown, MilliTimeUnit timeUnit) {
+		this.cooldown = cooldown * timeUnit.getMillisecondTime();
+		return this;
+	}
+
+	public long getCooldown() {
+		return cooldown;
 	}
 
 	public boolean hasUsage() {

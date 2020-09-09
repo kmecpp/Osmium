@@ -22,7 +22,7 @@ public class TableProperties {
 	private Field[] fields;
 	private Field[] primaryFields;
 
-	public TableProperties(Database db, Class<?> cls) {
+	public TableProperties(SQLiteDatabase db, Class<?> cls) {
 		this.tableClass = cls;
 
 		DBTable annotation = cls.getAnnotation(DBTable.class);

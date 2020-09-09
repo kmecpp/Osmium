@@ -9,11 +9,11 @@ import com.kmecpp.osmium.Osmium;
 
 public class DatabaseQueue {
 
-	private final Database database;
+	private final SQLiteDatabase database;
 	private final LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
 	private final QueueExecutor executor = new QueueExecutor();
 
-	public DatabaseQueue(Database database) {
+	public DatabaseQueue(SQLiteDatabase database) {
 		this.database = database;
 	}
 

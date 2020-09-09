@@ -41,14 +41,14 @@ public class ConfigData extends ConfigClassData {
 
 		boolean mustSave = false;
 		for (Entry<String, FieldData> entry : fieldData.entrySet()) {
-			Object[] virtualPath = entry.getKey().split("\\.");
+			String[] virtualPath = entry.getKey().split("\\.");
 
 			FieldData fieldData = entry.getValue();
 			FieldTypeData typeData = fieldData.getTypeData();
 
 			//			System.out.println("LOADING PATH: " + entry.getKey());
 
-			CommentedConfigurationNode node = root.getNode(virtualPath);
+			CommentedConfigurationNode node = root.getNode((Object[]) virtualPath);
 
 			try {
 				if (node.isVirtual() && !fieldData.isDeletable()) {
@@ -65,7 +65,7 @@ public class ConfigData extends ConfigClassData {
 					fieldData.setValue(typeData.convertToActualType(node.getValue(), pluginData));
 				}
 			} catch (Exception e) {
-				OsmiumLogger.error("An error occurred while loading config: " + configClass.getName());
+				OsmiumLogger.error("An error occurred while loading config field: " + configClass.getName() + "::" + String.join(".", virtualPath));
 				e.printStackTrace();
 			}
 		}

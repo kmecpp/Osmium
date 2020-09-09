@@ -36,7 +36,7 @@ public class MDBUtil {
 		types.put(Date.class, "DATE");
 	}
 
-	public static String getTypeString(MDBColumnData data) {
+	public static String getTypeString(MDBTableData tableData, MDBColumnData data) {
 		//		if (data.isForeignKey()) {
 		//			return "INT";
 		//		}
@@ -46,6 +46,9 @@ public class MDBUtil {
 		Class<?> type = data.getType();
 		if (type == String.class) {
 			int maxLength = data.getMaxLength();
+			if (maxLength <= 0) {
+				throw new IllegalArgumentException("Column has non-positive max length on a string field: " + tableData.getName() + "." + data.getName());
+			}
 			if (maxLength <= 1000) {
 				return "VARCHAR(" + maxLength + ")";
 			} else if (maxLength <= 65_535) {
@@ -60,8 +63,10 @@ public class MDBUtil {
 		return Require.nonNull(types.get(type));
 	}
 
-	public static void updatePreparedStatement(PreparedStatement s, int index, Object value) throws SQLException {
-		if (value instanceof Boolean) {
+	public static void updatePreparedStatement(MDBTableData tableData, PreparedStatement s, int index, Object value) throws SQLException {
+		if (value == null) {
+			s.setObject(index, null);
+		} else if (value instanceof Boolean) {
 			s.setBoolean(index, (boolean) value);
 		} else if (value instanceof Byte) {
 			s.setByte(index, (byte) value);
@@ -108,9 +113,9 @@ public class MDBUtil {
 		}
 	}
 
-	public static String getColumnAttributeString(MDBColumnData data) {
+	public static String getColumnAttributeString(MDBTableData tableData, MDBColumnData data) {
 		StringBuilder sb = new StringBuilder();
-		StringUtil.add(sb, getTypeString(data));
+		StringUtil.add(sb, getTypeString(tableData, data));
 		StringUtil.add(sb, data.isUnique() ? "unique" : "");
 		StringUtil.add(sb, data.isNullable() ? "" : "not null");
 		StringUtil.add(sb, data.isAutoIncrement() ? "auto_increment" : "");
@@ -123,7 +128,7 @@ public class MDBUtil {
 		//		LinkedHashMap<Class<?>, ArrayList<String>> foreignKeys = new LinkedHashMap<>();
 		for (MDBColumnData column : data.getColumns()) {
 			String columnName = column.getName();
-			sb.append(columnName + " " + getColumnAttributeString(column) + ",");
+			sb.append(columnName + " " + getColumnAttributeString(data, column) + ",");
 
 			if (column.isPrimary()) {
 				primaryKeys.add(columnName);

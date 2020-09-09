@@ -2,17 +2,26 @@ package com.kmecpp.osmium.api.command;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.SpongeAccess;
+import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.util.TimeUtil;
 
 public final class CommandManager {
 
 	//	private HashMap<OsmiumPlugin, Boolean> defaultAllowConsole = new HashMap<>();
 	private HashMap<OsmiumPlugin, ArrayList<Command>> commands = new HashMap<>();
+
+	private static HashMap<UUID, HashMap<CommandBase, Long>> cooldownData = new HashMap<>();
+
+	static {
+		initializeDefaultExceptions();
+	}
 
 	public Command register(OsmiumPlugin plugin, String name, String... aliases) {
 		return register(plugin, new Command(name, aliases));
@@ -82,7 +91,7 @@ public final class CommandManager {
 			//Simple commands
 			if (command.getArgs().isEmpty()) {
 				command.validate(event);
-				command.execute(event);
+				tryExecuteCommand(sender, command, event);
 				command.finalize(event);
 			}
 
@@ -103,7 +112,7 @@ public final class CommandManager {
 						event.setSubCommand(arg);
 
 						command.validate(event);
-						arg.execute(event);
+						tryExecuteCommand(sender, arg, event);
 						command.finalize(event);
 						return true;
 					}
@@ -111,7 +120,7 @@ public final class CommandManager {
 			}
 			return true;
 		} catch (CommandException e) {
-			//			e.printStackTrace();
+			//			e.printStackTrace(); //WARNING: THIS IS USELESS FOR DEFAULT EXCEPTIONS
 			if (e == CommandException.USAGE_ERROR) {
 				if (e.getMessage().isEmpty()) {
 					if (args.length > 0) {
@@ -140,11 +149,45 @@ public final class CommandManager {
 		}
 	}
 
+	private static void tryExecuteCommand(CommandSender sender, CommandBase command, CommandEvent event) {
+		if (sender instanceof Player) {
+			long currentTime = System.currentTimeMillis();
+
+			boolean cooldownBypass = sender.hasPermission("osmium.commandcooldown.bypass") || sender.hasPermission("osmium.commandcooldown.bypass." + command.getPrimaryAlias());
+
+			if (!cooldownBypass) {
+				HashMap<CommandBase, Long> playerCommandCooldowns = cooldownData.get(((Player) sender).getUniqueId());
+				if (playerCommandCooldowns != null) {
+					Long lastUsed = playerCommandCooldowns.get(command);
+					if (lastUsed != null) {
+						long timePassed = currentTime - lastUsed;
+						if (timePassed < command.getCooldown()) {
+							System.out.println("REMAINING: " + (command.getCooldown() - timePassed));
+							throw new CommandException("You cannot use that command for another " + TimeUtil.formatTotalMillis(command.getCooldown() - timePassed));
+						}
+					}
+				}
+			}
+			command.execute(event);
+			if (!cooldownBypass && event.isCooldownActivated()) {
+				Player player = (Player) sender;
+				System.out.println("SETTING COOLDOWN!");
+				cooldownData.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>()).put(command, currentTime);
+			}
+		} else {
+			command.execute(event);
+		}
+
+	}
+
 	public static void sendFailedRegistrationMessage(OsmiumPlugin plugin, CommandBase command) {
 		OsmiumLogger.warn("Unable to register /" + command.getPrimaryAlias() + " for plugin: " + plugin.getName() + " because its aliases are unavailable!");
 		OsmiumLogger.warn("To correct this issue, create a command rewrite rule in the osmium config");
 		OsmiumLogger.warn("commands." + command.getPrimaryAlias() + "={alternate}");
+	}
 
+	private static void initializeDefaultExceptions() {
+		new CommandException("");
 	}
 
 	//	private static ArrayList<Command> commands = new ArrayList<>();

@@ -37,4 +37,8 @@ public class MathUtil {
 				: "." + StringUtil.repeat('0', decimalDigits));
 	}
 
+	public static int bound(int x, int min, int max) {
+		return Math.max(min, Math.min(max, x));
+	}
+
 }

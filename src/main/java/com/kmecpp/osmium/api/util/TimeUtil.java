@@ -1,14 +1,13 @@
 package com.kmecpp.osmium.api.util;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 public class TimeUtil {
 
-	private static TimeZone timeZone;
+	private static TimeZone timeZone = TimeZone.getDefault();
 
 	public static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 
@@ -21,15 +20,15 @@ public class TimeUtil {
 	}
 
 	public static String formatTotalMillis(long time) {
-		return formatTime(1000, time, "", "");
-	}
-
-	public static String formatTotalSeconds(long time) {
 		return formatTime(1, time, "", "");
 	}
 
+	public static String formatTotalSeconds(long time) {
+		return formatTime(1000, time, "", "");
+	}
+
 	public static String formatTotalSeconds(long time, String amountPrefix, String unitPrefix) {
-		return formatTime(1, time, amountPrefix, unitPrefix);
+		return formatTime(1000, time, amountPrefix, unitPrefix);
 	}
 
 	public static String formatEpoch(long epoch) {
@@ -38,25 +37,33 @@ public class TimeUtil {
 
 	public static String formatEpoch(long epoch, DateTimeFormatter formatter) {
 		Instant instant = Instant.ofEpochMilli(epoch);
-		return instant.atZone(ZoneId.of("America/New_York")).format(formatter);
+		return instant.atZone(timeZone.toZoneId()).format(formatter);
 	}
 
 	private static String formatTime(int modifier, long time, String amountPrefix, String unitPrefix) {
-		final long day = modifier * 86400;
-		final long hour = modifier * 3600;
-		final long minute = modifier * 60;
-		final long second = modifier;
+		time *= modifier;
+
+		final long day = 86400 * 1000;
 		if (time > day) {
 			return StringUtil.plural(time / day, "day", amountPrefix, unitPrefix);
-		} else if (time > hour) {
-			return StringUtil.plural(time / hour, "hour", amountPrefix, unitPrefix);
-		} else if (time > minute) {
-			return StringUtil.plural(time / minute, "minute", amountPrefix, unitPrefix);
-		} else if (time >= second) {
-			return StringUtil.plural(time / second, "second", amountPrefix, unitPrefix);
-		} else {
-			return StringUtil.plural(time / second, "millisecond", amountPrefix, unitPrefix);
 		}
+
+		final long hour = 3600 * 1000;
+		if (time > hour) {
+			return StringUtil.plural(time / hour, "hour", amountPrefix, unitPrefix);
+		}
+
+		final long minute = 60 * 1000;
+		if (time > minute) {
+			return StringUtil.plural(time / minute, "minute", amountPrefix, unitPrefix);
+		}
+
+		final long second = 1000;
+		if (time >= second) {
+			return StringUtil.plural(time / second, "second", amountPrefix, unitPrefix);
+		}
+
+		return StringUtil.plural(time, "millisecond", amountPrefix, unitPrefix);
 	}
 
 	public static Calendar getCalendar(long time) {

@@ -2,11 +2,11 @@ package com.kmecpp.osmium.core;
 
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.TickTimeUnit;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.inventory.menu.InventoryManager;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
-import com.kmecpp.osmium.api.tasks.TimeUnit;
 import com.kmecpp.osmium.api.util.TimeUtil;
 import com.kmecpp.osmium.platform.osmium.OsmiumServerShutdownEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumServerStartedEvent;
@@ -43,15 +43,15 @@ public class OsmiumCore extends OsmiumPlugin {
 
 		Osmium.getPlayerDataManager().start();
 
-		Osmium.getTask().setTime(0, 1, TimeUnit.MINUTE).setExecutor((t) -> {
+		Osmium.getTask().setTime(0, 1, TickTimeUnit.MINUTE).setExecutor((t) -> {
 			OsmiumData.update();
 		}).start();
 
-		Osmium.getTask().setTime(0, 15, TimeUnit.MINUTE).setExecutor((t) -> {
+		Osmium.getTask().setTime(0, 15, TickTimeUnit.MINUTE).setExecutor((t) -> {
 			OsmiumListener.cleaupIds();
 		}).start();
 
-		Osmium.getTask().setAsync(true).setTime(0, 1, TimeUnit.HOUR).setExecutor(task -> {
+		Osmium.getTask().setAsync(true).setTime(0, 1, TickTimeUnit.HOUR).setExecutor(task -> {
 			saveAllData();
 		}).start();
 

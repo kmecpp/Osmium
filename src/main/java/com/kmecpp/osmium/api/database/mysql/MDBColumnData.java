@@ -67,7 +67,7 @@ public class MDBColumnData {
 	}
 
 	public int getMaxLength() {
-		return Require.nonNegative(maxLength);
+		return maxLength;
 	}
 
 	public boolean isPrimary() {

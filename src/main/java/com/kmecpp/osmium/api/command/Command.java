@@ -92,6 +92,10 @@ public class Command extends CommandBase {
 						continue;
 					}
 
+					if (!option.toLowerCase().startsWith(argLabel.toLowerCase())) {
+						continue;
+					}
+
 					int matching = 0;
 					for (int i = 0; i < argLabel.length(); i++) {
 						char c1 = Character.toLowerCase(argLabel.charAt(i));
@@ -103,7 +107,7 @@ public class Command extends CommandBase {
 						}
 					}
 
-					System.out.println("MATCH: " + alias + " = " + matching);
+					//					System.out.println("MATCH: " + alias + " = " + matching);
 					if (matching == option.length()) {
 						return arg;
 					} else if (matching > highestMatchCount) {

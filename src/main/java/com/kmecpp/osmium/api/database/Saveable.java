@@ -3,7 +3,7 @@ package com.kmecpp.osmium.api.database;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.database.mysql.MySQLDatabase;
 import com.kmecpp.osmium.api.database.mysql.MySQLTable;
-import com.kmecpp.osmium.api.database.sqlite.Database;
+import com.kmecpp.osmium.api.database.sqlite.SQLiteDatabase;
 
 public interface Saveable {
 
@@ -20,7 +20,7 @@ public interface Saveable {
 				database.replaceIntoAsync(this.getClass(), this);
 			}
 		} else {
-			Database database = Osmium.getPlugin(this.getClass()).getSQLiteDatabase();
+			SQLiteDatabase database = Osmium.getPlugin(this.getClass()).getSQLiteDatabase();
 			if (flush) {
 				database.replaceInto(this.getClass(), this);
 			} else {

@@ -43,6 +43,9 @@ public class ClassProcessor {
 	//	private final HashMap<Class<?>, Command> commands = new HashMap<>();
 	private final HashSet<String> skipClasses = new HashSet<>();
 
+	private final HashSet<Class<?>> sqliteTables = new HashSet<>();
+	private final HashSet<Class<?>> mysqlTables = new HashSet<>();
+
 	protected ClassProcessor(OsmiumPlugin plugin, Object pluginImpl) {
 		this.plugin = plugin;
 		this.mainClass = plugin.getClass();
@@ -244,43 +247,11 @@ public class ClassProcessor {
 			Osmium.getCommandManager().register(plugin, command);
 		}
 
-		DBTable sqliteTable = cls.getAnnotation(DBTable.class);
-		if (sqliteTable != null) {
-			OsmiumLogger.debug("Initializing SQLite database table: " + sqliteTable.name());
-			plugin.getSQLiteDatabase().createTable(cls);
-
-			if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
-				Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
-			}
-			//			try {
-			//				ClassPool.getDefault().insertClassPath(new ClassClassPath(cls));
-			//				CtClass c = ClassPool.getDefault().getAndRename(cls.getName(), cls.getName() + "_REMAPPED");
-			//				for (CtField field : c.getDeclaredFields()) {
-			//					if (!field.hasAnnotation(Transient.class)) {
-			//						String customType = plugin.getDatabase().getTypeKey(field.getType().getClass());
-			//						if (customType != null) {
-			//							ConstPool cp = c.getClassFile().getConstPool();
-			//							Annotation annotation = new Annotation(Type.class.getName(), cp);
-			//							annotation.addMemberValue("type", new StringMemberValue(customType, cp));
-			//							field.getFieldInfo().addAttribute(new AnnotationsAttribute(cp, null));
-			//						}
-			//					}
-			//				}
-			//				plugin.getDatabase().addTable(c.toClass());
-			//			} catch (CannotCompileException | NotFoundException e) {
-			//				OsmiumLogger.error("Failed to register database table: " + cls.getName());
-			//				e.printStackTrace();
-			//			}
+		if (cls.isAnnotationPresent(DBTable.class)) {
+			sqliteTables.add(cls);
 		}
-
-		MySQLTable mysqlTable = cls.getAnnotation(MySQLTable.class);
-		if (mysqlTable != null) {
-			OsmiumLogger.debug("Initializing MySQL database table: " + mysqlTable.name());
-			plugin.getMySQLDatabase().createTable(cls);
-
-			if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
-				Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
-			}
+		if (cls.isAnnotationPresent(MySQLTable.class)) {
+			mysqlTables.add(cls);
 		}
 
 		for (Method method : cls.getDeclaredMethods()) {
@@ -365,6 +336,49 @@ public class ClassProcessor {
 					} else {
 						Osmium.getEventManager().registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);
 					}
+				}
+			}
+		}
+	}
+
+	public void postProcess() {
+		for (Class<?> cls : sqliteTables) {
+			DBTable sqliteTable = cls.getAnnotation(DBTable.class);
+			OsmiumLogger.debug("Initializing SQLite database table: " + sqliteTable.name());
+			plugin.getSQLiteDatabase().createTable(cls);
+
+			if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
+				Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+			}
+			//			try {
+			//				ClassPool.getDefault().insertClassPath(new ClassClassPath(cls));
+			//				CtClass c = ClassPool.getDefault().getAndRename(cls.getName(), cls.getName() + "_REMAPPED");
+			//				for (CtField field : c.getDeclaredFields()) {
+			//					if (!field.hasAnnotation(Transient.class)) {
+			//						String customType = plugin.getDatabase().getTypeKey(field.getType().getClass());
+			//						if (customType != null) {
+			//							ConstPool cp = c.getClassFile().getConstPool();
+			//							Annotation annotation = new Annotation(Type.class.getName(), cp);
+			//							annotation.addMemberValue("type", new StringMemberValue(customType, cp));
+			//							field.getFieldInfo().addAttribute(new AnnotationsAttribute(cp, null));
+			//						}
+			//					}
+			//				}
+			//				plugin.getDatabase().addTable(c.toClass());
+			//			} catch (CannotCompileException | NotFoundException e) {
+			//				OsmiumLogger.error("Failed to register database table: " + cls.getName());
+			//				e.printStackTrace();
+			//			}
+		}
+
+		for (Class<?> cls : mysqlTables) {
+			MySQLTable mysqlTable = cls.getAnnotation(MySQLTable.class);
+			if (mysqlTable != null) {
+				OsmiumLogger.debug("Initializing MySQL database table: " + mysqlTable.name());
+				plugin.getMySQLDatabase().createTable(cls);
+
+				if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
+					Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
 				}
 			}
 		}

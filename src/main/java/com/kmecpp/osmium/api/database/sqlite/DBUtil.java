@@ -12,7 +12,7 @@ import com.kmecpp.osmium.api.util.StringUtil;
 
 public class DBUtil {
 
-	public String createWhere(Database db, Class<?> cls, Object... primaryKeys) {
+	public String createWhere(SQLiteDatabase db, Class<?> cls, Object... primaryKeys) {
 		String[] columns = db.getTable(cls).getPrimaryColumns();
 		StringBuilder sb = new StringBuilder();
 		for (int i = 1; i < columns.length; i++) {
@@ -21,7 +21,7 @@ public class DBUtil {
 		return sb.toString();
 	}
 
-	public static final String createTable(Database db, TableProperties properties) {
+	public static final String createTable(SQLiteDatabase db, TableProperties properties) {
 		if (properties.getColumnCount() == 0) {
 			throw new IllegalArgumentException("Invalid database table '" + properties.getName() + "' Must contain at least one column!");
 		}
@@ -107,7 +107,7 @@ public class DBUtil {
 		return sb.toString();
 	}
 
-	public static final String createReplaceInto(Database db, Class<?> cls, Object obj) {
+	public static final String createReplaceInto(SQLiteDatabase db, Class<?> cls, Object obj) {
 		ArrayList<String> columns = new ArrayList<>();
 		ArrayList<String> values = new ArrayList<>();
 

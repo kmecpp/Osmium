@@ -1,6 +1,6 @@
-package com.kmecpp.osmium.api.tasks;
+package com.kmecpp.osmium.api;
 
-public enum TimeUnit {
+public enum TickTimeUnit {
 
 	TICK(1),
 	SECOND(20),
@@ -10,12 +10,16 @@ public enum TimeUnit {
 
 	private int tickValue;
 
-	private TimeUnit(int tickValue) {
+	private TickTimeUnit(int tickValue) {
 		this.tickValue = tickValue;
 	}
 
 	public int getTickValue() {
 		return tickValue;
+	}
+
+	public int getMillisecondValue() {
+		return tickValue * 50;
 	}
 
 }
