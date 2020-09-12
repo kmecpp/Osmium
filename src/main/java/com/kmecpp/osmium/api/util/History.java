@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Function;
 
@@ -75,7 +76,17 @@ public class History<T> implements Iterable<T> {
 				count++;
 				return data[index];
 			}
+
 		};
+	}
+
+	@Override
+	public String toString() {
+		ArrayList<T> list = new ArrayList<>();
+		for (T obj : data) {
+			list.add(obj);
+		}
+		return list.toString();
 	}
 
 }

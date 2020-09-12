@@ -27,7 +27,7 @@ public class MDBTableData {
 		this.columnMap = new LinkedHashMap<>();
 
 		if (meta == null) {
-			throw new IllegalArgumentException("Missing @" + MySQLTable.class.getSimpleName() + " annotation");
+			throw new IllegalArgumentException("Database table is missing @" + MySQLTable.class.getSimpleName() + " annotation");
 		}
 
 		this.name = (StringUtil.isNullOrEmpty(database.getTablePrefix()) ? "" : database.getTablePrefix() + "_") + meta.name();

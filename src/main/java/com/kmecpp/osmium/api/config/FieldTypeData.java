@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.api.persistence.Serialization;
+import com.kmecpp.osmium.api.util.Require;
 
 public class FieldTypeData {
 
@@ -35,8 +36,8 @@ public class FieldTypeData {
 	}
 
 	public FieldTypeData(Class<?> type, List<FieldTypeData> generics) {
-		this.type = type;
-		this.args = generics;
+		this.type = Require.nonNull(type);
+		this.args = Require.nonNull(generics);
 
 		//		if (!ConfigSerialization.isConfigurateSerializable(type)) {
 		//			TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(type), new TypeSerializer() {

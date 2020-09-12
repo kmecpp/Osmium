@@ -37,15 +37,17 @@ public class MySQLDatabase extends SQLDatabase {
 		return plugin;
 	}
 
-	public void setTablePrefix(String tablePrefix) {
-		this.tablePrefix = tablePrefix;
-	}
-
 	public String getTablePrefix() {
 		return tablePrefix;
 	}
 
 	public void initialize(String host, int port, String database, String username, String password) {
+		initialize(null, host, port, database, username, password);
+	}
+
+	public void initialize(String prefix, String host, int port, String database, String username, String password) {
+		this.tablePrefix = prefix;
+
 		HikariConfig config = new HikariConfig();
 
 		if (StringUtil.isNullOrEmpty(database)) {
@@ -288,6 +290,7 @@ public class MySQLDatabase extends SQLDatabase {
 			createTable(cls.getSuperclass()); //Create parent first if it exists
 		}
 		MDBTableData data = getData(cls);
+		OsmiumLogger.info("Creating database table for " + data.getName());
 		this.update(MDBUtil.getCreateTableUpdate(data));
 	}
 

@@ -41,12 +41,13 @@ public class ConfigData extends ConfigClassData {
 
 		boolean mustSave = false;
 		for (Entry<String, FieldData> entry : fieldData.entrySet()) {
-			String[] virtualPath = entry.getKey().split("\\.");
+			String virtualPathString = entry.getKey(); //Ex: voting.vote-links 
+			String[] virtualPath = virtualPathString.split("\\.");
 
 			FieldData fieldData = entry.getValue();
 			FieldTypeData typeData = fieldData.getTypeData();
 
-			//			System.out.println("LOADING PATH: " + entry.getKey());
+			//			System.out.println("LOADING PATH: " + virtualPathString);
 
 			CommentedConfigurationNode node = root.getNode((Object[]) virtualPath);
 
@@ -54,7 +55,9 @@ public class ConfigData extends ConfigClassData {
 				if (node.isVirtual() && !fieldData.isDeletable()) {
 					Object defaultValue = fieldData.getFieldValue();
 					if (defaultValue == null) {
-						defaultValue = fieldData.getFieldValue();
+						OsmiumLogger.warn("Using default value for missing config value: " + this.configClass.getName() + "::" + virtualPathString);
+						//						defaultValue = fieldData.getFieldValue();
+						defaultValue = ConfigSerialization.getDefaultFor(fieldData.getType());
 						fieldData.setValue(defaultValue);
 					}
 					if (defaultValue != null) {
@@ -81,7 +84,8 @@ public class ConfigData extends ConfigClassData {
 		}
 
 		for (Entry<String, FieldData> entry : fieldData.entrySet()) {
-			Object[] virtualPath = entry.getKey().split("\\.");
+			String virtualPathString = entry.getKey();
+			Object[] virtualPath = virtualPathString.split("\\.");
 			FieldData fieldData = entry.getValue();
 
 			Object value = fieldData.getFieldValue();

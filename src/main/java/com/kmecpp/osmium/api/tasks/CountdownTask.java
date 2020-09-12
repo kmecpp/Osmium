@@ -37,11 +37,6 @@ public class CountdownTask extends AbstractOsmiumTask<CountdownTask> {
 	}
 
 	@Override
-	public boolean isLastRun() {
-		return remaining == 0;
-	}
-
-	@Override
 	protected void doExecute() {
 		if (paused) {
 			return;

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.database.DBColumn;
-import com.kmecpp.osmium.api.util.Require;
 import com.kmecpp.osmium.api.util.StringUtil;
 
 public class MDBUtil {
@@ -44,23 +43,27 @@ public class MDBUtil {
 		//		System.out.println(data.getType());
 
 		Class<?> type = data.getType();
-		if (type == String.class) {
-			int maxLength = data.getMaxLength();
-			if (maxLength <= 0) {
-				throw new IllegalArgumentException("Column has non-positive max length on a string field: " + tableData.getName() + "." + data.getName());
-			}
-			if (maxLength <= 1000) {
-				return "VARCHAR(" + maxLength + ")";
-			} else if (maxLength <= 65_535) {
-				return "TEXT";
-			} else if (maxLength <= 16_777_215) {
-				return "MEDIUMTEXT";
-			} else if (maxLength <= 4_294_967_295L) {
-				return "LONGTEXT";
-			}
+
+		String typeString = types.get(type);
+		if (typeString != null) {
+			return typeString;
 		}
 
-		return Require.nonNull(types.get(type));
+		int maxLength = data.getMaxLength();
+		if (maxLength <= 0) {
+			throw new IllegalArgumentException("Column has non-positive max length on a string field: " + tableData.getName() + "." + data.getName());
+		}
+		if (maxLength <= 1000) {
+			return "VARCHAR(" + maxLength + ")";
+		} else if (maxLength <= 65_535) {
+			return "TEXT";
+		} else if (maxLength <= 16_777_215) {
+			return "MEDIUMTEXT";
+		} else if (maxLength <= 4_294_967_295L) {
+			return "LONGTEXT";
+		} else {
+			throw new RuntimeException("Unsupported MySQL type: " + type.getName());
+		}
 	}
 
 	public static void updatePreparedStatement(MDBTableData tableData, PreparedStatement s, int index, Object value) throws SQLException {

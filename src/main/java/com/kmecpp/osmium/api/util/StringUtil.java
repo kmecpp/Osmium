@@ -136,6 +136,26 @@ public class StringUtil {
 		return str;
 	}
 
+	/**
+	 * Pad a numeric string with zeros on the left, to fill a field of the given
+	 * width.
+	 * 
+	 * The string is never truncated.
+	 * 
+	 * @param str
+	 *            the string to pad
+	 * @param width
+	 *            the width to pad to
+	 * @return the padding string
+	 */
+	public static String zfill(String str, int width) {
+		return StringUtil.repeat('0', Math.max(0, width - str.length())) + str;
+	}
+
+	public static String zfill(int n, int width) {
+		return zfill(String.valueOf(n), width);
+	}
+
 	public static String plural(long amount, String label) {
 		return plural(amount, "", label);
 	}
