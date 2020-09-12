@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -33,6 +35,8 @@ public class MDBUtil {
 		types.put(Double.class, "DOUBLE");
 		types.put(UUID.class, "CHAR(36)");
 		types.put(Date.class, "DATE");
+		types.put(Time.class, "TIME");
+		types.put(Timestamp.class, "TIMESTAMP");
 	}
 
 	public static String getTypeString(MDBTableData tableData, MDBColumnData data) {
