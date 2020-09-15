@@ -205,7 +205,7 @@ public class MySQLDatabase extends SQLDatabase {
 		//			columns = tableData.getPrimaryColumnNames();
 		//		}
 
-		OsmiumLogger.warn("EXECUTE: " + query);
+		OsmiumLogger.debug("QUERY: " + query);
 		ArrayList<T> results = new ArrayList<>();
 		this.preparedStatement(query, s -> {
 			for (int i = 0; i < values.length; i++) {
@@ -241,7 +241,6 @@ public class MySQLDatabase extends SQLDatabase {
 				e.printStackTrace();
 			}
 		});
-		System.out.println("RESULTS: " + results);
 		return results;
 	}
 

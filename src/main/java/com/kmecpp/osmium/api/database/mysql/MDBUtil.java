@@ -87,6 +87,12 @@ public class MDBUtil {
 			s.setFloat(index, (float) value);
 		} else if (value instanceof Double) {
 			s.setDouble(index, (double) value);
+		} else if (value instanceof Date) {
+			s.setDate(index, (Date) value);
+		} else if (value instanceof Time) {
+			s.setTime(index, (Time) value);
+		} else if (value instanceof Timestamp) {
+			s.setTimestamp(index, (Timestamp) value);
 		} else if (value instanceof String) {
 			s.setString(index, (String) value);
 		} else if (value instanceof UUID) {

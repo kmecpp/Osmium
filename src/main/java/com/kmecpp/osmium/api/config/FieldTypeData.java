@@ -190,6 +190,13 @@ public class FieldTypeData {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object convertToConfigurateType(Object actualValue) {
+		//		System.out.println("CONVERT TO CONFIGURATE TYPE: " + actualValue);
+		//		System.out.println(actualValue);
+		//		if (actualValue != null) {
+		//			System.out.println(actualValue.getClass());
+		//			System.out.println(actualValue.getClass().getPackage());
+		//			System.out.println(actualValue.getClass().getPackage().getName());
+		//		}
 		if (actualValue == null || actualValue.getClass().getPackage().getName().startsWith("java.lang")) {
 			return actualValue;
 		} else if (actualValue instanceof Collection) {
