@@ -90,7 +90,7 @@ public class WebUtil {
 	public static String getPlayerName(UUID uuid) throws IOException {
 		String responseString = IOUtil.readString(new URL("https://api.mojang.com/user/profiles/" + String.valueOf(uuid).replace("-", "") + "/names"));
 		JsonArray result = Json.parse(responseString).asArray();
-		return result.get(result.size() == 1 ? 0 : 1).asObject().get("name").asString();
+		return result.get(result.size() - 1).asObject().get("name").asString();
 	}
 
 }

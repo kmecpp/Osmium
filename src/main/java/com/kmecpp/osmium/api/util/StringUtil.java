@@ -156,6 +156,10 @@ public class StringUtil {
 		return zfill(String.valueOf(n), width);
 	}
 
+	public static String[] split(String str) {
+		return str.split("\\s+");
+	}
+
 	public static String plural(long amount, String label) {
 		return plural(amount, "", label);
 	}
@@ -747,12 +751,16 @@ public class StringUtil {
 	 * @return the capitalized version of the String
 	 */
 	public static String capitalize(String str) {
-		if (str.isEmpty()) {
+		return capitalize(str, true);
+	}
+
+	public static String capitalize(String str, boolean lowercaseEnd) {
+		if (str == null || str.isEmpty()) {
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
 		for (String word : str.split(" ")) {
-			sb.append(word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase());
+			sb.append(word.substring(0, 1).toUpperCase() + (lowercaseEnd ? word.substring(1).toLowerCase() : word.substring(1)));
 		}
 		return sb.toString();
 	}
@@ -775,7 +783,7 @@ public class StringUtil {
 	 * @return the proper article
 	 */
 	public static String article(String str) {
-		return vowel(str) ? "an" : "a";
+		return (vowel(str) ? "an" : "a") + str;
 	}
 
 	/**
@@ -1042,7 +1050,9 @@ public class StringUtil {
 				throw new Error(e);
 			}
 		}
-		sb.setLength(sb.length() - 2);
+		if (sb.length() > 2) {
+			sb.setLength(sb.length() - 2);
+		}
 		return sb.append("]").toString();
 	}
 
