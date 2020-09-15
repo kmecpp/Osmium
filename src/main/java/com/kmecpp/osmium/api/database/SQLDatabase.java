@@ -155,7 +155,7 @@ public abstract class SQLDatabase {
 	}
 
 	public <T> T query(String query, PreparedStatementBuilder builder, ResultSetProcessor<T> resultSetProcessor) {
-		OsmiumLogger.debug("Executing prepared statement: " + query);
+		OsmiumLogger.warn("Executing prepared statement: " + query);
 		if (source != null) {
 			PreparedStatement statement = null;
 			ResultSet resultSet = null;
