@@ -1,13 +1,11 @@
 package com.kmecpp.osmium.api.database.mysql;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 import com.kmecpp.osmium.api.database.OrderBy;
 import com.kmecpp.osmium.api.database.SQLDatabase;
@@ -88,13 +86,6 @@ public class MySQLDatabase extends SQLDatabase {
 		source.close();
 	}
 
-	public void query(String query, Consumer<ResultSet> handler) {
-		get(query, rs -> {
-			handler.accept(rs);
-			return null;
-		});
-	}
-
 	public Completer updateAsync(String update) {
 		Completer completer = new Completer();
 		scheduler.submit(() -> {
@@ -118,6 +109,18 @@ public class MySQLDatabase extends SQLDatabase {
 	//		//		System.out.println(MDBUtil.getCreateTableUpdate(new MDBTableData(RewardClaimsTable.class)));
 	//		System.out.println(MDBUtil.getCreateTableUpdate(new MDBTableData(ProductOrder.class)));
 	//	}
+
+	public int count(Class<?> tableClass, String columns, Object... values) {
+		MDBTableData table = tables.get(tableClass);
+		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + MDBUtil.createWhere(columns.split(",")), ps -> {
+			for (int i = 0; i < values.length; i++) {
+				MDBUtil.updatePreparedStatement(table, ps, i + 1, values[i]);
+			}
+		}, rs -> {
+			rs.next();
+			return rs.getInt(1);
+		});
+	}
 
 	public int setAll(Class<?> tableClass, String column, Object value) {
 		MDBTableData table = tables.get(tableClass);

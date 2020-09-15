@@ -20,6 +20,13 @@ public abstract class SQLDatabase {
 
 	protected HikariDataSource source;
 
+	public void query(String query, Consumer<ResultSet> handler) {
+		get(query, rs -> {
+			handler.accept(rs);
+			return null;
+		});
+	}
+
 	public <T> T get(String query, ResultSetProcessor<T> handler) {
 		return getOrDefault(query, null, rs -> {
 			rs.next();
@@ -121,7 +128,7 @@ public abstract class SQLDatabase {
 	}
 
 	public int preparedStatement(String update, PreparedStatementBuilder builder) {
-		return preparedStatement(update, builder, null);
+		return preparedStatement(update, builder, (Consumer<ResultSet>) null);
 	}
 
 	public int preparedStatement(String update, PreparedStatementBuilder builder, Consumer<ResultSet> handler) {
@@ -145,6 +152,26 @@ public abstract class SQLDatabase {
 			}
 		}
 		return -1;
+	}
+
+	public <T> T query(String query, PreparedStatementBuilder builder, ResultSetProcessor<T> resultSetProcessor) {
+		OsmiumLogger.debug("Executing prepared statement: " + query);
+		if (source != null) {
+			PreparedStatement statement = null;
+			ResultSet resultSet = null;
+			try (Connection connection = source.getConnection()) {
+				statement = connection.prepareStatement(query);
+				builder.build(statement);
+				statement.execute();
+				return resultSetProcessor.process(statement.getResultSet());
+			} catch (Exception e) {
+				OsmiumLogger.error("An error occurred while executing query: '" + query + "'");
+				e.printStackTrace();
+			} finally {
+				close(statement, resultSet);
+			}
+		}
+		return null;
 	}
 
 	//	public <T> T queryAsync(Callable<T> callable) {
