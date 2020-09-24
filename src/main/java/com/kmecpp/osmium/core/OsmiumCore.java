@@ -2,6 +2,7 @@ package com.kmecpp.osmium.core;
 
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.OsmiumUserIds;
 import com.kmecpp.osmium.api.TickTimeUnit;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.inventory.menu.InventoryManager;
@@ -47,7 +48,7 @@ public class OsmiumCore extends OsmiumPlugin {
 		}).start();
 
 		Osmium.getTask().setTime(0, 15, TickTimeUnit.MINUTE).setExecutor((t) -> {
-			OsmiumListener.cleaupIds();
+			OsmiumUserIds.cleanup();
 		}).start();
 
 		Osmium.getTask().setAsync(true).setTime(0, 1, TickTimeUnit.HOUR).setExecutor(task -> {

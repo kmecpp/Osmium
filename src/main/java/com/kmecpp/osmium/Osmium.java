@@ -17,6 +17,7 @@ import org.spongepowered.common.SpongeImpl;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonValue;
+import com.kmecpp.osmium.api.GameProfile;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Chat;
@@ -39,7 +40,6 @@ import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.WebUtil;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
-import com.kmecpp.osmium.core.OsmiumListener;
 import com.kmecpp.osmium.core.PlayerDataManager;
 import com.kmecpp.osmium.core.TPSTask;
 import com.kmecpp.osmium.platform.bukkit.BukkitUser;
@@ -155,10 +155,6 @@ public final class Osmium {
 	//	public static ExecutorService getGenericThreadpool() {
 	//		return genericThreadPool;
 	//	}
-
-	public static Optional<Integer> getUserId(UUID uuid) {
-		return OsmiumListener.getUserId(uuid);
-	}
 
 	public static double getTPS() {
 		return TPSTask.getAverage(60);
@@ -369,6 +365,18 @@ public final class Osmium {
 			}
 		}
 		return Optional.empty();
+	}
+
+	public static Optional<Integer> getUserId(UUID uuid) {
+		return OsmiumUserIds.getUserId(uuid);
+	}
+
+	public static Optional<GameProfile> getGameProfile(int userId) {
+		return Optional.ofNullable(OsmiumUserIds.getProfile(userId, false));
+	}
+
+	public static Optional<GameProfile> getGameProfile(int userId, boolean lookup) {
+		return Optional.ofNullable(OsmiumUserIds.getProfile(userId, lookup));
 	}
 
 	public static Optional<User> getUser(UUID uuid) {
