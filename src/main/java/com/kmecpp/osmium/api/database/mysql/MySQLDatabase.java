@@ -117,7 +117,7 @@ public class MySQLDatabase extends SQLDatabase {
 	public int count(Class<?> tableClass, String extraFilter, String columns, Object... values) {
 		MDBTableData table = tables.get(tableClass);
 		String where = MDBUtil.createWhere(columns.split(","));
-		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where + (where.isEmpty() ? "" : " AND ") + extraFilter, ps -> {
+		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where + (StringUtil.isNullOrEmpty(extraFilter) ? "" : " AND " + extraFilter), ps -> {
 			for (int i = 0; i < values.length; i++) {
 				MDBUtil.updatePreparedStatement(table, ps, i + 1, values[i]);
 			}
