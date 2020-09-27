@@ -57,6 +57,7 @@ public class OsmiumCore extends OsmiumPlugin {
 
 		//This wont actually get run until the server has completely started
 		Osmium.getTask().setExecutor(task -> {
+			Osmium.getPlugins().forEach(OsmiumPlugin::onServerStarted);
 			Osmium.getEventManager().callEvent(new OsmiumServerStartedEvent());
 		}).start();
 
