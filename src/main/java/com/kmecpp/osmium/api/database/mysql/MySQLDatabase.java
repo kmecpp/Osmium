@@ -11,7 +11,7 @@ import com.kmecpp.osmium.api.database.OrderBy;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
-import com.kmecpp.osmium.api.util.Completer;
+import com.kmecpp.osmium.api.util.Callback;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 import com.zaxxer.hikari.HikariConfig;
@@ -85,8 +85,8 @@ public class MySQLDatabase extends SQLDatabase {
 		source.close();
 	}
 
-	public Completer updateAsync(String update) {
-		Completer completer = new Completer();
+	public Callback updateAsync(String update) {
+		Callback completer = new Callback();
 		scheduler.submit(() -> {
 			update(update);
 			completer.complete();
@@ -94,8 +94,13 @@ public class MySQLDatabase extends SQLDatabase {
 		return completer;
 	}
 
-	public void updateAsync(String update, PreparedStatementBuilder builder) {
-		scheduler.submit(() -> preparedStatement(update, builder));
+	public Callback updateAsync(String update, PreparedStatementBuilder builder) {
+		Callback completer = new Callback();
+		scheduler.submit(() -> {
+			preparedStatement(update, builder);
+			completer.complete();
+		});
+		return completer;
 	}
 
 	/*

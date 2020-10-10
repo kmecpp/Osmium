@@ -440,7 +440,7 @@ public class SQLiteDatabase extends SQLDatabase {
 	 * Shuts down the connection pool
 	 */
 	public void shutdown() {
-		if (!source.isClosed()) {
+		if (source != null && !source.isClosed()) {
 			queue.flush(); //Queue should already have connection
 			source.close();
 		}

@@ -1,6 +1,6 @@
 package com.kmecpp.osmium.api.util;
 
-public class Completer {
+public class Callback {
 
 	private Runnable completer;
 
