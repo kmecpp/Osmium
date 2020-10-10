@@ -21,8 +21,7 @@ import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 public class MySQLDatabase extends SQLDatabase {
 
 	private static final ExecutorService scheduler = Executors.newFixedThreadPool(2);
-
-	private final HashMap<Class<?>, MDBTableData> tables = new HashMap<>();
+	private static final HashMap<Class<?>, MDBTableData> tables = new HashMap<>();
 
 	private OsmiumPlugin plugin;
 	private String tablePrefix;
@@ -110,6 +109,17 @@ public class MySQLDatabase extends SQLDatabase {
 	//		System.out.println(MDBUtil.getCreateTableUpdate(new MDBTableData(ProductOrder.class)));
 	//	}
 
+	public int count(Class<?> tableClass) {
+		MDBTableData table = tables.get(tableClass);
+		return get("SELECT COUNT(*) FROM " + table.getName(), rs -> {
+			if (rs.next()) {
+				return rs.getInt(1);
+			} else {
+				return 0;
+			}
+		});
+	}
+
 	public int count(Class<?> tableClass, String columns, Object... values) {
 		return count(tableClass, null, columns, values);
 	}
@@ -122,8 +132,11 @@ public class MySQLDatabase extends SQLDatabase {
 				MDBUtil.updatePreparedStatement(table, ps, i + 1, values[i]);
 			}
 		}, rs -> {
-			rs.next();
-			return rs.getInt(1);
+			if (rs.next()) {
+				return rs.getInt(1);
+			} else {
+				return 0;
+			}
 		});
 	}
 

@@ -21,6 +21,7 @@ public class ConfigUtil {
 				if (field.isAnnotationPresent(Transient.class)) {
 					continue;
 				}
+				//				System.out.println("SERIALIZING: " + classTypeData.getTargetClass().getName());
 				field.setAccessible(true);
 				FieldTypeData fieldTypeData = classTypeData.get(field);
 				result.put(field.getName(), fieldTypeData.convertToConfigurateType(field.get(object)));

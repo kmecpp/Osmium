@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
@@ -59,7 +61,7 @@ public final class Osmium {
 	private static final ItemManager itemManager = new ItemManager();
 	private static final OsmiumMetrics metrics = new OsmiumMetrics();
 
-	//	private static final ExecutorService genericThreadPool = Executors.newFixedThreadPool(3);
+	private static final ExecutorService genericThreadPool = Executors.newFixedThreadPool(3);
 
 	protected static boolean shuttingDown;
 
@@ -152,9 +154,9 @@ public final class Osmium {
 		return itemManager;
 	}
 
-	//	public static ExecutorService getGenericThreadpool() {
-	//		return genericThreadPool;
-	//	}
+	public static ExecutorService getGenericThreadpool() {
+		return genericThreadPool;
+	}
 
 	public static double getTPS() {
 		return TPSTask.getAverage(60);

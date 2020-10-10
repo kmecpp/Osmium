@@ -148,7 +148,7 @@ public class FieldTypeData {
 
 		if (loadedValue == null) {
 			return ConfigSerialization.getDefaultFor(type);
-		} else if (type.isPrimitive() || type.getPackage().getName().startsWith("java.lang")) {
+		} else if (type.isPrimitive() || type.getName().startsWith("java.lang")) {
 			if (type != String.class && loadedValue instanceof String) {
 				return Serialization.deserialize(type, (String) loadedValue);
 			}
@@ -194,10 +194,11 @@ public class FieldTypeData {
 		//		System.out.println(actualValue);
 		//		if (actualValue != null) {
 		//			System.out.println(actualValue.getClass());
+		//			System.out.println(actualValue.getClass().getName());
 		//			System.out.println(actualValue.getClass().getPackage());
 		//			System.out.println(actualValue.getClass().getPackage().getName());
 		//		}
-		if (actualValue == null || actualValue.getClass().getPackage().getName().startsWith("java.lang")) {
+		if (actualValue == null || actualValue.getClass().getName().startsWith("java.lang")) {
 			return actualValue;
 		} else if (actualValue instanceof Collection) {
 			ArrayList converted = new ArrayList();

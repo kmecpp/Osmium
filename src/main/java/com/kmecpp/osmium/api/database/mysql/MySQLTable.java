@@ -11,4 +11,6 @@ public @interface MySQLTable {
 
 	String name();
 
+	boolean autoCreate() default true;
+
 }

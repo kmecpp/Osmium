@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A utility class for manipulating text
@@ -1098,6 +1099,31 @@ public class StringUtil {
 				costs[s2.length()] = lastValue;
 		}
 		return costs[s2.length()];
+	}
+
+	public static String generateDigitCode(int length) {
+		ThreadLocalRandom rand = ThreadLocalRandom.current();
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			sb.append((char) rand.nextInt('0', '9' + 1));
+		}
+		return sb.toString();
+	}
+
+	public static String generateAlphaNumericCode(int length) {
+		ThreadLocalRandom rand = ThreadLocalRandom.current();
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			int r = rand.nextInt(3);
+			if (r == 0) {
+				sb.append((char) rand.nextInt('a', 'z' + 1));
+			} else if (r == 1) {
+				sb.append((char) rand.nextInt('A', 'Z' + 1));
+			} else {
+				sb.append((char) rand.nextInt('0', '9' + 1));
+			}
+		}
+		return sb.toString();
 	}
 
 }

@@ -373,7 +373,7 @@ public class ClassProcessor {
 
 		for (Class<?> cls : mysqlTables) {
 			MySQLTable mysqlTable = cls.getAnnotation(MySQLTable.class);
-			if (mysqlTable != null) {
+			if (mysqlTable != null && mysqlTable.autoCreate()) {
 				OsmiumLogger.debug("Initializing MySQL database table: " + mysqlTable.name());
 				plugin.getMySQLDatabase().createTable(cls);
 

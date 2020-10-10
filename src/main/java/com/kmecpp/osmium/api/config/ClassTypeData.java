@@ -26,6 +26,10 @@ public class ClassTypeData {
 		return typeData;
 	}
 
+	public Class<?> getTargetClass() {
+		return cls;
+	}
+
 	@Override
 	public String toString() {
 		return cls + ": " + String.valueOf(fieldTypeMap);
