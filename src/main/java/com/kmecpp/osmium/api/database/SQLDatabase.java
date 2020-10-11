@@ -127,11 +127,11 @@ public abstract class SQLDatabase {
 		threadPool.submit(runnable);
 	}
 
-	public int preparedStatement(String update, PreparedStatementBuilder builder) {
-		return preparedStatement(update, builder, (Consumer<ResultSet>) null);
+	public int preparedUpdateStatement(String update, PreparedStatementBuilder builder) {
+		return preparedUpdateStatement(update, builder, (Consumer<ResultSet>) null);
 	}
 
-	public int preparedStatement(String update, PreparedStatementBuilder builder, Consumer<ResultSet> handler) {
+	public int preparedUpdateStatement(String update, PreparedStatementBuilder builder, Consumer<ResultSet> handler) {
 		//		System.out.println("Executing statement: " + update);
 		OsmiumLogger.debug("Executing prepared statement: " + update);
 		if (source != null) {
@@ -140,11 +140,11 @@ public abstract class SQLDatabase {
 			try (Connection connection = source.getConnection()) {
 				statement = connection.prepareStatement(update);
 				builder.build(statement);
-				boolean result = statement.execute();
+				int result = statement.executeUpdate();
 				if (handler != null) {
 					handler.accept(statement.getResultSet());
 				}
-				return result ? 1 : -1;
+				return result;
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -152,6 +152,30 @@ public abstract class SQLDatabase {
 			}
 		}
 		return -1;
+	}
+
+	public void preparedQueryStatement(String update, PreparedStatementBuilder builder) {
+		preparedQueryStatement(update, builder, (Consumer<ResultSet>) null);
+	}
+
+	public void preparedQueryStatement(String update, PreparedStatementBuilder builder, Consumer<ResultSet> handler) {
+		OsmiumLogger.debug("Executing prepared statement: " + update);
+		if (source != null) {
+			PreparedStatement statement = null;
+			ResultSet resultSet = null;
+			try (Connection connection = source.getConnection()) {
+				statement = connection.prepareStatement(update);
+				builder.build(statement);
+				resultSet = statement.executeQuery();
+				if (handler != null) {
+					handler.accept(resultSet);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				close(statement, resultSet);
+			}
+		}
 	}
 
 	public <T> T query(String query, PreparedStatementBuilder builder, ResultSetProcessor<T> resultSetProcessor) {

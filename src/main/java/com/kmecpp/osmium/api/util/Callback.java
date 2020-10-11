@@ -1,16 +1,26 @@
 package com.kmecpp.osmium.api.util;
 
+import java.util.function.Consumer;
+
 public class Callback {
 
-	private Runnable completer;
+	private Consumer<Integer> consumer;
+	private Runnable runnable;
 
-	public void onComplete(Runnable completer) {
-		this.completer = completer;
+	public void onComplete(Consumer<Integer> callback) {
+		this.consumer = callback;
 	}
 
-	public void complete() {
-		if (completer != null) {
-			completer.run();
+	public void onComplete(Runnable callback) {
+		this.runnable = callback;
+	}
+
+	public void complete(int rowsUpdated) {
+		if (runnable != null) {
+			runnable.run();
+		}
+		if (consumer != null) {
+			consumer.accept(rowsUpdated);
 		}
 	}
 

@@ -3,6 +3,7 @@ package com.kmecpp.osmium.api.database.mysql;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 
@@ -67,6 +68,14 @@ public class MDBTableData {
 
 	public String getName() {
 		return name;
+	}
+
+	public MDBColumnData getColumnMeta(String columnName) {
+		return columnMap.get(SQLDatabase.getColumnName(columnName));
+	}
+
+	public void setDefaultValue(String column, Object value) {
+		getColumnMeta(column).setDefaultValue(value);
 	}
 
 	public LinkedHashMap<String, MDBColumnData> getColumnMap() {

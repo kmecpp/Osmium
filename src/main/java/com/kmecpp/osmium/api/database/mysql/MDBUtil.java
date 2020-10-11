@@ -132,6 +132,14 @@ public class MDBUtil {
 		StringUtil.add(sb, data.isUnique() ? "unique" : "");
 		StringUtil.add(sb, data.isNullable() ? "" : "not null");
 		StringUtil.add(sb, data.isAutoIncrement() ? "auto_increment" : "");
+		if (data.getDefaultValue() != null) {
+			Object value = data.getDefaultValue();
+			if (value instanceof String || value instanceof UUID) {
+				StringUtil.add(sb, "default '" + value + "'");
+			} else {
+				StringUtil.add(sb, "default " + value);
+			}
+		}
 		return sb.toString();
 	}
 

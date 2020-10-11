@@ -88,8 +88,8 @@ public class MySQLDatabase extends SQLDatabase {
 	public Callback updateAsync(String update) {
 		Callback completer = new Callback();
 		scheduler.submit(() -> {
-			update(update);
-			completer.complete();
+			int rowsUpdated = update(update);
+			completer.complete(rowsUpdated);
 		});
 		return completer;
 	}
@@ -97,8 +97,8 @@ public class MySQLDatabase extends SQLDatabase {
 	public Callback updateAsync(String update, PreparedStatementBuilder builder) {
 		Callback completer = new Callback();
 		scheduler.submit(() -> {
-			preparedStatement(update, builder);
-			completer.complete();
+			int rowsUpdated = preparedUpdateStatement(update, builder);
+			completer.complete(rowsUpdated);
 		});
 		return completer;
 	}
@@ -147,7 +147,7 @@ public class MySQLDatabase extends SQLDatabase {
 
 	public int setAll(Class<?> tableClass, String column, Object value) {
 		MDBTableData table = tables.get(tableClass);
-		return preparedStatement("update " + table.getName() + " set " + SQLDatabase.getColumnName(column) + "=?", ps -> MDBUtil.updatePreparedStatement(table, ps, 1, value));
+		return preparedUpdateStatement("update " + table.getName() + " set " + SQLDatabase.getColumnName(column) + "=?", ps -> MDBUtil.updatePreparedStatement(table, ps, 1, value));
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit) {
@@ -233,7 +233,7 @@ public class MySQLDatabase extends SQLDatabase {
 
 		OsmiumLogger.debug("QUERY: " + query);
 		ArrayList<T> results = new ArrayList<>();
-		this.preparedStatement(query, s -> {
+		this.preparedQueryStatement(query, s -> {
 			for (int i = 0; i < values.length; i++) {
 				MDBUtil.updatePreparedStatement(table, s, i + 1, values[i]);
 			}
@@ -275,7 +275,7 @@ public class MySQLDatabase extends SQLDatabase {
 		MDBTableData tableData = tables.get(tableClass);
 		String update = MDBUtil.createReplaceInto(tableData);
 
-		this.preparedStatement(update, s -> {
+		this.preparedUpdateStatement(update, s -> {
 			try {
 				MDBColumnData[] columns = tableData.getColumns();
 				for (int i = 0; i < columns.length; i++) {
@@ -291,7 +291,7 @@ public class MySQLDatabase extends SQLDatabase {
 	//		return tables.get(cls.getSuperclass());
 	//	}
 
-	public MDBTableData getData(Class<?> cls) {
+	public MDBTableData getTableMeta(Class<?> cls) {
 		MDBTableData data = tables.get(cls);
 		if (data != null) {
 			return data;
@@ -311,11 +311,13 @@ public class MySQLDatabase extends SQLDatabase {
 	}
 
 	public void createTable(Class<?> cls) {
+		Reflection.initialize(cls); //Call static initializer
+
 		if (cls.getSuperclass() != Object.class && cls.getSuperclass().isAnnotationPresent(MySQLTable.class)) {
 			createTable(cls.getSuperclass()); //Create parent first if it exists
 		}
-		MDBTableData data = getData(cls);
-		OsmiumLogger.info("Creating database table for " + data.getName());
+		MDBTableData data = getTableMeta(cls);
+		OsmiumLogger.info("Creating database table: '" + data.getName() + "'");
 		this.update(MDBUtil.getCreateTableUpdate(data));
 	}
 
