@@ -6,8 +6,10 @@ import java.util.UUID;
 
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.command.Command;
+import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.StringUtil;
 
@@ -102,6 +104,12 @@ public class OsmiumCoreCommands extends Command {
 			} else {
 				fail("That player does not have a user ID associated with their account");
 			}
+		});
+
+		add("clearcooldowns", "cc").setAdmin(true).setUsage("<player>").setExecutor(e -> {
+			User user = e.getUser(0);
+			CommandManager.getCooldownData().remove(user.getUniqueId());
+			e.sendMessage(Chat.GREEN + "User cooldowns cleared successfully!");
 		});
 	}
 

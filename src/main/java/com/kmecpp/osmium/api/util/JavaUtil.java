@@ -13,7 +13,7 @@ public class JavaUtil {
 		return System.getProperty("os.name");
 	}
 
-	public static <K, V> LinkedHashMap<K, V> buildLinkedMap(Object... data) {
+	public static <K, V> LinkedHashMap<K, V> lmap(Object... data) {
 		LinkedHashMap<K, V> map = new LinkedHashMap<>();
 		if (data.length % 2 != 0) {
 			throw new IllegalArgumentException("Data must have even length");

@@ -43,8 +43,12 @@ public class WebUtil {
 	}
 
 	public static JsonValue post(URL url, JsonValue json) throws IOException {
+		return post(url, json);
+	}
+
+	public static JsonValue post(URL url, byte[] bytes) throws IOException {
 		HttpURLConnection connection = getConnection(url);
-		postFast(connection, json.toString().getBytes());
+		postFast(connection, bytes);
 		return Json.parse(new InputStreamReader(connection.getInputStream()));
 	}
 

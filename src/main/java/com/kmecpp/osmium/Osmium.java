@@ -4,12 +4,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Predicate;
+import java.util.jar.JarFile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -122,6 +124,19 @@ public final class Osmium {
 
 	public static OsmiumPlugin getPlugin(Class<?> cls) {
 		return pluginLoader.getPlugin(cls);
+	}
+
+	public static void addExternalPackage(OsmiumPlugin plugin, String packageName) {
+		JarFile jarFile = Directory.getJarFile(plugin.getClassProcessor().getMainClass());
+		addExternalPackage(plugin, jarFile, packageName);
+	}
+
+	public static void addExternalPackage(OsmiumPlugin plugin, JarFile jarFile, String packageName) {
+		HashSet<Class<?>> classes = Reflection.getClasses(jarFile, packageName);
+		for (Class<?> cls : classes) {
+			pluginLoader.assignPluginToExternalClass(cls, plugin);
+			plugin.getClassProcessor().addExternalClass(cls);
+		}
 	}
 
 	public static void execute(String command) {

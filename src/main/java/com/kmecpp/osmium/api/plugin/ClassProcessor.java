@@ -38,6 +38,7 @@ public class ClassProcessor {
 	private final Class<?> mainClass;
 	private final Class<?> mainClassImpl;
 	private final HashSet<Class<?>> pluginClasses = new HashSet<Class<?>>();
+	private final HashSet<Class<?>> externalClasses = new HashSet<Class<?>>();
 
 	private final HashMap<Class<?>, Object> classInstances = new HashMap<>();
 	//	private final HashMap<Class<?>, Command> commands = new HashMap<>();
@@ -131,12 +132,12 @@ public class ClassProcessor {
 		skipClasses.add(cls.getName());
 	}
 
-	public void process(Class<?> cls) {
-		cls.getDeclaredMethods(); //Verify that return types exist
-		onLoad(cls);
-		pluginClasses.add(cls);
-		onEnable(cls);
-	}
+	//	public void process(Class<?> cls) {
+	//		cls.getDeclaredMethods(); //Verify that return types exist
+	//		onLoad(cls);
+	//		pluginClasses.add(cls);
+	//		onEnable(cls);
+	//	}
 
 	public Class<?> getMainClass() {
 		return mainClass;
@@ -150,6 +151,10 @@ public class ClassProcessor {
 		return pluginClasses;
 	}
 
+	public HashSet<Class<?>> getExternalClasses() {
+		return externalClasses;
+	}
+
 	public HashMap<Class<?>, Object> getClassInstances() {
 		return classInstances;
 	}
@@ -158,8 +163,17 @@ public class ClassProcessor {
 		classInstances.put(listener.getClass(), listener);
 	}
 
+	public void addExternalClass(Class<?> cls) {
+		externalClasses.add(cls);
+	}
+
 	protected void initializeClasses() {
-		for (Class<?> cls : pluginClasses) {
+		initializeClasses(pluginClasses);
+		initializeClasses(externalClasses);
+	}
+
+	protected void initializeClasses(HashSet<Class<?>> classes) {
+		for (Class<?> cls : classes) {
 			if (!Reflection.isConcrete(cls) || skipClasses.contains(cls.getName())) {
 				continue;
 			}
@@ -170,7 +184,6 @@ public class ClassProcessor {
 				OsmiumLogger.error("Failed to enable class: " + cls.getName());
 				t.printStackTrace();
 			}
-
 		}
 	}
 

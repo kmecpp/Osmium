@@ -190,6 +190,10 @@ public final class CommandManager {
 		new CommandException("");
 	}
 
+	public static HashMap<UUID, HashMap<CommandBase, Long>> getCooldownData() {
+		return cooldownData;
+	}
+
 	//	private static ArrayList<Command> commands = new ArrayList<>();
 	//
 	//	public CommandManager register(Class<? extends OsmiumCommand> command) {

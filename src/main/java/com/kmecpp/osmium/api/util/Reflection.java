@@ -578,9 +578,12 @@ public class Reflection {
 	public static Class<?>[] getClasses(String pkg) {
 		try {
 			Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(pkg.replace('.', '/'));
+			System.out.println(pkg.replace('.', '/'));
+			System.out.println("RESOURCES: " + resources);
 			List<File> files = new ArrayList<File>();
 			while (resources.hasMoreElements()) {
 				files.add(new File(resources.nextElement().getFile()));
+				System.out.println("RESOURCE: " + files.get(files.size() - 1));
 			}
 			ArrayList<Class<?>> classes = new ArrayList<>();
 			for (File directory : files) {

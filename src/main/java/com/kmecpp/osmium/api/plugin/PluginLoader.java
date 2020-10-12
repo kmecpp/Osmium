@@ -21,6 +21,8 @@ public class PluginLoader {
 	private final HashMap<String, OsmiumPlugin> pluginFiles = new HashMap<>();
 	private final HashMap<Class<? extends OsmiumPlugin>, OsmiumPlugin> plugins = new HashMap<>();
 
+	private final HashMap<Class<?>, OsmiumPlugin> externalClasses = new HashMap<>();
+
 	public OsmiumPlugin load(Object pluginImpl) {
 		try {
 			//			String[] lines = IOUtil.readLines(pluginImpl.getClass().getResource("/osmium.properties")); //Weird sponge bug. Doesn't work anymore
@@ -79,6 +81,10 @@ public class PluginLoader {
 		return null;
 	}
 
+	public void assignPluginToExternalClass(Class<?> cls, OsmiumPlugin plugin) {
+		externalClasses.put(cls, plugin);
+	}
+
 	public Collection<OsmiumPlugin> getPlugins() {
 		return plugins.values();
 	}
@@ -93,7 +99,11 @@ public class PluginLoader {
 	}
 
 	public OsmiumPlugin getPlugin(Class<?> cls) {
-		return pluginFiles.get(Directory.getJarFilePath(cls));
+		OsmiumPlugin plugin = pluginFiles.get(Directory.getJarFilePath(cls));
+		if (plugin != null) {
+			return plugin;
+		}
+		return externalClasses.get(cls);
 	}
 
 }
