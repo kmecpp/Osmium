@@ -5,11 +5,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.api.config.PluginConfigTypeData;
@@ -42,8 +44,17 @@ public class PluginLoader {
 				OsmiumPlugin plugin = main.newInstance();
 				OsmiumLogger.info("Loading plugin: " + plugin.getName() + " v" + plugin.getVersion());
 
-				ZipEntry configTypes = jar.getEntry("CONFIG_TYPES");
-				PluginConfigTypeData configTypeData = PluginConfigTypeData.parse(configTypes == null ? new String[0] : IOUtil.readLines(jar.getInputStream(configTypes)));
+				ArrayList<String> configTypes = new ArrayList<>();
+				Enumeration<JarEntry> entries = jar.entries();
+				while (entries.hasMoreElements()) {
+					JarEntry entry = entries.nextElement();
+					if (entry.getName().startsWith("CONFIG_TYPES")) {
+						for (String line : IOUtil.readLines(jar.getInputStream(entry))) {
+							configTypes.add(line);
+						}
+					}
+				}
+				PluginConfigTypeData configTypeData = PluginConfigTypeData.parse(configTypes);
 
 				for (Field field : plugin.getClass().getDeclaredFields()) {
 					if (field.isAnnotationPresent(PluginInstance.class)

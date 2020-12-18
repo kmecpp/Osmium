@@ -90,7 +90,7 @@ public class ConfigManager {
 		Path configPath;
 		if (Platform.isDev()) {
 			try {
-				pluginData = PluginConfigTypeData.parse(IOUtil.readLines(Paths.get("CONFIG_TYPES").toFile()));
+				pluginData = PluginConfigTypeData.parse(Arrays.asList(IOUtil.readLines(Paths.get("CONFIG_TYPES").toFile())));
 				configPath = Paths.get(configProperties.path());
 			} catch (Exception e) {
 				throw new RuntimeException(e);

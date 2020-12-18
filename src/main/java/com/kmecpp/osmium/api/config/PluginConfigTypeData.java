@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.api.config;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 public class PluginConfigTypeData {
@@ -61,7 +62,7 @@ public class PluginConfigTypeData {
 		return result;
 	}
 
-	public static PluginConfigTypeData parse(String[] configTypesFile) {
+	public static PluginConfigTypeData parse(List<String> configTypesFile) {
 		PluginConfigTypeData data = new PluginConfigTypeData();
 
 		HashMap<String, String> current = new HashMap<>();

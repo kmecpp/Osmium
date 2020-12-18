@@ -23,7 +23,7 @@ import com.kmecpp.osmium.api.config.MapSerializable;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes({ "com.kmecpp.osmium.api.config.ConfigClass", "com.kmecpp.osmium.api.config.MapSerializable",
-		"com.kmecpp.osmium.api.config.ConfigSerializable" })
+		"com.kmecpp.osmium.api.config.ConfigSerializable", })
 public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 
 	private static StringBuilder data = new StringBuilder();
@@ -48,6 +48,16 @@ public class ConfigTypeProcessor extends OsmiumAnnotationProcessor {
 			}
 			return true;
 		}
+
+		//		Set<? extends Element> plugins = roundEnv.getElementsAnnotatedWith(Plugin.class);
+		//		for (Element plugin : plugins) {
+		//			if (plugin.getKind() == ElementKind.CLASS) {
+		//				String className = String.valueOf(plugin);
+		//				Reflection.getPackageName(className);
+		//				System.out.println(plugin);
+		//				System.out.println(plugin.getSimpleName());
+		//			}
+		//		}
 
 		Set<? extends Element> mapSerializable = roundEnv.getElementsAnnotatedWith(ConfigSerializable.class);
 		mapSerializableElements.addAll(mapSerializable);

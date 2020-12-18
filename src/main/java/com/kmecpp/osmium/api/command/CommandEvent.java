@@ -181,7 +181,11 @@ public class CommandEvent implements Messageable {
 	}
 
 	public boolean contains(String parameter) {
-		for (int i = 0; i < args.length; i++) {
+		return contains(0, parameter);
+	}
+
+	public boolean contains(int startIndex, String parameter) {
+		for (int i = startIndex; i < args.length; i++) {
 			if (args[i].equalsIgnoreCase(parameter)) {
 				return true;
 			}
@@ -339,7 +343,7 @@ public class CommandEvent implements Messageable {
 	}
 
 	public CommandException notFound(String expectedLabel, String input) {
-		return new CommandException("Could find " + expectedLabel + ": '" + input + "'");
+		return new CommandException("Could not find " + expectedLabel + ": '" + input + "'");
 	}
 
 	//	public void sendRawMessage(String style, String message) {

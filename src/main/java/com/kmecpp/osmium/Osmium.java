@@ -412,6 +412,10 @@ public final class Osmium {
 	}
 
 	public static Optional<User> getUser(String name) {
+		Player onlinePlayer = PlayerList.getPlayer(name);
+		if (onlinePlayer != null) {
+			return Optional.of(onlinePlayer);
+		}
 		if (Platform.isBukkit()) {
 			@SuppressWarnings("deprecation")
 			OfflinePlayer user = Bukkit.getOfflinePlayer(name);

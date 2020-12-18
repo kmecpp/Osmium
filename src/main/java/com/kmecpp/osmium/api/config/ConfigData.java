@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.persistence.Serialization;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -58,6 +59,9 @@ public class ConfigData extends ConfigClassData {
 						OsmiumLogger.warn("Using default value for missing config value: " + this.configClass.getName() + "::" + virtualPathString);
 						//						defaultValue = fieldData.getFieldValue();
 						defaultValue = ConfigSerialization.getDefaultFor(fieldData.getType());
+						//						System.out.println();
+						//						System.out.println(fieldData.getType());
+						//						System.out.println("DEFAULT VALUE: " + defaultValue);
 						fieldData.setValue(defaultValue);
 					}
 					if (defaultValue != null) {
@@ -96,7 +100,14 @@ public class ConfigData extends ConfigClassData {
 
 			FieldTypeData typeData = fieldData.getTypeData();
 			node.setComment(fieldData.getComment());
-			node.setValue(typeData.convertToConfigurateType(value));
+
+			Object configurateValue = typeData.convertToConfigurateType(value);
+			node.setValue(configurateValue);
+
+			//Try not to save null values as this will erase the key from the file. If it's serializable just save an empty string
+			if (configurateValue == null && Serialization.isSerializable(fieldData.getType())) {
+				node.setValue("");
+			}
 
 			//			Object value = typeData.convertToActualType(node.getValue());
 			//			fieldData.setValue(value);

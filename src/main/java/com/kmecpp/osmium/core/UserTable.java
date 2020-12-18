@@ -7,7 +7,7 @@ import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.database.mysql.MySQLTable;
 
 @DBTable(name = "users")
-@MySQLTable(name = "users")
+@MySQLTable(name = "users", autoCreate = false)
 public class UserTable {
 
 	@DBColumn(primary = true, autoIncrement = true)

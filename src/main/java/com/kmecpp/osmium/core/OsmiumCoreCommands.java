@@ -41,13 +41,28 @@ public class OsmiumCoreCommands extends Command {
 			e.send("&eOsmium debug mode: " + (result ? "&aenabled" : "&cdisabled"));
 		});
 
-		add("reload").setAdmin(true).setExecutor((e) -> {
-			int count = 0;
-			for (OsmiumPlugin plugin : Osmium.getPlugins()) {
-				plugin.reload();
-				count++;
+		add("reload").setUsage("[plugin/all] [full]").setAdmin(true).setExecutor((e) -> {
+			if (e.hasString(0)) {
+				boolean full = e.contains(1, "full");
+
+				String pluginName = e.getString(0);
+				if (pluginName.equalsIgnoreCase("all")) {
+					int count = 0;
+					for (OsmiumPlugin plugin : Osmium.getPlugins()) {
+						plugin.reload();
+						count++;
+					}
+					e.send("&a" + count + " Osmium plugins reloaded successfully!");
+				} else {
+					OsmiumPlugin plugin = e.getPlugin(0);
+					Osmium.reloadPlugin(plugin, full);
+					e.sendMessage(Chat.GREEN + plugin.getName() + " reloaded successfully!");
+				}
+			} else {
+				boolean full = e.contains("full");
+				Osmium.reloadPlugin(OsmiumCore.getPlugin(), full);
+				e.sendMessage(Chat.GREEN + OsmiumCore.getPlugin().getName() + " reloaded successfully!");
 			}
-			e.send("&a" + count + " Osmium plugins reloaded successfully!");
 		});
 
 		add("plugins").setAdmin(true).setUsage("{plugin}").setExecutor((e) -> {

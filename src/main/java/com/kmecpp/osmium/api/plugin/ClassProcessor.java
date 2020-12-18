@@ -165,6 +165,9 @@ public class ClassProcessor {
 
 	public void addExternalClass(Class<?> cls) {
 		externalClasses.add(cls);
+		if (!cls.isAnnotationPresent(HookClass.class) && !cls.isAnnotationPresent(SkipProcessing.class)) {
+			onLoad(cls);
+		}
 	}
 
 	protected void initializeClasses() {
@@ -386,6 +389,7 @@ public class ClassProcessor {
 
 		for (Class<?> cls : mysqlTables) {
 			MySQLTable mysqlTable = cls.getAnnotation(MySQLTable.class);
+			//			System.out.println("MYSQL TABLE : " + cls);
 			if (mysqlTable != null && mysqlTable.autoCreate()) {
 				OsmiumLogger.debug("Initializing MySQL database table: " + mysqlTable.name());
 				plugin.getMySQLDatabase().createTable(cls);
