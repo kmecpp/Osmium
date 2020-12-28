@@ -22,25 +22,41 @@ public class ReflectField<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public T get(Object instance) throws Exception {
-		init();
-		return (T) field.get(instance);
+	public T get(Object instance) {
+		try {
+			init();
+			return (T) field.get(instance);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public T getStatic() throws Exception {
-		init();
-		return (T) field.get(null);
+	public T getStatic() {
+		try {
+			init();
+			return (T) field.get(null);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public void set(Object instance, T value) throws Exception {
-		init();
-		field.set(instance, value);
+	public void set(Object instance, T value) {
+		try {
+			init();
+			field.set(instance, value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public void setStatic(T value) throws Exception {
-		init();
-		field.set(null, value);
+	public void setStatic(T value) {
+		try {
+			init();
+			field.set(null, value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

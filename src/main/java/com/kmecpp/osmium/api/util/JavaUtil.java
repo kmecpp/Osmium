@@ -1,7 +1,9 @@
 package com.kmecpp.osmium.api.util;
 
+import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 public class JavaUtil {
 
@@ -11,6 +13,10 @@ public class JavaUtil {
 
 	public static String getOSName() {
 		return System.getProperty("os.name");
+	}
+
+	public static <K, V> Entry<K, V> entry(K key, V value) {
+		return new AbstractMap.SimpleEntry<>(key, value);
 	}
 
 	public static <K, V> LinkedHashMap<K, V> lmap(Object... data) {
