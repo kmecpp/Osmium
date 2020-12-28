@@ -1,16 +1,46 @@
 package com.kmecpp.osmium.api.database.sqlite;
 
 import java.lang.reflect.Field;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
 
 import com.kmecpp.osmium.api.database.DBColumn;
 import com.kmecpp.osmium.api.persistence.Serialization;
-import com.kmecpp.osmium.api.persistence.SerializationData;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 
 public class DBUtil {
+
+	public static HashMap<Class<?>, String> types = new HashMap<>();
+
+	static {
+		types.put(boolean.class, "TINYINT(1)");
+		types.put(Boolean.class, "TINYINT(1)");
+		types.put(byte.class, "TINYINT");
+		types.put(Byte.class, "TINYINT");
+		types.put(short.class, "SMALLINT");
+		types.put(Short.class, "SMALLINT");
+		types.put(int.class, "INT");
+		types.put(Integer.class, "INT");
+		types.put(long.class, "BIGINT");
+		types.put(Long.class, "BIGINT");
+		types.put(float.class, "FLOAT");
+		types.put(Float.class, "FLOAT");
+		types.put(double.class, "DOUBLE");
+		types.put(Double.class, "DOUBLE");
+		types.put(UUID.class, "CHAR(36)");
+		types.put(Date.class, "DATE");
+		types.put(Time.class, "TIME");
+		types.put(Timestamp.class, "TIMESTAMP");
+
+		//SQLITE
+		types.put(String.class, "VARCHAR");
+	}
 
 	public String createWhere(SQLiteDatabase db, Class<?> cls, Object... primaryKeys) {
 		String[] columns = db.getTable(cls).getPrimaryColumns();
@@ -65,9 +95,18 @@ public class DBUtil {
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
-			SerializationData<?> serializationData = Serialization.getData(field.getType());
-			if (serializationData == null) {
-				throw new IllegalArgumentException("Cannot create database table with unregistered type: " + field.getType());
+			//			SerializationData<?> serializationData = Serialization.getData(field.getType());
+			//			if (serializationData == null) {
+			//				throw new IllegalArgumentException("Cannot create database table with unregistered type: " + field.getType());
+			//			}
+
+			String typeString = types.get(field.getType());
+			if (typeString == null) {
+				if (Serialization.isSerializable(field.getType())) {
+					typeString = "SERIALIZABLE";
+				} else {
+					throw new IllegalArgumentException("Cannot create database table with unregistered type: " + field.getType());
+				}
 			}
 
 			if (column.autoIncrement()) {
@@ -75,7 +114,7 @@ public class DBUtil {
 				schema.append(getColumnName(field)).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
 			} else {
 				schema.append(getColumnName(field))
-						.append(" " + serializationData.getType().getName())
+						.append(" " + typeString)
 						.append(column.nullable() ? "" : " NOT NULL")
 						.append(column.autoIncrement() ? " AUTOINCREMENT" : "")
 						.append(column.unique() ? " UNIQUE" : "")
