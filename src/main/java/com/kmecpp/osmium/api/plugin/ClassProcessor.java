@@ -359,12 +359,16 @@ public class ClassProcessor {
 
 	public void postProcess() {
 		for (Class<?> cls : sqliteTables) {
-			DBTable sqliteTable = cls.getAnnotation(DBTable.class);
-			OsmiumLogger.debug("Initializing SQLite database table: " + sqliteTable.name());
-			plugin.getSQLiteDatabase().createTable(cls);
+			try {
+				DBTable sqliteTable = cls.getAnnotation(DBTable.class);
+				OsmiumLogger.debug("Initializing SQLite database table: " + sqliteTable.name());
+				plugin.getSQLiteDatabase().createTable(cls);
 
-			if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
-				Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+				if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
+					Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			//			try {
 			//				ClassPool.getDefault().insertClassPath(new ClassClassPath(cls));
@@ -391,11 +395,15 @@ public class ClassProcessor {
 			MySQLTable mysqlTable = cls.getAnnotation(MySQLTable.class);
 			//			System.out.println("MYSQL TABLE : " + cls);
 			if (mysqlTable != null && mysqlTable.autoCreate()) {
-				OsmiumLogger.debug("Initializing MySQL database table: " + mysqlTable.name());
-				plugin.getMySQLDatabase().createTable(cls);
+				try {
+					OsmiumLogger.debug("Initializing MySQL database table: " + mysqlTable.name());
+					plugin.getMySQLDatabase().createTable(cls);
 
-				if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
-					Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+					if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
+						Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}
