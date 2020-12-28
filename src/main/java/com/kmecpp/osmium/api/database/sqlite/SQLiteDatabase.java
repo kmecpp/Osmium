@@ -40,6 +40,10 @@ public class SQLiteDatabase extends SQLDatabase {
 		this.plugin = plugin;
 	}
 
+	/**
+	 * Generally no need to call this manually. The database is initialized
+	 * automatically when tables are created.
+	 */
 	public void start() {
 		HikariConfig config = new HikariConfig();
 
@@ -288,7 +292,7 @@ public class SQLiteDatabase extends SQLDatabase {
 			resultSet = statement.executeQuery(query);
 			return processor.process(resultSet);
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to execute database query: \"" + query + "\"");
+			throw new RuntimeException("Failed to execute database query: \"" + query + "\"", e);
 		} finally {
 			IOUtil.close(connection, statement, resultSet);
 		}
@@ -370,7 +374,7 @@ public class SQLiteDatabase extends SQLDatabase {
 		}
 
 		if (source == null) {
-			start();
+			start(); //Initialize connection automatically
 		}
 
 		TableProperties data = new TableProperties(this, cls);
