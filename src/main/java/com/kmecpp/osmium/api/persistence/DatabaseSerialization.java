@@ -2,8 +2,6 @@ package com.kmecpp.osmium.api.persistence;
 
 import java.util.HashMap;
 
-import com.kmecpp.osmium.api.database.sqlite.DBType;
-
 public class DatabaseSerialization {
 
 	private static final HashMap<Class<?>, SerializationData<?>> database = new HashMap<>();
@@ -13,8 +11,8 @@ public class DatabaseSerialization {
 		//		register(Boolean.class, DBType.BOOLEAN, b -> b ? 1 : 0, );
 	}
 
-	public static <T> void register(Class<T> cls, DBType type, Serializer<T> serializer, Deserializer<T> deserializer) {
-		database.put(cls, new SerializationData<>(type, true, serializer, deserializer));
+	public static <T> void register(Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
+		database.put(cls, new SerializationData<>(true, serializer, deserializer));
 	}
 
 	public static <T> String serialize(T obj) {

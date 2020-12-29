@@ -12,7 +12,6 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.kmecpp.osmium.api.config.ConfigSerialization;
-import com.kmecpp.osmium.api.database.sqlite.DBType;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Reflection;
 
@@ -22,33 +21,33 @@ public class Serialization {
 	private static final HashMap<Class<?>, SerializationData<?>> types = new HashMap<>();
 
 	static {
-		registerDefaultType(DBType.INTEGER, byte.class, Byte::parseByte);
-		registerDefaultType(DBType.INTEGER, short.class, Short::parseShort);
-		registerDefaultType(DBType.INTEGER, int.class, Integer::parseInt);
-		registerDefaultType(DBType.INTEGER, long.class, Long::parseLong);
-		registerDefaultType(DBType.FLOAT, float.class, Float::parseFloat);
-		registerDefaultType(DBType.DOUBLE, double.class, Double::parseDouble);
-		registerDefaultType(DBType.BOOLEAN, boolean.class, b -> String.valueOf(b ? 1 : 0), s -> s.equals("1") ? true : false);
+		registerDefaultType(byte.class, Byte::parseByte);
+		registerDefaultType(short.class, Short::parseShort);
+		registerDefaultType(int.class, Integer::parseInt);
+		registerDefaultType(long.class, Long::parseLong);
+		registerDefaultType(float.class, Float::parseFloat);
+		registerDefaultType(double.class, Double::parseDouble);
+		registerDefaultType(boolean.class, b -> String.valueOf(b ? 1 : 0), s -> s.equals("1") ? true : false);
 
-		registerDefaultType(DBType.INTEGER, Byte.class, Byte::parseByte);
-		registerDefaultType(DBType.INTEGER, Short.class, Short::parseShort);
-		registerDefaultType(DBType.INTEGER, Integer.class, Integer::parseInt);
-		registerDefaultType(DBType.INTEGER, Long.class, Long::parseLong);
-		registerDefaultType(DBType.FLOAT, Float.class, Float::parseFloat);
-		registerDefaultType(DBType.DOUBLE, Double.class, Double::parseDouble);
-		registerDefaultType(DBType.BOOLEAN, Boolean.class, b -> String.valueOf(b ? 1 : 0), s -> s.equals("1") ? true : false);
+		registerDefaultType(Byte.class, Byte::parseByte);
+		registerDefaultType(Short.class, Short::parseShort);
+		registerDefaultType(Integer.class, Integer::parseInt);
+		registerDefaultType(Long.class, Long::parseLong);
+		registerDefaultType(Float.class, Float::parseFloat);
+		registerDefaultType(Double.class, Double::parseDouble);
+		registerDefaultType(Boolean.class, b -> String.valueOf(b ? 1 : 0), s -> s.equals("1") ? true : false);
 
-		registerDefaultType(DBType.SERIALIZABLE, byte[].class, Arrays::toString, (s) -> get(byte.class, s, Byte::parseByte));
-		registerDefaultType(DBType.SERIALIZABLE, short[].class, Arrays::toString, (s) -> get(short.class, s, Short::parseShort));
-		registerDefaultType(DBType.SERIALIZABLE, int[].class, Arrays::toString, (s) -> get(int.class, s, Integer::parseInt));
-		registerDefaultType(DBType.SERIALIZABLE, long[].class, Arrays::toString, (s) -> get(long.class, s, Long::parseLong));
-		registerDefaultType(DBType.SERIALIZABLE, float[].class, Arrays::toString, (s) -> get(float.class, s, Float::parseFloat));
-		registerDefaultType(DBType.SERIALIZABLE, double[].class, Arrays::toString, (s) -> get(double.class, s, Double::parseDouble));
-		registerDefaultType(DBType.SERIALIZABLE, boolean[].class, Arrays::toString, (s) -> get(boolean.class, s, Boolean::parseBoolean));
+		registerDefaultType(byte[].class, Arrays::toString, (s) -> get(byte.class, s, Byte::parseByte));
+		registerDefaultType(short[].class, Arrays::toString, (s) -> get(short.class, s, Short::parseShort));
+		registerDefaultType(int[].class, Arrays::toString, (s) -> get(int.class, s, Integer::parseInt));
+		registerDefaultType(long[].class, Arrays::toString, (s) -> get(long.class, s, Long::parseLong));
+		registerDefaultType(float[].class, Arrays::toString, (s) -> get(float.class, s, Float::parseFloat));
+		registerDefaultType(double[].class, Arrays::toString, (s) -> get(double.class, s, Double::parseDouble));
+		registerDefaultType(boolean[].class, Arrays::toString, (s) -> get(boolean.class, s, Boolean::parseBoolean));
 
-		registerDefaultType(DBType.STRING, char.class, (s) -> s.charAt(0));
-		registerDefaultType(DBType.STRING, char[].class, String::new, String::toCharArray);
-		registerDefaultType(DBType.STRING, String.class, (obj) -> obj == null ? null : "\"" + obj + "\"", String::valueOf);
+		registerDefaultType(char.class, (s) -> s.charAt(0));
+		registerDefaultType(char[].class, String::new, String::toCharArray);
+		registerDefaultType(String.class, (obj) -> obj == null ? null : "\"" + obj + "\"", String::valueOf);
 
 		//Not default type
 		register(UUID.class, UUID::fromString);
@@ -114,12 +113,12 @@ public class Serialization {
 		return data;
 	}
 
-	private static <T> void registerDefaultType(DBType type, Class<T> cls, Deserializer<T> deserializer) {
-		types.put(cls, new SerializationData<>(type, false, String::valueOf, deserializer));
+	private static <T> void registerDefaultType(Class<T> cls, Deserializer<T> deserializer) {
+		types.put(cls, new SerializationData<>(false, String::valueOf, deserializer));
 	}
 
-	private static <T> void registerDefaultType(DBType type, Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
-		types.put(cls, new SerializationData<>(type, false, serializer, deserializer));
+	private static <T> void registerDefaultType(Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
+		types.put(cls, new SerializationData<>(false, serializer, deserializer));
 	}
 
 	private static <T> void register(Class<T> cls, Method deserializationMethod) {
@@ -139,14 +138,6 @@ public class Serialization {
 
 	public static <T> void register(Class<T> cls, Serializer<T> serializer, Deserializer<T> deserializer) {
 		types.put(cls, new SerializationData<>(true, serializer, deserializer));
-	}
-
-	public static <T> void register(Class<T> cls, DBType type, Deserializer<T> deserializer) {
-		types.put(cls, new SerializationData<>(type, true, String::valueOf, deserializer));
-	}
-
-	public static <T> void register(Class<T> cls, DBType type, Serializer<T> serializer, Deserializer<T> deserializer) {
-		types.put(cls, new SerializationData<>(type, true, serializer, deserializer));
 	}
 
 	public static <T> Deserializer<T> getDeserializer(Class<T> type) {

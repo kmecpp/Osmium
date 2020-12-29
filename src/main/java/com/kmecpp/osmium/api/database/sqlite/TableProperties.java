@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.database.DBColumn;
 import com.kmecpp.osmium.api.database.DBTable;
-import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.util.Reflection;
 
 public class TableProperties {
@@ -17,7 +16,7 @@ public class TableProperties {
 
 	private String[] columns;
 	private String[] primaryColumns;
-	private String[] primaryColumnsWithMaxLengths; //For MySQL
+	//	private String[] primaryColumnsWithMaxLengths; //For MySQL
 
 	private Field[] fields;
 	private Field[] primaryFields;
@@ -39,7 +38,7 @@ public class TableProperties {
 		ArrayList<Field> primaryFields = new ArrayList<>();
 		ArrayList<String> columns = new ArrayList<>();
 		ArrayList<String> primaryColumns = new ArrayList<>();
-		ArrayList<String> primaryColumnsWithMaxLengths = new ArrayList<>();
+		//		ArrayList<String> primaryColumnsWithMaxLengths = new ArrayList<>();
 
 		for (Field field : Reflection.getAllFieldsWith(cls, DBColumn.class)) {
 			//			System.out.println("LOOPING THROUGH FIELD: " + field);
@@ -58,9 +57,9 @@ public class TableProperties {
 				if (columnAnnotation.primary()) {
 					primaryFields.add(field);
 					primaryColumns.add(name);
-					primaryColumnsWithMaxLengths.add(name + "(" + (columnAnnotation.maxLength() > 0
-							? columnAnnotation.maxLength() : Serialization.getData(field.getType()).getType().getMaxLength())
-							+ ")");
+					//					primaryColumnsWithMaxLengths.add(name + "(" + (columnAnnotation.maxLength() > 0
+					//							? columnAnnotation.maxLength() : Serialization.getData(field.getType()).getType().getMaxLength())
+					//							+ ")");
 				}
 			}
 		}
@@ -68,7 +67,7 @@ public class TableProperties {
 		this.primaryFields = primaryFields.toArray(new Field[primaryFields.size()]);
 		this.columns = columns.toArray(new String[columns.size()]);
 		this.primaryColumns = primaryColumns.toArray(new String[primaryColumns.size()]);
-		this.primaryColumnsWithMaxLengths = primaryColumnsWithMaxLengths.toArray(new String[primaryColumnsWithMaxLengths.size()]);
+		//		this.primaryColumnsWithMaxLengths = primaryColumnsWithMaxLengths.toArray(new String[primaryColumnsWithMaxLengths.size()]);
 	}
 
 	public String getName() {
@@ -87,9 +86,9 @@ public class TableProperties {
 		return primaryColumns;
 	}
 
-	public String[] getPrimaryColumnsWithLengths() {
-		return primaryColumnsWithMaxLengths;
-	}
+	//	public String[] getPrimaryColumnsWithLengths() {
+	//		return primaryColumnsWithMaxLengths;
+	//	}
 
 	public Field[] getFields() {
 		return fields;

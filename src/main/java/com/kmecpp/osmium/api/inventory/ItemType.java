@@ -438,33 +438,33 @@ public enum ItemType implements MaterialType {
 		Osmium.getItemManager().register(values(), false);
 
 		System.out.println(Osmium.getMinecraftVersion());
-		if (Osmium.getMinecraftVersion().contains("1.7")) {
-			if (Platform.isBukkit()) {
-				BREWING_STAND.source = Material.BREWING_STAND_ITEM;
-				FIRE_CHARGE.source = Material.FIREBALL;
-				DYE.source = Material.INK_SACK;
+		//		if (Osmium.getMinecraftVersion().contains("1.7")) {
+		if (Platform.isBukkit()) {
+			BREWING_STAND.source = Material.BREWING_STAND_ITEM;
+			FIRE_CHARGE.source = Material.FIREBALL;
+			DYE.source = Material.INK_SACK;
 
-				//				CHAINMAIL_BOOTS.source = Material.CHAINMAIL_BOOTS;
-				//				DYE.source = Material.INK_SACK;
-				//				END_STONE.source = Material.ENDER_STONE;
-				//				PLANKS.source = Material.WOOD;
-				//				WOODEN_PICKAXE.source = Material.WOOD_PICKAXE;
-				//				WOODEN_SWORD.source = Material.WOOD_SWORD;
-				//				WOODEN_SHOVEL.source = Material.WOOD_SPADE;
-				//				WOODEN_AXE.source = Material.WOOD_AXE;
-				//				WOODEN_HOE.source = Material.WOOD_HOE;
-				//				GOLDEN_PICKAXE.source = Material.GOLD_PICKAXE;
-				//				GOLDEN_SWORD.source = Material.GOLD_SWORD;
-				//				GOLDEN_SHOVEL.source = Material.GOLD_SPADE;
-				//				GOLDEN_AXE.source = Material.GOLD_AXE;
-				//				GOLDEN_HOE.source = Material.GOLD_HOE;
-			} else if (Platform.isSponge()) {
+			//				CHAINMAIL_BOOTS.source = Material.CHAINMAIL_BOOTS;
+			//				DYE.source = Material.INK_SACK;
+			//				END_STONE.source = Material.ENDER_STONE;
+			//				PLANKS.source = Material.WOOD;
+			//				WOODEN_PICKAXE.source = Material.WOOD_PICKAXE;
+			//				WOODEN_SWORD.source = Material.WOOD_SWORD;
+			//				WOODEN_SHOVEL.source = Material.WOOD_SPADE;
+			//				WOODEN_AXE.source = Material.WOOD_AXE;
+			//				WOODEN_HOE.source = Material.WOOD_HOE;
+			//				GOLDEN_PICKAXE.source = Material.GOLD_PICKAXE;
+			//				GOLDEN_SWORD.source = Material.GOLD_SWORD;
+			//				GOLDEN_SHOVEL.source = Material.GOLD_SPADE;
+			//				GOLDEN_AXE.source = Material.GOLD_AXE;
+			//				GOLDEN_HOE.source = Material.GOLD_HOE;
+		} else if (Platform.isSponge()) {
 
-			}
 		}
+		//		}
 	}
 
-	public static void setSource(ItemType type, Object source) {
+	public static void setSource(ItemType12 type, Object source) {
 		type.source = source;
 	}
 
