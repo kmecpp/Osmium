@@ -464,9 +464,9 @@ public enum ItemType implements MaterialType {
 		//		}
 	}
 
-	public static void setSource(ItemType12 type, Object source) {
-		type.source = source;
-	}
+	//	public static void setSource(ItemType type, Object source) {
+	//		type.source = source;
+	//	}
 
 	@Override
 	public Object getSource() {
