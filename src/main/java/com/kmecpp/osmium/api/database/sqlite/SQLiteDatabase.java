@@ -90,12 +90,23 @@ public class SQLiteDatabase extends SQLDatabase {
 		return tables.get(tableClass).getName();
 	}
 
+	@Override
 	public void replaceInto(Class<?> cls, Object obj) {
-		update(DBUtil.createReplaceInto(this, cls, obj));
-	}
+		//		update(DBUtil.createReplaceInto(this, cls, obj));
 
-	public void replaceIntoAsync(Class<?> cls, Object obj) {
-		updateAsync(DBUtil.createReplaceInto(this, cls, obj));
+		TableProperties tableData = getTable(cls);
+		String update = DBUtil.createReplaceInto(tableData);
+
+		this.preparedUpdateStatement(update, s -> {
+			try {
+				Field[] columns = tableData.getFields();
+				for (int i = 0; i < columns.length; i++) {
+					DBUtil.updatePreparedStatement(s, i + 1, columns[i].get(obj));
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
 	}
 
 	/**

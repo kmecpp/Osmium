@@ -134,7 +134,7 @@ public class MySQLDatabase extends SQLDatabase {
 		String where = MDBUtil.createWhere(columns.split(","));
 		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where + (StringUtil.isNullOrEmpty(extraFilter) ? "" : " AND " + extraFilter), ps -> {
 			for (int i = 0; i < values.length; i++) {
-				MDBUtil.updatePreparedStatement(table, ps, i + 1, values[i]);
+				MDBUtil.updatePreparedStatement(ps, i + 1, values[i]);
 			}
 		}, rs -> {
 			if (rs.next()) {
@@ -147,7 +147,7 @@ public class MySQLDatabase extends SQLDatabase {
 
 	public int setAll(Class<?> tableClass, String column, Object value) {
 		MDBTableData table = tables.get(tableClass);
-		return preparedUpdateStatement("update " + table.getName() + " set " + SQLDatabase.getColumnName(column) + "=?", ps -> MDBUtil.updatePreparedStatement(table, ps, 1, value));
+		return preparedUpdateStatement("update " + table.getName() + " set " + SQLDatabase.getColumnName(column) + "=?", ps -> MDBUtil.updatePreparedStatement(ps, 1, value));
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit) {
@@ -235,7 +235,7 @@ public class MySQLDatabase extends SQLDatabase {
 		ArrayList<T> results = new ArrayList<>();
 		this.preparedQueryStatement(query, s -> {
 			for (int i = 0; i < values.length; i++) {
-				MDBUtil.updatePreparedStatement(table, s, i + 1, values[i]);
+				MDBUtil.updatePreparedStatement(s, i + 1, values[i]);
 			}
 		}, rs -> {
 			try {
@@ -279,7 +279,7 @@ public class MySQLDatabase extends SQLDatabase {
 			try {
 				MDBColumnData[] columns = tableData.getColumns();
 				for (int i = 0; i < columns.length; i++) {
-					MDBUtil.updatePreparedStatement(tableData, s, i + 1, columns[i].getField().get(obj));
+					MDBUtil.updatePreparedStatement(s, i + 1, columns[i].getField().get(obj));
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);

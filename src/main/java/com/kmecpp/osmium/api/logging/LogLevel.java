@@ -53,6 +53,7 @@ public enum LogLevel {
 
 	public java.util.logging.Level getLevel() {
 		switch (this) {
+		case DEBUG:
 		case INFO:
 			return java.util.logging.Level.INFO;
 		case WARN:
@@ -60,7 +61,7 @@ public enum LogLevel {
 		case ERROR:
 			return java.util.logging.Level.SEVERE;
 		default:
-			return java.util.logging.Level.ALL;
+			return java.util.logging.Level.SEVERE;
 		}
 	}
 

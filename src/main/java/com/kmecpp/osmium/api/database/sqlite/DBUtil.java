@@ -2,21 +2,24 @@ package com.kmecpp.osmium.api.database.sqlite;
 
 import java.lang.reflect.Field;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.database.DBColumn;
 import com.kmecpp.osmium.api.persistence.Serialization;
-import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 
 public class DBUtil {
 
 	public static HashMap<Class<?>, String> types = new HashMap<>();
+
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	static {
 		types.put(boolean.class, "TINYINT(1)");
@@ -40,6 +43,38 @@ public class DBUtil {
 
 		//SQLITE
 		types.put(String.class, "VARCHAR");
+	}
+
+	public static void updatePreparedStatement(PreparedStatement s, int index, Object value) throws SQLException {
+		if (value == null) {
+			s.setObject(index, null);
+		} else if (value instanceof Boolean) {
+			s.setBoolean(index, (boolean) value);
+		} else if (value instanceof Byte) {
+			s.setByte(index, (byte) value);
+		} else if (value instanceof Short) {
+			s.setShort(index, (short) value);
+		} else if (value instanceof Integer) {
+			s.setInt(index, (int) value);
+		} else if (value instanceof Long) {
+			s.setLong(index, (long) value);
+		} else if (value instanceof Float) {
+			s.setFloat(index, (float) value);
+		} else if (value instanceof Double) {
+			s.setDouble(index, (double) value);
+		} else if (value instanceof Date) {
+			s.setString(index, dateFormat.format((Date) value)); //SQLITE
+		} else if (value instanceof Time) {
+			s.setTime(index, (Time) value);
+		} else if (value instanceof Timestamp) {
+			s.setTimestamp(index, (Timestamp) value);
+		} else if (value instanceof String) {
+			s.setString(index, (String) value);
+		} else if (value instanceof UUID) {
+			s.setString(index, String.valueOf(value));
+		} else {
+			throw new UnsupportedOperationException("MySQL serialization of '" + value + "' is not yet supported");
+		}
 	}
 
 	public String createWhere(SQLiteDatabase db, Class<?> cls, Object... primaryKeys) {
@@ -146,21 +181,27 @@ public class DBUtil {
 		return sb.toString();
 	}
 
-	public static final String createReplaceInto(SQLiteDatabase db, Class<?> cls, Object obj) {
-		ArrayList<String> columns = new ArrayList<>();
-		ArrayList<String> values = new ArrayList<>();
+	//	public static final String createReplaceInto(SQLiteDatabase db, Class<?> cls, Object obj) {
+	//		ArrayList<String> columns = new ArrayList<>();
+	//		ArrayList<String> values = new ArrayList<>();
+	//
+	//		TableProperties info = db.getTable(cls);
+	//		for (Field field : info.getFields()) {
+	//			columns.add(DBUtil.getColumnName(field));
+	//
+	//			Object value = Reflection.getFieldValue(obj, field);
+	//			values.add(value == null ? null : Serialization.serializeAndQuote(value));
+	//		}
+	//
+	//		return "REPLACE INTO " + info.getName()
+	//				+ "(" + StringUtil.join(columns, ", ") + ") "
+	//				+ "VALUES(" + StringUtil.join(values, ", ") + ");";
+	//	}
 
-		TableProperties info = db.getTable(cls);
-		for (Field field : info.getFields()) {
-			columns.add(DBUtil.getColumnName(field));
-
-			Object value = Reflection.getFieldValue(obj, field);
-			values.add(value == null ? null : Serialization.serializeAndQuote(value));
-		}
-
-		return "REPLACE INTO " + info.getName()
-				+ "(" + StringUtil.join(columns, ", ") + ") "
-				+ "VALUES(" + StringUtil.join(values, ", ") + ");";
+	public static final String createReplaceInto(TableProperties table) {
+		return "REPLACE INTO " + table.getName()
+				+ "(" + StringUtil.join(table.getColumns(), ", ") + ") "
+				+ "VALUES(" + StringUtil.join('?', ",", table.getColumnCount()) + ");";
 	}
 
 	public static String getColumnName(Field field) {
