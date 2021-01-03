@@ -116,13 +116,7 @@ public class MySQLDatabase extends SQLDatabase {
 
 	public int count(Class<?> tableClass) {
 		MDBTableData table = tables.get(tableClass);
-		return get("SELECT COUNT(*) FROM " + table.getName(), rs -> {
-			if (rs.next()) {
-				return rs.getInt(1);
-			} else {
-				return 0;
-			}
-		});
+		return get("SELECT COUNT(*) FROM " + table.getName(), rs -> rs.getInt(1));
 	}
 
 	public int count(Class<?> tableClass, String columns, Object... values) {

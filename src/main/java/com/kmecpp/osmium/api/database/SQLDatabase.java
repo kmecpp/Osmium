@@ -36,6 +36,7 @@ public abstract class SQLDatabase {
 
 	public <T> T getOrDefault(String query, Object defaultValue, ResultSetProcessor<T> handler) {
 		if (source != null) {
+			OsmiumLogger.debug("Executing get query: " + query);
 			Statement statement = null;
 			ResultSet resultSet = null;
 			try (Connection connection = source.getConnection()) {
@@ -46,6 +47,7 @@ public abstract class SQLDatabase {
 				}
 				return handler.process(resultSet);
 			} catch (Exception e) {
+				OsmiumLogger.warn("An error occurred while executing get query: " + query);
 				e.printStackTrace();
 			} finally {
 				close(statement, resultSet);
@@ -116,6 +118,7 @@ public abstract class SQLDatabase {
 			statement = connection.createStatement();
 			return statement.executeUpdate(update);
 		} catch (Exception e) {
+			OsmiumLogger.warn("An error occurred while executing update: " + update);
 			e.printStackTrace();
 		} finally {
 			close(statement, resultSet);
@@ -146,6 +149,7 @@ public abstract class SQLDatabase {
 				}
 				return result;
 			} catch (Exception e) {
+				OsmiumLogger.warn("An error occurred while executing update: " + update);
 				e.printStackTrace();
 			} finally {
 				close(statement, resultSet);
@@ -171,6 +175,7 @@ public abstract class SQLDatabase {
 					handler.accept(resultSet);
 				}
 			} catch (Exception e) {
+				OsmiumLogger.warn("An error occurred while executing query: " + update);
 				e.printStackTrace();
 			} finally {
 				close(statement, resultSet);
