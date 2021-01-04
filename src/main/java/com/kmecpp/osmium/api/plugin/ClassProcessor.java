@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,7 +29,6 @@ import com.kmecpp.osmium.api.persistence.Persistent;
 import com.kmecpp.osmium.api.persistence.PersistentField;
 import com.kmecpp.osmium.api.persistence.PersistentPluginData;
 import com.kmecpp.osmium.api.tasks.Schedule;
-import com.kmecpp.osmium.api.util.JavaUtil;
 import com.kmecpp.osmium.api.util.Reflection;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -367,7 +367,11 @@ public class ClassProcessor {
 					continue;
 				}
 
-				for (DatabaseType type : JavaUtil.distinct(table.type())) {
+				EnumSet<DatabaseType> seen = EnumSet.noneOf(DatabaseType.class);
+				for (DatabaseType type : table.type()) {
+					if (seen.contains(type)) {
+						continue; //Ignore duplicates
+					}
 					if (type == DatabaseType.MYSQL) {
 						OsmiumLogger.debug("Initializing MySQL database table: " + table.name());
 						plugin.getMySQLDatabase().createTable(cls);
@@ -383,6 +387,7 @@ public class ClassProcessor {
 							Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
 						}
 					}
+					seen.add(type);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

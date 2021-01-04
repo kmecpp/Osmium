@@ -406,7 +406,7 @@ public abstract class SQLDatabase {
 			createTable(cls.getSuperclass()); //Create parent first if it exists
 		}
 		MDBTableData data = getTableMeta(cls);
-		OsmiumLogger.info("Creating database table: '" + data.getName() + "'");
+		OsmiumLogger.info("Creating " + type.getName() + " database table: " + data.getName());
 		if (type == DatabaseType.MYSQL) {
 			this.update(MDBUtil.getCreateTableUpdate(data));
 		} else {

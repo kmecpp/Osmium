@@ -163,7 +163,7 @@ public class DBUtil {
 
 		if (properties.getPrimaryColumns().length > 0 && !autoIncrement) {
 			schema.append("PRIMARY KEY("
-					+ StringUtil.join(properties.getPrimaryColumns(), ", ")
+					+ StringUtil.join(properties.getPrimaryColumnNames(), ", ")
 					+ ")");
 		} else {
 			schema.setLength(schema.length() - 2);
