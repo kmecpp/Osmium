@@ -31,8 +31,9 @@ public class WorldPosition {
 		return location;
 	}
 
-	public Object asBukkitLocation() {
-		return new org.bukkit.Location((World) location.getWorld().getSource(),
+	@SuppressWarnings("unchecked")
+	public <T> T asBukkitLocation() {
+		return (T) new org.bukkit.Location((World) location.getWorld().getSource(),
 				location.getX(), location.getY(), location.getZ(),
 				direction.getYaw(), direction.getPitch());
 	}

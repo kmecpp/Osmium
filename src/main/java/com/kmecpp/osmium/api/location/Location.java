@@ -3,7 +3,6 @@ package com.kmecpp.osmium.api.location;
 import org.spongepowered.api.world.extent.Extent;
 
 import com.kmecpp.osmium.BukkitAccess;
-import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
@@ -14,7 +13,7 @@ import com.kmecpp.osmium.cache.WorldList;
 
 public class Location {
 
-	private World world;
+	//	private World world;
 	private String worldName;
 
 	private final double x;
@@ -25,15 +24,15 @@ public class Location {
 		if (world == null) {
 			throw new IllegalArgumentException("Invalid world: " + world);
 		}
-		this.world = world;
-		//		this.worldName = world.getName().intern();
+		//		this.world = world;
+		this.worldName = world.getName().intern();
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
 	public Location(String worldName, double x, double y, double z) {
-		this.world = Osmium.getWorld(worldName).orElse(null);
+		//		this.world = Osmium.getWorld(worldName).orElse(null);
 		this.worldName = worldName.intern();
 		this.x = x;
 		this.y = y;
@@ -45,17 +44,19 @@ public class Location {
 	}
 
 	public World getWorld() {
-		if (world == null) {
-			world = WorldList.getWorld(worldName);
-		}
-		return world;
+		return WorldList.getWorld(worldName);
+		//		if (world == null) {
+		//			world = WorldList.getWorld(worldName);
+		//		}
+		//		return world;
 	}
 
 	public String getWorldName() {
-		if (world == null) {
-			return worldName;
-		}
-		return world.getName();
+		return worldName;
+		//		if (world == null) {
+		//			return worldName;
+		//		}
+		//		return world.getName();
 	}
 
 	public Block getBlock() {
