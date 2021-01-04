@@ -66,7 +66,7 @@ public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 				catchError(t);
 			}
 			try {
-				plugin.getClassProcessor().postProcess();
+				plugin.getClassProcessor().createDatabaseTables();
 				plugin.onPostInit();
 			} catch (Throwable t) {
 				catchError(t);

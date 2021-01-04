@@ -1,11 +1,23 @@
 package com.kmecpp.osmium.api.util;
 
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 public class JavaUtil {
+
+	public static void printStacktrace() {
+		for (StackTraceElement e : Thread.currentThread().getStackTrace()) {
+			System.err.println("    " + e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] distinct(T[] array) {
+		return (T[]) Arrays.stream(array).distinct().toArray();
+	}
 
 	public static String defaultToString(Object o) {
 		return o.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(o));

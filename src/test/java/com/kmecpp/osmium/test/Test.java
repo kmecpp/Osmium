@@ -1,11 +1,11 @@
 package com.kmecpp.osmium.test;
 
 import com.kmecpp.osmium.api.database.DBColumn;
-import com.kmecpp.osmium.api.database.mysql.MySQLTable;
+import com.kmecpp.osmium.api.database.DBTable;
 
 public class Test {
 
-	@MySQLTable(name = "product")
+	@DBTable(name = "product")
 	public static class Product {
 
 		@DBColumn(primary = true)
@@ -16,7 +16,7 @@ public class Test {
 
 	}
 
-	@MySQLTable(name = "customer")
+	@DBTable(name = "customer")
 	public static class Customer {
 
 		@DBColumn(primary = true)
@@ -24,7 +24,7 @@ public class Test {
 
 	}
 
-	@MySQLTable(name = "product_order")
+	@DBTable(name = "product_order")
 	public static class ProductOrder {
 
 		public Product product;

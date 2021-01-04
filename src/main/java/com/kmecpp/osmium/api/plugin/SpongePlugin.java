@@ -66,7 +66,7 @@ public abstract class SpongePlugin {
 	@Listener
 	public void on(GamePostInitializationEvent e) {
 		try {
-			plugin.getClassProcessor().postProcess();
+			plugin.getClassProcessor().createDatabaseTables();
 			plugin.onPostInit();
 		} catch (Throwable t) {
 			catchError(t);

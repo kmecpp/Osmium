@@ -4,10 +4,10 @@ import java.util.UUID;
 
 import com.kmecpp.osmium.api.database.DBColumn;
 import com.kmecpp.osmium.api.database.DBTable;
-import com.kmecpp.osmium.api.database.mysql.MySQLTable;
+import com.kmecpp.osmium.api.database.DatabaseType;
 
-@DBTable(name = "users")
-@MySQLTable(name = "users", autoCreate = false)
+@DBTable(name = "users", type = { DatabaseType.SQLITE, DatabaseType.MYSQL }, autoCreate = false)
+//@MySQLTable(name = "users", autoCreate = false)
 public class UserTable {
 
 	@DBColumn(primary = true, autoIncrement = true)

@@ -16,9 +16,9 @@ import com.kmecpp.osmium.api.HookClass;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.ConfigClass;
 import com.kmecpp.osmium.api.database.DBTable;
+import com.kmecpp.osmium.api.database.DatabaseType;
 import com.kmecpp.osmium.api.database.MultiplePlayerData;
 import com.kmecpp.osmium.api.database.PlayerData;
-import com.kmecpp.osmium.api.database.mysql.MySQLTable;
 import com.kmecpp.osmium.api.event.Event;
 import com.kmecpp.osmium.api.event.EventAbstraction;
 import com.kmecpp.osmium.api.event.EventInfo;
@@ -28,6 +28,7 @@ import com.kmecpp.osmium.api.persistence.Persistent;
 import com.kmecpp.osmium.api.persistence.PersistentField;
 import com.kmecpp.osmium.api.persistence.PersistentPluginData;
 import com.kmecpp.osmium.api.tasks.Schedule;
+import com.kmecpp.osmium.api.util.JavaUtil;
 import com.kmecpp.osmium.api.util.Reflection;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -44,8 +45,8 @@ public class ClassProcessor {
 	//	private final HashMap<Class<?>, Command> commands = new HashMap<>();
 	private final HashSet<String> skipClasses = new HashSet<>();
 
-	private final HashSet<Class<?>> sqliteTables = new HashSet<>();
-	private final HashSet<Class<?>> mysqlTables = new HashSet<>();
+	private final HashSet<Class<?>> databaseTables = new HashSet<>();
+	//	private final HashSet<Class<?>> mysqlTables = new HashSet<>();
 
 	protected ClassProcessor(OsmiumPlugin plugin, Object pluginImpl) {
 		this.plugin = plugin;
@@ -264,11 +265,11 @@ public class ClassProcessor {
 		}
 
 		if (cls.isAnnotationPresent(DBTable.class)) {
-			sqliteTables.add(cls);
+			databaseTables.add(cls);
 		}
-		if (cls.isAnnotationPresent(MySQLTable.class)) {
-			mysqlTables.add(cls);
-		}
+		//		if (cls.isAnnotationPresent(MySQLTable.class)) {
+		//			mysqlTables.add(cls);
+		//		}
 
 		for (Method method : cls.getDeclaredMethods()) {
 			Schedule scheduleAnnotation = method.getAnnotation(Schedule.class);
@@ -357,15 +358,31 @@ public class ClassProcessor {
 		}
 	}
 
-	public void postProcess() {
-		for (Class<?> cls : sqliteTables) {
+	public void createDatabaseTables() {
+		for (Class<?> cls : databaseTables) {
 			try {
-				DBTable sqliteTable = cls.getAnnotation(DBTable.class);
-				OsmiumLogger.debug("Initializing SQLite database table: " + sqliteTable.name());
-				plugin.getSQLiteDatabase().createTable(cls);
+				DBTable table = cls.getAnnotation(DBTable.class);
 
-				if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
-					Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+				if (!table.autoCreate()) {
+					continue;
+				}
+
+				for (DatabaseType type : JavaUtil.distinct(table.type())) {
+					if (type == DatabaseType.MYSQL) {
+						OsmiumLogger.debug("Initializing MySQL database table: " + table.name());
+						plugin.getMySQLDatabase().createTable(cls);
+
+						if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
+							Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+						}
+					} else if (type == DatabaseType.SQLITE) {
+						OsmiumLogger.debug("Initializing SQLite database table: " + table.name());
+						plugin.getSQLiteDatabase().createTable(cls);
+
+						if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
+							Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+						}
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -391,22 +408,22 @@ public class ClassProcessor {
 			//			}
 		}
 
-		for (Class<?> cls : mysqlTables) {
-			MySQLTable mysqlTable = cls.getAnnotation(MySQLTable.class);
-			//			System.out.println("MYSQL TABLE : " + cls);
-			if (mysqlTable != null && mysqlTable.autoCreate()) {
-				try {
-					OsmiumLogger.debug("Initializing MySQL database table: " + mysqlTable.name());
-					plugin.getMySQLDatabase().createTable(cls);
-
-					if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
-						Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		//		for (Class<?> cls : mysqlTables) {
+		//			MySQLTable mysqlTable = cls.getAnnotation(MySQLTable.class);
+		//			//			System.out.println("MYSQL TABLE : " + cls);
+		//			if (mysqlTable != null && mysqlTable.autoCreate()) {
+		//				try {
+		//					OsmiumLogger.debug("Initializing MySQL database table: " + mysqlTable.name());
+		//					plugin.getMySQLDatabase().createTable(cls);
+		//
+		//					if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
+		//						Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+		//					}
+		//				} catch (Exception e) {
+		//					e.printStackTrace();
+		//				}
+		//			}
+		//		}
 	}
 
 }

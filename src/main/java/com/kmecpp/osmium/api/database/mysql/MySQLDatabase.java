@@ -2,106 +2,29 @@ package com.kmecpp.osmium.api.database.mysql;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
+import com.kmecpp.osmium.api.database.DatabaseType;
 import com.kmecpp.osmium.api.database.OrderBy;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
-import com.kmecpp.osmium.api.util.Callback;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 
 public class MySQLDatabase extends SQLDatabase {
 
-	private static final ExecutorService scheduler = Executors.newFixedThreadPool(2);
-	private static final HashMap<Class<?>, MDBTableData> tables = new HashMap<>();
+	//	private static final ExecutorService scheduler = Executors.newFixedThreadPool(2);
 
-	private OsmiumPlugin plugin;
-	private String tablePrefix;
+	//	private String tablePrefix;
 
 	public MySQLDatabase(OsmiumPlugin plugin) {
-		this.plugin = plugin;
+		super(plugin, DatabaseType.MYSQL);
 	}
 
-	public OsmiumPlugin getPlugin() {
-		return plugin;
-	}
-
-	public String getTablePrefix() {
-		return tablePrefix;
-	}
-
-	public void initialize(String host, int port, String database, String username, String password) {
-		initialize(null, host, port, database, username, password);
-	}
-
-	public void initialize(String prefix, String host, int port, String database, String username, String password) {
-		this.tablePrefix = prefix;
-
-		HikariConfig config = new HikariConfig();
-
-		if (StringUtil.isNullOrEmpty(database)) {
-			throw new IllegalArgumentException("Cannot initializing empty database for plugin: " + plugin.getName());
-		}
-
-		//		OsmiumLogger.error("INITIALIZING MYSQL DATABASE WITH PREFIX: " + tablePrefix);
-
-		try {
-			OsmiumLogger.info("Using MySQL for database storage");
-
-			config.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
-			config.setDriverClassName("com.mysql.jdbc.Driver");
-			config.setUsername(username);
-			config.setPassword(password);
-			config.setConnectionTestQuery("USE " + database);
-
-			config.setMinimumIdle(2);
-			config.setMaximumPoolSize(10);
-			config.setConnectionTimeout(500L);
-			source = new HikariDataSource(config);
-			OsmiumLogger.info("Successfully established connection to MySQL database: " + database);
-		} catch (PoolInitializationException ex) {
-			OsmiumLogger.error("Invalid database configuration! Failed to execute: '" + config.getConnectionTestQuery() + "'");
-			ex.printStackTrace();
-		}
-	}
-
-	public static void reload() {
-
-	}
-
-	public boolean isConnected() {
-		return source != null && !source.isClosed();//&& source.isRunning();
-	}
-
-	public void shutdown() {
-		source.close();
-	}
-
-	public Callback updateAsync(String update) {
-		Callback completer = new Callback();
-		scheduler.submit(() -> {
-			int rowsUpdated = update(update);
-			completer.complete(rowsUpdated);
-		});
-		return completer;
-	}
-
-	public Callback updateAsync(String update, PreparedStatementBuilder builder) {
-		Callback completer = new Callback();
-		scheduler.submit(() -> {
-			int rowsUpdated = preparedUpdateStatement(update, builder);
-			completer.complete(rowsUpdated);
-		});
-		return completer;
-	}
+	//	public String getTablePrefix() {
+	//		return tablePrefix;
+	//	}
 
 	/*
 	 * TODO:
@@ -283,36 +206,34 @@ public class MySQLDatabase extends SQLDatabase {
 
 	//	public MDBTableData getParentData(Class<?> cls) {
 	//		return tables.get(cls.getSuperclass());
-	//	}
-
-	public MDBTableData getTableMeta(Class<?> cls) {
-		MDBTableData data = tables.get(cls);
-		if (data != null) {
-			return data;
-		}
-		registerTable(cls);
-		return tables.get(cls);
-	}
-
-	//	public static <T> T get(Class<T> cls) {
+	//	}	//	public static <T> T get(Class<T> cls) {
 	//		MDBTableData data = Require.nonNull(tables.get(cls));
 	//		DB.get().query("select * "+ data.getTableName() + , handler);
 	//	}
 
-	public void registerTable(Class<?> cls) {
-		MDBTableData data = new MDBTableData(this, cls);
-		tables.put(cls, data);
-	}
+	//	public MDBTableData getTableMeta(Class<?> cls) {
+	//		MDBTableData data = tables.get(cls);
+	//		if (data != null) {
+	//			return data;
+	//		}
+	//		registerTable(cls);
+	//		return tables.get(cls);
+	//	}
+	//
+	//	public void registerTable(Class<?> cls) {
+	//		MDBTableData data = new MDBTableData(this, cls);
+	//		tables.put(cls, data);
+	//	}
 
-	public void createTable(Class<?> cls) {
-		Reflection.initialize(cls); //Call static initializer
-
-		if (cls.getSuperclass() != Object.class && cls.getSuperclass().isAnnotationPresent(MySQLTable.class)) {
-			createTable(cls.getSuperclass()); //Create parent first if it exists
-		}
-		MDBTableData data = getTableMeta(cls);
-		OsmiumLogger.info("Creating database table: '" + data.getName() + "'");
-		this.update(MDBUtil.getCreateTableUpdate(data));
-	}
+	//	public void createTable(Class<?> cls) {
+	//		Reflection.initialize(cls); //Call static initializer
+	//
+	//		if (cls.getSuperclass() != Object.class && cls.getSuperclass().isAnnotationPresent(MySQLTable.class)) {
+	//			createTable(cls.getSuperclass()); //Create parent first if it exists
+	//		}
+	//		MDBTableData data = getTableMeta(cls);
+	//		OsmiumLogger.info("Creating database table: '" + data.getName() + "'");
+	//		this.update(MDBUtil.getCreateTableUpdate(data));
+	//	}
 
 }

@@ -1,8 +1,12 @@
 package com.kmecpp.osmium.api.database.mysql;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 
+import com.kmecpp.osmium.api.database.DBTable;
+import com.kmecpp.osmium.api.database.DatabaseType;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
@@ -19,17 +23,26 @@ public class MDBTableData {
 	private MDBColumnData[] primaryColumns;
 	private String[] primaryColumnNames;
 
+	private DatabaseType[] types;
+	private boolean sqlite;
+	private boolean mysql;
+
 	//	private MDBColumnData[] foreignKeyColumns;
 	//	private String[] foreignKeyColumnNames;
 
-	public MDBTableData(MySQLDatabase database, Class<?> cls) {
-		MySQLTable meta = cls.getDeclaredAnnotation(MySQLTable.class);
+	public MDBTableData(SQLDatabase database, Class<?> cls) {
+		DBTable meta = cls.getDeclaredAnnotation(DBTable.class);
 		this.tableClass = cls;
 		this.columnMap = new LinkedHashMap<>();
 
 		if (meta == null) {
-			throw new IllegalArgumentException("Database table is missing @" + MySQLTable.class.getSimpleName() + " annotation");
+			throw new IllegalArgumentException("Database table is missing @" + DBTable.class.getSimpleName() + " annotation");
 		}
+
+		EnumSet<DatabaseType> typeSet = EnumSet.copyOf(Arrays.asList(meta.type()));
+		this.types = typeSet.toArray(new DatabaseType[0]);
+		this.sqlite = typeSet.contains(DatabaseType.SQLITE);
+		this.mysql = typeSet.contains(DatabaseType.MYSQL);
 
 		this.name = (StringUtil.isNullOrEmpty(database.getTablePrefix()) ? "" : database.getTablePrefix() + "_") + meta.name();
 
@@ -66,6 +79,10 @@ public class MDBTableData {
 		return tableClass;
 	}
 
+	public DatabaseType[] getTypes() {
+		return types;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -100,6 +117,14 @@ public class MDBTableData {
 
 	public String[] getPrimaryColumnNames() {
 		return primaryColumnNames;
+	}
+
+	public boolean isMySQL() {
+		return mysql;
+	}
+
+	public boolean isSQLite() {
+		return sqlite;
 	}
 
 	@Override

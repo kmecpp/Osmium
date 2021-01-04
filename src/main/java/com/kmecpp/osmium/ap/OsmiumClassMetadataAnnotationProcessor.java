@@ -13,7 +13,6 @@ import javax.lang.model.element.TypeElement;
 
 import com.kmecpp.osmium.api.config.ConfigClass;
 import com.kmecpp.osmium.api.database.DBTable;
-import com.kmecpp.osmium.api.database.mysql.MySQLTable;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.plugin.Initializer;
 import com.kmecpp.osmium.api.tasks.Schedule;
@@ -39,7 +38,7 @@ public class OsmiumClassMetadataAnnotationProcessor extends OsmiumAnnotationProc
 
 		HashSet<Element> elements = new HashSet<>();
 		elements.addAll(roundEnv.getElementsAnnotatedWith(DBTable.class));
-		elements.addAll(roundEnv.getElementsAnnotatedWith(MySQLTable.class));
+		//		elements.addAll(roundEnv.getElementsAnnotatedWith(MySQLTable.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(ConfigClass.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(Listener.class));
 		elements.addAll(roundEnv.getElementsAnnotatedWith(Schedule.class));

@@ -36,7 +36,7 @@ public class OsmiumBukkitMain extends BukkitPlugin {
 		WorldList.addWorld(new BukkitWorld(e.getWorld()));
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onWorldUnload(WorldUnloadEvent e) {
 		WorldList.removeWorld(e.getWorld().getName());
 	}

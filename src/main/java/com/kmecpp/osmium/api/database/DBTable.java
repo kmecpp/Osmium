@@ -11,6 +11,8 @@ public @interface DBTable {
 
 	String name();
 
-	DatabaseType type() default DatabaseType.SQLITE;
+	DatabaseType[] type() default DatabaseType.SQLITE;
+
+	boolean autoCreate() default true;
 
 }
