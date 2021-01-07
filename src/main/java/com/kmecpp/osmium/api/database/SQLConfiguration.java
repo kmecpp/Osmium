@@ -9,8 +9,8 @@ public class SQLConfiguration {
 	private final int port;
 	private final String tablePrefix;
 
-	private int minIdle = 2;
-	private int maxIdle = 10;
+	private int minimumIdle = 2;
+	private int maximumPoolSize = 10;
 
 	public SQLConfiguration(String host, String database, String username, String password, int port, String tablePrefix) {
 		this.host = host;
@@ -45,12 +45,12 @@ public class SQLConfiguration {
 		return tablePrefix;
 	}
 
-	public int getMinIdle() {
-		return minIdle;
+	public int getMinimumIdle() {
+		return minimumIdle;
 	}
 
-	public int getMaxIdle() {
-		return maxIdle;
+	public int getMaximumPoolSize() {
+		return maximumPoolSize;
 	}
 
 }

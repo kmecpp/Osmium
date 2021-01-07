@@ -392,9 +392,9 @@ public abstract class SQLDatabase {
 	 *            the class containing the table data
 	 */
 	public void createTable(Class<?> cls) {
-		if (tables.containsKey(cls)) {
-			throw new IllegalStateException("Database table '" + cls.getName() + "' already exists!");
-		}
+		//		if (tables.containsKey(cls)) {
+		//			throw new IllegalStateException("Database table '" + cls.getName() + "' already exists!");
+		//		}
 
 		if (hikariSource == null) {
 			start(); //Initialize connection automatically

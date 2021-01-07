@@ -115,16 +115,18 @@ public class BukkitAccess {
 			SimpleCommandMap commandMap = (SimpleCommandMap) Reflection.getFieldValue(Bukkit.getServer(), "commandMap");
 			List<String> aliases = Arrays.asList(Arrays.copyOfRange(command.getAliases(), 1, command.getAliases().length));
 
-			String name = command.getPrimaryAlias();
-			if (commandMap.getCommand(name) != null) {
-				for (int i = 0; i < command.getAliases().length; i++) {
-					String alias = command.getAliases()[i];
-					if (commandMap.getCommand(alias) == null) {
-						OsmiumLogger.debug("Remapped primary alias: " + name + " -> " + alias);
-						command.setPrimaryAlias(alias);
-						break;
-					} else if (i == command.getAliases().length) {
-						CommandManager.sendFailedRegistrationMessage(plugin, command);
+			if (!command.isOverride()) {
+				String name = command.getPrimaryAlias();
+				if (commandMap.getCommand(name) != null) {
+					for (int i = 0; i < command.getAliases().length; i++) {
+						String alias = command.getAliases()[i];
+						if (commandMap.getCommand(alias) == null) {
+							OsmiumLogger.debug("Remapped primary alias: " + name + " -> " + alias);
+							command.setPrimaryAlias(alias);
+							break;
+						} else if (i == command.getAliases().length) {
+							CommandManager.sendFailedRegistrationMessage(plugin, command);
+						}
 					}
 				}
 			}
@@ -151,10 +153,11 @@ public class BukkitAccess {
 
 			};
 
-			commandMap.register(command.getPrimaryAlias(), bukkitCommand);
+			commandMap.register(plugin.getName(), bukkitCommand);
 			if (command.isOverride()) {
 				Map<String, org.bukkit.command.Command> map = Reflection.getFieldValue(commandMap, "knownCommands");
-				org.bukkit.command.Command existing = map.put(command.getPrimaryAlias(), bukkitCommand);
+				org.bukkit.command.Command existing = map.put(command.getPrimaryAlias().toLowerCase(), bukkitCommand);
+				System.out.println("EXISTING COMMAND: " + existing);
 				if (existing != bukkitCommand) {
 					OsmiumLogger.info("Overriding command: " + existing);
 				}
