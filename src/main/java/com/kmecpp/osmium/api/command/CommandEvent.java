@@ -176,6 +176,14 @@ public class CommandEvent implements Messageable {
 		return get(index);
 	}
 
+	public String getStringMaxLength(int index, int maxLength) {
+		String result = get(index);
+		if (result.length() > maxLength) {
+			throw new CommandException("Input '" + result + "' is too long by " + (result.length() - maxLength) + " characters");
+		}
+		return result;
+	}
+
 	public String getString(int index, String def) {
 		return index < args.length ? getString(index) : def;
 	}
