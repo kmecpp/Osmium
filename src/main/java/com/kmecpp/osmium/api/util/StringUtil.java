@@ -1133,4 +1133,32 @@ public class StringUtil {
 		return m.matches();
 	}
 
+	public static String escape(String str, char escapedChar) {
+		return str.replace("\\", "\\\\").replace(String.valueOf(escapedChar), "\\" + escapedChar); //Map \ to \\ and then c to \c
+	}
+
+	public static String parseEscape(String str, char escapedChar) {
+		return str.replace("\\\\", "\\").replace("\\" + escapedChar, String.valueOf(escapedChar)); //Map \\ to \ and then \c to c
+	}
+
+	/**
+	 * Starting at startIndex, finds the index of endChar in the given char
+	 * array that isn't escaped by a backslash. This method assumes
+	 * chars[startIndex] != endChar otherwise an Exception will be thrown.
+	 * 
+	 * If endChar isn't found, then chars.length will be returned
+	 * 
+	 * @param chars
+	 * @param startIndex
+	 * @param endChar
+	 * @return
+	 */
+	public static int findEnd(char[] chars, int startIndex, char endChar) {
+		int index = startIndex;
+		while (index < chars.length && (chars[index] != endChar || chars[index - 1] == '\\')) {
+			index++;
+		}
+		return index;
+	}
+
 }
