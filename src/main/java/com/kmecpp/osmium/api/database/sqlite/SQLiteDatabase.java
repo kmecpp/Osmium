@@ -32,6 +32,10 @@ public class SQLiteDatabase extends SQLDatabase {
 		super(plugin, DatabaseType.SQLITE);
 	}
 
+	public void configure(String prefix) {
+		configure(prefix, null, -1, null, null, null);
+	}
+
 	//	public final Collection<TableProperties> getTables() {
 	//		return tables.values();
 	//	}

@@ -48,6 +48,8 @@ public class Serialization {
 		registerDefaultType(char.class, (s) -> s.charAt(0));
 		registerDefaultType(char[].class, String::new, String::toCharArray);
 		registerDefaultType(String.class, (obj) -> obj == null ? null : "\"" + obj + "\"", String::valueOf);
+		registerDefaultType(java.util.Date.class, SerializationUtil.DATE_FORMAT::format, SerializationUtil::parseDate);
+		registerDefaultType(java.sql.Date.class, SerializationUtil.DATE_FORMAT::format, SerializationUtil::parseSQLDate);
 
 		//Not default type
 		register(UUID.class, UUID::fromString);
@@ -200,7 +202,7 @@ public class Serialization {
 				//Ignore
 			}
 		}
-		throw new IllegalArgumentException("Cannot parse unregistered config type: " + type.getName());
+		throw new IllegalArgumentException("Cannot parse unregistered type: " + type.getName());
 	}
 
 }

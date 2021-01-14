@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
@@ -20,8 +19,6 @@ import com.kmecpp.osmium.api.util.StringUtil;
 public class DBUtil {
 
 	public static HashMap<Class<?>, String> types = new HashMap<>();
-
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	static {
 		types.put(boolean.class, "TINYINT(1)");
@@ -65,7 +62,7 @@ public class DBUtil {
 		} else if (value instanceof Double) {
 			s.setDouble(index, (double) value);
 		} else if (value instanceof Date) {
-			s.setString(index, dateFormat.format((Date) value)); //SQLITE
+			s.setString(index, Serialization.serialize((Date) value)); //SQLITE
 		} else if (value instanceof Time) {
 			s.setTime(index, (Time) value);
 		} else if (value instanceof Timestamp) {
