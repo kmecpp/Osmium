@@ -182,7 +182,7 @@ public class Serialization {
 		if (str == null || str.equals("null")) {
 			return null;
 		} else if (str.isEmpty()) {
-			return ConfigSerialization.getDefaultFor(type);
+			return ConfigSerialization.getDefaultFor(type, false);
 		}
 
 		SerializationData<T> data = (SerializationData<T>) types.get(type);

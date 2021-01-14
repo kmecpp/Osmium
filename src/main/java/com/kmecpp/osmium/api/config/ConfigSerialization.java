@@ -2,12 +2,16 @@ package com.kmecpp.osmium.api.config;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -25,6 +29,8 @@ import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.function.Supplier;
+
+import antlr.collections.List;
 
 public class ConfigSerialization {
 
@@ -51,21 +57,25 @@ public class ConfigSerialization {
 		defaults.put(Boolean.class, () -> false);
 		defaults.put(String.class, () -> "");
 
+		//Lists
 		defaults.put(ArrayList.class, ArrayList::new);
 		defaults.put(CopyOnWriteArrayList.class, CopyOnWriteArrayList::new);
 		defaults.put(LinkedList.class, LinkedList::new);
 
+		//Sets
 		defaults.put(TreeSet.class, TreeSet::new);
 		defaults.put(HashSet.class, HashSet::new);
 		defaults.put(LinkedHashSet.class, LinkedHashSet::new);
 		defaults.put(ConcurrentSkipListSet.class, ConcurrentSkipListSet::new);
 		defaults.put(CopyOnWriteArraySet.class, CopyOnWriteArraySet::new);
 
+		//Maps
 		defaults.put(HashMap.class, HashMap::new);
 		defaults.put(LinkedHashMap.class, LinkedHashMap::new);
 		defaults.put(ConcurrentHashMap.class, ConcurrentHashMap::new);
 		defaults.put(ConcurrentSkipListMap.class, ConcurrentSkipListMap::new);
 
+		//Queues and deques
 		defaults.put(SynchronousQueue.class, SynchronousQueue::new);
 		defaults.put(PriorityQueue.class, PriorityQueue::new);
 		defaults.put(PriorityBlockingQueue.class, PriorityBlockingQueue::new);
@@ -79,11 +89,21 @@ public class ConfigSerialization {
 		defaults.put(Vector.class, Vector::new);
 		defaults.put(Stack.class, Stack::new);
 		defaults.put(UUID.class, UUID::randomUUID);
+
+		//Interfaces
+		defaults.put(List.class, ArrayList::new);
+		defaults.put(Map.class, HashMap::new);
+		defaults.put(Set.class, HashSet::new);
+		defaults.put(Queue.class, LinkedList::new);
+		defaults.put(Deque.class, LinkedList::new);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T getDefaultFor(Class<T> cls) {
+	public static <T> T getDefaultFor(Class<T> cls, boolean required) {
 		Supplier<T> def = (Supplier<T>) defaults.get(cls);
+		if (def == null && required) {
+			throw new RuntimeException("The class: " + cls.getName() + " does not have a default config value registered!");
+		}
 		return def != null ? def.get() : null;
 	}
 

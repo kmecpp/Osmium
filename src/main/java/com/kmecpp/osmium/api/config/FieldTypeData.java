@@ -147,7 +147,7 @@ public class FieldTypeData {
 		//		System.out.println(type.getPackage() == null ? "NULL" : type.getPackage().getName());
 
 		if (loadedValue == null) {
-			return ConfigSerialization.getDefaultFor(type);
+			return ConfigSerialization.getDefaultFor(type, false);
 		} else if (type.isPrimitive() || type.getName().startsWith("java.lang")) {
 			if (type != String.class && loadedValue instanceof String) {
 				return Serialization.deserialize(type, (String) loadedValue);
@@ -160,7 +160,7 @@ public class FieldTypeData {
 					convertedList.add(args.get(0).convertToActualType(o, pluginData));
 				}
 			}
-			Collection result = (Collection) ConfigSerialization.getDefaultFor(type);
+			Collection result = (Collection) ConfigSerialization.getDefaultFor(type, true); //Collections must have a default value because we initialize them to be empty
 			result.addAll(convertedList);
 			return result;
 		} else if (Map.class.isAssignableFrom(loadedValue.getClass())) {
@@ -178,7 +178,7 @@ public class FieldTypeData {
 							args.get(1).convertToActualType(entry.getValue(), pluginData));
 				}
 			}
-			Map result = (Map) ConfigSerialization.getDefaultFor(type);
+			Map result = (Map) ConfigSerialization.getDefaultFor(type, true); //Map must have a default value because we initialize them to be empty
 			result.putAll(convertedMap);
 			return result;
 		} else if (loadedValue instanceof String) { //type can't be string because java.lang is handled already

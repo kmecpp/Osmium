@@ -58,7 +58,7 @@ public class ConfigData extends ConfigClassData {
 					if (defaultValue == null) {
 						OsmiumLogger.warn("Using default value for missing config value: " + this.configClass.getName() + "::" + virtualPathString);
 						//						defaultValue = fieldData.getFieldValue();
-						defaultValue = ConfigSerialization.getDefaultFor(fieldData.getType());
+						defaultValue = ConfigSerialization.getDefaultFor(fieldData.getType(), false); //Set it to null if not default value
 						//						System.out.println();
 						//						System.out.println(fieldData.getType());
 						//						System.out.println("DEFAULT VALUE: " + defaultValue);
@@ -94,7 +94,7 @@ public class ConfigData extends ConfigClassData {
 
 			Object value = fieldData.getFieldValue();
 			if (value == null) {
-				value = ConfigSerialization.getDefaultFor(fieldData.getType());
+				value = ConfigSerialization.getDefaultFor(fieldData.getType(), false); //Null if no default value exists. TODO: Do we need this if we already do it in load?
 			}
 			CommentedConfigurationNode node = root.getNode(virtualPath);
 
