@@ -11,6 +11,7 @@ import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.database.DatabaseType;
 import com.kmecpp.osmium.api.database.OrderBy;
 import com.kmecpp.osmium.api.database.ResultSetProcessor;
+import com.kmecpp.osmium.api.database.SQLConfiguration;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.database.mysql.MDBColumnData;
 import com.kmecpp.osmium.api.database.mysql.MDBTableData;
@@ -33,7 +34,7 @@ public class SQLiteDatabase extends SQLDatabase {
 	}
 
 	public void configure(String prefix) {
-		configure(prefix, null, -1, null, null, null);
+		this.config = new SQLConfiguration(null, null, null, null, -1, prefix);
 	}
 
 	//	public final Collection<TableProperties> getTables() {
