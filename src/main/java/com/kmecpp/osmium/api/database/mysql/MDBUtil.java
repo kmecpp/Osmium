@@ -153,7 +153,7 @@ public class MDBUtil {
 		//		LinkedHashMap<Class<?>, ArrayList<String>> foreignKeys = new LinkedHashMap<>();
 		for (MDBColumnData column : data.getColumns()) {
 			String columnName = column.getName();
-			sb.append(columnName + " " + getColumnAttributeString(data, column) + ",");
+			sb.append("`" + columnName + "` " + getColumnAttributeString(data, column) + ", ");
 
 			if (column.isPrimary()) {
 				primaryKeys.add(columnName);
