@@ -10,4 +10,8 @@ public class Pagination {
 		return pageSize * (page - 1);
 	}
 
+	public static int getStartIndexReversed(int numItems, int page, int pageSize) {
+		return (numItems - 1) - getStartIndex(page, pageSize);
+	}
+
 }
