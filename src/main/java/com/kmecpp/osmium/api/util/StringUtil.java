@@ -10,17 +10,31 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Pattern;
 
 /**
  * A utility class for manipulating text
  */
 public class StringUtil {
 
+	private static final CharsetEncoder ASCII_ENCODER = Charset.forName("US-ASCII").newEncoder();
+	private static final Pattern ASCII_ALPHANUMERIC_PATTERN = Pattern.compile("^[a-zA-Z0-9]*$");
+
 	protected StringUtil() {
+	}
+
+	public static boolean isAscii(String str) {
+		return ASCII_ENCODER.canEncode(str);
+	}
+
+	public static boolean isAsciiAlphanumeric(String str) {
+		return ASCII_ALPHANUMERIC_PATTERN.matcher(str).matches();
 	}
 
 	public static String normalize(String str, String separator) {

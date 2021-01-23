@@ -176,6 +176,14 @@ public class CommandEvent implements Messageable {
 		return get(index);
 	}
 
+	public String getStringNormal(int index) {
+		String result = getString(index);
+		if (!StringUtil.isAsciiAlphanumeric(result)) {
+			throw new CommandException("Input '" + result + "' contains invalid characters");
+		}
+		return result;
+	}
+
 	public String getStringMaxLength(int index, int maxLength) {
 		String result = get(index);
 		if (result.length() > maxLength) {
