@@ -50,6 +50,10 @@ public interface Messageable {
 		sendList(CS.XAEB, list);
 	}
 
+	default <T> void sendList(Collection<T> list, Function<T, String> serializer) {
+		sendList(CS.XAEB, null, list, serializer);
+	}
+
 	default void sendList(CS colors, Collection<?> list) {
 		sendList(colors, null, list);
 	}
