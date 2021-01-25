@@ -13,7 +13,7 @@ Osmium is currently in ALPHA so the API is far from complete. However, plugins r
 Please join the Discord server if you have questions, would like to stay updated with the project or want to help out: https://discord.gg/jBjYckt
 
 Some servers already using Osmium:
-* https://www.voidflame.com
+* https://voidflame.com
 
 # Features
 
