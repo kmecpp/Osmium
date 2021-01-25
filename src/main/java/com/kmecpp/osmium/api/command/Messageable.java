@@ -46,16 +46,18 @@ public interface Messageable {
 		}
 	}
 
+	default void sendList(Collection<?> list) {
+		sendList(CS.XAEB, list);
+	}
+
+	default void sendList(CS colors, Collection<?> list) {
+		for (Object item : list) {
+			sendMessage(colors.getSecondary() + " - " + colors.getPrimary() + item);
+		}
+	}
+
 	default void sendList(String title, Collection<?> list) {
 		sendList(CS.XAEB, title, list);
-	}
-
-	default void sendNumberedList(String title, Collection<?> list) {
-		sendNumberedList(CS.XAEB, title, list, String::valueOf);
-	}
-
-	default <T> void sendNumberedList(String title, Collection<T> list, Function<T, String> serializer) {
-		sendNumberedList(CS.XAEB, title, list, serializer);
 	}
 
 	default <T> void sendList(String title, Collection<T> list, Function<T, String> serializer) {
@@ -74,6 +76,14 @@ public interface Messageable {
 		for (T item : list) {
 			sendMessage(colors.getSecondary() + " - " + colors.getPrimary() + serializer.apply(item));
 		}
+	}
+
+	default void sendNumberedList(String title, Collection<?> list) {
+		sendNumberedList(CS.XAEB, title, list, String::valueOf);
+	}
+
+	default <T> void sendNumberedList(String title, Collection<T> list, Function<T, String> serializer) {
+		sendNumberedList(CS.XAEB, title, list, serializer);
 	}
 
 	default <T> void sendNumberedList(CS colors, String title, Collection<T> list, Function<T, String> serializer) {
