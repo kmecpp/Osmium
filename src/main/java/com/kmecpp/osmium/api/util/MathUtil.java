@@ -8,12 +8,16 @@ public class MathUtil {
 
 	private static final ThreadLocalRandom RAND = ThreadLocalRandom.current();
 
-	public static int randInt(int least, int bound) {
-		return RAND.nextInt(least, bound);
-	}
-
 	public static int randInt() {
 		return RAND.nextInt();
+	}
+
+	public static int randInt(int bound) {
+		return RAND.nextInt(bound);
+	}
+
+	public static int randInt(int least, int bound) {
+		return RAND.nextInt(least, bound);
 	}
 
 	public static boolean randBoolean() {

@@ -47,7 +47,9 @@ public class StringUtil {
 			if (i > 0 && ((c != lower && !prev) || (c == ' '))) {
 				sb.append(separator);
 			}
-			sb.append(lower);
+			if (c != ' ') {
+				sb.append(lower);
+			}
 			prev = c != lower;
 		}
 		return sb.toString();
