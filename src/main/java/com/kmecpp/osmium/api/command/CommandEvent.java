@@ -129,6 +129,14 @@ public class CommandEvent implements Messageable {
 		return index < args.length ? getInt(index) : def;
 	}
 
+	public int getIntMax(int index, int max) {
+		int result = getInt(index);
+		if (result > max) {
+			throw new CommandException("Input '" + result + "' is too large. Max value: " + max);
+		}
+		return result;
+	}
+
 	public double getDouble(int index) {
 		String input = get(index);
 		try {
