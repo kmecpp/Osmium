@@ -14,6 +14,18 @@ public class ReflectField<T> {
 		this.name = name;
 	}
 
+	public ReflectField(String className, String name) {
+		this(getClass(className), name);
+	}
+
+	private static Class<?> getClass(String className) {
+		try {
+			return Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private void init() throws Exception {
 		if (field == null) {
 			field = cls.getDeclaredField(name);
