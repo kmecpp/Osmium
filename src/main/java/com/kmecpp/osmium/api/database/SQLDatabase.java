@@ -311,7 +311,7 @@ public abstract class SQLDatabase {
 	}
 
 	public static String getColumnName(String fieldName) {
-		return StringUtil.normalize(fieldName, "_");
+		return StringUtil.normalizeCamelCase(fieldName, "_");
 	}
 
 	/**

@@ -37,7 +37,7 @@ public class StringUtil {
 		return ASCII_ALPHANUMERIC_PATTERN.matcher(str).matches();
 	}
 
-	public static String normalize(String str, String separator) {
+	public static String normalizeCamelCase(String str, String separator) {
 		StringBuilder sb = new StringBuilder(str.length() + 4);
 		char[] chars = str.toCharArray();
 		boolean prev = false;
@@ -51,6 +51,20 @@ public class StringUtil {
 				sb.append(lower);
 			}
 			prev = c != lower;
+		}
+		return sb.toString();
+	}
+
+	public static String normalize(String str) {
+		StringBuilder sb = new StringBuilder(str.length());
+		char[] chars = str.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			char c = chars[i];
+			if (c == ' ') {
+				sb.append('_');
+			} else {
+				sb.append(Character.toLowerCase(c));
+			}
 		}
 		return sb.toString();
 	}

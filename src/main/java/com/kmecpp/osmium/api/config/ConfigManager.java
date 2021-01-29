@@ -250,7 +250,7 @@ public class ConfigManager {
 	}
 
 	private static String normalizeName(String name) {
-		return StringUtil.normalize(name, "-");
+		return StringUtil.normalizeCamelCase(name, "-");
 	}
 
 }
