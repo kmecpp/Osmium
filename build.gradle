@@ -126,7 +126,7 @@ compileJava.source sourceSets.generated.java, sourceSets.main.java
 repositories {
 	jcenter()
 	//maven { url "http://ci.kmecpp.com/plugin/repository/everything/" }
-	maven { url "http://repo.spongepowered.org/maven" }
+	maven { url "https://repo.spongepowered.org/maven" }
 	maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 	//maven { url "http://repo.bstats.org/content/repositories/releases/" }
 }
