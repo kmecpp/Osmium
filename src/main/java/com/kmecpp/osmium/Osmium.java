@@ -303,9 +303,15 @@ public final class Osmium {
 		if (reloadDatabase) {
 			if (plugin.getSQLiteDatabase() != null) {
 				plugin.getSQLiteDatabase().reload();
+				if (plugin.getSQLiteDatabase().isConnected()) {
+					plugin.getClassProcessor().createDatabaseTables();
+				}
 			}
 			if (plugin.getMySQLDatabase() != null) {
 				plugin.getMySQLDatabase().reload();
+				if (plugin.getMySQLDatabase().isConnected()) {
+					plugin.getClassProcessor().createDatabaseTables();
+				}
 			}
 		}
 		return true;
