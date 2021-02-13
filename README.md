@@ -132,15 +132,12 @@ The first way is the shortest and is useful when you only have a few very simple
 Osmium.registerCommand("spawn", "sp")
 	.setDescription("Teleport to the spawn point of your current world")
 	.setPermission("myplugin.spawn")
-	.setConsole()
 	.onExecute((e) -> {
-		Player player = e.getPlayer();
+		Player player = e.getPlayer(); // Gets the command sender as a Player object. Prints a useful error message if the command was not run by a player
 		player.teleport(player.getWorld().getSpawn());
-		player.sendMessage(C.GREEN + "You have been teleported to this world's spawn point!");
+		player.sendMessage(Chat.GREEN + "You have been teleported to this world's spawn point!");
 	})
 ```
-
-Notice the setConsole() method. 
 
 Alternatively you can move the command into its own class. The same command would look like this
 
@@ -155,9 +152,9 @@ public class KillCommand extends Command {
 
 	@Override
 	public void execute(CommandEvent e) {
-		World world = e.getWorld(0); //Gets the argument at index 0 and parses it as a World
+		World world = e.getWorld(0); //Gets the argument at index 0 and parses it as a World. Prints useful error message if argument is not a World
 		world.getPlayers().forEach(Player::kill)
-		e.sendMessage(C.GREEN + "You have killed everyone in " + world.getName());
+		e.sendMessage(Chat.GREEN + "You have killed everyone in " + world.getName());
 	}
 
 }
@@ -185,18 +182,18 @@ public class KillCommands extends Command {
 		
 		add("all").setExecutor(e) -> {
 			Osmium.getOnlinePlayers().stream().filter(p -> !p.isOp()).forEach(Player::kill);
-			e.sendMessage(C.GREEN + "You have killed everyone!");
+			e.sendMessage(Chat.GREEN + "You have killed everyone!");
 		});
 		
 		add("world").setExecutor(e) -> {
 			World world = e.getWorld(0); //Gets the argument at index 0 and parses it as a World
 			world.getPlayers().filter(p -> !p.isOp()).forEach(Player::kill)
-			e.sendMessage(C.GREEN + "You have killed everyone in " + world.getName());
+			e.sendMessage(Chat.GREEN + "You have killed everyone in " + world.getName());
 		});
 		
 		add("player").setExecutor(e) -> {
 			e.getPlayer(0).kill(); //Gets the argument at index 0 and parses it as a Player
-			e.sendMessage(C.GREEN + "You have killed " + player.getName());
+			e.sendMessage(Chat.GREEN + "You have killed " + player.getName());
 		});
 	}
 
