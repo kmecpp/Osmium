@@ -301,13 +301,13 @@ public final class Osmium {
 		eventManager.callEvent(reloadEvent);
 
 		if (reloadDatabase) {
-			if (plugin.getSQLiteDatabase() != null) {
+			if (plugin.getSQLiteDatabase().isInitialized()) {
 				plugin.getSQLiteDatabase().reload();
 				if (plugin.getSQLiteDatabase().isConnected()) {
 					plugin.getClassProcessor().createDatabaseTables();
 				}
 			}
-			if (plugin.getMySQLDatabase() != null) {
+			if (plugin.getMySQLDatabase().isInitialized()) {
 				plugin.getMySQLDatabase().reload();
 				if (plugin.getMySQLDatabase().isConnected()) {
 					plugin.getClassProcessor().createDatabaseTables();

@@ -31,6 +31,7 @@ public abstract class SQLDatabase {
 	protected final OsmiumPlugin plugin;
 	protected final DatabaseType type;
 
+	protected boolean initialized;
 	protected DatabaseQueue queue;
 	protected CountDownLatch availableLatch = new CountDownLatch(1);
 
@@ -384,6 +385,10 @@ public abstract class SQLDatabase {
 		tables.put(cls, data);
 	}
 
+	public boolean isInitialized() {
+		return initialized;
+	}
+
 	/**
 	 * Creates a database table with the given name representing the specified
 	 * class. If the table already exists, this method will fail silently.
@@ -397,6 +402,7 @@ public abstract class SQLDatabase {
 		//		}
 
 		if (hikariSource == null) {
+			initialized = true;
 			start(); //Initialize connection automatically
 		}
 
