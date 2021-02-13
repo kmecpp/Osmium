@@ -90,4 +90,22 @@ public interface Player extends User, EntityLiving, CommandSender {
 		this.setLocation(this.getWorld().getSpawnLocation().getBlockTopCenter());
 	}
 
+	//	default BukkitPlayer asBukkitPlayer() {
+	//		return (BukkitPlayer) this;
+	//	}
+	//
+	//	default SpongePlayer asSpongePlayer() {
+	//		return (SpongePlayer) this;
+	//	}
+
+	@SuppressWarnings("unchecked")
+	default <T extends org.bukkit.entity.Player> T asBukkitPlayer() {
+		return (T) this.getSource();
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T extends org.spongepowered.api.entity.living.player.Player> T asSpongePlayer() {
+		return (T) this.getSource();
+	}
+
 }

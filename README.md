@@ -241,7 +241,7 @@ For example:
 ```
 if (Platform.isBukkit()) {
 	//Bukkit code
-} else if(Platform.isSponge()) {
+} else if (Platform.isSponge()) {
 	//Sponge code
 }
 ```
