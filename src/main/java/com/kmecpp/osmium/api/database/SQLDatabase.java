@@ -114,6 +114,12 @@ public abstract class SQLDatabase {
 		});
 	}
 
+	public <T> T accumulate(String query, ResultSetProcessor<T> handler) {
+		return getOrDefault(query, null, rs -> {
+			return handler.process(rs);
+		});
+	}
+
 	public <T> T getOrDefault(String query, Object defaultValue, ResultSetProcessor<T> handler) {
 		OsmiumLogger.debug("Executing get query: " + query);
 		Statement statement = null;
