@@ -35,10 +35,13 @@ public class MathUtil {
 	}
 
 	public static String format(double n, int decimalDigits) {
-		String rounded = round(n, decimalDigits);
-		return rounded + (rounded.contains(".")
-				? StringUtil.repeat('0', decimalDigits - rounded.split("\\.")[1].length())
-				: "." + StringUtil.repeat('0', decimalDigits));
+		DecimalFormat format = new DecimalFormat("#." + StringUtil.repeat('0', decimalDigits));
+		format.setRoundingMode(RoundingMode.HALF_UP);
+		return format.format(n);
+		//		String rounded = round(n, decimalDigits);
+		//		return rounded + (rounded.contains(".")
+		//				? StringUtil.repeat('0', decimalDigits - rounded.split("\\.")[1].length())
+		//				: "." + StringUtil.repeat('0', decimalDigits));
 	}
 
 	public static int bound(int x, int min, int max) {

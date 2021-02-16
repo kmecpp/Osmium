@@ -66,6 +66,36 @@ public class TimeUtil {
 		return StringUtil.plural(time, "millisecond", amountPrefix, unitPrefix);
 	}
 
+	public static String formatTotalMillis(long time, int decimals) {
+		return formatTime(1, time, "", "", decimals);
+	}
+
+	private static String formatTime(int modifier, long time, String amountPrefix, String unitPrefix, int decimals) {
+		time *= modifier;
+
+		final long day = 86400 * 1000;
+		if (time > day) {
+			return amountPrefix + MathUtil.format((double) time / day, decimals) + unitPrefix + " days";
+		}
+
+		final long hour = 3600 * 1000;
+		if (time > hour) {
+			return amountPrefix + MathUtil.format((double) time / hour, decimals) + unitPrefix + " hours";
+		}
+
+		final long minute = 60 * 1000;
+		if (time > minute) {
+			return amountPrefix + MathUtil.format((double) time / minute, decimals) + " minutes";
+		}
+
+		final long second = 1000;
+		if (time >= second) {
+			return amountPrefix + MathUtil.format((double) time / second, decimals) + " seconds";
+		}
+
+		return amountPrefix + MathUtil.round((double) time / second, decimals) + " milliseconds";
+	}
+
 	public static Calendar getCalendar(long time) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(time);
