@@ -184,10 +184,30 @@ public class CommandEvent implements Messageable {
 		return get(index);
 	}
 
-	public String getStringNormal(int index) {
+	public String getStringAlpha(int index) {
+		return getStringAlpha(index, -1);
+	}
+
+	public String getStringAlpha(int index, int maxLength) {
 		String result = getString(index);
-		if (!StringUtil.isAsciiAlphanumeric(result)) {
+		if (!StringUtil.isAlpha(result)) {
 			throw new CommandException("Input '" + result + "' contains invalid characters");
+		} else if (maxLength >= 0 && result.length() > maxLength) {
+			throw new CommandException("Input '" + result + "' is " + (result.length() - maxLength) + " characters too long");
+		}
+		return result;
+	}
+
+	public String getStringAlphaNumeric(int index) {
+		return getStringAlphaNumeric(index, -1);
+	}
+
+	public String getStringAlphaNumeric(int index, int maxLength) {
+		String result = getString(index);
+		if (!StringUtil.isAlphaNumeric(result)) {
+			throw new CommandException("Input '" + result + "' contains invalid characters");
+		} else if (maxLength >= 0 && result.length() > maxLength) {
+			throw new CommandException("Input '" + result + "' is " + (result.length() - maxLength) + " characters too long");
 		}
 		return result;
 	}
@@ -195,7 +215,7 @@ public class CommandEvent implements Messageable {
 	public String getStringMaxLength(int index, int maxLength) {
 		String result = get(index);
 		if (result.length() > maxLength) {
-			throw new CommandException("Input '" + result + "' is too long by " + (result.length() - maxLength) + " characters");
+			throw new CommandException("Input '" + result + "' is " + (result.length() - maxLength) + " characters too long");
 		}
 		return result;
 	}

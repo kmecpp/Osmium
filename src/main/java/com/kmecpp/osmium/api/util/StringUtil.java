@@ -37,6 +37,26 @@ public class StringUtil {
 		return ASCII_ALPHANUMERIC_PATTERN.matcher(str).matches();
 	}
 
+	public static boolean isAlpha(String str) {
+		for (int i = 0; i < str.length(); i++) {
+			char c = str.charAt(i);
+			if (c < 65 || (c > 90 && c < 97) || c > 122) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean isAlphaNumeric(String str) {
+		for (int i = 0; i < str.length(); i++) {
+			char c = str.charAt(i);
+			if (c < 48 || (c > 57 && c < 65) || (c > 90 && c < 97) || c > 122) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static String normalizeCamelCase(String str, String separator) {
 		StringBuilder sb = new StringBuilder(str.length() + 4);
 		char[] chars = str.toCharArray();
