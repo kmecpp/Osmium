@@ -48,27 +48,14 @@ public class OsmiumUserIds {
 
 	public static void createUserId(UUID uuid, String playerName) {
 		if (OsmiumCoreConfig.Database.useMySql) {
-			//			String update = "insert ignore into osmium_users(uuid, name) values (?, ?) on duplicate key update name=?";
-
-			int result = OsmiumCore.getPlugin().getMySQLDatabase()
-					.update("update osmium_users set name='" + playerName + "' where uuid='" + uuid + "'");
-
+			int result = OsmiumCore.getPlugin().getMySQLDatabase().update("update osmium_users set name='" + playerName + "' where uuid='" + uuid + "'");
 			if (result == 0) {
-				OsmiumCore.getPlugin().getMySQLDatabase()
-						.update("insert ignore into osmium_users(uuid, name) values ('" + uuid + "', '" + playerName + "')");
+				OsmiumCore.getPlugin().getMySQLDatabase().update("insert ignore into osmium_users(uuid, name) values ('" + uuid + "', '" + playerName + "')");
 			}
-
-			//			OsmiumCore.getPlugin().getMySQLDatabase().preparedStatement("insert ignore into osmium_users(uuid, name) values (?, ?)", ps -> {
-			//				ps.setString(1, String.valueOf(e.getUniqueId()));
-			//				ps.setString(2, e.getPlayerName());
-			//				ps.setString(3, e.getPlayerName());
-			//			});
 		} else {
-			int result = OsmiumCore.getPlugin().getSQLiteDatabase()
-					.update("UPDATE osmium_users SET name='" + playerName + "' WHERE uuid='" + uuid + "'");
+			int result = OsmiumCore.getPlugin().getSQLiteDatabase().update("UPDATE users SET name='" + playerName + "' WHERE uuid='" + uuid + "'");
 			if (result == 0) {
-				OsmiumCore.getPlugin().getSQLiteDatabase()
-						.update("INSERT OR IGNORE INTO osmium_users(uuid, name) values ('" + uuid + "', '" + playerName + "');");
+				OsmiumCore.getPlugin().getSQLiteDatabase().update("INSERT OR IGNORE INTO users(uuid, name) values ('" + uuid + "', '" + playerName + "');");
 			}
 		}
 	}
