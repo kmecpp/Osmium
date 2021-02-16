@@ -15,6 +15,12 @@ public class StringUtilTest {
 	}
 
 	@Test
+	public void testParseDuration() {
+		assertTrue(StringUtil.parseDuration("1d") == 86400000);
+		assertTrue(StringUtil.parseDuration("2w") == 2 * 7 * 86400000);
+	}
+
+	@Test
 	public void testIsAlpha() {
 		assertTrue(StringUtil.isAlpha("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"));
 		assertTrue(StringUtil.isAlpha("wASIFJWEOUIFWBHUYEWWEFIFUW"));

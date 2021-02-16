@@ -29,6 +29,45 @@ public class StringUtil {
 	protected StringUtil() {
 	}
 
+	public static long parseDuration(String str) {
+		Long number = null;
+		String unit = null;
+		for (int i = 0; i < str.length(); i++) {
+			char c = str.charAt(i);
+			if (c != '-' && !Character.isDigit(c)) {
+				try {
+					number = Long.parseLong(str.substring(0, i));
+				} catch (NumberFormatException ex) {
+					throw new IllegalArgumentException("Invalid duration: " + str.substring(0, i));
+				}
+				unit = str.substring(i, str.length());
+				break;
+			}
+		}
+		if (number == null) {
+			throw new IllegalArgumentException("Invalid input: " + str);
+		}
+		if (unit == "ms") {
+			return number;
+		} else if (unit.equalsIgnoreCase("s")) {
+			return 1000 * number;
+		} else if (unit.equalsIgnoreCase("m")) {
+			return 60 * 1000 * number;
+		} else if (unit.equalsIgnoreCase("h")) {
+			return 3600 * 1000 * number;
+		} else if (unit.equalsIgnoreCase("d")) {
+			return 86400 * 1000 * number;
+		} else if (unit.equalsIgnoreCase("w")) {
+			return 7 * 86400 * 1000 * number;
+		} else if (unit.equalsIgnoreCase("mo")) {
+			return 30 * 86400 * 1000 * number;
+		} else if (unit.equalsIgnoreCase("y")) {
+			return 365 * 86400 * 1000 * number;
+		} else {
+			throw new IllegalArgumentException("Invalid unit: '" + unit + "'");
+		}
+	}
+
 	public static boolean isAscii(String str) {
 		return ASCII_ENCODER.canEncode(str);
 	}
