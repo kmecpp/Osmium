@@ -18,6 +18,7 @@ public class MDBTableData {
 	private LinkedHashMap<String, MDBColumnData> columnMap;
 
 	private String[] columnNames;
+	private String[] escapedColumnNames;
 	private MDBColumnData[] columns;
 
 	private MDBColumnData[] primaryColumns;
@@ -69,6 +70,7 @@ public class MDBTableData {
 		});
 		this.columns = columns.toArray(new MDBColumnData[columns.size()]);
 		this.columnNames = columns.stream().map(MDBColumnData::getName).toArray(String[]::new);
+		this.escapedColumnNames = columns.stream().map(data -> "`" + data.getName() + "`").toArray(String[]::new);
 		this.primaryColumns = primaryColumns.toArray(new MDBColumnData[primaryColumns.size()]);
 		this.primaryColumnNames = primaryColumns.stream().map(MDBColumnData::getName).toArray(String[]::new);
 		//		this.foreignKeyColumns = foreignKeyColumns.toArray(new MDBColumnData[foreignKeyColumns.size()]);
@@ -109,6 +111,10 @@ public class MDBTableData {
 
 	public String[] getColumnNames() {
 		return columnNames;
+	}
+
+	public String[] getEscapedColumnNames() {
+		return escapedColumnNames;
 	}
 
 	public MDBColumnData[] getPrimaryColumns() {

@@ -206,7 +206,7 @@ public class MDBUtil {
 
 	public static final String createReplaceInto(MDBTableData table) {
 		return "REPLACE INTO " + table.getName()
-				+ "(" + StringUtil.join(table.getColumnNames(), ", ") + ") "
+				+ "(" + StringUtil.join(table.getEscapedColumnNames(), ", ") + ") "
 				+ "VALUES(" + StringUtil.join('?', ",", table.getColumnCount()) + ");";
 	}
 
