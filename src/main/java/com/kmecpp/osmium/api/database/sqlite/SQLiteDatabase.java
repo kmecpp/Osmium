@@ -7,7 +7,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.kmecpp.osmium.api.database.DBTable;
 import com.kmecpp.osmium.api.database.DatabaseType;
 import com.kmecpp.osmium.api.database.OrderBy;
 import com.kmecpp.osmium.api.database.ResultSetProcessor;
@@ -24,7 +23,6 @@ import com.kmecpp.osmium.api.util.IOUtil;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.core.OsmiumCoreConfig;
 
-@DBTable(name = "f", type = DatabaseType.SQLITE)
 public class SQLiteDatabase extends SQLDatabase {
 
 	//	private final HashMap<Class<?>, TableProperties> tables = new HashMap<>();

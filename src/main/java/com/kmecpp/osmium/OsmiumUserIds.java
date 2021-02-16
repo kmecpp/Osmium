@@ -76,7 +76,8 @@ public class OsmiumUserIds {
 	public static Optional<Integer> getUserId(UUID uuid) {
 		Pair<Integer, Long> data = ids.get(uuid);
 		if (data == null) {
-			String query = "select id from osmium_users where uuid='" + uuid + "'";
+			String query = "select id from " + (OsmiumCoreConfig.Database.useMySql ? "osmium_users" : "users") + " where uuid='" + uuid + "'";
+
 			Integer id = OsmiumCore.getDatabase().get(query, rs -> rs.getInt(1));
 			if (id == null) {
 				return Optional.empty();
