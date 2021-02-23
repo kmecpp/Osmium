@@ -120,6 +120,12 @@ public class MDBUtil {
 			field.setFloat(instance, rs.getFloat(index));
 		} else if (type == double.class || type == Double.class) {
 			field.setDouble(instance, rs.getDouble(index));
+		} else if (type == Date.class) {
+			field.set(instance, rs.getDate(index));
+		} else if (type == Time.class) {
+			field.set(instance, rs.getTime(index));
+		} else if (type == Timestamp.class) {
+			field.set(instance, rs.getTimestamp(index));
 		} else if (type == String.class) {
 			field.set(instance, rs.getString(index));
 		} else if (type == UUID.class) {
