@@ -91,7 +91,7 @@ public class OsmiumPluginLogger {
 			boolean displayLevel = level != LogLevel.DEBUG && level != LogLevel.INFO;
 			Sponge.getServer().getConsole().sendMessage(Text.of(
 					TextColors.DARK_AQUA, "[", TextColors.AQUA, prefix,
-					(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColor(), level) : Text.EMPTY),
+					(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColor(), level) : Text.empty()),
 					TextColors.DARK_AQUA, "] ", level.getColor(), message));
 		} else {
 			printDefault(level, message);

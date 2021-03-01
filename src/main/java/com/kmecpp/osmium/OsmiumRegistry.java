@@ -52,7 +52,7 @@ public class OsmiumRegistry {
 						try {
 							CatalogType spongeCatalogedItem = (CatalogType) field.get(null);
 							sourceField.set(type, spongeCatalogedItem);
-							typeMap.put(spongeCatalogedItem.getId(), type);
+							typeMap.put(spongeCatalogedItem.getKey().getValue(), type);
 							break;
 						} catch (IllegalArgumentException | IllegalAccessException e) {
 							e.printStackTrace();

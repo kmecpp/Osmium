@@ -24,7 +24,7 @@ public class ItemManager {
 		if (Platform.isBukkit()) {
 			return (T) bukkitItemTypes.get(source);
 		} else if (Platform.isSponge()) {
-			return (T) spongeItemTypes.get(((org.spongepowered.api.item.ItemType) source).getId());
+			return (T) spongeItemTypes.get(((org.spongepowered.api.item.ItemType) source).getKey().getValue());
 		}
 		return null;
 		//		return (T) spongeItemTypes.get(id);
@@ -94,7 +94,7 @@ public class ItemManager {
 							try {
 								CatalogType spongeCatalogedItem = (CatalogType) field.get(null);
 								sourceField.set(type, spongeCatalogedItem);
-								spongeItemTypes.put(spongeCatalogedItem.getId(), type);
+								spongeItemTypes.put(spongeCatalogedItem.getKey().getValue(), type);
 								break;
 							} catch (IllegalArgumentException | IllegalAccessException e) {
 								e.printStackTrace();
