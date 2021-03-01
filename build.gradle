@@ -143,7 +143,7 @@ dependencies {
 	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648_DEOBF.jar")
 	compile files("lib/spongevanilla-1.12.2-8.0.0-BETA-448.jar");
 	//compile "org.spigotmc:spigot:$bukkit_version"
-	compile "org.spongepowered:spongeapi:$sponge_version"
+	//compile "org.spongepowered:spongeapi:$sponge_version"
 	compile files("build/generated/com/kmecpp/osmium/AppInfo.class")
 	//compileOnly "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75" //Breaking builds. Find alternative for this
 	shade "org.javassist:javassist:3.22.0-GA"
