@@ -72,6 +72,13 @@ public class MySQLDatabase extends SQLDatabase {
 		return query(table, "SELECT * FROM " + table.getName() + " " + orderBy + " LIMIT " + limit);
 	}
 
+	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit, String columns, Object... values) {
+		MDBTableData table = tables.get(tableClass);
+		return query(table, "SELECT * FROM " + table.getName()
+				+ " WHERE " + MDBUtil.createWhere(columns.split(","))
+				+ " " + orderBy + " LIMIT " + limit, values);
+	}
+
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int min, int max) {
 		MDBTableData table = tables.get(tableClass);
 		return query(table, "SELECT * FROM " + table.getName() + " " + orderBy + " LIMIT " + min + "," + max);
