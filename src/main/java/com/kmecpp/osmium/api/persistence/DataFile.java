@@ -11,6 +11,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
+@SuppressWarnings("deprecation")
 public class DataFile {
 
 	protected final Path path;

@@ -140,7 +140,7 @@ public class SpongeInventoryEvent implements InventoryEvent {
 
 		@Override
 		public int getSlot() {
-			return event.getTransactions().get(0).getSlot().getProperty(SlotIndex.class).get().getValue();
+			return event.getTransactions().get(0).getSlot().getInventoryProperty(SlotIndex.class).get().getValue();
 		}
 
 		@Override
@@ -177,7 +177,7 @@ public class SpongeInventoryEvent implements InventoryEvent {
 		@Override
 		public Set<Integer> getSlots() {
 			return event.getTransactions().stream()
-					.map(t -> t.getSlot().getProperty(SlotIndex.class).get().getValue())
+					.map(t -> t.getSlot().getInventoryProperty(SlotIndex.class).get().getValue())
 					.collect(Collectors.toSet());
 		}
 

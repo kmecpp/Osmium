@@ -3,6 +3,7 @@ package com.kmecpp.osmium.platform.sponge;
 import java.util.Collection;
 
 import org.spongepowered.api.item.inventory.property.SlotIndex;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.Wrappers;
@@ -43,7 +44,7 @@ public class SpongeInventory implements Inventory {
 
 	@Override
 	public ItemStack getItem(int index) {
-		return SpongeAccess.getItemStack(inventory.getSlot(SlotIndex.of(index)).orElseThrow(IndexOutOfBoundsException::new).peek());
+		return SpongeAccess.getItemStack(inventory.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotIndex.of(index))).first().first());
 	}
 
 	@Override
@@ -58,7 +59,7 @@ public class SpongeInventory implements Inventory {
 
 	@Override
 	public void setItem(int index, ItemStack itemStack) {
-		inventory.getSlot(SlotIndex.of(index)).get().set(itemStack == null ? null : (org.spongepowered.api.item.inventory.ItemStack) itemStack.getSource());
+		inventory.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotIndex.of(index))).first().set(itemStack == null ? null : (org.spongepowered.api.item.inventory.ItemStack) itemStack.getSource());
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class SpongeInventory implements Inventory {
 
 	@Override
 	public Collection<ItemStack> getItems() {
-		return Wrappers.convert(inventory.slots(), slot -> SpongeAccess.getItemStack(slot.peek()));
+		return Wrappers.convert(inventory.slots(), slot -> SpongeAccess.getItemStack(slot.first()));
 	}
 
 	@Override
