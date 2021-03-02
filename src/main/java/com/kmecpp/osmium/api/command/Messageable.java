@@ -3,8 +3,6 @@ package com.kmecpp.osmium.api.command;
 import java.util.Collection;
 import java.util.function.Function;
 
-import org.bukkit.ChatColor;
-
 public interface Messageable {
 
 	void sendMessage(String message);
@@ -18,11 +16,11 @@ public interface Messageable {
 	}
 
 	default void sendNotification(CS colors, String message) {
-		sendMessage(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "-------------------------------------------"); //43
+		sendMessage(colors.getSecondary() + Chat.BOLD.toString() + Chat.STRIKETHROUGH + "-------------------------------------------"); //43
 		sendMessage("");
 		sendMessage(colors.getPrimary() + message);
 		sendMessage("");
-		sendMessage(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "-------------------------------------------");
+		sendMessage(colors.getSecondary() + Chat.BOLD.toString() + Chat.STRIKETHROUGH + "-------------------------------------------");
 	}
 
 	default void sendTitle(String title) {
@@ -39,8 +37,8 @@ public interface Messageable {
 
 	default void sendTitle(CS colors, String title, boolean extraLine) {
 		send("");
-		send(colors.getPrimary() + ChatColor.BOLD.toString() + title);
-		send(colors.getSecondary() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
+		send(colors.getPrimary() + Chat.BOLD.toString() + title);
+		send(colors.getSecondary() + Chat.BOLD.toString() + Chat.STRIKETHROUGH + "----------------------------------------");
 		if (extraLine) {
 			send("");
 		}
