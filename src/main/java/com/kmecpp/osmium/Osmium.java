@@ -62,7 +62,7 @@ public final class Osmium {
 	private static final CommandManager commandManager = new CommandManager();
 	private static final PlayerDataManager playerDataManager = new PlayerDataManager();
 	private static final EventManager eventManager = new EventManager();
-	private static final ItemManager itemManager = Platform.getPlatform() == Platform.BUNGEECORD ? null : new ItemManager();
+	private static final ItemManager itemManager = Platform.isGame() ? new ItemManager() : null;
 	private static final OsmiumMetrics metrics = new OsmiumMetrics();
 
 	private static final ExecutorService genericThreadPool = Executors.newFixedThreadPool(3);

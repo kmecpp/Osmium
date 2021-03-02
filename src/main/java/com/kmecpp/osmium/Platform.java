@@ -7,7 +7,7 @@ public enum Platform {
 
 	BUKKIT("org.bukkit.Bukkit", "plugin.yml"),
 	SPONGE("org.spongepowered.api.Sponge", "mcmod.info"),
-	BUNGEECORD("net.md_5.bungee.BungeeCord", "bungee.yml"),
+	BUNGEE("net.md_5.bungee.BungeeCord", "bungee.yml"),
 
 	;
 
@@ -15,7 +15,8 @@ public enum Platform {
 	private final String metaFile;
 	private final boolean active;
 
-	private static final Platform CURRENT_PLATFORM = BUKKIT.active ? BUKKIT : SPONGE.active ? SPONGE : BUNGEECORD.active ? BUNGEECORD : null;
+	private static final Platform CURRENT_PLATFORM = BUKKIT.active ? BUKKIT : SPONGE.active ? SPONGE : BUNGEE.active ? BUNGEE : null;
+	private static final boolean IS_PROXY = CURRENT_PLATFORM == BUNGEE;
 
 	private Platform(String className, String metaFile) {
 		this.className = className;
@@ -52,17 +53,19 @@ public enum Platform {
 	}
 
 	public static boolean isBungeeCord() {
-		return BUNGEECORD.active;
+		return BUNGEE.active;
 	}
 
 	public static Platform getPlatform() {
 		return CURRENT_PLATFORM;
-		//		if (SPONGE.active) {
-		//			return SPONGE; //Primary platform
-		//		} else if (BUKKIT.active) {
-		//			return BUKKIT;
-		//		}
-		//		return null;
+	}
+
+	public static boolean isGame() {
+		return !IS_PROXY;
+	}
+
+	public static boolean isProxy() {
+		return IS_PROXY;
 	}
 
 	public static boolean isDev() {
