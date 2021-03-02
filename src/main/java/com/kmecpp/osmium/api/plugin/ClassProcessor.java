@@ -13,6 +13,7 @@ import java.util.jar.JarFile;
 
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.HookClass;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.ConfigClass;
@@ -333,7 +334,7 @@ public class ClassProcessor {
 			}
 
 			//LISTENERS
-			if (listenerAnnotation != null) {
+			if (!Platform.isBungeeCord() && listenerAnnotation != null) {
 				if (method.getParameterCount() != 1 || !Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
 					plugin.error("Invalid listener method with signature: '" + method + "'");
 				} else {

@@ -76,6 +76,8 @@ public abstract class OsmiumPlugin {
 			this.dataFolder = this.<JavaPlugin> getSource().getDataFolder().toPath();
 		} else if (Platform.isSponge()) {
 			dataFolder = SpongeImpl.getPluginConfigDir() != null ? SpongeImpl.getPluginConfigDir().resolve(properties.name()) : Paths.get("");
+		} else if (Platform.isBungeeCord()) {
+			dataFolder = this.<net.md_5.bungee.api.plugin.Plugin> getSource().getDataFolder().toPath();
 		}
 		this.persistentData = new PersistentPluginData(this);
 		this.classProcessor = new ClassProcessor(this, pluginImpl); //This loads the plugin's configs and persistent data

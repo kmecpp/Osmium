@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.BungeeAccess;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.TimeUtil;
+import com.kmecpp.osmium.platform.osmium.CommandRedirectSender;
 
 public final class CommandManager {
 
@@ -35,6 +37,8 @@ public final class CommandManager {
 			BukkitAccess.registerCommand(plugin, command);
 		} else if (Platform.isSponge()) {
 			SpongeAccess.registerCommand(plugin, command);
+		} else if (Platform.isBungeeCord()) {
+			BungeeAccess.registerCommand(plugin, command);
 		}
 		return command;
 	}
@@ -60,14 +64,18 @@ public final class CommandManager {
 			BukkitAccess.processConsoleCommand(command);
 		} else if (Platform.isSponge()) {
 			SpongeAccess.processConsoleCommand(command);
+		} else if (Platform.isBungeeCord()) {
+			BungeeAccess.processConsoleCommand(command);
 		}
 	}
 
-	public void processConsoleCommand(CommandSender output, String command) {
+	public void processConsoleCommand(CommandSender outputReceiver, String command) {
 		if (Platform.isBukkit()) {
-			BukkitAccess.processConsoleCommand(output, command);
+			BukkitAccess.processConsoleCommand(outputReceiver, command);
 		} else if (Platform.isSponge()) {
-			SpongeAccess.processConsoleCommand(output, command);
+			SpongeAccess.processConsoleCommand(outputReceiver, command);
+		} else if (Platform.isSponge()) {
+			BungeeAccess.processConsoleCommand(outputReceiver, command);
 		}
 	}
 
@@ -75,8 +83,14 @@ public final class CommandManager {
 		if (Platform.isBukkit()) {
 			BukkitAccess.processCommand((org.bukkit.command.CommandSender) sender.getSource(), command);
 		} else if (Platform.isSponge()) {
-			SpongeAccess.processCommand((org.spongepowered.api.command.CommandSource) sender, command);
+			SpongeAccess.processCommand((org.spongepowered.api.command.CommandSource) sender.getSource(), command);
+		} else if (Platform.isBungeeCord()) {
+			BungeeAccess.processCommand((net.md_5.bungee.api.CommandSender) sender.getSource(), command);
 		}
+	}
+
+	public void processCommand(CommandSender sender, CommandSender receiver, String command) {
+		processCommand(new CommandRedirectSender(sender, receiver), command);
 	}
 
 	public static boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {

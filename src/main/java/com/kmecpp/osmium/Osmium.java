@@ -51,6 +51,8 @@ import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginReloadEvent;
 import com.kmecpp.osmium.platform.sponge.SpongeUser;
 
+import net.md_5.bungee.BungeeCord;
+
 public final class Osmium {
 
 	//	private static final HashMap<Class<? extends OsmiumPlugin>, Database> databases = new HashMap<>();
@@ -60,7 +62,7 @@ public final class Osmium {
 	private static final CommandManager commandManager = new CommandManager();
 	private static final PlayerDataManager playerDataManager = new PlayerDataManager();
 	private static final EventManager eventManager = new EventManager();
-	private static final ItemManager itemManager = new ItemManager();
+	private static final ItemManager itemManager = Platform.getPlatform() == Platform.BUNGEECORD ? null : new ItemManager();
 	private static final OsmiumMetrics metrics = new OsmiumMetrics();
 
 	private static final ExecutorService genericThreadPool = Executors.newFixedThreadPool(3);
@@ -83,7 +85,7 @@ public final class Osmium {
 	 */
 
 	static {
-		if (!Platform.isDev()) {
+		if (!Platform.isDev() && !Platform.isBungeeCord()) {
 			try {
 				Class.forName(BlockType.class.getName());
 				Class.forName(ItemType.class.getName());
@@ -206,6 +208,8 @@ public final class Osmium {
 			Bukkit.shutdown();
 		} else if (Platform.isSponge()) {
 			Sponge.getServer().shutdown();
+		} else if (Platform.isBungeeCord()) {
+			BungeeCord.getInstance().stop();
 		}
 	}
 
@@ -214,6 +218,8 @@ public final class Osmium {
 			Bukkit.broadcastMessage(Chat.style(message));
 		} else if (Platform.isSponge()) {
 			Sponge.getServer().getBroadcastChannel().send(SpongeAccess.getText(Chat.style(message)));
+		} else if (Platform.isBungeeCord()) {
+			BungeeCord.getInstance().broadcast(message);
 		}
 	}
 

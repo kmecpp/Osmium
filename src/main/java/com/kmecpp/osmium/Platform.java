@@ -6,11 +6,16 @@ import com.kmecpp.osmium.api.util.StringUtil;
 public enum Platform {
 
 	BUKKIT("org.bukkit.Bukkit", "plugin.yml"),
-	SPONGE("org.spongepowered.api.Sponge", "mcmod.info");
+	SPONGE("org.spongepowered.api.Sponge", "mcmod.info"),
+	BUNGEECORD("net.md_5.bungee.BungeeCord", "bungee.yml"),
+
+	;
 
 	private final String className;
 	private final String metaFile;
 	private final boolean active;
+
+	private static final Platform CURRENT_PLATFORM = BUKKIT.active ? BUKKIT : SPONGE.active ? SPONGE : BUNGEECORD.active ? BUNGEECORD : null;
 
 	private Platform(String className, String metaFile) {
 		this.className = className;
@@ -46,13 +51,18 @@ public enum Platform {
 		return SPONGE.active;
 	}
 
+	public static boolean isBungeeCord() {
+		return BUNGEECORD.active;
+	}
+
 	public static Platform getPlatform() {
-		if (SPONGE.active) {
-			return SPONGE; //Primary platform
-		} else if (BUKKIT.active) {
-			return BUKKIT;
-		}
-		return null;
+		return CURRENT_PLATFORM;
+		//		if (SPONGE.active) {
+		//			return SPONGE; //Primary platform
+		//		} else if (BUKKIT.active) {
+		//			return BUKKIT;
+		//		}
+		//		return null;
 	}
 
 	public static boolean isDev() {

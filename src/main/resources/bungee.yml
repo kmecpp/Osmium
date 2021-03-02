@@ -1,0 +1,4 @@
+name: ${project_name}
+main: ${bungee_main}
+version: ${project_version}
+author: kmecpp
