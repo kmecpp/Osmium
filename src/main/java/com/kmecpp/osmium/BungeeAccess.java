@@ -3,7 +3,9 @@ package com.kmecpp.osmium;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
+import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.platform.bungee.BungeeGenericCommandSender;
 import com.kmecpp.osmium.platform.bungee.BungeePlayer;
 import com.kmecpp.osmium.platform.osmium.CommandRedirectSender;
@@ -12,6 +14,10 @@ import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BungeeAccess {
+
+	public static Player getPlayer(ProxiedPlayer player) {
+		return PlayerList.getPlayer(player);
+	}
 
 	public static void processConsoleCommand(String command) {
 		BungeeCord.getInstance().getPluginManager().dispatchCommand(BungeeCord.getInstance().getConsole(), command);

@@ -359,7 +359,13 @@ public class ClassProcessor {
 		}
 	}
 
+	/*
+	 * This is called on startup and full reloads
+	 */
 	public void createDatabaseTables() {
+		Boolean mysql = null;
+		Boolean sqlite = null;
+
 		for (Class<?> cls : databaseTables) {
 			try {
 				DBTable table = cls.getAnnotation(DBTable.class);
@@ -371,24 +377,57 @@ public class ClassProcessor {
 				EnumSet<DatabaseType> seen = EnumSet.noneOf(DatabaseType.class);
 				for (DatabaseType type : table.type()) {
 					if (seen.contains(type)) {
-						continue; //Ignore duplicates
-					}
-					if (type == DatabaseType.MYSQL) {
-						OsmiumLogger.debug("Initializing MySQL database table: " + table.name());
-						plugin.getMySQLDatabase().createTable(cls);
-
-						if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
-							Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
-						}
-					} else if (type == DatabaseType.SQLITE) {
-						OsmiumLogger.debug("Initializing SQLite database table: " + table.name());
-						plugin.getSQLiteDatabase().createTable(cls);
-
-						if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
-							Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
-						}
+						continue; //Skip duplicates
 					}
 					seen.add(type);
+
+					if (type == DatabaseType.MYSQL) {
+						if (mysql == null) {
+							try {
+								if (!plugin.getMySQLDatabase().isConnected()) {
+									plugin.getMySQLDatabase().initialize(); //Mark this database as active for Osmium
+									plugin.getMySQLDatabase().start();
+								}
+							} catch (Throwable t) {
+								OsmiumLogger.error("Failed to connect to " + plugin.getName() + "'s MySQL database!");
+								t.printStackTrace();
+							}
+							mysql = plugin.getMySQLDatabase().isConnected();
+						} else if (mysql) {
+							OsmiumLogger.debug("Initializing MySQL database table: " + table.name());
+
+							plugin.getMySQLDatabase().createTable(cls);
+
+							if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
+								Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+							}
+						} else {
+							OsmiumLogger.warn("Cannot create " + plugin.getName() + "'s MySQL database table: " + table.name());
+						}
+
+					} else if (type == DatabaseType.SQLITE) {
+						if (sqlite == null) {
+							try {
+								if (!plugin.getSQLiteDatabase().isConnected()) {
+									plugin.getSQLiteDatabase().initialize(); //Mark this database as active for Osmium
+									plugin.getSQLiteDatabase().start();
+								}
+							} catch (Throwable t) {
+								OsmiumLogger.error("Failed to connect to " + plugin.getName() + "'s SQLite database!");
+								t.printStackTrace();
+							}
+							sqlite = plugin.getMySQLDatabase().isConnected();
+						} else if (sqlite) {
+							OsmiumLogger.debug("Initializing SQLite database table: " + table.name());
+							plugin.getSQLiteDatabase().createTable(cls);
+
+							if (PlayerData.class.isAssignableFrom(cls) || MultiplePlayerData.class.isAssignableFrom(cls)) {
+								Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
+							}
+						} else {
+							OsmiumLogger.warn("Cannot create " + plugin.getName() + "'s SQLite database table: " + table.name());
+						}
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

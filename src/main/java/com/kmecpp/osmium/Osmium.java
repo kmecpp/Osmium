@@ -40,6 +40,7 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.PluginLoader;
 import com.kmecpp.osmium.api.tasks.CountdownTask;
 import com.kmecpp.osmium.api.tasks.OsmiumTask;
+import com.kmecpp.osmium.api.util.FileUtil;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.WebUtil;
 import com.kmecpp.osmium.cache.PlayerList;
@@ -49,6 +50,7 @@ import com.kmecpp.osmium.core.TPSTask;
 import com.kmecpp.osmium.platform.bukkit.BukkitUser;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginReloadEvent;
+import com.kmecpp.osmium.platform.osmium.OsmiumServerShutdownEvent;
 import com.kmecpp.osmium.platform.sponge.SpongeUser;
 
 import net.md_5.bungee.BungeeCord;
@@ -93,6 +95,13 @@ public final class Osmium {
 				e.printStackTrace();
 			}
 		}
+
+		try {
+			//Load these classes in case jar is replaced at runtime
+			Reflection.initialize(new Class<?>[] { FileUtil.class, PlayerList.class, OsmiumServerShutdownEvent.class });
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+		}
 	}
 
 	//	public static void main(String[] args) throws IOException {
@@ -125,7 +134,11 @@ public final class Osmium {
 	}
 
 	public static OsmiumPlugin getPlugin(Class<?> cls) {
-		return pluginLoader.getPlugin(cls);
+		OsmiumPlugin plugin = pluginLoader.getPlugin(cls);
+		if (plugin == null) {
+			throw new IllegalStateException("Failed to find Osmium plugin for " + cls.getName() + ". Either this is not an Osmium plugin or it has not been loaded yet.");
+		}
+		return plugin;
 	}
 
 	public static void addExternalPackage(OsmiumPlugin plugin, String packageName) {
@@ -231,10 +244,6 @@ public final class Osmium {
 		}
 	}
 
-	public static OsmiumPlugin getPlugin() {
-		return getInvokingPlugin();
-	}
-
 	public static OsmiumTask getTask() {
 		return getInvokingPlugin().getTask();
 	}
@@ -245,6 +254,14 @@ public final class Osmium {
 
 	public static Command registerCommand(String name, String... aliases) {
 		return getCommandManager().register(getInvokingPlugin(), name, aliases);
+	}
+
+	public static OsmiumPlugin getPlugin() {
+		return getInvokingPlugin();
+	}
+
+	private static OsmiumPlugin getInvokingPlugin() {
+		return Osmium.getPlugin(Reflection.getInvokingClass(2));
 	}
 
 	//	public static SimpleCommand registerCommand(OsmiumPlugin plugin, String name, String... aliases) {
@@ -499,10 +516,6 @@ public final class Osmium {
 			}
 		}
 		return mcVersion;
-	}
-
-	private static OsmiumPlugin getInvokingPlugin() {
-		return Osmium.getPlugin(Reflection.getInvokingClass(2));
 	}
 
 	//	public static String getPluginId(String name) {

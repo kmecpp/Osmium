@@ -45,6 +45,7 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 	//Cannot use direct class references as one will not exist
 	public static final String BUKKIT_PARENT = "com.kmecpp.osmium.api.plugin.BukkitPlugin";
 	public static final String SPONGE_PARENT = "com.kmecpp.osmium.api.plugin.SpongePlugin";
+	public static final String BUNGEE_PARENT = "com.kmecpp.osmium.api.plugin.BungeePlugin";
 
 	//	public static final String SPONGE_PLUGIN_ANNOTATION_CLASS = "org.spongepowered.api.plugin.Plugin";
 
@@ -110,6 +111,19 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 		// GENERATE META FILES
 		info("Generating plugin metafiles for annotation: " + StringUtil.toString(meta));
 
+		// Bukkit metadata: plugin.yml
+		StringBuilder pluginYml = new StringBuilder().append("name: " + meta.getName() + "\n")
+				.append("main: " + meta.getName() + "Bukkit" + "\n")
+				.append("version: " + meta.getVersion() + "\n")
+				.append("description: " + meta.getDescription() + "\n")
+				.append("website: " + meta.getUrl() + "\n")
+				.append("authors: " + Arrays.toString(meta.getAuthors()) + "\n")
+				.append("softdepend: " + Arrays.toString(meta.getBukkitDependencies()) + "\n")
+				.append("loadbefore: " + Arrays.toString(meta.getLoadBeforePlugins()) + "\n");
+		//				.append("load: STARTUP");
+		writeRawFile(Platform.BUKKIT.getMetaFile(), pluginYml.toString());
+
+		// Sponge metadata: mcmod.info
 		PluginMetadata modinfo = new PluginMetadata(entry.getKey());
 		//				.setVersion(meta.getVersion())
 		//				.setDescription(meta.getDescription())
@@ -150,17 +164,16 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 		//				.add("requiredMods", JsonArray.from(new String[] { "spongeapi@" + AppInfo.SPONGE_VERSION })));
 		//		writeRawFile(Platform.SPONGE.getMetaFile(), plugins.getFormatted());
 
-		// Bukkit plugin.yml
-		StringBuilder pluginYml = new StringBuilder().append("name: " + meta.getName() + "\n")
-				.append("main: " + meta.getName() + "Bukkit" + "\n")
+		// Bungee metadata: bungee.yml
+		StringBuilder bungeePluginYml = new StringBuilder().append("name: " + meta.getName() + "\n")
+				.append("name: " + meta.getName() + "\n")
+				.append("main: " + meta.getName() + "Bungee" + "\n")
 				.append("version: " + meta.getVersion() + "\n")
+				.append("author: \"" + Arrays.toString(meta.getAuthors()) + "\"\n")
 				.append("description: " + meta.getDescription() + "\n")
-				.append("website: " + meta.getUrl() + "\n")
-				.append("authors: " + Arrays.toString(meta.getAuthors()) + "\n")
-				.append("softdepend: " + Arrays.toString(meta.getBukkitDependencies()) + "\n")
-				.append("loadbefore: " + Arrays.toString(meta.getLoadBeforePlugins()) + "\n");
-		//				.append("load: STARTUP");
-		writeRawFile(Platform.BUKKIT.getMetaFile(), pluginYml.toString());
+				.append("depends: [Osmium]\n")
+				.append("softDepends: " + Arrays.toString(Arrays.copyOfRange(meta.getBukkitDependencies(), 1, meta.getBukkitDependencies().length)) + "\n");
+		writeRawFile(Platform.BUNGEE.getMetaFile(), bungeePluginYml.toString());
 
 		StringBuilder osmiumYml = new StringBuilder().append("main: " + meta.getSourceClass() + "\n").append("name: " + meta.getName());
 		writeRawFile("osmium.properties", osmiumYml.toString());
@@ -169,12 +182,13 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 			// GENERATE MAIN CLASSES
 			ClassPool pool = ClassPool.getDefault();
 
+			//Generate main Bukkit class
 			CtClass ctClassBukkit = pool.makeClass(meta.getName() + Platform.BUKKIT.getName());
 			ctClassBukkit.setSuperclass(pool.makeClass(BUKKIT_PARENT));
 			ctClassBukkit.addConstructor(CtNewConstructor.make(null, null, CtNewConstructor.PASS_PARAMS, null, null, ctClassBukkit));
 			writeClassToRoot(ctClassBukkit);
 
-			// Sponge
+			//Generate main Sponge class
 			pool.insertClassPath(new ClassClassPath(SpongePlugin.class));
 
 			CtClass ctClassSponge = pool.makeClass(meta.getName() + Platform.SPONGE.getName());
@@ -197,6 +211,12 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 
 			// Write file
 			writeClassToRoot(ctClassSponge);
+
+			//Generate main Bukkit class
+			CtClass ctClassBungee = pool.makeClass(meta.getName() + Platform.BUNGEE.getName());
+			ctClassBungee.setSuperclass(pool.makeClass(BUNGEE_PARENT));
+			ctClassBungee.addConstructor(CtNewConstructor.make(null, null, CtNewConstructor.PASS_PARAMS, null, null, ctClassBungee));
+			writeClassToRoot(ctClassBungee);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

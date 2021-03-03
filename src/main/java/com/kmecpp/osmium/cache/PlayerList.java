@@ -7,7 +7,10 @@ import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.platform.UnsupportedPlatformException;
 import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
+import com.kmecpp.osmium.platform.bungee.BungeePlayer;
 import com.kmecpp.osmium.platform.sponge.SpongePlayer;
+
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class PlayerList {
 
@@ -33,23 +36,29 @@ public class PlayerList {
 	}
 
 	public static Player getPlayer(Object sourcePlayer) {
-		Player player;
+		Player osmiumPlayer;
 		if (Platform.isBukkit()) {
 			org.bukkit.entity.Player bukkitPlayer = (org.bukkit.entity.Player) sourcePlayer;
-			player = getPlayer(bukkitPlayer.getName());
-			if (player == null) {
-				player = new BukkitPlayer(bukkitPlayer);
+			osmiumPlayer = getPlayer(bukkitPlayer.getName());
+			if (osmiumPlayer == null) {
+				osmiumPlayer = new BukkitPlayer(bukkitPlayer);
 			}
 		} else if (Platform.isSponge()) {
 			org.spongepowered.api.entity.living.player.Player spongePlayer = (org.spongepowered.api.entity.living.player.Player) sourcePlayer;
-			player = getPlayer(spongePlayer.getName());
-			if (player == null) {
-				player = new SpongePlayer(spongePlayer);
+			osmiumPlayer = getPlayer(spongePlayer.getName());
+			if (osmiumPlayer == null) {
+				osmiumPlayer = new SpongePlayer(spongePlayer);
+			}
+		} else if (Platform.isProxy()) {
+			ProxiedPlayer bungeePlayer = (ProxiedPlayer) sourcePlayer;
+			osmiumPlayer = getPlayer(bungeePlayer.getName());
+			if (osmiumPlayer == null) {
+				osmiumPlayer = new BungeePlayer(bungeePlayer);
 			}
 		} else {
 			throw new UnsupportedPlatformException();
 		}
-		return player;
+		return osmiumPlayer;
 	}
 
 	public static Player getPlayer(String name) {

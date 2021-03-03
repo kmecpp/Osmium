@@ -31,12 +31,12 @@ public abstract class SQLDatabase {
 	protected final OsmiumPlugin plugin;
 	protected final DatabaseType type;
 
-	protected boolean initialized;
 	protected DatabaseQueue queue;
 	protected CountDownLatch availableLatch = new CountDownLatch(1);
 
 	protected SQLConfiguration config;
 	private HikariDataSource hikariSource;
+	private boolean initialized; //Represents whether or not this database has any tables associated with it
 
 	protected static final HashMap<Class<?>, MDBTableData> tables = new HashMap<>();
 
@@ -55,7 +55,7 @@ public abstract class SQLDatabase {
 
 	public void configure(SQLConfiguration config) {
 		if (StringUtil.isNullOrEmpty(config.getDatabase())) {
-			throw new IllegalArgumentException("Cannot initializing empty database for plugin: " + plugin.getName());
+			throw new IllegalArgumentException("Database is not configured for plugin: " + plugin.getName());
 		}
 		this.config = config;
 	}
@@ -71,8 +71,12 @@ public abstract class SQLDatabase {
 	public void start() {
 		HikariConfig hikariConfig = new HikariConfig();
 
+		if (hikariSource != null) {
+			shutdown();
+		}
+
 		try {
-			OsmiumLogger.info("Using " + type.getName() + " for database storage");
+			OsmiumLogger.info("Starting " + plugin.getName() + "'s " + type.getName() + " database");
 			if (type == DatabaseType.SQLITE) {
 				hikariConfig.setJdbcUrl("jdbc:sqlite:" + plugin.getFolder() + File.separator + "data.db");
 				hikariConfig.setDriverClassName("org.sqlite.JDBC");
@@ -363,6 +367,7 @@ public abstract class SQLDatabase {
 		if (hikariSource != null && !hikariSource.isClosed()) {
 			queue.flush(); //Queue should already have connection
 			hikariSource.close();
+			hikariSource = null;
 		}
 	}
 
@@ -389,6 +394,10 @@ public abstract class SQLDatabase {
 	public void registerTable(Class<?> cls) {
 		MDBTableData data = new MDBTableData(this, cls);
 		tables.put(cls, data);
+	}
+
+	public void initialize() {
+		initialized = true;
 	}
 
 	public boolean isInitialized() {
