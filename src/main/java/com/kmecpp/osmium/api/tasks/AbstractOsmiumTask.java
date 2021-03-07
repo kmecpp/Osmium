@@ -8,6 +8,8 @@ import org.spongepowered.api.scheduler.Task.Builder;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 
+import net.md_5.bungee.BungeeCord;
+
 public abstract class AbstractOsmiumTask<T extends AbstractTask<T>> extends AbstractTask<T> {
 
 	public AbstractOsmiumTask(OsmiumPlugin plugin) {
@@ -46,6 +48,8 @@ public abstract class AbstractOsmiumTask<T extends AbstractTask<T>> extends Abst
 						}
 					})
 					.submit(getSource());
+		} else if (Platform.isBungeeCord()) {
+			taskImpl = BungeeCord.getInstance().getScheduler().schedule(getSource(), this::doExecute, delay * 50, interval * 50, TimeUnit.MILLISECONDS);
 		}
 		return getInstance();
 	}
