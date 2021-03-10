@@ -11,9 +11,12 @@ import java.util.HashSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.BungeeAccess;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
+import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.HookClass;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.ConfigClass;
@@ -284,27 +287,7 @@ public class ClassProcessor {
 			method.setAccessible(true);
 
 			//Retrieve instance or create one if possible
-			final Object instance;
-			try {
-				Class.forName(cls.getName()); //Initialize class. This hack allows classes to register themselves in a static initializer
-
-				//THE FOLLOWING CODE IS DONE THIS WAY BECAUSE THE LISTENER INSTANCE MUST BE FINAL
-				Object temp = classInstances.get(cls);
-				if (temp != null) {
-					instance = temp;
-				} else {
-					instance = cls.newInstance(); //WE DON'T INSTANTIATE THE CLASS UNTIL DOWN HERE BECAUSE WE ONLY WANT TO INSTANTIATE IF IT HAS AN ANNOTATION 
-					classInstances.put(cls, instance);
-				}
-			} catch (IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
-				OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.provideInstance(obj)");
-				e.printStackTrace();
-				break;
-			} catch (Exception e) {
-				OsmiumLogger.error("Caught exception while trying to instantiate task/listener class: " + cls.getName());
-				e.printStackTrace();
-				break;
-			}
+			Object instance = safeGetInstance(cls);
 
 			//STARTUP
 			if (initializer != null) {
@@ -356,7 +339,43 @@ public class ClassProcessor {
 					}
 				}
 			}
+
 		}
+
+		AutoRegister autoRegister = cls.getDeclaredAnnotation(AutoRegister.class);
+		if (autoRegister != null) {
+			Object instance = safeGetInstance(cls);
+			if (Platform.isBukkit()) {
+				BukkitAccess.registerListener(plugin, (org.bukkit.event.Listener) instance);
+			} else if (Platform.isBungeeCord()) {
+				BungeeAccess.registerListener(plugin, (net.md_5.bungee.api.plugin.Listener) instance);
+			} else if (Platform.isSponge()) {
+				SpongeAccess.registerListener(plugin, instance);
+			}
+		}
+	}
+
+	private Object safeGetInstance(Class<?> cls) {
+		Object instance = null;
+		try {
+			Class.forName(cls.getName()); //Initialize class. This hack allows classes to register themselves in a static initializer
+
+			//THE FOLLOWING CODE IS DONE THIS WAY BECAUSE THE LISTENER INSTANCE MUST BE FINAL
+			Object temp = classInstances.get(cls);
+			if (temp != null) {
+				instance = temp;
+			} else {
+				instance = cls.newInstance(); //WE DON'T INSTANTIATE THE CLASS UNTIL DOWN HERE BECAUSE WE ONLY WANT TO INSTANTIATE IF IT HAS AN ANNOTATION 
+				classInstances.put(cls, instance);
+			}
+		} catch (IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
+			OsmiumLogger.error("Cannot instantiate " + cls.getName() + "! Task and listener classes without a default constructor must be enabled with: plugin.provideInstance(obj)");
+			e.printStackTrace();
+		} catch (Exception e) {
+			OsmiumLogger.error("Caught exception while trying to instantiate task/listener class: " + cls.getName());
+			e.printStackTrace();
+		}
+		return instance;
 	}
 
 	/*

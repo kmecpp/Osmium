@@ -12,8 +12,13 @@ import com.kmecpp.osmium.platform.osmium.CommandRedirectSender;
 
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Listener;
 
 public class BungeeAccess {
+
+	public static void registerListener(OsmiumPlugin plugin, Listener listener) {
+		BungeeCord.getInstance().getPluginManager().registerListener(plugin.getSource(), listener);
+	}
 
 	public static Player getPlayer(ProxiedPlayer player) {
 		return PlayerList.getPlayer(player);

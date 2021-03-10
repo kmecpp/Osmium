@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
@@ -43,6 +44,10 @@ import com.kmecpp.osmium.platform.bukkit.BukkitItemStack;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
+
+	public static void registerListener(OsmiumPlugin plugin, Listener listener) {
+		Bukkit.getPluginManager().registerEvents(listener, plugin.getSource());
+	}
 
 	public static EntityType getEntityType(org.bukkit.entity.EntityType type) {
 		return OsmiumRegistry.fromSource(EntityType.class, type);

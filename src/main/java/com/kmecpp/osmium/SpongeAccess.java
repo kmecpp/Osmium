@@ -45,6 +45,10 @@ import com.kmecpp.osmium.platform.sponge.SpongeItemStack;
 
 public class SpongeAccess {
 
+	public static void registerListener(OsmiumPlugin plugin, Object listener) {
+		Sponge.getEventManager().registerListeners(plugin.getSource(), listener);
+	}
+
 	public static Text getText(String str) {
 		return Text.of(str);
 	}
@@ -163,4 +167,5 @@ public class SpongeAccess {
 		//			}
 		//		});
 	}
+
 }
