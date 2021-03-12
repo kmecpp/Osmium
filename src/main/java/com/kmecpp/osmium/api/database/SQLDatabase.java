@@ -19,7 +19,6 @@ import com.kmecpp.osmium.api.database.sqlite.DatabaseQueue;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Callback;
-import com.kmecpp.osmium.api.util.JavaUtil;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 import com.zaxxer.hikari.HikariConfig;
@@ -244,14 +243,10 @@ public abstract class SQLDatabase {
 		return update("DELETE FROM " + table.getName());
 	}
 
-	public int deleteFrom(Class<?> tableClass, Filter filter, Filter... filters) {
+	public int deleteFrom(Class<?> tableClass, Filter filter) {
 		MDBTableData table = getTable(tableClass);
-		String update = "DELETE FROM " + table.getName() + " WHERE " + MDBUtil.createWhere(JavaUtil.merge(filter, filters));
-		return preparedUpdateStatement(update, ps -> {
-			for (int i = 0; i < filters.length; i++) {
-				MDBUtil.updatePreparedStatement(ps, i + 1, filters[i].getValue());
-			}
-		});
+		String update = "DELETE FROM " + table.getName() + " WHERE " + MDBUtil.createWhere(filter);
+		return preparedUpdateStatement(update, MDBUtil.filterLinker(filter));
 	}
 
 	public int update(String update) {

@@ -42,14 +42,10 @@ public class MySQLDatabase extends SQLDatabase {
 		return get("SELECT COUNT(*) FROM " + table.getName(), rs -> rs.getInt(1));
 	}
 
-	public int count(Class<?> tableClass, Filter... filters) {
+	public int count(Class<?> tableClass, Filter filter) {
 		MDBTableData table = tables.get(tableClass);
-		String where = MDBUtil.createWhere(filters);
-		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where, ps -> {
-			for (int i = 0; i < filters.length; i++) {
-				MDBUtil.updatePreparedStatement(ps, i + 1, filters[i].getValue());
-			}
-		}, rs -> {
+		String where = MDBUtil.createWhere(filter);
+		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where, MDBUtil.filterLinker(filter), rs -> {
 			if (rs.next()) {
 				return rs.getInt(1);
 			} else {

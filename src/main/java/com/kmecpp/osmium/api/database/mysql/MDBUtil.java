@@ -134,12 +134,8 @@ public class MDBUtil {
 		}
 	}
 
-	public static PreparedStatementBuilder withFilters(Filter... filters) {
-		return ps -> {
-			for (int i = 0; i < filters.length; i++) {
-				MDBUtil.updatePreparedStatement(ps, i + 1, filters[i].getValue());
-			}
-		};
+	public static PreparedStatementBuilder filterLinker(Filter filter) {
+		return ps -> filter.link(ps);
 	}
 
 	public static String getColumnAttributeString(MDBTableData tableData, MDBColumnData data) {
@@ -219,10 +215,11 @@ public class MDBUtil {
 		//		}
 	}
 
-	public static String createWhere(Filter[] filters) {
+	public static String createWhere(Filter filter) {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < filters.length; ++i) {
-			sb.append((i > 0 ? " AND " : "") + "" + filters[i].getSQL());
+		ArrayList<String> filters = filter.getFilters();
+		for (int i = 0; i < filters.size(); ++i) {
+			sb.append((i > 0 ? " AND " : "") + "" + filters.get(i) + "?");
 		}
 		return sb.toString();
 	}
