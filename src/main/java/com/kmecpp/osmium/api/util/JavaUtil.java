@@ -1,9 +1,12 @@
 package com.kmecpp.osmium.api.util;
 
+import java.lang.reflect.Array;
 import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+
+import javax.annotation.Nonnull;
 
 public class JavaUtil {
 
@@ -19,6 +22,23 @@ public class JavaUtil {
 
 	public static String getOSName() {
 		return System.getProperty("os.name");
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] merge(@Nonnull T element, T[] array) {
+		T[] result = (T[]) Array.newInstance(element.getClass(), array.length + 1);
+		result[0] = element;
+		System.arraycopy(array, 0, result, 1, array.length);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] merge(@Nonnull T element1, @Nonnull T element2, T[] array) {
+		T[] result = (T[]) Array.newInstance(element1.getClass(), array.length + 2);
+		result[0] = element1;
+		result[1] = element2;
+		System.arraycopy(array, 0, result, 2, array.length);
+		return result;
 	}
 
 	public static <K, V> Entry<K, V> entry(K key, V value) {

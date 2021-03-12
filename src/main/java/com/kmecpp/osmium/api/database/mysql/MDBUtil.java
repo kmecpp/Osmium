@@ -134,6 +134,14 @@ public class MDBUtil {
 		}
 	}
 
+	public static PreparedStatementBuilder withFilters(Filter... filters) {
+		return ps -> {
+			for (int i = 0; i < filters.length; i++) {
+				MDBUtil.updatePreparedStatement(ps, i + 1, filters[i].getValue());
+			}
+		};
+	}
+
 	public static String getColumnAttributeString(MDBTableData tableData, MDBColumnData data) {
 		StringBuilder sb = new StringBuilder();
 		StringUtil.add(sb, getTypeString(tableData, data));

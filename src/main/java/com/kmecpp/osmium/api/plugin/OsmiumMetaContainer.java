@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.api.plugin;
 
 import com.kmecpp.osmium.AppInfo;
+import com.kmecpp.osmium.api.util.JavaUtil;
 
 public class OsmiumMetaContainer {
 
@@ -25,14 +26,16 @@ public class OsmiumMetaContainer {
 		this.authors = authors;
 		this.loadBeforePlugins = loadBeforePlugins;
 
-		this.bukkitDependencies = new String[dependencies.length + 1];
-		this.bukkitDependencies[0] = "Osmium";
-		System.arraycopy(dependencies, 0, this.bukkitDependencies, 1, dependencies.length);
+		this.bukkitDependencies = JavaUtil.merge("Osmium", dependencies);
+		//		this.bukkitDependencies = new String[dependencies.length + 1];
+		//		this.bukkitDependencies[0] = "Osmium";
+		//		System.arraycopy(dependencies, 0, this.bukkitDependencies, 1, dependencies.length);
 
-		this.spongeDependencies = new String[dependencies.length + 2];
-		this.spongeDependencies[0] = "spongeapi@" + AppInfo.SPONGE_VERSION;
-		this.spongeDependencies[1] = "osmium";
-		System.arraycopy(dependencies, 0, this.spongeDependencies, 2, dependencies.length);
+		this.spongeDependencies = JavaUtil.merge("spongeapi@" + AppInfo.SPONGE_VERSION, "osmium", dependencies);
+		//		this.spongeDependencies = new String[dependencies.length + 2];
+		//		this.spongeDependencies[0] = "spongeapi@" + AppInfo.SPONGE_VERSION;
+		//		this.spongeDependencies[1] = "osmium";
+		//		System.arraycopy(dependencies, 0, this.spongeDependencies, 2, dependencies.length);
 	}
 
 	public String getSourceClass() {
