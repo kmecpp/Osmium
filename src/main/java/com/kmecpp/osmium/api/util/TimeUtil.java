@@ -1,6 +1,9 @@
 package com.kmecpp.osmium.api.util;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -8,15 +11,39 @@ import java.util.TimeZone;
 public class TimeUtil {
 
 	private static TimeZone timeZone = TimeZone.getDefault();
+	private static ZoneId zoneId = timeZone.toZoneId();
 
-	public static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
+	public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 
 	public static TimeZone getTimeZone() {
 		return timeZone;
 	}
 
+	public static ZoneId getZoneId() {
+		return zoneId;
+	}
+
 	public static void setTimeZone(String id) {
 		timeZone = TimeZone.getTimeZone(id);
+		zoneId = timeZone.toZoneId();
+	}
+
+	public static String getDate() {
+		return getDate(0);
+	}
+
+	public static String getDate(int offset) {
+		ZonedDateTime purgeDate = ZonedDateTime.now(zoneId).plusDays(offset);
+		return purgeDate.format(DATE_FORMATTER);
+	}
+
+	public static ZonedDateTime now() {
+		return ZonedDateTime.now(zoneId);
+	}
+
+	public static long getStartOfDay(int dayOffset) {
+		return LocalDate.now().plusDays(dayOffset).atStartOfDay(zoneId).toInstant().toEpochMilli();
 	}
 
 	public static String formatTotalMillis(long time) {
@@ -32,7 +59,7 @@ public class TimeUtil {
 	}
 
 	public static String formatEpoch(long epoch) {
-		return formatEpoch(epoch, DEFAULT_FORMATTER);
+		return formatEpoch(epoch, DATE_TIME_FORMATTER);
 	}
 
 	public static String formatEpoch(long epoch, DateTimeFormatter formatter) {
