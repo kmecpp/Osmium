@@ -412,7 +412,8 @@ public class ClassProcessor {
 								t.printStackTrace();
 							}
 							mysql = plugin.getMySQLDatabase().isConnected();
-						} else if (mysql) {
+						}
+						if (mysql) {
 							OsmiumLogger.debug("Initializing MySQL database table: " + table.name());
 
 							plugin.getMySQLDatabase().createTable(cls);
@@ -423,7 +424,6 @@ public class ClassProcessor {
 						} else {
 							OsmiumLogger.warn("Cannot create " + plugin.getName() + "'s MySQL database table: " + table.name());
 						}
-
 					} else if (type == DatabaseType.SQLITE) {
 						if (sqlite == null) {
 							try {
@@ -436,7 +436,8 @@ public class ClassProcessor {
 								t.printStackTrace();
 							}
 							sqlite = plugin.getMySQLDatabase().isConnected();
-						} else if (sqlite) {
+						}
+						if (sqlite) {
 							OsmiumLogger.debug("Initializing SQLite database table: " + table.name());
 							plugin.getSQLiteDatabase().createTable(cls);
 
