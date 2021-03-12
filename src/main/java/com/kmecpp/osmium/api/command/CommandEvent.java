@@ -137,6 +137,14 @@ public class CommandEvent implements Messageable {
 		return result;
 	}
 
+	public int getIntMin(int index, int min) {
+		int result = getInt(index);
+		if (result < min) {
+			throw new CommandException("Input '" + result + "' is too small. Min value: " + min);
+		}
+		return result;
+	}
+
 	public double getDouble(int index) {
 		String input = get(index);
 		try {
