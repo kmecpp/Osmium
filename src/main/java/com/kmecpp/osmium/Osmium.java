@@ -272,6 +272,10 @@ public final class Osmium {
 		return shuttingDown;
 	}
 
+	public static void setShuttingDown() {
+		shuttingDown = true;
+	}
+
 	//	public static Task getScheduler() {
 	//		return scheduler;
 	//	}

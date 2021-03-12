@@ -82,6 +82,8 @@ public class OsmiumCore extends OsmiumPlugin {
 
 	@Override
 	public void onDisable() {
+		Osmium.setShuttingDown();
+
 		saveAllData();
 
 		Osmium.getEventManager().callEvent(new OsmiumServerShutdownEvent());
