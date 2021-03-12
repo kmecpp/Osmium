@@ -111,29 +111,48 @@ public abstract class SQLDatabase {
 		});
 	}
 
+	/**
+	 * Warning: This method could throw a strange NPE if you are trying to
+	 * implicitly cast it as a primitive such as returning the result in a
+	 * method. Use getInt(), etc, to avoid this.
+	 */
 	public <T> T get(String query, ResultSetProcessor<T> handler) {
-		return getOrDefault(query, null, rs -> {
+		return getOrDefault(query, null, handler);
+	}
+
+	public int getInt(String query) {
+		return getInt(query, 1);
+	}
+
+	public int getInt(String query, int column) {
+		return getOrDefault(query, 0, rs -> rs.getInt(column));
+	}
+
+	public double getDouble(String query) {
+		return getDouble(query, 1);
+	}
+
+	public double getDouble(String query, int column) {
+		return getOrDefault(query, 0D, rs -> rs.getDouble(column));
+	}
+
+	public <T> T getOrDefault(String query, T defaultValue, ResultSetProcessor<T> handler) {
+		return accumulate(query, rs -> {
+			if (!rs.isBeforeFirst()) {
+				return defaultValue;
+			}
 			rs.next();
 			return handler.process(rs);
 		});
 	}
 
 	public <T> T accumulate(String query, ResultSetProcessor<T> handler) {
-		return getOrDefault(query, null, rs -> {
-			return handler.process(rs);
-		});
-	}
-
-	public <T> T getOrDefault(String query, Object defaultValue, ResultSetProcessor<T> handler) {
 		OsmiumLogger.debug("Executing get query: " + query);
 		Statement statement = null;
 		ResultSet resultSet = null;
 		try (Connection connection = getConnection()) {
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
-			if (!resultSet.isBeforeFirst()) {
-				return null;
-			}
 			return handler.process(resultSet);
 		} catch (Exception e) {
 			OsmiumLogger.warn("An error occurred while executing get query: " + query);
@@ -144,12 +163,40 @@ public abstract class SQLDatabase {
 		return null;
 	}
 
+	//	public <T> T accumulate(String query, T defaultValue, ResultSetProcessor<T> handler) {
+	//		OsmiumLogger.debug("Executing get query: " + query);
+	//		Statement statement = null;
+	//		ResultSet resultSet = null;
+	//		try (Connection connection = getConnection()) {
+	//			statement = connection.createStatement();
+	//			resultSet = statement.executeQuery(query);
+	//			if (!resultSet.isBeforeFirst()) {
+	//				return defaultValue;
+	//			}
+	//			return handler.process(resultSet);
+	//		} catch (Exception e) {
+	//			OsmiumLogger.warn("An error occurred while executing get query: " + query);
+	//			e.printStackTrace();
+	//		} finally {
+	//			close(statement, resultSet);
+	//		}
+	//		return null;
+	//	}
+
 	public <T> T get(Class<T> tableClass, Object... primaryKeys) {
 		return getOrDefault(tableClass, null, primaryKeys);
 	}
 
 	public <T> T get(Class<T> tableClass, String columns, Object... primaryKeys) {
 		return getOrDefault(tableClass, null, columns, primaryKeys);
+	}
+
+	public <T> T getOrCreate(Class<T> tableClass, String columns, Object... primaryKeys) {
+		T result = getOrDefault(tableClass, null, columns, primaryKeys);
+		if (result == null) {
+			result = Reflection.createInstance(tableClass);
+		}
+		return result;
 	}
 
 	public <T> T getOrDefault(Class<T> tableClass, T defaultValue, Object... primaryKeys) {

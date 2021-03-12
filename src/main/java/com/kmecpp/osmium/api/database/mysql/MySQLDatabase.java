@@ -4,13 +4,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.kmecpp.osmium.api.database.Filter;
 import com.kmecpp.osmium.api.database.DatabaseType;
 import com.kmecpp.osmium.api.database.OrderBy;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
-import com.kmecpp.osmium.api.util.StringUtil;
 
 public class MySQLDatabase extends SQLDatabase {
 
@@ -42,14 +42,27 @@ public class MySQLDatabase extends SQLDatabase {
 		return get("SELECT COUNT(*) FROM " + table.getName(), rs -> rs.getInt(1));
 	}
 
-	public int count(Class<?> tableClass, String columns, Object... values) {
-		return countWhere(tableClass, null, columns, values);
+	public int count(Class<?> tableClass, Filter... filters) {
+		MDBTableData table = tables.get(tableClass);
+		String where = MDBUtil.createWhere(filters);
+		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where, ps -> {
+			for (int i = 0; i < filters.length; i++) {
+				MDBUtil.updatePreparedStatement(ps, i + 1, filters[i].getValue());
+			}
+		}, rs -> {
+			if (rs.next()) {
+				return rs.getInt(1);
+			} else {
+				return 0;
+			}
+		});
 	}
 
-	public int countWhere(Class<?> tableClass, String extraFilter, String columns, Object... values) {
+	public int count(Class<?> tableClass, String columns, Object... values) {
 		MDBTableData table = tables.get(tableClass);
 		String where = MDBUtil.createWhere(columns.split(","));
-		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where + (StringUtil.isNullOrEmpty(extraFilter) ? "" : " AND " + extraFilter), ps -> {
+		//		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where + (StringUtil.isNullOrEmpty(extraFilter) ? "" : " AND " + extraFilter), ps -> {
+		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where, ps -> {
 			for (int i = 0; i < values.length; i++) {
 				MDBUtil.updatePreparedStatement(ps, i + 1, values[i]);
 			}

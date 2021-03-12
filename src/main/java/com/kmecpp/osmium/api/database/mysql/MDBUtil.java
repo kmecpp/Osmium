@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.kmecpp.osmium.api.database.Filter;
 import com.kmecpp.osmium.api.database.DBColumn;
 import com.kmecpp.osmium.api.database.SQLPhrase;
 import com.kmecpp.osmium.api.util.StringUtil;
@@ -208,6 +209,14 @@ public class MDBUtil {
 		}
 		return sb.toString();
 		//		}
+	}
+
+	public static String createWhere(Filter[] filters) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < filters.length; ++i) {
+			sb.append((i > 0 ? " AND " : "") + "" + filters[i].getSQL());
+		}
+		return sb.toString();
 	}
 
 	public static final String createReplaceInto(MDBTableData table) {
