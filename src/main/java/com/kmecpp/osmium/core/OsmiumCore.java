@@ -3,6 +3,7 @@ package com.kmecpp.osmium.core;
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.OsmiumUserIds;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.TickTimeUnit;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.inventory.menu.InventoryManager;
@@ -63,7 +64,10 @@ public class OsmiumCore extends OsmiumPlugin {
 			Osmium.getEventManager().callEvent(new OsmiumServerStartedEvent());
 		}).start();
 
-		this.getClassProcessor().onEnable(InventoryManager.class);
+		if (Platform.isGame()) {
+			this.getClassProcessor().onEnable(InventoryManager.class);
+			this.getClassProcessor().onEnable(OsmiumEvents.class);
+		}
 
 		//		if (Platform.isBukkit()) {
 		//			this.metricsImplementation = new OsmiumMetrics(getPluginImplementation());

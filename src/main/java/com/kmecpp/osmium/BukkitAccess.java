@@ -45,10 +45,6 @@ import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
 
-	public static void registerListener(OsmiumPlugin plugin, Listener listener) {
-		Bukkit.getPluginManager().registerEvents(listener, plugin.getSource());
-	}
-
 	public static EntityType getEntityType(org.bukkit.entity.EntityType type) {
 		return OsmiumRegistry.fromSource(EntityType.class, type);
 	}
@@ -172,13 +168,16 @@ public class BukkitAccess {
 		}
 	}
 
-	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> consumer) {
+	public static void registerListener(OsmiumPlugin plugin, Listener listener) {
+		Bukkit.getPluginManager().registerEvents(listener, plugin.getSource());
+	}
+
+	public static void registerOsmiumListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> sourceEventConsumer) {
 		for (Class<? extends org.bukkit.event.Event> bukkitEventClass : eventInfo.<org.bukkit.event.Event> getSourceClasses()) {
 			Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getSource(), (EventPriority) order.getSource(),
-					(bukkitListener, bukkitEvent) -> consumer.accept(bukkitEvent),
+					(bukkitListener, bukkitEvent) -> sourceEventConsumer.accept(bukkitEvent),
 					plugin.getSource(), false);
 		}
-
 	}
 
 }

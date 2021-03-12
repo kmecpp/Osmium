@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import com.kmecpp.osmium.BukkitAccess;
+import com.kmecpp.osmium.BungeeAccess;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
@@ -144,9 +145,11 @@ public class EventManager {
 
 				if (Platform.isBukkit()) {
 					//					OsmiumLogger.debug(Chat.RED + "REGISTERED LISTENER FOR " + plugin.getName() + ": " + eventInfo.getEventName());
-					BukkitAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
+					BukkitAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
 				} else if (Platform.isSponge()) {
-					SpongeAccess.registerListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
+					SpongeAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
+				} else if (Platform.isProxy()) {
+					BungeeAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
 				}
 			}
 		}

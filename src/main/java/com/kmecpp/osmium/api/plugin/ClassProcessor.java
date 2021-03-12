@@ -106,14 +106,16 @@ public class ClassProcessor {
 					OsmiumLogger.debug("Loading class: " + className);
 					//					Class<?> cls = classLoader.loadClass(className, true);
 					Class<?> cls = plugin.getSource().getClass().getClassLoader().loadClass(className);
+					cls.getDeclaredMethods(); //Verify that return types exist
+
+					pluginClasses.add(cls);
 					if (cls.isAnnotationPresent(HookClass.class) || cls.isAnnotationPresent(SkipProcessing.class)) {
+						skipClasses.add(cls.getName());
 						continue;
 					}
 					//					Class<?> cls = Class.forName(className, false, classLoader);
-					cls.getDeclaredMethods(); //Verify that return types exist
 					//					cls.getFields();
 					onLoad(cls);
-					pluginClasses.add(cls);
 				} catch (ClassNotFoundException | NoClassDefFoundError e) {
 					if (e.getMessage().toLowerCase().contains("spongepowered") || e.getMessage().toLowerCase().contains("bukkit")) {
 						OsmiumLogger.debug("SKIPPING: " + className);
@@ -317,7 +319,7 @@ public class ClassProcessor {
 			}
 
 			//LISTENERS
-			if (!Platform.isBungeeCord() && listenerAnnotation != null) {
+			if (listenerAnnotation != null) {
 				if (method.getParameterCount() != 1 || !Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
 					plugin.error("Invalid listener method with signature: '" + method + "'");
 				} else {
@@ -326,6 +328,10 @@ public class ClassProcessor {
 
 					if (eventInfo == null) {
 						OsmiumLogger.error("Osmium event class has no registered implementation: " + eventClass.getName());
+						continue;
+					} else if (eventInfo.getOsmiumImplementation() == null) {
+						OsmiumLogger.error("Failed to register " + eventInfo.getEvent().getSimpleName() + " listener with " + cls.getSimpleName() + ". "
+								+ "The event is not implemented for this platform.");
 						continue;
 					}
 

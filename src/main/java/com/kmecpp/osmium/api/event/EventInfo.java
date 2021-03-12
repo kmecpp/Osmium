@@ -47,6 +47,10 @@ import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerInteractEvent.
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerMoveEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitPlayerTeleportEvent;
 import com.kmecpp.osmium.platform.bukkit.event.events.BukkitServerListPingEvent;
+import com.kmecpp.osmium.platform.bungee.events.BungeePlayerConnectionEvent.BungeePlayerAuthEvent;
+import com.kmecpp.osmium.platform.bungee.events.BungeePlayerConnectionEvent.BungeePlayerJoinEvent;
+import com.kmecpp.osmium.platform.bungee.events.BungeePlayerConnectionEvent.BungeePlayerLoginEvent;
+import com.kmecpp.osmium.platform.bungee.events.BungeePlayerConnectionEvent.BungeePlayerQuitEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumDayChangeEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumMonthChangeEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPlayerMovePositionEvent;
@@ -146,10 +150,10 @@ public class EventInfo {
 		register(PlayerChangedWorldEvent.class,       BukkitPlayerChangedWorldEvent.class,     SpongePlayerChangedWorldEvent.class);
 		                    
 		register(ServerListPingEvent.class,           BukkitServerListPingEvent.class,         SpongeServerListPingEvent.class);
-		register(PlayerConnectionEvent.Auth.class,    BukkitPlayerAuthEvent.class,             SpongePlayerAuthEvent.class);
-		register(PlayerConnectionEvent.Login.class,   BukkitPlayerLoginEvent.class,            SpongePlayerLoginEvent.class);
-		register(PlayerConnectionEvent.Join.class,    BukkitPlayerJoinEvent.class,             SpongePlayerJoinEvent.class);
-		register(PlayerConnectionEvent.Quit.class,    BukkitPlayerQuitEvent.class,             SpongePlayerQuitEvent.class);
+		register(PlayerConnectionEvent.Auth.class,    BukkitPlayerAuthEvent.class,             SpongePlayerAuthEvent.class,            BungeePlayerAuthEvent.class);
+		register(PlayerConnectionEvent.Login.class,   BukkitPlayerLoginEvent.class,            SpongePlayerLoginEvent.class,           BungeePlayerLoginEvent.class);
+		register(PlayerConnectionEvent.Join.class,    BukkitPlayerJoinEvent.class,             SpongePlayerJoinEvent.class,            BungeePlayerJoinEvent.class);
+		register(PlayerConnectionEvent.Quit.class,    BukkitPlayerQuitEvent.class,             SpongePlayerQuitEvent.class,            BungeePlayerQuitEvent.class);
 		                                                                                       
 		register(BlockEvent.Break.class,              BukkitBlockBreakEvent.class,             SpongeBlockBreakEvent.class);
 		register(BlockEvent.Place.class,              BukkitBlockPlaceEvent.class,             SpongeBlockPlaceEvent.class);
@@ -166,14 +170,21 @@ public class EventInfo {
 	}
 
 	public static void register(Class<? extends EventAbstraction> event, Class<? extends EventAbstraction> bukkitImplementation, Class<? extends EventAbstraction> spongeImplementation) {
-		//Don't exact source unless needed
-		if (Platform.isBukkit()) {
-			events.put(event, new EventInfo(event, bukkitImplementation, extractSourceClasses(bukkitImplementation), false));
-		} else if (Platform.isSponge()) {
-			events.put(event, new EventInfo(event, spongeImplementation, extractSourceClasses(spongeImplementation), false));
-		}
-		//		EVENTS.put(event, new EventInfo(bukkitImplementation, bukkitSource, spongeImplementation, spongeSource, false));
+		register(event, bukkitImplementation, spongeImplementation, null);
+	}
 
+	public static void register(Class<? extends EventAbstraction> event, Class<? extends EventAbstraction> bukkitImplementation, Class<? extends EventAbstraction> spongeImplementation, Class<? extends EventAbstraction> bungeeImplementation) {
+		//Don't exact source unless needed
+		Class<? extends EventAbstraction> osmiumClass = Platform.isBukkit() ? bukkitImplementation : Platform.isSponge() ? spongeImplementation
+				: Platform.isBungeeCord() ? bungeeImplementation : null;
+
+		if (osmiumClass != null) {
+			events.put(event, new EventInfo(event, osmiumClass, extractSourceClasses(osmiumClass), false));
+		} else {
+			events.put(event, new EventInfo(event, null, null, false)); //No Osmium wrapper exists for this event
+		}
+
+		//		EVENTS.put(event, new EventInfo(bukkitImplementation, bukkitSource, spongeImplementation, spongeSource, false));
 	}
 
 	private static ArrayList<Class<?>> extractSourceClasses(Class<? extends EventAbstraction> osmiumClass) {

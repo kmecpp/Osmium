@@ -138,11 +138,11 @@ public class SpongeAccess {
 		}
 	}
 
-	public static void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> consumer) {
+	public static void registerOsmiumListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> sourceEventConsumer) {
 		for (Class<Event> sourceClass : eventInfo.<Event> getSourceClasses()) {
 			Sponge.getEventManager().registerListener(plugin.getSource(), sourceClass,
 					(org.spongepowered.api.event.Order) order.getSource(), false,
-					(spongeEvent) -> consumer.accept(spongeEvent));
+					(spongeEvent) -> sourceEventConsumer.accept(spongeEvent));
 		}
 
 		//		Class<? extends org.spongepowered.api.event.Event> spongeEventClass = eventInfo.getSource();

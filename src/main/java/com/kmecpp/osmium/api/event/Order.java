@@ -37,6 +37,13 @@ public enum Order implements Abstraction {
 			LATE.source = org.spongepowered.api.event.Order.LATE;
 			LAST.source = org.spongepowered.api.event.Order.LAST;
 			POST.source = org.spongepowered.api.event.Order.POST;
+		} else if (Platform.isProxy()) {
+			FIRST.source = net.md_5.bungee.event.EventPriority.LOWEST - 1;
+			EARLY.source = net.md_5.bungee.event.EventPriority.LOW;
+			DEFAULT.source = net.md_5.bungee.event.EventPriority.NORMAL;
+			LATE.source = net.md_5.bungee.event.EventPriority.HIGH;
+			LAST.source = net.md_5.bungee.event.EventPriority.HIGHEST;
+			POST.source = net.md_5.bungee.event.EventPriority.HIGHEST + 1;
 		}
 	}
 

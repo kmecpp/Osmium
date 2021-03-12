@@ -133,7 +133,8 @@ repositories {
 
 configurations.all {
 	resolutionStrategy {
-		force 'org.javassist:javassist:3.22.0-GA'
+		//force 'org.javassist:javassist:3.22.0-GA'
+		force 'org.javassist:javassist:3.27.0-GA'
 	}
 }
 

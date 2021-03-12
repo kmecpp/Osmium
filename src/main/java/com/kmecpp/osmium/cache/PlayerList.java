@@ -17,9 +17,13 @@ public class PlayerList {
 	private static final HashMap<String, Player> players = new HashMap<>();
 
 	public static void addPlayer(Object sourcePlayer) {
-		Player wrapper = sourcePlayer instanceof org.bukkit.entity.Player ? new BukkitPlayer((org.bukkit.entity.Player) sourcePlayer)
-				: sourcePlayer instanceof org.spongepowered.api.entity.living.player.Player ? new SpongePlayer((org.spongepowered.api.entity.living.player.Player) sourcePlayer)
-						: null;
+		//		Player wrapper = sourcePlayer instanceof org.bukkit.entity.Player ? new BukkitPlayer((org.bukkit.entity.Player) sourcePlayer)
+		//				: sourcePlayer instanceof org.spongepowered.api.entity.living.player.Player ? new SpongePlayer((org.spongepowered.api.entity.living.player.Player) sourcePlayer)
+		//						: null;
+
+		Player wrapper = Platform.isBukkit() ? new BukkitPlayer((org.bukkit.entity.Player) sourcePlayer)
+				: Platform.isSponge() ? new SpongePlayer((org.spongepowered.api.entity.living.player.Player) sourcePlayer)
+						: Platform.isProxy() ? new BungeePlayer((ProxiedPlayer) sourcePlayer) : null;
 
 		if (wrapper == null) {
 			throw new IllegalArgumentException("Not a player!");
