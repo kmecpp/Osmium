@@ -22,14 +22,14 @@ public interface Saveable {
 		for (DatabaseType type : table.getTypes()) {
 			if (type == DatabaseType.MYSQL) {
 				MySQLDatabase database = Osmium.getPlugin(this.getClass()).getMySQLDatabase();
-				if (flush) {
+				if (flush || Osmium.isShuttingDown()) {
 					database.replaceInto(this.getClass(), this);
 				} else {
 					database.replaceIntoAsync(this.getClass(), this);
 				}
 			} else if (type == DatabaseType.SQLITE) {
 				SQLiteDatabase database = Osmium.getPlugin(this.getClass()).getSQLiteDatabase();
-				if (flush) {
+				if (flush || Osmium.isShuttingDown()) {
 					database.replaceInto(this.getClass(), this);
 				} else {
 					database.replaceIntoAsync(this.getClass(), this);
