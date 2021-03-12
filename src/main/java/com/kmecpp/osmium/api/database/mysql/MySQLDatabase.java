@@ -43,7 +43,7 @@ public class MySQLDatabase extends SQLDatabase {
 	}
 
 	public int count(Class<?> tableClass, String columns, Object... values) {
-		return count(tableClass, null, columns, values);
+		return countWhere(tableClass, null, columns, values);
 	}
 
 	public int countWhere(Class<?> tableClass, String extraFilter, String columns, Object... values) {
