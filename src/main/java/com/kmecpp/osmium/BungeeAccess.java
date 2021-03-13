@@ -24,6 +24,7 @@ import javassist.CtMethod;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.ByteMemberValue;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Event;
@@ -71,13 +72,13 @@ public class BungeeAccess {
 	}
 
 	public static void registerOsmiumListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> sourceEventConsumer) {
-		String parameterString = Arrays.stream(method.getParameterTypes()).map(c -> c.getName()).collect(Collectors.joining(","));
+		String parameterString = Arrays.stream(method.getParameterTypes()).map(c -> c.getName()).collect(Collectors.joining("|"));
 
 		for (Class<? extends Event> bungeeEventClass : eventInfo.<Event> getSourceClasses()) {
 			try {
 				ClassPool pool = ClassPool.getDefault();
 
-				String className = listenerInstance.getClass().getName() + "$$$OsmiumBungeeWrapper$" + method.getName() + "$" + parameterString;
+				String className = listenerInstance.getClass().getName() + "$$$OsmiumBungeeWrapper$" + method.getName() + "$" + parameterString + "$" + bungeeEventClass;
 				OsmiumLogger.debug("Generating listener class " + className);
 				CtClass cc = pool.makeClass(className);
 				ConstPool constPool = cc.getClassFile().getConstPool();
@@ -87,8 +88,9 @@ public class BungeeAccess {
 				CtMethod ctMethod = new CtMethod(CtClass.voidType, method.getName(), new CtClass[] { pool.get(bungeeEventClass.getName()) }, cc);
 
 				AnnotationsAttribute attribute = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-				attribute.addAnnotation(new Annotation(constPool, pool.get(EventHandler.class.getName())));
-				//TODO: Implement event ordering
+				Annotation annotation = new Annotation(constPool, pool.get(EventHandler.class.getName()));
+				annotation.addMemberValue("priority", new ByteMemberValue((byte) order.getSource(), constPool));
+				attribute.addAnnotation(annotation);
 				ctMethod.getMethodInfo().addAttribute(attribute);
 
 				Listener bungeeListener = (Listener) cc.toClass(listenerInstance.getClass().getClassLoader(), listenerInstance.getClass().getProtectionDomain()).newInstance();
