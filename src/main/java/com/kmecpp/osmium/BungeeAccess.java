@@ -88,8 +88,8 @@ public class BungeeAccess {
 
 				AnnotationsAttribute attribute = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
 				attribute.addAnnotation(new Annotation(constPool, pool.get(EventHandler.class.getName())));
+				//TODO: Implement event ordering
 				ctMethod.getMethodInfo().addAttribute(attribute);
-				//			m.
 
 				Listener bungeeListener = (Listener) cc.toClass(listenerInstance.getClass().getClassLoader(), listenerInstance.getClass().getProtectionDomain()).newInstance();
 				BungeeCord.getInstance().getPluginManager().registerListener(plugin.getSource(), bungeeListener);
