@@ -8,6 +8,14 @@ public class MathUtil {
 
 	private static final ThreadLocalRandom RAND = ThreadLocalRandom.current();
 
+	public static float average(float currentAverage, float sample, int sampleCount) {
+		return currentAverage + (sample - currentAverage) / (float) sampleCount;
+	}
+
+	public static double average(double currentAverage, double sample, int sampleCount) {
+		return currentAverage + (sample - currentAverage) / (double) sampleCount;
+	}
+
 	public static int randInt() {
 		return RAND.nextInt();
 	}
