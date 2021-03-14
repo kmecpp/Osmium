@@ -100,7 +100,7 @@ public class MDBUtil {
 		} else if (value instanceof UUID) {
 			s.setString(index, String.valueOf(value));
 		} else {
-			throw new UnsupportedOperationException("MySQL serialization of '" + value + "' is not yet supported");
+			throw new UnsupportedOperationException("SQL serialization of " + value.getClass().getSimpleName() + " (" + value + ") is not supported yet!");
 		}
 	}
 
