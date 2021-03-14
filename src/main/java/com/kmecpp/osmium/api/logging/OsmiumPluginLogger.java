@@ -11,6 +11,8 @@ import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.core.OsmiumCoreConfig;
 
+import net.md_5.bungee.BungeeCord;
+
 public class OsmiumPluginLogger {
 
 	private final String name;
@@ -83,8 +85,8 @@ public class OsmiumPluginLogger {
 				//				} else {
 				//					Bukkit.getLogger().log(level.getLevel(), "[" + prefix + "] " + message);
 				//				}
-				Bukkit.getLogger().log(level.getLevel(), Chat.DARK_AQUA.ansi() + "[" + Chat.AQUA.ansi() + prefix + Chat.DARK_AQUA.ansi() + "] "
-						+ level.getColor().ansi() + message + Chat.RESET.ansi());
+				Bukkit.getLogger().log(level.getLevel(), Chat.DARK_AQUA.ansi()
+						+ "[" + Chat.AQUA.ansi() + prefix + Chat.DARK_AQUA.ansi() + "] " + level.getColor().ansi() + message + Chat.RESET.ansi());
 			}
 		} else if (Platform.isSponge()) {
 			//TODO: Rewrite to use ANSI
@@ -93,6 +95,9 @@ public class OsmiumPluginLogger {
 					TextColors.DARK_AQUA, "[", TextColors.AQUA, prefix,
 					(displayLevel ? Text.of(TextColors.DARK_AQUA, "|", level.getColor(), level) : Text.empty()),
 					TextColors.DARK_AQUA, "] ", level.getColor(), message));
+		} else if (Platform.isProxy()) {
+			BungeeCord.getInstance().getLogger().log(level.getLevel(),
+					Chat.DARK_AQUA.ansi() + "[" + Chat.AQUA.ansi() + prefix + Chat.DARK_AQUA.ansi() + "] " + level.getColor().ansi() + message + Chat.RESET.ansi());
 		} else {
 			printDefault(level, message);
 		}

@@ -35,6 +35,7 @@ import com.kmecpp.osmium.api.event.events.osmium.PluginReloadEvent;
 import com.kmecpp.osmium.api.inventory.BlockType;
 import com.kmecpp.osmium.api.inventory.ItemManager;
 import com.kmecpp.osmium.api.inventory.ItemType;
+import com.kmecpp.osmium.api.platform.UnsupportedPlatformException;
 import com.kmecpp.osmium.api.plugin.OsmiumMetrics;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.PluginLoader;
@@ -45,9 +46,11 @@ import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.WebUtil;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
+import com.kmecpp.osmium.core.OsmiumUserIds;
 import com.kmecpp.osmium.core.PlayerDataManager;
 import com.kmecpp.osmium.core.TPSTask;
 import com.kmecpp.osmium.platform.bukkit.BukkitUser;
+import com.kmecpp.osmium.platform.bungee.BungeeUser;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginReloadEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumServerShutdownEvent;
@@ -405,7 +408,7 @@ public final class Osmium {
 		}
 	}
 
-	public static Optional<User> getOrCreateUser(UUID uuid) {
+	public static Optional<User> getOrCreateUser(UUID uuid, String name) {
 		if (Platform.isBukkit()) {
 			OfflinePlayer user = Bukkit.getOfflinePlayer(uuid);
 			return Optional.of(new BukkitUser(user));
@@ -416,8 +419,10 @@ public final class Osmium {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+		} else if (Platform.isProxy()) {
+			return Optional.of(new BungeeUser(uuid, name));
 		}
-		return Optional.empty();
+		throw new UnsupportedPlatformException();
 	}
 
 	public static Optional<Integer> getUserId(UUID uuid) {

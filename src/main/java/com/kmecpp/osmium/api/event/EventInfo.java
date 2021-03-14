@@ -200,7 +200,8 @@ public class EventInfo {
 			Field[] fields = osmiumClass.getDeclaredFields();
 			for (Field field : fields) {
 				if ((Platform.isBukkit() && org.bukkit.event.Event.class.isAssignableFrom(field.getType()))
-						|| (Platform.isSponge() && org.spongepowered.api.event.Event.class.isAssignableFrom(field.getType()))) {
+						|| (Platform.isSponge() && org.spongepowered.api.event.Event.class.isAssignableFrom(field.getType())
+								|| (Platform.isProxy() && net.md_5.bungee.api.plugin.Event.class.isAssignableFrom(field.getType())))) {
 					result.add(field.getType());
 				}
 			}

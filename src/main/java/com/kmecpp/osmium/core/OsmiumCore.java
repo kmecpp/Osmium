@@ -2,7 +2,6 @@ package com.kmecpp.osmium.core;
 
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.OsmiumUserIds;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.TickTimeUnit;
 import com.kmecpp.osmium.api.database.SQLDatabase;

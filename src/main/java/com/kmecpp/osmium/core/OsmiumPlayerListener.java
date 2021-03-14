@@ -1,16 +1,15 @@
 package com.kmecpp.osmium.core;
 
 import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.OsmiumUserIds;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 
-public class OsmiumListener {
+public class OsmiumPlayerListener {
 
 	@Listener(order = Order.FIRST)
 	public void on(PlayerConnectionEvent.Auth e) {
-		OsmiumUserIds.onAsyncPreLogin(e);
+		OsmiumUserIds.onAsyncPreLogin(e.getUniqueId(), e.getPlayerName());
 	}
 
 	@Listener(order = Order.FIRST)

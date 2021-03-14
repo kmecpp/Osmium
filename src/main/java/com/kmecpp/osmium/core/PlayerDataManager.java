@@ -103,7 +103,7 @@ public class PlayerDataManager {
 	//	}
 
 	//This is not in core so it can't listen to events
-	public <K> void onPlayerAuthenticate(PlayerConnectionEvent.Auth e, User user) {
+	public <K> void onPlayerAuthenticate(User user) {
 		//		System.out.println("AUTHENCIATED!");
 		long start = System.currentTimeMillis();
 
@@ -111,7 +111,7 @@ public class PlayerDataManager {
 			try {
 				Class<?> dataClass = entry.getKey();
 				Object data = entry.getValue().apply(user);
-				this.data.computeIfAbsent(e.getUniqueId(), k -> new HashMap<>()).put(dataClass, data);
+				this.data.computeIfAbsent(user.getUniqueId(), k -> new HashMap<>()).put(dataClass, data);
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
@@ -124,14 +124,14 @@ public class PlayerDataManager {
 					if (MultiplePlayerData.class.isAssignableFrom(rawType)) {
 						Class<? extends MultiplePlayerData<K>> type = Reflection.cast(rawType);
 						HashMap<K, MultiplePlayerData<K>> map = new HashMap<>();
-						plugin.getMySQLDatabase().queryColumns(type, "uuid", e.getUniqueId()).forEach(obj -> {
-							obj.updatePlayerData(e.getUniqueId(), e.getPlayerName());
+						plugin.getMySQLDatabase().queryColumns(type, "uuid", user.getUniqueId()).forEach(obj -> {
+							obj.updatePlayerData(user.getUniqueId(), user.getName());
 							map.put(obj.getKey(), obj);
 						});
 						//						list.stream().forEach(d -> d.updatePlayerData(e.getUniqueId(), e.getPlayerName()));
 
 						HashMap<Class<? extends MultiplePlayerData<?>>, HashMap<K, MultiplePlayerData<K>>> data =
-								Reflection.cast(this.multipleData.computeIfAbsent(e.getUniqueId(), k -> new HashMap<>()));
+								Reflection.cast(this.multipleData.computeIfAbsent(user.getUniqueId(), k -> new HashMap<>()));
 						data.put(type, map);
 					} else {
 						Class<? extends PlayerData> type = Reflection.cast(rawType);
@@ -143,19 +143,19 @@ public class PlayerDataManager {
 							//						} else {
 							System.out.println("GET DATA: " + type.getName());
 
-							value = plugin.getMySQLDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), e.getUniqueId());
+							value = plugin.getMySQLDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), user.getUniqueId());
 							//						}
 						} else {
-							value = plugin.getSQLiteDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), e.getUniqueId());
+							value = plugin.getSQLiteDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), user.getUniqueId());
 						}
 
 						//				System.out.println("VALUE: " + value);
 
 						if (value instanceof PlayerData) {
-							((PlayerData) value).updatePlayerData(e.getUniqueId(), e.getPlayerName());
+							((PlayerData) value).updatePlayerData(user.getUniqueId(), user.getName());
 						}
 
-						this.data.computeIfAbsent(e.getUniqueId(), k -> new HashMap<>()).put(type, value);
+						this.data.computeIfAbsent(user.getUniqueId(), k -> new HashMap<>()).put(type, value);
 						//				System.out.println("UPDATED PLAYER DATA: " + e.getPlayerName() + ", " + data);
 						//						data.put(type, value);
 					}

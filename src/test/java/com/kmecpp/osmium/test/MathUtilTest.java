@@ -19,7 +19,7 @@ public class MathUtilTest {
 		avg = MathUtil.average(avg, 6, ++count); // (1 + 5 + 6) / 3
 		assertEquals(avg, 4.0, 1e-5);
 
-		avg = MathUtil.average(avg, 2, ++count); // (1 + 5 + 6 + 0) / 4
+		avg = MathUtil.average(avg, 0, ++count); // (1 + 5 + 6 + 0) / 4
 		assertEquals(avg, 3.0, 1e-5);
 	}
 

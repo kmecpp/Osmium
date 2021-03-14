@@ -25,6 +25,7 @@ public class EventManager {
 	//Only for Osmium events
 	//The Listener event list must be kept in sorted order (by priority)
 	private final HashMap<Class<? extends EventAbstraction>, ArrayList<RegisteredListener>> events = new HashMap<>();
+	private final HashMap<Class<?>, Consumer<Object>> osmiumSourceEventConsumers = new HashMap<>();
 
 	public void registerListener(Class<? extends EventAbstraction> eventClass, Order order, Object listenerInstance, Method listener) {
 		listener.setAccessible(true);
@@ -142,14 +143,15 @@ public class EventManager {
 						e.printStackTrace();
 					}
 				};
+				osmiumSourceEventConsumers.put(sourceEventClass, globalHandlerForEvent);
 
 				if (Platform.isBukkit()) {
 					//					OsmiumLogger.debug(Chat.RED + "REGISTERED LISTENER FOR " + plugin.getName() + ": " + eventInfo.getEventName());
-					BukkitAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
+					BukkitAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, Reflection.cast(globalHandlerForEvent));
 				} else if (Platform.isSponge()) {
-					SpongeAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
+					SpongeAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, Reflection.cast(globalHandlerForEvent));
 				} else if (Platform.isProxy()) {
-					BungeeAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, globalHandlerForEvent);
+					BungeeAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, Reflection.cast(globalHandlerForEvent));
 				}
 			}
 		}
@@ -163,6 +165,17 @@ public class EventManager {
 			}
 		}
 		throw new RuntimeException("Failed to extract event wrapper constructor for " + sourceEventClass.getName());
+	}
+
+	/**
+	 * NEED THIS FOR RUNTIME GENERATION OF BUNGEE HANDLERS
+	 * 
+	 * @param sourceEventClass
+	 *            the Event class provided by
+	 * @return the global Osmium handler for the given event
+	 */
+	public Consumer<Object> getOsmiumSourceEventConsumer(Class<?> sourceEventClass) {
+		return osmiumSourceEventConsumers.get(sourceEventClass);
 	}
 
 }

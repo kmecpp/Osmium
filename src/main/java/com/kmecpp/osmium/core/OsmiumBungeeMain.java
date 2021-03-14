@@ -15,12 +15,12 @@ public class OsmiumBungeeMain extends BungeePlugin {
 		Osmium.shutdown();
 	}
 
-	@EventHandler
+	@EventHandler(priority = Byte.MIN_VALUE)
 	public void onPlayerLogin(net.md_5.bungee.api.event.PostLoginEvent e) {
 		PlayerList.addPlayer(e.getPlayer());
 	}
 
-	@EventHandler
+	@EventHandler(priority = Byte.MAX_VALUE)
 	public void onPlayerQuit(PlayerDisconnectEvent e) {
 		PlayerList.removePlayer(e.getPlayer().getName());
 	}
