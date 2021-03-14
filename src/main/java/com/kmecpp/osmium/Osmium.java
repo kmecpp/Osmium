@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
@@ -69,6 +70,7 @@ public final class Osmium {
 	private static final EventManager eventManager = new EventManager();
 	private static final ItemManager itemManager = Platform.isGame() ? new ItemManager() : null;
 	private static final OsmiumMetrics metrics = new OsmiumMetrics();
+	private static final HashMap<String, Object> store = new HashMap<>(); //Environment variables
 
 	private static final ExecutorService genericThreadPool = Executors.newFixedThreadPool(3);
 
@@ -536,6 +538,16 @@ public final class Osmium {
 			}
 		}
 		return mcVersion;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T store(String key, Object value) {
+		return (T) store.put(key, value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T get(String key) {
+		return (T) store.get(key);
 	}
 
 	//	public static String getPluginId(String name) {
