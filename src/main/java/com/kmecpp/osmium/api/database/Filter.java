@@ -31,6 +31,10 @@ public class Filter {
 		return new Filter(filter, value);
 	}
 
+	public static Filter where(String filter, Object value) {
+		return new Filter(filter, value);
+	}
+
 	public Filter and(String filter, Object value) {
 		this.filters.add(filter);
 		return this;
