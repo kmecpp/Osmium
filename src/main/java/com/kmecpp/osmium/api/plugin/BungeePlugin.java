@@ -36,19 +36,28 @@ public abstract class BungeePlugin extends Plugin implements Listener {
 			} catch (Throwable t) {
 				catchError(t);
 			}
+
 			BungeeCord.getInstance().getPluginManager().registerListener(this, this);
+
 			try {
 				plugin.getClassProcessor().initializeClasses();
 			} catch (Throwable t) {
 				catchError(t);
 			}
+
 			try {
 				plugin.onInit();
 			} catch (Throwable t) {
 				catchError(t);
 			}
+
 			try {
 				plugin.getClassProcessor().createDatabaseTables();
+			} catch (Throwable t) {
+				catchError(t);
+			}
+
+			try {
 				plugin.onPostInit();
 			} catch (Throwable t) {
 				catchError(t);
