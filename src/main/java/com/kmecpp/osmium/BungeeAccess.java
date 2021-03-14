@@ -21,8 +21,8 @@ import com.kmecpp.osmium.platform.osmium.CommandRedirectSender;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtConstructor;
 import javassist.CtField;
-import javassist.CtField.Initializer;
 import javassist.CtMethod;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
@@ -92,7 +92,12 @@ public class BungeeAccess {
 				pool.insertClassPath(new ClassClassPath(Osmium.class));
 
 				CtField ctField = CtField.make("private final java.util.function.Consumer consumer;", generatedClass);
-				generatedClass.addField(ctField, Initializer.byExpr(Osmium.class.getName() + ".getEventManager().getOsmiumSourceEventConsumer(" + bungeeEventClass.getName() + ".class);"));
+				//				generatedClass.addField(ctField, Initializer.byExpr(Osmium.class.getName() + ".getEventManager().getOsmiumSourceEventConsumer(" + bungeeEventClass.getName() + ".class);"));
+				generatedClass.addField(ctField);
+
+				CtConstructor ctConstructor = new CtConstructor(new CtClass[] { pool.get("java.util.function.Consumer") }, generatedClass);
+				ctConstructor.setBody("{ this.consumer = $1; }");
+				generatedClass.addConstructor(ctConstructor);
 
 				CtMethod ctMethod = new CtMethod(CtClass.voidType, method.getName(), new CtClass[] { pool.get(bungeeEventClass.getName()) }, generatedClass);
 				ctMethod.setBody("{ consumer.accept($1); }");
@@ -105,8 +110,11 @@ public class BungeeAccess {
 
 				generatedClass.addMethod(ctMethod);
 
-				//				Files.write(generatedClass.toBytecode(), Paths.get(className + ".class").toFile());
-				Listener bungeeListener = (Listener) generatedClass.toClass(listenerInstance.getClass().getClassLoader(), listenerInstance.getClass().getProtectionDomain()).newInstance();
+				//				com.google.common.io.Files.write(generatedClass.toBytecode(), Paths.get(className + ".class").toFile());
+				Class<?> cls = generatedClass.toClass(listenerInstance.getClass().getClassLoader(), listenerInstance.getClass().getProtectionDomain());
+				Listener bungeeListener = (Listener) cls.getConstructor(Consumer.class).newInstance(osmiumSourceEventConsumer);
+
+				//				Listener bungeeListener = (Listener) generatedClass.toClass(listenerInstance.getClass().getClassLoader(), listenerInstance.getClass().getProtectionDomain()).newInstance();
 				BungeeCord.getInstance().getPluginManager().registerListener(plugin.getSource(), bungeeListener);
 
 				//Note: can't create a Listener instance because bungeeEventClass is dynamic
