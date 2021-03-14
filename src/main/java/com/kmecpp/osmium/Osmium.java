@@ -383,6 +383,17 @@ public final class Osmium {
 		return PlayerList.getPlayers();
 	}
 
+	public static int getOnlinePlayerCount() {
+		if (Platform.isBukkit()) {
+			return Bukkit.getOnlinePlayers().size();
+		} else if (Platform.isSponge()) {
+			return Sponge.getServer().getOnlinePlayers().size();
+		} else if (Platform.isProxy()) {
+			return BungeeCord.getInstance().getOnlineCount();
+		}
+		throw new UnsupportedPlatformException();
+	}
+
 	public static Optional<Player> getPlayer(String name) {
 		return Optional.ofNullable(PlayerList.getPlayer(name));
 	}
