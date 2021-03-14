@@ -7,9 +7,12 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.platform.UnsupportedPlatformException;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
+
+import net.md_5.bungee.BungeeCord;
 
 public class Hook<T> {
 
@@ -80,8 +83,10 @@ public class Hook<T> {
 						return pluginContainer.getInstance().orElse(null);
 					}
 				}
+			} else if (Platform.isProxy()) {
+				return BungeeCord.getInstance().getPluginManager().getPlugin(accessor);
 			}
-			return null;
+			throw new UnsupportedPlatformException();
 		});
 
 		if (pluginHook.isLoaded()) {
