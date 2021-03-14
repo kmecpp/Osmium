@@ -238,6 +238,17 @@ public abstract class SQLDatabase {
 		updateAsync(() -> replaceInto(tableClass, obj));
 	}
 
+	public int increment(Class<?> tableClass, String column) {
+		MDBTableData table = getTable(tableClass);
+		return update("UPDATE " + table.getName() + " SET " + column + " = " + column + " + 1");
+	}
+
+	public int increment(Class<?> tableClass, String column, Filter filter) {
+		MDBTableData table = getTable(tableClass);
+		String where = MDBUtil.createWhere(filter);
+		return preparedUpdateStatement("UPDATE " + table.getName() + " SET " + column + " = " + column + " + 1 WHERE " + where, MDBUtil.filterLinker(filter));
+	}
+
 	public int deleteAll(Class<?> tableClass) {
 		MDBTableData table = getTable(tableClass);
 		return update("DELETE FROM " + table.getName());
@@ -268,6 +279,10 @@ public abstract class SQLDatabase {
 			close(statement, resultSet);
 		}
 		return -1;
+	}
+
+	public void queue(Runnable runnable) {
+		queue.submit(runnable);
 	}
 
 	public void updateAsync(Runnable runnable) {
