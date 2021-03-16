@@ -37,6 +37,7 @@ public class Filter {
 
 	public Filter and(String filter, Object value) {
 		this.filters.add(filter);
+		this.values.add(value);
 		return this;
 	}
 
