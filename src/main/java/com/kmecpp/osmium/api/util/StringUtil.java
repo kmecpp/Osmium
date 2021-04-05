@@ -68,6 +68,53 @@ public class StringUtil {
 		}
 	}
 
+	public static long parseAmount(String str) {
+		Long number = null;
+		String unit = null;
+		for (int i = 0; i < str.length(); i++) {
+			char c = str.charAt(i);
+			if (c != '-' && !Character.isDigit(c)) {
+				try {
+					number = Long.parseLong(str.substring(0, i));
+				} catch (NumberFormatException ex) {
+					throw new IllegalArgumentException("Invalid duration: " + str.substring(0, i));
+				}
+				unit = str.substring(i, str.length());
+				break;
+			}
+		}
+		if (number == null) {
+			throw new IllegalArgumentException("Invalid input: " + str);
+		}
+		if (unit == null) {
+			return number;
+		} else if (unit.equalsIgnoreCase("K")) {
+			return number * 1_000;
+		} else if (unit.equalsIgnoreCase("M")) {
+			return number * 1_000_000;
+		} else if (unit.equalsIgnoreCase("B")) {
+			return number * 1_000_000_000;
+		} else if (unit.equalsIgnoreCase("T")) {
+			return number * 1_000_000_000_000L;
+		} else {
+			throw new IllegalArgumentException("Unknown unit: '" + unit + "'");
+		}
+	}
+
+	public static String displayAmount(long n, int decimals) {
+		if (n >= 1_000_000_000_000L) {
+			return MathUtil.round(n / 1_000_000_000_000D, decimals) + "T";
+		} else if (n >= 1_000_000_000) {
+			return MathUtil.round(n / 1_000_000_000D, decimals) + "B";
+		} else if (n >= 1_000_000) {
+			return MathUtil.round(n / 1_000_000D, decimals) + "M";
+		} else if (n >= 1_000) {
+			return MathUtil.round(n / 1_000D, decimals) + "K";
+		} else {
+			return MathUtil.round(n, decimals);
+		}
+	}
+
 	public static boolean isAscii(String str) {
 		return ASCII_ENCODER.canEncode(str);
 	}
