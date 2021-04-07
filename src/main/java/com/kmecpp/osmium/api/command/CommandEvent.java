@@ -108,6 +108,16 @@ public class CommandEvent implements Messageable {
 		return false;
 	}
 
+	public boolean isInt(int index) {
+		if (index >= 0 && index < args.length) {
+			try {
+				Integer.parseInt(get(index));
+				return true;
+			} catch (NumberFormatException ex) {}
+		}
+		return false;
+	}
+
 	public int getInt(int index) {
 		String input = get(index);
 		try {

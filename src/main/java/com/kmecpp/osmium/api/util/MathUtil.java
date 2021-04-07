@@ -16,6 +16,10 @@ public class MathUtil {
 		return currentAverage + (sample - currentAverage) / (double) sampleCount;
 	}
 
+	public static int cap(long n) {
+		return n > Integer.MAX_VALUE ? Integer.MAX_VALUE : n < Integer.MIN_VALUE ? Integer.MIN_VALUE : (int) n;
+	}
+
 	public static int randInt() {
 		return RAND.nextInt();
 	}
