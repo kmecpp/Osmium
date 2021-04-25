@@ -87,7 +87,7 @@ public class EventInfo {
 
 	private static final HashMap<Class<? extends Event>, EventInfo> events = new HashMap<>(); //<Interface, EventInfo>
 
-	private final Class<? extends Event> event;
+	private final Class<? extends Event> eventWrapperClass;
 	private final Class<? extends Event> osmiumImplementation;
 	private final ArrayList<Class<?>> sourceClasses;
 	private final boolean osmiumEvent;
@@ -109,8 +109,8 @@ public class EventInfo {
 	//		this.osmiumEvent = osmiumEvent;
 	//	}
 
-	public EventInfo(Class<? extends Event> event, Class<? extends Event> implementation, ArrayList<Class<?>> sourceClasses, boolean osmiumEvent) {
-		this.event = event;
+	public EventInfo(Class<? extends Event> eventWrapperClass, Class<? extends Event> implementation, ArrayList<Class<?>> sourceClasses, boolean osmiumEvent) {
+		this.eventWrapperClass = eventWrapperClass;
 		this.osmiumImplementation = implementation;
 		this.sourceClasses = sourceClasses;
 		this.osmiumEvent = osmiumEvent;
@@ -129,32 +129,32 @@ public class EventInfo {
 		register(DateChangeEvent.Week.class,          OsmiumWeekChangeEvent.class);
 		register(DateChangeEvent.Month.class,         OsmiumMonthChangeEvent.class);
 		register(PlayerMovePositionEvent.class,       OsmiumPlayerMovePositionEvent.class);
-		
+
 		register(EntityDamageEvent.class,             BukkitEntityDamageEvent.class,           SpongeEntityDamageEvent.class);
 		register(ItemDropEvent.Player.class,          BukkitItemDropPlayerEvent.class,         SpongeItemDropPlayerEvent.class);
-		
+
 		register(InventoryEvent.Open.class,           BukkitInventoryOpenEvent.class,          SpongeInventoryOpenEvent.class);
 		register(InventoryEvent.Close.class,          BukkitInventoryCloseEvent.class,         SpongeInventoryCloseEvent.class);
 		register(InventoryEvent.Click.class,          BukkitInventoryClickEvent.class,         SpongeInventoryClickEvent.class);
 		register(InventoryEvent.Drag.class,           BukkitInventoryDragEvent.class,          SpongeInventoryDragEvent.class);
 		register(InventoryEvent.Interact.class,       BukkitInventoryInteractEvent.class,      SpongeInventoryInteractEvent.class);
-		                                                                                       
+
 		register(PlayerInteractEvent.Item.class,      BukkitPlayerInteractItemEvent.class,     SpongePlayerInteractItemEvent.class);
 		register(PlayerInteractEvent.Block.class,     BukkitPlayerInteractBlockEvent.class,    SpongePlayerInteractBlockEvent.class);
 		register(PlayerInteractEvent.Entity.class,    BukkitPlayerInteractEntityEvent.class,   SpongePlayerInteractEntityEvent.class);
 		register(PlayerInteractEvent.Physical.class,  BukkitPlayerInteractPhysicalEvent.class, SpongePlayerInteractPhysicalEvent.class);
-                                                                                       
+
 		register(PlayerChatEvent.class,               BukkitPlayerChatEvent.class,             SpongePlayerChatEvent.class);
 		register(PlayerMoveEvent.class,               BukkitPlayerMoveEvent.class,             SpongePlayerMoveEvent.class);
 		register(PlayerTeleportEvent.class,           BukkitPlayerTeleportEvent.class,         SpongePlayerTeleportEvent.class);
 		register(PlayerChangedWorldEvent.class,       BukkitPlayerChangedWorldEvent.class,     SpongePlayerChangedWorldEvent.class);
-		                    
+
 		register(ServerListPingEvent.class,           BukkitServerListPingEvent.class,         SpongeServerListPingEvent.class);
 		register(PlayerConnectionEvent.Auth.class,    BukkitPlayerAuthEvent.class,             SpongePlayerAuthEvent.class,            BungeePlayerAuthEvent.class);
 		register(PlayerConnectionEvent.Login.class,   BukkitPlayerLoginEvent.class,            SpongePlayerLoginEvent.class,           BungeePlayerLoginEvent.class);
 		register(PlayerConnectionEvent.Join.class,    BukkitPlayerJoinEvent.class,             SpongePlayerJoinEvent.class,            BungeePlayerJoinEvent.class);
 		register(PlayerConnectionEvent.Quit.class,    BukkitPlayerQuitEvent.class,             SpongePlayerQuitEvent.class,            BungeePlayerQuitEvent.class);
-		                                                                                       
+
 		register(BlockEvent.Break.class,              BukkitBlockBreakEvent.class,             SpongeBlockBreakEvent.class);
 		register(BlockEvent.Place.class,              BukkitBlockPlaceEvent.class,             SpongeBlockPlaceEvent.class);
 		register(BlockEvent.PlayerChange.class,       BukkitPlayerChangeBlockEvent.class,      SpongePlayerChangeBlockEvent.class);
@@ -223,14 +223,14 @@ public class EventInfo {
 		return osmiumEvent;
 	}
 
-	public Class<? extends Event> getEvent() {
-		return event;
+	public Class<? extends Event> getEventWrapperClass() {
+		return eventWrapperClass;
 	}
 
 	public String getEventName() {
 		//TODO: Define this recursively for arbitrarily many enclosing classes
-		return event.getEnclosingClass() == null ? event.getSimpleName()
-				: event.getEnclosingClass().getSimpleName() + "." + event.getSimpleName();
+		return eventWrapperClass.getEnclosingClass() == null ? eventWrapperClass.getSimpleName()
+				: eventWrapperClass.getEnclosingClass().getSimpleName() + "." + eventWrapperClass.getSimpleName();
 	}
 
 	@SuppressWarnings("unchecked")

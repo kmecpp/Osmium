@@ -24,7 +24,6 @@ import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.EntityType;
 import com.kmecpp.osmium.api.entity.Player;
-import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
@@ -138,12 +137,12 @@ public class SpongeAccess {
 		}
 	}
 
-	public static void registerOsmiumListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> sourceEventConsumer) {
-		for (Class<Event> sourceClass : eventInfo.<Event> getSourceClasses()) {
-			Sponge.getEventManager().registerListener(plugin.getSource(), sourceClass,
-					(org.spongepowered.api.event.Order) order.getSource(), false,
-					(spongeEvent) -> sourceEventConsumer.accept(spongeEvent));
-		}
+	public static void registerOsmiumListener(OsmiumPlugin plugin, Class<? extends Event> spongeEventClass, Order order, Method method, Object listenerInstance, Consumer<Object> sourceEventConsumer) {
+		//		for (Class<Event> sourceClass : eventInfo.<Event> getSourceClasses()) {
+		Sponge.getEventManager().registerListener(plugin.getSource(), spongeEventClass,
+				(org.spongepowered.api.event.Order) order.getSource(), false,
+				(spongeEvent) -> sourceEventConsumer.accept(spongeEvent));
+		//		}
 
 		//		Class<? extends org.spongepowered.api.event.Event> spongeEventClass = eventInfo.getSource();
 		//		Constructor<? extends Event> eventWrapper = eventInfo.getImplementation().getConstructor(spongeEventClass);

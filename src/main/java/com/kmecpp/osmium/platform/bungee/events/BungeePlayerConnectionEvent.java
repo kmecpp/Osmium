@@ -9,21 +9,20 @@ import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 
 public abstract class BungeePlayerConnectionEvent implements PlayerConnectionEvent {
 
 	public static class BungeePlayerAuthEvent extends BungeePlayerConnectionEvent implements PlayerConnectionEvent.Auth {
 
-		private PreLoginEvent event;
+		private LoginEvent event; //PreLoginEvent exists but UUID is not accessible when it is called. Use LoginEvent instead
 
-		public BungeePlayerAuthEvent(PreLoginEvent event) {
+		public BungeePlayerAuthEvent(LoginEvent event) {
 			this.event = event;
 		}
 
 		@Override
-		public PreLoginEvent getSource() {
+		public LoginEvent getSource() {
 			return event;
 		}
 

@@ -72,7 +72,7 @@ public class EventManager {
 	}
 
 	public void registerListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {
-		Class<? extends Event> osmiumEventInterface = eventInfo.getEvent(); //getOsmiumImplementation();
+		Class<? extends Event> osmiumEventInterface = eventInfo.getEventWrapperClass(); //getOsmiumImplementation();
 		Class<?>[] nestedClasses = osmiumEventInterface.getClass().getDeclaredClasses();
 
 		//Register event class with children. Ex: void on(BlockEvent)
@@ -91,36 +91,33 @@ public class EventManager {
 	}
 
 	private void registerSourceListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance) {
-		OsmiumLogger.debug("Registering source listener for " + plugin.getName() + ": "
-				+ listenerInstance.getClass().getName() + "." + method.getName()
-				+ "(" + eventInfo.getEventName() + ")");
+		//		OsmiumLogger.debug("Registering source listener for " + plugin.getName() + ": "
+		//				+ listenerInstance.getClass().getName() + "." + method.getName() + "(" + eventInfo.getEventName() + ")");
 		//		OsmiumLogger.debug(Chat.YELLOW + "    SOURCE CLASSES: " + eventInfo.getSourceClasses());
+		EventKey key = new EventKey(eventInfo.getEventWrapperClass(), order); //Every Osmium event wrapper class has exactly one global handler
 		for (Class<?> sourceEventClass : eventInfo.getSourceClasses()) {
-			EventKey key = new EventKey(sourceEventClass, order);
+			//			EventKey key = new EventKey(sourceEventClass, order);
 
 			boolean firstEventRegistration = !this.proxyListeners.containsKey(key);
-			HashMap<Object, ArrayList<Method>> listenerInstances = firstEventRegistration ? new HashMap<>() : this.proxyListeners.get(key);
-			if (firstEventRegistration) {
-				this.proxyListeners.put(key, listenerInstances);
-			}
+			HashMap<Object, ArrayList<Method>> listenerInstances = this.proxyListeners.computeIfAbsent(key, k -> new HashMap<>());
 
-			ArrayList<Method> listeners = listenerInstances.get(listenerInstance);
-			if (listeners == null) {
-				listeners = new ArrayList<>();
-				listenerInstances.put(listenerInstance, listeners);
-			}
-			listeners.add(method);
+			listenerInstances.computeIfAbsent(listenerInstance, k -> new ArrayList<>())
+					.add(method);
+
+			//			System.out.println("FIRST REGISTRATION: " + firstEventRegistration);
 
 			if (firstEventRegistration) {
 				//Register source event once for each sourceEventClass/order combination 
 				final Constructor<? extends EventAbstraction> eventWrapperConstructor = getConstructor(eventInfo, sourceEventClass);
+				//				System.out.println("EVENT WRAPPER CONSTRUCTOR FOR " + sourceEventClass + " == " + eventWrapperConstructor);
 
-				Consumer<Object> globalHandlerForEvent = (sourceEventInstance) -> {
-					if (!sourceEventClass.isAssignableFrom(sourceEventInstance.getClass())) {
-						return;
-					}
+				Consumer<Object> globalOsmiumHandlerForEvent = (sourceEventInstance) -> {
+					//					System.out.println("SOURCE EVENT INSTANCE: " + sourceEventInstance);
+					//					if (!sourceEventClass.isAssignableFrom(sourceEventInstance.getClass())) {
+					//						return; //Is this necessary?
+					//					}
 					try {
-						EventAbstraction event = eventWrapperConstructor.newInstance(sourceEventInstance);
+						EventAbstraction event = eventWrapperConstructor.newInstance(sourceEventInstance); //Construct the Osmium Event wrapper with the source event instance
 						if (!event.shouldFire()) {
 							return;
 						}
@@ -129,7 +126,7 @@ public class EventManager {
 							Object currentListenerInstance = entry.getKey();
 							for (Method listenerMethod : entry.getValue()) {
 								try {
-									//									System.out.println("Invoking: " + listenerMethod + ", " + listenerInstance + ", " + event);
+									//									System.out.println("Invoking: " + listenerMethod + ", " + currentListenerInstance + ", " + event);
 									listenerMethod.invoke(currentListenerInstance, event);
 								} catch (Exception ex) {
 									//								System.out.println(listenerInstance.getClass().getName());
@@ -143,13 +140,15 @@ public class EventManager {
 					}
 				};
 
+				//				OsmiumLogger.info(Chat.RED + "REGISTERED LISTENER FOR " + plugin.getName() + ": " + eventInfo.getEventName());
+
+				//Register a listener on the source platform for the source event that invokes our global event handler
 				if (Platform.isBukkit()) {
-					//					OsmiumLogger.debug(Chat.RED + "REGISTERED LISTENER FOR " + plugin.getName() + ": " + eventInfo.getEventName());
-					BukkitAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, Reflection.cast(globalHandlerForEvent));
+					BukkitAccess.registerOsmiumListener(plugin, Reflection.cast(sourceEventClass), order, method, listenerInstance, Reflection.cast(globalOsmiumHandlerForEvent));
 				} else if (Platform.isSponge()) {
-					SpongeAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, Reflection.cast(globalHandlerForEvent));
+					SpongeAccess.registerOsmiumListener(plugin, Reflection.cast(sourceEventClass), order, method, listenerInstance, Reflection.cast(globalOsmiumHandlerForEvent));
 				} else if (Platform.isProxy()) {
-					BungeeAccess.registerOsmiumListener(plugin, eventInfo, order, method, listenerInstance, Reflection.cast(globalHandlerForEvent));
+					BungeeAccess.registerOsmiumListener(plugin, Reflection.cast(sourceEventClass), order, method, listenerInstance, Reflection.cast(globalOsmiumHandlerForEvent));
 				}
 			}
 		}

@@ -20,7 +20,6 @@ import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.EntityType;
 import com.kmecpp.osmium.api.entity.Player;
-import com.kmecpp.osmium.api.event.EventInfo;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
@@ -172,12 +171,12 @@ public class BukkitAccess {
 		Bukkit.getPluginManager().registerEvents(listener, plugin.getSource());
 	}
 
-	public static void registerOsmiumListener(OsmiumPlugin plugin, EventInfo eventInfo, Order order, Method method, Object listenerInstance, Consumer<Object> sourceEventConsumer) {
-		for (Class<? extends org.bukkit.event.Event> bukkitEventClass : eventInfo.<org.bukkit.event.Event> getSourceClasses()) {
-			Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getSource(), (EventPriority) order.getSource(),
-					(bukkitListener, bukkitEvent) -> sourceEventConsumer.accept(bukkitEvent),
-					plugin.getSource(), false);
-		}
+	public static void registerOsmiumListener(OsmiumPlugin plugin, Class<? extends org.bukkit.event.Event> bukkitEventClass, Order order, Method method, Object listenerInstance, Consumer<Object> sourceEventConsumer) {
+		//		for (Class<? extends org.bukkit.event.Event> bukkitEventClass : eventInfo.<org.bukkit.event.Event> getSourceClasses()) {
+		Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getSource(), (EventPriority) order.getSource(),
+				(bukkitListener, bukkitEvent) -> sourceEventConsumer.accept(bukkitEvent),
+				plugin.getSource(), false);
+		//		}
 	}
 
 }

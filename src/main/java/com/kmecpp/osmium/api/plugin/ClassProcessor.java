@@ -330,14 +330,14 @@ public class ClassProcessor {
 						OsmiumLogger.error("Osmium event class has no registered implementation: " + eventClass.getName());
 						continue;
 					} else if (eventInfo.getOsmiumImplementation() == null) {
-						OsmiumLogger.error("Failed to register " + eventInfo.getEvent().getSimpleName() + " listener with " + cls.getSimpleName() + ". "
+						OsmiumLogger.error("Failed to register " + eventInfo.getEventWrapperClass().getSimpleName() + " listener with " + cls.getSimpleName() + ". "
 								+ "The event is not implemented for this platform.");
 						continue;
 					}
 
 					if (eventInfo.isOsmiumEvent()) {
 						//Register implementation class for Osmium
-						OsmiumLogger.debug("Registering listener for " + eventInfo.getEvent().getSimpleName() + ": " + cls.getSimpleName() + "." + method.getName());
+						OsmiumLogger.debug("Registering listener for " + eventInfo.getEventWrapperClass().getSimpleName() + ": " + cls.getSimpleName() + "." + method.getName());
 						Osmium.getEventManager().registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
 
 					} else {
