@@ -20,16 +20,14 @@ public class Pair<X, Y> {
 
 	@Override
 	public int hashCode() {
-		if (first != null && second != null) {
-			return first.hashCode() ^ second.hashCode();
-		}
-
-		return super.hashCode();
+		return (first == null ? 0 : first.hashCode()) ^ (second == null ? 0 : second.hashCode());
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Pair) {
+		if (obj == this) {
+			return true;
+		} else if (obj instanceof Pair) {
 			Pair<?, ?> pair = (Pair<?, ?>) obj;
 			return first.equals(pair.first) && second.equals(pair.second);
 		}

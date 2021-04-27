@@ -187,10 +187,14 @@ public class TimeUtil {
 		return (System.currentTimeMillis() - start) / 1000D / 60D / 60D / 24D;
 	}
 
+	//	public static boolean isSameDay2(long t1, long t2) {
+	//		Calendar c1 = getCalendar(t1);
+	//		Calendar c2 = getCalendar(t2);
+	//		return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
+	//	}
+
 	public static boolean isSameDay(long t1, long t2) {
-		Calendar c1 = getCalendar(t1);
-		Calendar c2 = getCalendar(t2);
-		return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
+		return Instant.ofEpochMilli(t1).atZone(zoneId).toLocalDate().isEqual(Instant.ofEpochMilli(t2).atZone(zoneId).toLocalDate());
 	}
 
 }

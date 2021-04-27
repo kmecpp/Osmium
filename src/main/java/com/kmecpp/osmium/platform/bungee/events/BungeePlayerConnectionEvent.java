@@ -9,7 +9,7 @@ import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.ServerConnectEvent;
+import net.md_5.bungee.api.event.ServerConnectedEvent;
 
 public abstract class BungeePlayerConnectionEvent implements PlayerConnectionEvent {
 
@@ -78,14 +78,14 @@ public abstract class BungeePlayerConnectionEvent implements PlayerConnectionEve
 
 	public static class BungeePlayerJoinEvent extends BungeePlayerConnectionEvent implements PlayerConnectionEvent.Join {
 
-		private ServerConnectEvent event;
+		private ServerConnectedEvent event; //Also use login event? otherwise join event is called multiple times for bungee
 
-		public BungeePlayerJoinEvent(ServerConnectEvent event) {
+		public BungeePlayerJoinEvent(ServerConnectedEvent event) {
 			this.event = event;
 		}
 
 		@Override
-		public ServerConnectEvent getSource() {
+		public ServerConnectedEvent getSource() {
 			return event;
 		}
 

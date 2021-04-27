@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import com.kmecpp.osmium.api.database.mysql.MDBTableData;
 import com.kmecpp.osmium.api.database.mysql.MDBUtil;
@@ -197,6 +198,21 @@ public abstract class SQLDatabase {
 			result = Reflection.createInstance(tableClass);
 		}
 		return result;
+	}
+
+	public <T> T getOrCreate(Class<T> tableClass, Supplier<T> supplier, String columns, Object... primaryKeys) {
+		return getOrCreate(tableClass, supplier, columns.split(","), primaryKeys);
+	}
+
+	public <T> T getOrCreate(Class<T> tableClass, Supplier<T> supplier, String[] columns, Object... primaryKeys) {
+		ArrayList<T> list = query(tableClass, columns, primaryKeys);
+		if (list.isEmpty()) {
+			return supplier.get();
+		} else if (list.size() != 1) {
+			throw new IllegalStateException("Database query returned multiple rows: " + list.size());
+		} else {
+			return list.get(0);
+		}
 	}
 
 	public <T> T getOrDefault(Class<T> tableClass, T defaultValue, Object... primaryKeys) {

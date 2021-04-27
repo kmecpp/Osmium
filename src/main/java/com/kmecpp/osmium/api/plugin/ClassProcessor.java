@@ -350,6 +350,7 @@ public class ClassProcessor {
 
 		AutoRegister autoRegister = cls.getDeclaredAnnotation(AutoRegister.class);
 		if (autoRegister != null) {
+			OsmiumLogger.warn("Auto registering: " + cls.getName());
 			Object instance = safeGetInstance(cls);
 			if (Platform.isBukkit()) {
 				BukkitAccess.registerListener(plugin, (org.bukkit.event.Listener) instance);
