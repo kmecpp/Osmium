@@ -31,7 +31,7 @@ public class OrderBy {
 
 	@Override
 	public String toString() {
-		return "ORDER BY " + column + " " + direction;
+		return "ORDER BY `" + column + "` " + direction;
 	}
 
 }
