@@ -209,7 +209,7 @@ public class MDBUtil {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < columns.length; ++i) {
 			//				sb.append((i > 0 ? " AND " : "") + "" + columns[i] + "='" + values[i] + "'");
-			sb.append((i > 0 ? " AND " : "") + "" + columns[i] + "=?");
+			sb.append((i > 0 ? " AND " : "") + "`" + columns[i].trim() + "`=?");
 		}
 		return sb.toString();
 		//		}
