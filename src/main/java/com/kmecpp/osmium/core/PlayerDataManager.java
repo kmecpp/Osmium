@@ -46,6 +46,10 @@ public class PlayerDataManager {
 		return (T) data.get(player.getUniqueId()).get(cls);
 	}
 
+	public <T> void setData(Player player, Class<T> cls, T value) {
+		data.get(player.getUniqueId()).put(cls, value);
+	}
+
 	public <T> void registerDataLoader(Class<T> cls, Function<User, T> loader) {
 		loaders.put(cls, loader);
 	}

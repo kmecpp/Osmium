@@ -71,6 +71,10 @@ public interface Player extends User, EntityLiving, CommandSender {
 		return Osmium.getPlayerDataManager().getData(this, type);
 	}
 
+	default <T extends Saveable> void setData(Class<T> type, T data) {
+		Osmium.getPlayerDataManager().setData(this, type, data);
+	}
+
 	default <T extends Saveable> void updateData(Class<T> type, Consumer<T> updater) {
 		T data = getData(type);
 		updater.accept(data);
