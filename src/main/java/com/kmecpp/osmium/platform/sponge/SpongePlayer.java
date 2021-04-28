@@ -14,13 +14,12 @@ import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.text.Text;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.SoundType;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
-import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.core.OsmiumUserIds;
 
 public class SpongePlayer extends SpongeEntityLiving implements Player {
 
@@ -30,15 +29,7 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 	public SpongePlayer(org.spongepowered.api.entity.living.player.Player player) {
 		super(player);
 		this.player = player;
-		if (player.getName().startsWith("[")) {
-			this.osmiumId = -1;
-		} else {
-			Optional<Integer> optionalId = Osmium.getUserId(player.getUniqueId());
-			this.osmiumId = optionalId.orElse(-1);
-			if (!optionalId.isPresent()) {
-				OsmiumLogger.warn("Could not get user ID player: " + player.getName());
-			}
-		}
+		this.osmiumId = OsmiumUserIds.getUserIdFromPlayer(this);
 	}
 
 	@Override

@@ -1,19 +1,16 @@
 package com.kmecpp.osmium.platform.bukkit;
 
-import java.util.Optional;
-
 import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
-import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.SoundType;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Vector3d;
-import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.core.OsmiumUserIds;
 
 public class BukkitPlayer extends BukkitEntityLiving implements Player {
 
@@ -23,15 +20,7 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 	public BukkitPlayer(org.bukkit.entity.Player player) {
 		super(player);
 		this.player = player;
-		if (player.getName().startsWith("[") || player.getName().contains("-")) {
-			this.osmiumId = -1;
-		} else {
-			Optional<Integer> optionalId = Osmium.getUserId(player.getUniqueId());
-			this.osmiumId = optionalId.orElse(-1);
-			if (!optionalId.isPresent()) {
-				OsmiumLogger.warn("Could not get user ID player: " + player.getName());
-			}
-		}
+		this.osmiumId = OsmiumUserIds.getUserIdFromPlayer(this);
 	}
 
 	@Override

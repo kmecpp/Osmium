@@ -1,9 +1,7 @@
 package com.kmecpp.osmium.platform.bungee;
 
-import java.util.Optional;
 import java.util.UUID;
 
-import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.GameMode;
 import com.kmecpp.osmium.api.Projectile;
 import com.kmecpp.osmium.api.SoundType;
@@ -15,7 +13,7 @@ import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.location.Vector3d;
-import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.core.OsmiumUserIds;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -27,15 +25,7 @@ public class BungeePlayer implements Player {
 
 	public BungeePlayer(ProxiedPlayer player) {
 		this.player = player;
-		if (player.getName().startsWith("[")) {
-			this.osmiumId = -1;
-		} else {
-			Optional<Integer> optionalId = Osmium.getUserId(player.getUniqueId());
-			this.osmiumId = optionalId.orElse(-1);
-			if (!optionalId.isPresent()) {
-				OsmiumLogger.warn("Could not get user ID player: " + player.getName());
-			}
-		}
+		this.osmiumId = OsmiumUserIds.getUserIdFromPlayer(this);
 	}
 
 	@Override

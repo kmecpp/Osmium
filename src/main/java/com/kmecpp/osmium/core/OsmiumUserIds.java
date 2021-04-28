@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.GameProfile;
+import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Pair;
 
@@ -73,6 +74,18 @@ public class OsmiumUserIds {
 			ids.put(uuid, data);
 		}
 		return Optional.of(data.getFirst());
+	}
+
+	public static int getUserIdFromPlayer(Player player) {
+		if (player.getName().startsWith("[") || player.getName().contains("-")) {
+			return -1;
+		} else {
+			Optional<Integer> optionalId = Osmium.getUserId(player.getUniqueId());
+			if (!optionalId.isPresent()) {
+				OsmiumLogger.warn("Could not get user ID player: " + player.getName());
+			}
+			return optionalId.orElse(-1);
+		}
 	}
 
 	public static void cleanup() {
