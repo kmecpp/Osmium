@@ -8,9 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import com.kmecpp.osmium.api.database.mysql.MDBTableData;
 import com.kmecpp.osmium.api.database.mysql.MDBUtil;
@@ -200,18 +200,18 @@ public abstract class SQLDatabase {
 		return result;
 	}
 
-	public <T> T getOrCreate(Class<T> tableClass, Supplier<T> supplier, String columns, Object... primaryKeys) {
-		return getOrCreate(tableClass, supplier, columns.split(","), primaryKeys);
+	public <T> Optional<T> getOptional(Class<T> tableClass, String columns, Object... primaryKeys) {
+		return getOptional(tableClass, columns.split(","), primaryKeys);
 	}
 
-	public <T> T getOrCreate(Class<T> tableClass, Supplier<T> supplier, String[] columns, Object... primaryKeys) {
+	public <T> Optional<T> getOptional(Class<T> tableClass, String[] columns, Object... primaryKeys) {
 		ArrayList<T> list = query(tableClass, columns, primaryKeys);
 		if (list.isEmpty()) {
-			return supplier.get();
+			return Optional.empty();
 		} else if (list.size() != 1) {
 			throw new IllegalStateException("Database query returned multiple rows: " + list.size());
 		} else {
-			return list.get(0);
+			return Optional.of(list.get(0));
 		}
 	}
 
