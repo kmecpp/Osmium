@@ -538,7 +538,9 @@ public final class Osmium {
 	public static String getMinecraftVersion() {
 		if (mcVersion == null) {
 			try {
-				if (Platform.isBukkit()) {
+				if (Platform.isDev()) {
+					mcVersion = "DEV";
+				} else if (Platform.isBukkit()) {
 					//				mcVersion = Bukkit.getServer().getClass().getPackage().getName().substring(23);
 					mcVersion = Bukkit.getVersion().substring(Bukkit.getVersion().indexOf(':') + 2, Bukkit.getVersion().length() - 1);
 				} else if (Platform.isSponge()) {

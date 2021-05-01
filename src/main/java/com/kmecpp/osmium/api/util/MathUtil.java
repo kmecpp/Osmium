@@ -37,7 +37,7 @@ public class MathUtil {
 	}
 
 	public static String round(double n, int decimalDigits) {
-		DecimalFormat format = new DecimalFormat("#." + StringUtil.repeat('#', decimalDigits));
+		DecimalFormat format = new DecimalFormat("0." + StringUtil.repeat('#', decimalDigits));
 		format.setRoundingMode(RoundingMode.HALF_UP);
 		return format.format(n);
 	}
@@ -47,7 +47,7 @@ public class MathUtil {
 	}
 
 	public static String format(double n, int decimalDigits) {
-		DecimalFormat format = new DecimalFormat("#." + StringUtil.repeat('0', decimalDigits));
+		DecimalFormat format = new DecimalFormat("0." + StringUtil.repeat('0', decimalDigits));
 		format.setRoundingMode(RoundingMode.HALF_UP);
 		return format.format(n);
 		//		String rounded = round(n, decimalDigits);

@@ -155,6 +155,22 @@ public class CommandEvent implements Messageable {
 		return result;
 	}
 
+	public int getIntBound(int index, int min, int max) {
+		int result = getInt(index);
+		if (result < min || result > max) {
+			throw new CommandException("Input '" + result + "' must be between " + min + " and " + max);
+		}
+		return result;
+	}
+
+	public int getIntBound(int index, int min, int max, String name) {
+		int result = getInt(index);
+		if (result < min || result > max) {
+			throw new CommandException(name + " was " + result + " but must be between " + min + " and " + max);
+		}
+		return result;
+	}
+
 	public double getDouble(int index) {
 		String input = get(index);
 		try {
