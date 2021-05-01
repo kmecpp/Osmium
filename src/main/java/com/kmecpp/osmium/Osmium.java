@@ -231,21 +231,35 @@ public final class Osmium {
 		}
 	}
 
-	public static void broadcast(String message) {
-		if (Platform.isBukkit()) {
-			Bukkit.broadcastMessage(Chat.style(message));
-		} else if (Platform.isSponge()) {
-			Sponge.getServer().getBroadcastChannel().send(SpongeAccess.getText(Chat.style(message)));
-		} else if (Platform.isBungeeCord()) {
-			BungeeCord.getInstance().broadcast(message);
-		}
-	}
-
 	public static void broadcast(Predicate<Player> filter, String message) {
 		for (Player player : Osmium.getOnlinePlayers()) {
 			if (filter.test(player)) {
 				player.send(message);
 			}
+		}
+	}
+
+	public static void broadcast(String message) {
+		if (Platform.isDev()) {
+			System.out.println(message);
+		} else if (Platform.isBukkit()) {
+			Bukkit.broadcastMessage(Chat.style(message));
+		} else if (Platform.isSponge()) {
+			Sponge.getServer().getBroadcastChannel().send(SpongeAccess.getText(Chat.style(message)));
+		} else if (Platform.isBungeeCord()) {
+			BungeeCord.getInstance().broadcast(Chat.style(message));
+		}
+	}
+
+	public static void broadcastMessage(String message) {
+		if (Platform.isDev()) {
+			System.out.println(message);
+		} else if (Platform.isBukkit()) {
+			Bukkit.broadcastMessage(message);
+		} else if (Platform.isSponge()) {
+			Sponge.getServer().getBroadcastChannel().send(SpongeAccess.getText(message));
+		} else if (Platform.isBungeeCord()) {
+			BungeeCord.getInstance().broadcast(message);
 		}
 	}
 

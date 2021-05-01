@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.util;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -195,6 +196,10 @@ public class TimeUtil {
 
 	public static boolean isSameDay(long t1, long t2) {
 		return Instant.ofEpochMilli(t1).atZone(zoneId).toLocalDate().isEqual(Instant.ofEpochMilli(t2).atZone(zoneId).toLocalDate());
+	}
+
+	public static LocalDateTime getLocalDateTime(long time) {
+		return Instant.ofEpochMilli(time).atZone(zoneId).toLocalDateTime();
 	}
 
 }
