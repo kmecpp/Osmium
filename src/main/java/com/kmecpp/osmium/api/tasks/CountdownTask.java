@@ -12,7 +12,7 @@ public class CountdownTask extends AbstractOsmiumTask<CountdownTask> {
 		super(plugin);
 		this.start = start;
 		this.remaining = start + 1;
-		this.setLastRun(start);
+		this.setLastRun(remaining);
 		this.setInterval(1, com.kmecpp.osmium.api.TickTimeUnit.SECOND);
 	}
 
