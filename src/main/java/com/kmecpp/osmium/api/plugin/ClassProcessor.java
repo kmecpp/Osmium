@@ -297,7 +297,7 @@ public class ClassProcessor {
 					method.invoke(instance);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					OsmiumLogger.error("Method " + cls.getSimpleName() + "." + method.getName() + " annotated with @" + Initializer.class.getSimpleName()
-							+ " cannot be executed because it contains parameters!");
+							+ " cannot be executed. Does it require arguments?");
 					e.printStackTrace();
 				}
 			}

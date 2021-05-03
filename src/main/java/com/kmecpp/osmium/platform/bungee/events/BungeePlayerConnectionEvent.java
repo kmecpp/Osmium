@@ -9,13 +9,12 @@ import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.ServerConnectedEvent;
 
 public abstract class BungeePlayerConnectionEvent implements PlayerConnectionEvent {
 
 	public static class BungeePlayerAuthEvent extends BungeePlayerConnectionEvent implements PlayerConnectionEvent.Auth {
 
-		private LoginEvent event; //PreLoginEvent exists but UUID is not accessible when it is called. Use LoginEvent instead
+		private LoginEvent event; //PreLoginEvent exists but UUID is not accessible when it is called. Use LoginEvent instead? If so auth is post-login for Bungee and pre for others.
 
 		public BungeePlayerAuthEvent(LoginEvent event) {
 			this.event = event;
@@ -76,38 +75,15 @@ public abstract class BungeePlayerConnectionEvent implements PlayerConnectionEve
 
 	}
 
-	public static class BungeePlayerJoinEvent extends BungeePlayerConnectionEvent implements PlayerConnectionEvent.Join {
+	public static class BungeePlayerJoinEvent extends BungeePlayerLoginEvent implements PlayerConnectionEvent.Join {
 
-		private ServerConnectedEvent event; //Also use login event? otherwise join event is called multiple times for bungee
-
-		public BungeePlayerJoinEvent(ServerConnectedEvent event) {
-			this.event = event;
-		}
-
-		@Override
-		public ServerConnectedEvent getSource() {
-			return event;
+		public BungeePlayerJoinEvent(LoginEvent event) {
+			super(event);
 		}
 
 		@Override
 		public Player getPlayer() {
-			return BungeeAccess.getPlayer(event.getPlayer());
-		}
-
-		@Override
-		public UUID getUniqueId() {
-			return event.getPlayer().getUniqueId();
-		}
-
-		@Override
-		public String getPlayerName() {
-			return event.getPlayer().getName();
-		}
-
-		@SuppressWarnings("deprecation")
-		@Override
-		public InetAddress getAddress() {
-			return event.getPlayer().getAddress().getAddress();
+			return null;
 		}
 
 	}
