@@ -52,19 +52,32 @@ public class TimeUtil {
 	}
 
 	public static String formatTotalMillis(long time, int decimals) {
-		if (time < 1000) {
-			return StringUtil.plural(time, "millisecond");
-		} else if (time < 60 * 1000) {
-			return MathUtil.format(time, decimals) + " seconds";
-		} else if (time < 3600 * 1000) {
-			return MathUtil.format(time / 60D, decimals) + " minutes";
-		} else if (time < 86400 * 1000) {
-			return MathUtil.format(time / 3600D, decimals) + " hours";
-		} else if (time < 86400 * 365 * 1000) {
-			return MathUtil.format(time / 86400D, decimals) + " days";
-		} else {
-			return MathUtil.format(time / (86400D * 365D), decimals) + " years";
+		final double year = 365 * 86400 * 1000;
+		if (time > year) {
+			return MathUtil.format(time / year, decimals) + " years";
 		}
+
+		final double day = 86400 * 1000;
+		if (time > day) {
+			return MathUtil.format(time / day, decimals) + " days";
+		}
+
+		final double hour = 3600 * 1000;
+		if (time > hour) {
+			return MathUtil.format(time / hour, decimals) + " hours";
+		}
+
+		final double minute = 60 * 1000;
+		if (time > minute) {
+			return MathUtil.format(time / minute, decimals) + " minutes";
+		}
+
+		final double second = 1000;
+		if (time >= second) {
+			return MathUtil.format(time / second, decimals) + " seconds";
+		}
+
+		return StringUtil.plural(time, "millisecond");
 	}
 
 	public static String formatTotalMillis(long time) {
