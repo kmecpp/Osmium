@@ -19,20 +19,26 @@ import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.plugin.Initializer;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.tasks.Schedule;
-import com.kmecpp.osmium.api.util.StringUtil;
+import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.api.util.TimeUtil;
 
 public class OsmiumTest {
 
+	private static final int a = 3;
+
 	public static void main(String[] args) {
+		Reflection.setFinalField(OsmiumTest.class, null, "a", 4);
+		System.out.println(a);
 		//		JsonArray arr = Json.array("t console hi");
 		//		String s = arr.toString();
 		//		System.out.println(Json.parse(s));
 		//		System.out.println(StringUtil.rjust("hello", 6));
 		//		System.out.println(StringUtil.ljust("hello", 6));
-		System.out.println("HI");
-		System.out.println(StringUtil.displayAmount(120000000, 1));
-		System.out.println(StringUtil.parseAmount("12T"));
-		System.out.println(StringUtil.formatNumber(StringUtil.parseAmount("22T")));
+		//		System.out.println("HI");
+		//		System.out.println(StringUtil.displayAmount(120000000, 1));
+		//		System.out.println(StringUtil.parseAmount("12T"));
+		//		System.out.println(StringUtil.formatNumber(StringUtil.parseAmount("22T")));
+		System.out.println(TimeUtil.formatTotalMillis(1, 1));
 	}
 
 	@Test

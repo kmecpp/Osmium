@@ -163,6 +163,25 @@ public class Reflection {
 		}
 	}
 
+	public static void setStaticFinalField(Class<?> cls, String fieldName, Object value) {
+		setFinalField(cls, null, fieldName, value);
+	}
+
+	public static void setFinalField(Class<?> cls, Object obj, String fieldName, Object value) {
+		try {
+			Field field = cls.getDeclaredField(fieldName);
+			field.setAccessible(true);
+
+			Field modifiersField = Field.class.getDeclaredField("modifiers");
+			modifiersField.setAccessible(true);
+			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+			field.set(null, value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
 	 * Tests whether or not the class is assignable from ANY of the given
 	 * options. Essentially this method calls for each class parameter in the
