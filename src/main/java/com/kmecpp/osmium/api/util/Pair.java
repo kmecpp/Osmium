@@ -10,6 +10,10 @@ public class Pair<X, Y> {
 		this.second = second;
 	}
 
+	public static <X, Y> Pair<X, Y> of(X first, Y second) {
+		return new Pair<>(first, second);
+	}
+
 	public X getFirst() {
 		return first;
 	}
