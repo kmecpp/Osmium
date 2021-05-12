@@ -84,6 +84,15 @@ public class SimpleDate {
 	}
 
 	@Override
+	public int hashCode() {
+		int result = 1;
+		result = 31 * result + year;
+		result = 31 * result + month;
+		result = 31 * result + day;
+		return result;
+	}
+
+	@Override
 	public String toString() {
 		return year + "-" + month + "-" + day;
 	}

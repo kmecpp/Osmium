@@ -69,4 +69,12 @@ public class JavaUtil {
 		return null;
 	}
 
+	public static int hashCode(int... integers) {
+		int result = 1;
+		for (int i : integers) {
+			result = 31 * result + i;
+		}
+		return result;
+	}
+
 }
