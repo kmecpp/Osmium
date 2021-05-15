@@ -50,19 +50,19 @@ public class StringUtil {
 		if (unit == "ms") {
 			return number;
 		} else if (unit.equalsIgnoreCase("s")) {
-			return 1000 * number;
+			return 1000L * number;
 		} else if (unit.equalsIgnoreCase("m")) {
-			return 60 * 1000 * number;
+			return 60 * 1000L * number;
 		} else if (unit.equalsIgnoreCase("h")) {
-			return 3600 * 1000 * number;
+			return 3600 * 1000L * number;
 		} else if (unit.equalsIgnoreCase("d")) {
-			return 86400 * 1000 * number;
+			return 86400 * 1000L * number;
 		} else if (unit.equalsIgnoreCase("w")) {
-			return 7 * 86400 * 1000 * number;
+			return 7 * 86400 * 1000l * number;
 		} else if (unit.equalsIgnoreCase("mo")) {
-			return 30 * 86400 * 1000 * number;
+			return 30 * 86400 * 1000L * number;
 		} else if (unit.equalsIgnoreCase("y")) {
-			return 365 * 86400 * 1000 * number;
+			return 365 * 86400 * 1000L * number;
 		} else {
 			throw new IllegalArgumentException("Invalid unit: '" + unit + "'");
 		}

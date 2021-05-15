@@ -12,6 +12,7 @@ public class StringUtilTest {
 	public static void main(String[] args) {
 		//		System.out.println("-a".substring(0, "-a".length() - 1));
 		System.out.println(StringUtil.zfill("1", 0));
+		System.out.println(StringUtil.parseDuration("3mo"));
 	}
 
 	@Test
