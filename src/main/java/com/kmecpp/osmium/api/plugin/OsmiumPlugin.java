@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.api.plugin;
 
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -75,14 +76,16 @@ public abstract class OsmiumPlugin {
 		if (Platform.isBukkit()) {
 			this.dataFolder = this.<JavaPlugin> getSource().getDataFolder().toPath();
 		} else if (Platform.isSponge()) {
-			dataFolder = SpongeImpl.getPluginConfigDir() != null ? SpongeImpl.getPluginConfigDir().resolve(properties.name()) : Paths.get("");
+			this.dataFolder = SpongeImpl.getPluginConfigDir() != null ? SpongeImpl.getPluginConfigDir().resolve(properties.name()) : Paths.get("");
 		} else if (Platform.isBungeeCord()) {
-			dataFolder = this.<net.md_5.bungee.api.plugin.Plugin> getSource().getDataFolder().toPath();
+			this.dataFolder = this.<net.md_5.bungee.api.plugin.Plugin> getSource().getDataFolder().toPath();
 		}
 		this.persistentData = new PersistentPluginData(this);
 		this.classProcessor = new ClassProcessor(this, pluginImpl); //This loads the plugin's configs and persistent data
 		this.configTypeData = configTypeData;
-		this.classProcessor.provideInstance(this); //Always register main class. Avoids creating a second instance later 
+		this.classProcessor.provideInstance(this); //Always register main class. Avoids creating a second instance later
+		Files.createDirectories(this.dataFolder); //Always create a folder for the plugin. Maybe we only want to do this if necessary?
+
 		onConstruct();
 
 		//		if (!database.getTables().isEmpty()) {

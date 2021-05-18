@@ -17,7 +17,7 @@ import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 // @Plugin added by to subclass by Osmium annotation processor
 public abstract class SpongePlugin {
 
-	private final OsmiumPlugin plugin = Osmium.getPluginLoader().load(this);
+	private final OsmiumPlugin plugin = Osmium.getPluginLoader().createOsmiumPlugin(this);
 	private PluginContainer pluginContainer;
 
 	public PluginContainer getPluginContainer() {

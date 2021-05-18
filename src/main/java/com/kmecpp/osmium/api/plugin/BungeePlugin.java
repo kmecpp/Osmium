@@ -14,7 +14,7 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public abstract class BungeePlugin extends Plugin implements Listener {
 
-	private final OsmiumPlugin plugin = Osmium.getPluginLoader().load(this); //OsmiumData.constructPlugin();
+	private final OsmiumPlugin plugin = Osmium.getPluginLoader().createOsmiumPlugin(this); //OsmiumData.constructPlugin();
 
 	@Override
 	public void onLoad() {

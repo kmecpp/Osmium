@@ -25,7 +25,7 @@ public class PluginLoader {
 
 	private final HashMap<Class<?>, OsmiumPlugin> externalClasses = new HashMap<>();
 
-	public OsmiumPlugin load(Object pluginImpl) {
+	public OsmiumPlugin createOsmiumPlugin(Object pluginImpl) {
 		try {
 			//			String[] lines = IOUtil.readLines(pluginImpl.getClass().getResource("/osmium.properties")); //Weird sponge bug. Doesn't work anymore
 			JarFile jar = Directory.getJarFile(pluginImpl.getClass());

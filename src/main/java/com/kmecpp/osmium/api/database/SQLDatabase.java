@@ -147,6 +147,10 @@ public abstract class SQLDatabase {
 		});
 	}
 
+	public <T> void process(String query, ResultSetProcessor<T> handler) {
+		accumulate(query, handler);
+	}
+
 	public <T> T accumulate(String query, ResultSetProcessor<T> handler) {
 		OsmiumLogger.debug("Executing get query: " + query);
 		Statement statement = null;
