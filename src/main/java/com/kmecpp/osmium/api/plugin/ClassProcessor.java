@@ -442,7 +442,7 @@ public class ClassProcessor {
 								OsmiumLogger.error("Failed to connect to " + plugin.getName() + "'s SQLite database!");
 								t.printStackTrace();
 							}
-							sqlite = plugin.getMySQLDatabase().isConnected();
+							sqlite = plugin.getSQLiteDatabase().isConnected();
 						}
 						if (sqlite) {
 							OsmiumLogger.debug("Initializing SQLite database table: " + table.name());
