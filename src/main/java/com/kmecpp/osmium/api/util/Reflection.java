@@ -723,6 +723,15 @@ public class Reflection {
 		return names;
 	}
 
+	public static Method getDeclaredMethodWithName(Class<?> cls, String name) {
+		for (Method method : cls.getDeclaredMethods()) {
+			if (method.getName().equals(name)) {
+				return method;
+			}
+		}
+		return null;
+	}
+
 	public static void printMethods(Class<?> cls) {
 		for (Method method : cls.getDeclaredMethods()) {
 			System.out.println(method.getReturnType().getName() + " " + method.getName() + "(" + String.join(", ", getSimpleNames(method.getParameterTypes())) + ")");
