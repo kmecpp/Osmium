@@ -2,12 +2,30 @@ package com.kmecpp.osmium.api.location;
 
 public class BlockLocation {
 
-	public int x, y, z;
+	private String worldName;
+	private int x, y, z;
 
-	public BlockLocation(int x, int y, int z) {
+	public BlockLocation(String worldName, int x, int y, int z) {
+		this.worldName = worldName;
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+
+	public String getWorldName() {
+		return worldName;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getZ() {
+		return z;
 	}
 
 	@Override
