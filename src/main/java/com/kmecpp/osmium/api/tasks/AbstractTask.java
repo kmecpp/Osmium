@@ -156,9 +156,13 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return running;
 	}
 
-	public T setCancelOnError() {
-		this.cancelOnError = true;
+	public T setCancelOnError(boolean cancelOnError) {
+		this.cancelOnError = cancelOnError;
 		return getInstance();
+	}
+
+	public boolean isCancelOnError() {
+		return cancelOnError;
 	}
 
 	public T start() {

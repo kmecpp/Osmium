@@ -36,17 +36,7 @@ public abstract class AbstractOsmiumTask<T extends AbstractTask<T>> extends Abst
 			}
 			taskImpl = builder.delay(delay * 50, TimeUnit.MILLISECONDS)
 					.interval(interval * 50, TimeUnit.MILLISECONDS)
-					.execute((t) -> {
-						if (cancelOnError) {
-							try {
-								doExecute();
-							} catch (Throwable throwable) {
-								t.cancel();
-							}
-						} else {
-							doExecute();
-						}
-					})
+					.execute((t) -> this.doExecute())
 					.submit(getSource());
 		} else if (Platform.isBungeeCord()) {
 			taskImpl = BungeeCord.getInstance().getScheduler().schedule(getSource(), this::doExecute, delay * 50, interval * 50, TimeUnit.MILLISECONDS);
@@ -59,7 +49,11 @@ public abstract class AbstractOsmiumTask<T extends AbstractTask<T>> extends Abst
 			executor.execute(getInstance());
 		} catch (Throwable t) {
 			doFinalize();
-			throw new RuntimeException(t);
+			if (cancelOnError) {
+				cancel();
+			} else {
+				throw new RuntimeException(t);
+			}
 		}
 		if (lastRun > 0 && counter >= lastRun) {
 			cancel(); //Cancel should be called first to ensure that if the finalizer errors we still exit
