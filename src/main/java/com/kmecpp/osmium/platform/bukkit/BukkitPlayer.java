@@ -229,4 +229,9 @@ public class BukkitPlayer extends BukkitEntityLiving implements Player {
 		player.playSound(player.getLocation(), (Sound) sound.getSource(), volume, pitch);
 	}
 
+	@Override
+	public String toString() {
+		return player.toString();
+	}
+
 }

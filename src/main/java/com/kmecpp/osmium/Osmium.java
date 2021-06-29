@@ -390,9 +390,12 @@ public final class Osmium {
 	public static boolean isPlayerOnline(UUID uuid) {
 		if (Platform.isBukkit()) {
 			return Bukkit.getPlayer(uuid) != null;
-		} else {
+		} else if (Platform.isSponge()) {
 			return Sponge.getServer().getPlayer(uuid).isPresent();
+		} else if (Platform.isProxy()) {
+			return BungeeCord.getInstance().getPlayer(uuid) != null;
 		}
+		return false;
 	}
 
 	public static Collection<Player> getOnlinePlayers() {
@@ -437,8 +440,8 @@ public final class Osmium {
 
 	public static Optional<User> getOrCreateUser(UUID uuid, String name) {
 		if (Platform.isBukkit()) {
-			OfflinePlayer user = Bukkit.getOfflinePlayer(uuid);
-			return Optional.of(new BukkitUser(user));
+			OfflinePlayer user = Bukkit.getOfflinePlayer(uuid); //User.getName() is null when they are new to the server
+			return Optional.of(new BukkitUser(user, name));
 		} else if (Platform.isSponge()) {
 			try {
 				org.spongepowered.api.profile.GameProfile gameProfile = Sponge.getServer().getGameProfileManager().get(uuid).get();
@@ -468,7 +471,7 @@ public final class Osmium {
 		if (Platform.isBukkit()) {
 			OfflinePlayer user = Bukkit.getOfflinePlayer(uuid);
 			if (user.hasPlayedBefore()) {
-				return Optional.of(new BukkitUser(user));
+				return Optional.of(new BukkitUser(user, user.getName()));
 			}
 		} else if (Platform.isSponge()) {
 			Optional<org.spongepowered.api.entity.living.player.User> user = Sponge.getServiceManager().provide(UserStorageService.class).get().get(uuid);
@@ -488,7 +491,7 @@ public final class Osmium {
 			@SuppressWarnings("deprecation")
 			OfflinePlayer user = Bukkit.getOfflinePlayer(name);
 			if (user.hasPlayedBefore()) {
-				return Optional.of(new BukkitUser(user));
+				return Optional.of(new BukkitUser(user, user.getName()));
 			}
 		} else if (Platform.isSponge()) {
 			Optional<org.spongepowered.api.entity.living.player.User> user = Sponge.getServiceManager().provide(UserStorageService.class).get().get(name);

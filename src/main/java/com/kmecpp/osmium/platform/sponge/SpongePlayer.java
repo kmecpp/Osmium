@@ -230,4 +230,9 @@ public class SpongePlayer extends SpongeEntityLiving implements Player {
 		player.playSound((org.spongepowered.api.effect.sound.SoundType) sound.getSource(), player.getPosition(), volume, pitch);
 	}
 
+	@Override
+	public String toString() {
+		return player.toString();
+	}
+
 }

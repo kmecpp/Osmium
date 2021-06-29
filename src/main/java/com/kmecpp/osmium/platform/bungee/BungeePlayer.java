@@ -288,4 +288,9 @@ public class BungeePlayer implements Player {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public String toString() {
+		return player.toString();
+	}
+
 }

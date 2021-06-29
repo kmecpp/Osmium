@@ -10,9 +10,11 @@ import com.kmecpp.osmium.api.User;
 public class BukkitUser implements User {
 
 	private OfflinePlayer user;
+	private String name; //Bukkit's OfflinePlayer's name is null when the player first joins. Use our own to avoid this problem
 
-	public BukkitUser(OfflinePlayer user) {
+	public BukkitUser(OfflinePlayer user, String name) {
 		this.user = user;
+		this.name = name;
 	}
 
 	@Override
@@ -27,7 +29,7 @@ public class BukkitUser implements User {
 
 	@Override
 	public String getName() {
-		return user.getName();
+		return name;
 	}
 
 	@Override
