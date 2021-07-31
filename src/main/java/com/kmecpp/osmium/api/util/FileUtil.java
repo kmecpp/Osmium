@@ -122,7 +122,7 @@ public abstract class FileUtil {
 	 *            the file or directory to delete
 	 * @return whether or not the file was deleted successfully or doesn't exist
 	 */
-	public static boolean deleteFile(File file) {
+	public static boolean delete(File file) {
 		if (file.isDirectory()) {
 			File[] files = file.listFiles();
 			if (files != null) {
@@ -130,7 +130,7 @@ public abstract class FileUtil {
 					if (f.isFile()) {
 						f.delete();
 					} else {
-						deleteFile(f);
+						delete(f);
 					}
 				}
 			}
