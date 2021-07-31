@@ -78,28 +78,6 @@ public class IOUtil {
 	}
 
 	/**
-	 * Deletes a file or folder if it exists, regardless of its contents
-	 * 
-	 * @param file
-	 *            the file or directory to delete
-	 */
-	public static void deleteFile(File file) {
-		if (file.exists() && file.isDirectory()) {
-			File[] files = file.listFiles();
-			if (files != null) {
-				for (File f : files) {
-					if (f.isFile()) {
-						f.delete();
-					} else {
-						deleteFile(f);
-					}
-				}
-			}
-			file.delete();
-		}
-	}
-
-	/**
 	 * Reads the given URL into a byte array
 	 * 
 	 * @param url

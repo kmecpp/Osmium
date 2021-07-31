@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashSet;
 
 public abstract class FileUtil {
@@ -119,21 +120,26 @@ public abstract class FileUtil {
 	 * 
 	 * @param file
 	 *            the file or directory to delete
+	 * @return whether or not the file was deleted successfully or doesn't exist
 	 */
-	public static void delete(File file) {
-		if (file.exists() && file.isDirectory()) {
+	public static boolean deleteFile(File file) {
+		if (file.isDirectory()) {
 			File[] files = file.listFiles();
 			if (files != null) {
 				for (File f : files) {
 					if (f.isFile()) {
 						f.delete();
 					} else {
-						delete(f);
+						deleteFile(f);
 					}
 				}
 			}
-			file.delete();
 		}
+		return !file.exists() || file.delete();
+	}
+
+	public static boolean isSymlink(File file) {
+		return file != null && Files.isSymbolicLink(file.toPath());
 	}
 
 }
