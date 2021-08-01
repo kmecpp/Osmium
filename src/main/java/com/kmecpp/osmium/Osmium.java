@@ -3,6 +3,7 @@ package com.kmecpp.osmium;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ import com.kmecpp.osmium.api.tasks.CountdownTask;
 import com.kmecpp.osmium.api.tasks.OsmiumTask;
 import com.kmecpp.osmium.api.util.FileUtil;
 import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.api.util.TimeUtil;
 import com.kmecpp.osmium.api.util.WebUtil;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
@@ -269,6 +271,18 @@ public final class Osmium {
 
 	public static CountdownTask countdown(int count) {
 		return getInvokingPlugin().countdown(count);
+	}
+
+	public static CountdownTask countdownBroadcast(int count, String message, Runnable runnable) {
+		HashSet<Integer> broadcastSeconds = new HashSet<>(Arrays.asList(1, 2, 3, 5, 10, 15, 30));
+
+		return getInvokingPlugin().countdown(count).setExecutor(t -> {
+			int remaining = t.getRemaining();
+			if (broadcastSeconds.contains(remaining)
+					|| (remaining % 60 == 0 && broadcastSeconds.contains(remaining / 60))) {
+				Osmium.broadcastMessage("" + Chat.GREEN + Chat.BOLD + message + " in " + Chat.AQUA + Chat.BOLD + TimeUtil.formatTotalSeconds(remaining) + Chat.GREEN + Chat.BOLD + "!");
+			}
+		}).setFinalizer(t -> runnable.run());
 	}
 
 	public static Command registerCommand(String name, String... aliases) {
