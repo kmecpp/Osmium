@@ -1,5 +1,6 @@
 package com.kmecpp.osmium;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -7,9 +8,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
@@ -131,11 +135,18 @@ public class BukkitAccess {
 				}
 			}
 
-			org.bukkit.command.Command bukkitCommand = new org.bukkit.command.Command(command.getPrimaryAlias(),
-					command.getDescription(), command.getUsage(), aliases) { // Usage message cannot be null or else stuff will break
+			// Usage message cannot be null or else stuff will break
+			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
+			constructor.setAccessible(true);
+			org.bukkit.command.PluginCommand bukkitCommand = constructor.newInstance(command.getPrimaryAlias(), plugin.getSource());
+
+			bukkitCommand.setAliases(aliases);
+			bukkitCommand.setUsage(command.getUsage());
+			bukkitCommand.setDescription(command.getDescription());
+			bukkitCommand.setExecutor(new CommandExecutor() {
 
 				@Override
-				public boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args) {
+				public boolean onCommand(org.bukkit.command.CommandSender bukkitSender, org.bukkit.command.Command cmd, String label, String[] args) {
 					try {
 						CommandSender sender = bukkitSender instanceof org.bukkit.entity.Player
 								? getPlayer((org.bukkit.entity.Player) bukkitSender)
@@ -151,7 +162,7 @@ public class BukkitAccess {
 					}
 				}
 
-			};
+			});
 
 			commandMap.register(plugin.getName(), bukkitCommand);
 			if (command.isOverride()) {
