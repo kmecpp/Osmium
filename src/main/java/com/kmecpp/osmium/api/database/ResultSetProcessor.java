@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @FunctionalInterface
-public interface ResultSetProcessor<T> {
+public interface ResultSetProcessor {
 
-	T process(ResultSet rs) throws SQLException;
+	void process(ResultSet rs) throws SQLException;
 
 }

@@ -117,7 +117,7 @@ public abstract class SQLDatabase {
 	 * implicitly cast it as a primitive such as returning the result in a
 	 * method. Use getInt(), etc, to avoid this.
 	 */
-	public <T> T get(String query, ResultSetProcessor<T> handler) {
+	public <T> T get(String query, ResultSetTransformer<T> handler) {
 		return getOrDefault(query, null, handler);
 	}
 
@@ -137,7 +137,7 @@ public abstract class SQLDatabase {
 		return getOrDefault(query, 0D, rs -> rs.getDouble(column));
 	}
 
-	public <T> T getOrDefault(String query, T defaultValue, ResultSetProcessor<T> handler) {
+	public <T> T getOrDefault(String query, T defaultValue, ResultSetTransformer<T> handler) {
 		return accumulate(query, rs -> {
 			if (!rs.isBeforeFirst()) {
 				return defaultValue;
@@ -147,11 +147,14 @@ public abstract class SQLDatabase {
 		});
 	}
 
-	public <T> void process(String query, ResultSetProcessor<T> handler) {
-		accumulate(query, handler);
+	public void process(String query, ResultSetProcessor handler) {
+		accumulate(query, rs -> {
+			handler.process(rs);
+			return null;
+		});
 	}
 
-	public <T> T accumulate(String query, ResultSetProcessor<T> handler) {
+	public <T> T accumulate(String query, ResultSetTransformer<T> handler) {
 		OsmiumLogger.debug("Executing get query: " + query);
 		Statement statement = null;
 		ResultSet resultSet = null;
@@ -382,7 +385,7 @@ public abstract class SQLDatabase {
 		}
 	}
 
-	public <T> T query(String query, PreparedStatementBuilder builder, ResultSetProcessor<T> resultSetProcessor) {
+	public <T> T query(String query, PreparedStatementBuilder builder, ResultSetTransformer<T> resultSetProcessor) {
 		OsmiumLogger.warn("Executing prepared statement: " + query);
 
 		PreparedStatement statement = null;

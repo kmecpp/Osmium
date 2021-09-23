@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import com.kmecpp.osmium.api.database.DatabaseType;
 import com.kmecpp.osmium.api.database.OrderBy;
-import com.kmecpp.osmium.api.database.ResultSetProcessor;
+import com.kmecpp.osmium.api.database.ResultSetTransformer;
 import com.kmecpp.osmium.api.database.SQLConfiguration;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.database.mysql.MDBColumnData;
@@ -264,7 +264,7 @@ public class SQLiteDatabase extends SQLDatabase {
 		}
 	}
 
-	public <T> T rawQuery(String query, ResultSetProcessor<T> processor) {
+	public <T> T rawQuery(String query, ResultSetTransformer<T> processor) {
 		Connection connection = null;
 		Statement statement = null;
 		ResultSet resultSet = null;
@@ -288,7 +288,7 @@ public class SQLiteDatabase extends SQLDatabase {
 	 *            the query to execute
 	 * @return the result of the query
 	 */
-	public <T> void query(String query, ResultSetProcessor<T> processor) {
+	public <T> void query(String query, ResultSetTransformer<T> processor) {
 		Connection connection = null;
 		Statement statement = null;
 		ResultSet resultSet = null;
