@@ -173,11 +173,12 @@ public class SQLiteDatabase extends SQLDatabase {
 	}
 
 	public <T> T getOrDefault(Class<T> tableClass, T defaultValue, Object... primaryKeys) {
-		ArrayList<T> list = query(tableClass, primaryKeys);
+		ArrayList<T> list = queryPrimaryKeys(tableClass, primaryKeys);
 		return list.isEmpty() ? defaultValue : list.get(0);
 	}
 
-	public <T> ArrayList<T> query(Class<T> tableClass, Object... primaryKeys) {
+	@Override
+	public <T> ArrayList<T> queryPrimaryKeys(Class<T> tableClass, Object... primaryKeys) {
 		return query(tableClass, (String[]) null, primaryKeys);
 	}
 

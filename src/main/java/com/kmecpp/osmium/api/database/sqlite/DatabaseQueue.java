@@ -4,16 +4,12 @@ import java.lang.Thread.State;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 
 public class DatabaseQueue {
 
-	//	private final SQLDatabase database;
-	private final LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
+	private final LinkedBlockingQueue<ContextRunnable> queue = new LinkedBlockingQueue<>();
 	private final QueueExecutor executor = new QueueExecutor();
-
-	//	public DatabaseQueue(SQLDatabase database) {
-	//		this.database = database;
-	//	}
 
 	public void start() {
 		if (executor.getState() == State.NEW) {
@@ -24,8 +20,7 @@ public class DatabaseQueue {
 	public void flush() {
 		while (!queue.isEmpty()) {
 			try {
-				queue.take().run();
-				//				database.update(queue.take());
+				queue.take().runnable.run();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -36,17 +31,9 @@ public class DatabaseQueue {
 		if (Osmium.isShuttingDown()) {
 			runnable.run();
 		} else {
-			queue.add(runnable);
+			queue.add(new ContextRunnable(runnable));
 		}
 	}
-
-	//	public void queue(String update) {
-	//		if (Osmium.isShuttingDown()) {
-	//			database.update(update);
-	//		} else {
-	//			queue.add(update);
-	//		}
-	//	}
 
 	public class QueueExecutor extends Thread {
 
@@ -57,22 +44,36 @@ public class DatabaseQueue {
 
 		@Override
 		public void run() {
-			//			Connection connection = database.getConnection();
 			while (true) {
 				try {
-					Runnable runnable = queue.take();
-					runnable.run();
 
-					//					String update = queue.take();
-					//					if (database.isClosed()) {
-					//						connection = database.getConnection();
-					//					}
-					//					System.out.println("EXECUTING UPDATE: " + update);
-					//					connection.createStatement().executeUpdate(update);
-				} catch (Exception e) {
-					e.printStackTrace();
+					ContextRunnable contextRunnable = queue.take();
+
+					try {
+						contextRunnable.runnable.run();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						OsmiumLogger.warn("Caused By:");
+						for (StackTraceElement element : contextRunnable.stack) {
+							System.err.println(element);
+						}
+					}
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
 				}
 			}
+		}
+
+	}
+
+	public static class ContextRunnable {
+
+		private Runnable runnable;
+		private StackTraceElement[] stack;
+
+		public ContextRunnable(Runnable runnable) {
+			this.runnable = runnable;
+			this.stack = Thread.currentThread().getStackTrace();
 		}
 
 	}

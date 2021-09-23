@@ -2,6 +2,8 @@ package com.kmecpp.osmium.api.database;
 
 import java.util.UUID;
 
+import com.kmecpp.osmium.api.util.StringUtil;
+
 public abstract class PlayerData implements Saveable {
 
 	@DBColumn(primary = true)
@@ -25,6 +27,11 @@ public abstract class PlayerData implements Saveable {
 	}
 
 	public void onLoad() {
+	}
+
+	@Override
+	public String toString() {
+		return StringUtil.toString(this);
 	}
 
 }

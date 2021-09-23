@@ -161,11 +161,11 @@ public abstract class SQLDatabase {
 			return handler.process(resultSet);
 		} catch (Exception e) {
 			OsmiumLogger.warn("An error occurred while executing get query: " + query);
-			e.printStackTrace();
+			throw new RuntimeException(e);
+			//			e.printStackTrace();
 		} finally {
 			close(statement, resultSet);
 		}
-		return null;
 	}
 
 	//	public <T> T accumulate(String query, T defaultValue, ResultSetProcessor<T> handler) {
@@ -238,7 +238,7 @@ public abstract class SQLDatabase {
 		}
 	}
 
-	public <T> ArrayList<T> query(Class<T> tableClass, Object... values) {
+	public <T> ArrayList<T> queryPrimaryKeys(Class<T> tableClass, Object... values) {
 		return query(tableClass, (String[]) null, values);
 	}
 
@@ -294,11 +294,12 @@ public abstract class SQLDatabase {
 			return statement.executeUpdate(update);
 		} catch (Exception e) {
 			OsmiumLogger.warn("An error occurred while executing update: " + update);
-			e.printStackTrace();
+			throw new RuntimeException(e);
+			//			e.printStackTrace();
 		} finally {
 			close(statement, resultSet);
 		}
-		return -1;
+		//		return -1;
 	}
 
 	public void queue(Runnable runnable) {
@@ -347,11 +348,13 @@ public abstract class SQLDatabase {
 			return result;
 		} catch (Exception e) {
 			OsmiumLogger.warn("An error occurred while executing update: " + update);
-			e.printStackTrace();
+			OsmiumLogger.warn("Prepared statement: " + statement);
+			throw new RuntimeException(e); //TODO: Check if this change works. Must throw so that DatabaseQueue can properly receive the stack trace of the exception. Also probably better
+			//			e.printStackTrace();
 		} finally {
 			close(statement, resultSet);
 		}
-		return -1;
+		//		return -1;
 	}
 
 	public void preparedQueryStatement(String update, PreparedStatementBuilder builder) {
@@ -372,7 +375,8 @@ public abstract class SQLDatabase {
 			}
 		} catch (Exception e) {
 			OsmiumLogger.warn("An error occurred while executing query: " + update);
-			e.printStackTrace();
+			//			e.printStackTrace();
+			throw new RuntimeException(e);
 		} finally {
 			close(statement, resultSet);
 		}
@@ -390,11 +394,12 @@ public abstract class SQLDatabase {
 			return resultSetProcessor.process(statement.getResultSet());
 		} catch (Exception e) {
 			OsmiumLogger.error("An error occurred while executing query: '" + query + "'");
-			e.printStackTrace();
+			throw new RuntimeException(e);
+			//			e.printStackTrace();
 		} finally {
 			close(statement, resultSet);
 		}
-		return null;
+		//		return null;
 	}
 
 	//	public <T> T queryAsync(Callable<T> callable) {
@@ -408,8 +413,8 @@ public abstract class SQLDatabase {
 			}
 			try {
 				closeable.close();
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (Throwable t) {
+				t.printStackTrace();
 			}
 		}
 	}
