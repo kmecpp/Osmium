@@ -10,6 +10,17 @@ public class Pagination {
 		return pageSize * (page - 1);
 	}
 
+	/**
+	 * @return the exclusive end index
+	 */
+	public static int getEndIndex(int page, int pageSize) {
+		return getStartIndex(page, pageSize) + pageSize;
+	}
+
+	public static int getEndIndex(int page, int pageSize, int totalRecords) {
+		return Math.min(getEndIndex(page, pageSize), totalRecords);
+	}
+
 	public static int getStartIndexReversed(int numItems, int page, int pageSize) {
 		return (numItems - 1) - getStartIndex(page, pageSize);
 	}
