@@ -46,7 +46,7 @@ public abstract class AbstractOsmiumTask<T extends AbstractTask<T>> extends Abst
 
 	protected void doExecute() {
 		try {
-			executor.execute(getInstance());
+			executor.accept(getInstance());
 		} catch (Throwable t) {
 			doFinalize();
 			if (cancelOnError) {
@@ -64,7 +64,7 @@ public abstract class AbstractOsmiumTask<T extends AbstractTask<T>> extends Abst
 
 	protected void doFinalize() {
 		if (finalizer != null) {
-			finalizer.execute(getInstance());
+			finalizer.accept(getInstance());
 		}
 	}
 

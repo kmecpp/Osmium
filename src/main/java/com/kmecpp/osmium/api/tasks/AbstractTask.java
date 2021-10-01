@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.api.tasks;
 
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 import org.bukkit.scheduler.BukkitTask;
 
@@ -18,8 +19,8 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 	protected boolean async;
 	protected int delay;
 	protected int interval;
-	protected TaskExecutor<T> executor;
-	protected TaskExecutor<T> finalizer;
+	protected Consumer<T> executor;
+	protected Consumer<T> finalizer;
 	protected boolean cancelOnError;
 	protected int lastRun;
 
@@ -114,21 +115,21 @@ public abstract class AbstractTask<T extends AbstractTask<T>> {
 		return counter == lastRun; //Counter gets updated after we are run
 	}
 
-	public T setFinalizer(TaskExecutor<T> finalizer) {
+	public T setFinalizer(Consumer<T> finalizer) {
 		this.finalizer = finalizer;
 		return getInstance();
 	}
 
-	public TaskExecutor<T> getFinalizer() {
+	public Consumer<T> getFinalizer() {
 		return finalizer;
 	}
 
-	public T setExecutor(TaskExecutor<T> executor) {
+	public T setExecutor(Consumer<T> executor) {
 		this.executor = executor;
 		return getInstance();
 	}
 
-	public TaskExecutor<T> getExecutor() {
+	public Consumer<T> getExecutor() {
 		return executor;
 	}
 
