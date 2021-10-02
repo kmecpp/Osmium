@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.UUID;
 
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.text.Text;
 
 import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
@@ -47,6 +48,21 @@ public class SpongePlayerConnectEvent implements PlayerConnectionEvent {
 		}
 
 		@Override
+		public void setCancelled(boolean cancel) {
+			event.setCancelled(cancel);
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return event.isCancelled();
+		}
+
+		@Override
+		public void setKickMessage(String message) {
+			event.setMessage(Text.of(message));
+		}
+
+		@Override
 		public String getPlayerName() {
 			return event.getProfile().getName().orElse("");
 		}
@@ -74,6 +90,21 @@ public class SpongePlayerConnectEvent implements PlayerConnectionEvent {
 		@Override
 		public ClientConnectionEvent.Login getSource() {
 			return event;
+		}
+
+		@Override
+		public void setCancelled(boolean cancel) {
+			event.setCancelled(cancel);
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return event.isCancelled();
+		}
+
+		@Override
+		public void setKickMessage(String message) {
+			event.setMessage(Text.of(message));
 		}
 
 		@Override

@@ -23,6 +23,23 @@ public abstract class BukkitPlayerConnectionEvent implements PlayerConnectionEve
 		}
 
 		@Override
+		public void setCancelled(boolean cancel) {
+			event.setLoginResult(cancel
+					? org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result.KICK_OTHER
+					: org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result.ALLOWED);
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return event.getLoginResult() != org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result.ALLOWED;
+		}
+
+		@Override
+		public void setKickMessage(String message) {
+			event.setKickMessage(message);
+		}
+
+		@Override
 		public String getPlayerName() {
 			return event.getName();
 		}
@@ -45,12 +62,28 @@ public abstract class BukkitPlayerConnectionEvent implements PlayerConnectionEve
 
 		public BukkitPlayerLoginEvent(org.bukkit.event.player.PlayerLoginEvent event) {
 			this.event = event;
-
 		}
 
 		@Override
 		public org.bukkit.event.player.PlayerLoginEvent getSource() {
 			return event;
+		}
+
+		@Override
+		public void setCancelled(boolean cancel) {
+			event.setResult(cancel
+					? org.bukkit.event.player.PlayerLoginEvent.Result.KICK_OTHER
+					: org.bukkit.event.player.PlayerLoginEvent.Result.ALLOWED);
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return event.getResult() != org.bukkit.event.player.PlayerLoginEvent.Result.ALLOWED;
+		}
+
+		@Override
+		public void setKickMessage(String message) {
+			event.setKickMessage(message);
 		}
 
 		@Override

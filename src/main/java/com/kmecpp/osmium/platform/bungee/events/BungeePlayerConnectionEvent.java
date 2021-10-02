@@ -7,6 +7,7 @@ import com.kmecpp.osmium.BungeeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 
@@ -23,6 +24,21 @@ public abstract class BungeePlayerConnectionEvent implements PlayerConnectionEve
 		@Override
 		public LoginEvent getSource() {
 			return event;
+		}
+
+		@Override
+		public void setCancelled(boolean cancel) {
+			event.setCancelled(cancel);
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return event.isCancelled();
+		}
+
+		@Override
+		public void setKickMessage(String message) {
+			event.setCancelReason(TextComponent.fromLegacyText(message));
 		}
 
 		@Override
@@ -49,12 +65,26 @@ public abstract class BungeePlayerConnectionEvent implements PlayerConnectionEve
 
 		public BungeePlayerLoginEvent(LoginEvent event) {
 			this.event = event;
-
 		}
 
 		@Override
 		public LoginEvent getSource() {
 			return event;
+		}
+
+		@Override
+		public void setCancelled(boolean cancel) {
+			event.setCancelled(cancel);
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return event.isCancelled();
+		}
+
+		@Override
+		public void setKickMessage(String message) {
+			event.setCancelReason(TextComponent.fromLegacyText(message));
 		}
 
 		@Override
