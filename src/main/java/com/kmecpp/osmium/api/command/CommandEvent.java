@@ -22,6 +22,7 @@ public class CommandEvent implements Messageable {
 	private String[] args;
 
 	private boolean cooldownActivated;
+	//	private long cooldownOverride;
 
 	public CommandEvent(Command command, CommandSender sender, String baseLabel, String argLabel, String[] args) {
 		this.command = command;
@@ -31,13 +32,27 @@ public class CommandEvent implements Messageable {
 		this.args = args;
 	}
 
-	public void setCooldownActivated(boolean cooldownActivated) {
-		this.cooldownActivated = cooldownActivated;
-	}
-
 	public boolean isCooldownActivated() {
 		return cooldownActivated;
 	}
+
+	public void setCooldownActivated(boolean cooldownActivated) {
+		this.cooldownActivated = true;
+	}
+
+	//TODO: This is better. Just needs execution time + cooldown time
+	//	public void setCooldownActivated(boolean cooldownActivated, long cooldown) {
+	//		setCooldownActivated(cooldownActivated, cooldown, MilliTimeUnit.MILLISECOND);
+	//	}
+	//
+	//	public void setCooldownActivated(boolean cooldownActivated, long cooldown, MilliTimeUnit unit) {
+	//		this.cooldownActivated = cooldownActivated;
+	//		this.cooldownOverride = cooldown * unit.getMillisecondTime();
+	//	}
+	//
+	//	public long getCooldownOverride() {
+	//		return cooldownOverride;
+	//	}
 
 	void setSubCommand(CommandBase subCommand) {
 		this.subCommand = subCommand;
@@ -166,7 +181,7 @@ public class CommandEvent implements Messageable {
 	public int getIntBound(int index, int min, int max, String name) {
 		int result = getInt(index);
 		if (result < min || result > max) {
-			throw new CommandException(name + " was " + result + " but must be between " + min + " and " + max);
+			throw new CommandException("Input '" + name + "' was " + result + " but must be between " + min + " and " + max);
 		}
 		return result;
 	}

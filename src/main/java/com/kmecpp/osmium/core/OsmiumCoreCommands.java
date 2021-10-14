@@ -42,26 +42,25 @@ public class OsmiumCoreCommands extends Command {
 		});
 
 		add("reload").setUsage("[plugin/all] [full]").setAdmin(true).setExecutor((e) -> {
-			if (e.hasString(0)) {
-				boolean full = e.contains(1, "full");
+			long startTime = System.currentTimeMillis();
 
-				String pluginName = e.getString(0);
-				if (pluginName.equalsIgnoreCase("all")) {
-					int count = 0;
-					for (OsmiumPlugin plugin : Osmium.getPlugins()) {
-						plugin.reload();
-						count++;
-					}
-					e.send("&a" + count + " Osmium plugins reloaded successfully!");
-				} else {
-					OsmiumPlugin plugin = e.getPlugin(0);
+			String pluginName = e.getString(0);
+			boolean full = e.getString(1, "").equalsIgnoreCase("full");
+
+			if (pluginName.equalsIgnoreCase("full")) {
+				Osmium.reloadPlugin(OsmiumCore.getPlugin(), true);
+				e.sendMessage(Chat.GREEN + OsmiumCore.getPlugin().getName() + " reloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
+			} else if (pluginName.equalsIgnoreCase("all")) {
+				int count = 0;
+				for (OsmiumPlugin plugin : Osmium.getPlugins()) {
 					Osmium.reloadPlugin(plugin, full);
-					e.sendMessage(Chat.GREEN + plugin.getName() + " reloaded successfully!");
+					count++;
 				}
+				e.sendMessage(Chat.GREEN + "" + count + " Osmium plugins reloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
 			} else {
-				boolean full = e.contains("full");
-				Osmium.reloadPlugin(OsmiumCore.getPlugin(), full);
-				e.sendMessage(Chat.GREEN + OsmiumCore.getPlugin().getName() + " reloaded successfully!");
+				OsmiumPlugin plugin = e.getPlugin(0);
+				Osmium.reloadPlugin(plugin, full);
+				e.sendMessage(Chat.GREEN + plugin.getName() + " reloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
 			}
 		});
 

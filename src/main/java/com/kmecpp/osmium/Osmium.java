@@ -37,6 +37,7 @@ import com.kmecpp.osmium.api.event.events.osmium.PluginReloadEvent;
 import com.kmecpp.osmium.api.inventory.BlockType;
 import com.kmecpp.osmium.api.inventory.ItemManager;
 import com.kmecpp.osmium.api.inventory.ItemType;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.UnsupportedPlatformException;
 import com.kmecpp.osmium.api.plugin.OsmiumMetrics;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -343,6 +344,8 @@ public final class Osmium {
 	}
 
 	public static boolean reloadPlugin(OsmiumPlugin plugin, boolean reloadDatabase) {
+		OsmiumLogger.info("Reloading plugin: " + plugin.getName());
+
 		for (Class<?> config : configManager.getPluginConfigs(plugin)) {
 			try {
 				configManager.load(config);

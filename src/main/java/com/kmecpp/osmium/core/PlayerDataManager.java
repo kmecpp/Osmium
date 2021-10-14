@@ -32,6 +32,8 @@ public class PlayerDataManager {
 	void start() {
 		//Safely remove offline players
 		Osmium.getTask().setInterval(30, TickTimeUnit.SECOND).setExecutor(t -> {
+			System.out.println("Osmium Online Players: " + Osmium.getOnlinePlayers().size() + " == " + Osmium.getOnlinePlayers());
+
 			Set<UUID> onlineIds = new HashSet<>(Osmium.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet()));
 			for (UUID uuid : onlineIds) {
 				if (!onlineIds.contains(uuid)) {
@@ -159,6 +161,7 @@ public class PlayerDataManager {
 							((PlayerData) value).updatePlayerData(user.getUniqueId(), user.getName());
 						}
 
+						System.out.println("LOADED PLAYER DATA: " + value);
 						this.data.computeIfAbsent(user.getUniqueId(), k -> new HashMap<>()).put(type, value);
 						//				System.out.println("UPDATED PLAYER DATA: " + e.getPlayerName() + ", " + data);
 						//						data.put(type, value);
@@ -176,6 +179,7 @@ public class PlayerDataManager {
 	}
 
 	public void savePlayer(Player player) {
+		System.out.println("OSMIUM SAVING PLAYER DATA FOR " + player);
 		HashMap<Class<?>, Object> playerData = this.data.get(player.getUniqueId());
 		if (playerData != null) {
 			playerData.entrySet().forEach(e -> {

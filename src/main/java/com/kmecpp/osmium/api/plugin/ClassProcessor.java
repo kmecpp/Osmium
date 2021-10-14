@@ -116,12 +116,13 @@ public class ClassProcessor {
 					//					Class<?> cls = Class.forName(className, false, classLoader);
 					//					cls.getFields();
 					onLoad(cls);
-				} catch (ClassNotFoundException | NoClassDefFoundError e) {
-					if (e.getMessage().toLowerCase().contains("spongepowered") || e.getMessage().toLowerCase().contains("bukkit")) {
+				} catch (ClassNotFoundException | NoClassDefFoundError ex) {
+					String exceptionMessage = ex.getMessage().toLowerCase();
+					if (exceptionMessage.contains("spongepowered") || exceptionMessage.contains("bukkit") || exceptionMessage.contains("bungee")) {
 						OsmiumLogger.debug("SKIPPING: " + className);
 					} else {
 						OsmiumLogger.warn("Could not load class: " + className);
-						OsmiumLogger.warn(e.getLocalizedMessage());
+						OsmiumLogger.warn(ex.getLocalizedMessage());
 						//						e.printStackTrace();
 					}
 					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF??)

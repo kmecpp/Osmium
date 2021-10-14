@@ -1173,7 +1173,11 @@ public class StringUtil {
 	 * @return a string representation of the object
 	 */
 	public static String toString(Object object) {
-		StringBuilder sb = new StringBuilder("[");
+		if (object == null) {
+			return "null";
+		}
+
+		StringBuilder sb = new StringBuilder(object.getClass().getSimpleName() + "[");
 		for (Field field : object.getClass().getDeclaredFields()) {
 			if (!field.isAccessible()) {
 				field.setAccessible(true);

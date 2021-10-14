@@ -2,6 +2,8 @@ package com.kmecpp.osmium.cache;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.entity.Player;
@@ -28,15 +30,21 @@ public class PlayerList {
 		if (wrapper == null) {
 			throw new IllegalArgumentException("Not a player!");
 		}
+		System.out.println("ADDING PLAYER TO OSMIUM PLAYERLIST CACHE: " + sourcePlayer);
 		players.put(wrapper.getName().toLowerCase(), wrapper);
 	}
 
 	public static void removePlayer(String name) {
+		System.out.println("REMOVING PLAYER FROM OSMIUM PLAYERLIST CACHE: " + name);
 		players.remove(name.toLowerCase());
+		List<Player> offlinePlayers = players.values().stream().filter(p -> !p.isOnline()).collect(Collectors.toList());
+		if (offlinePlayers != null && !offlinePlayers.isEmpty()) {
+			System.out.println("OFFLINE PLAYERS DETECTED IN OSMIUM PLAYER LIST CACHE: " + offlinePlayers);
+		}
 	}
 
 	public static boolean contains(String name) {
-		return players.containsKey(name);
+		return players.containsKey(name.toLowerCase());
 	}
 
 	public static Player getPlayer(Object sourcePlayer) {
