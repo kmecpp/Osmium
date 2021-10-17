@@ -4,17 +4,16 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	
-	id 'maven'
+	//id 'maven'
 	id 'maven-publish'
 	//id 'com.github.johnrengelman.shadow' version '1.2.3'
     //id 'org.spongepowered.plugin' version '0.8.1'
 }
 
-group = "com.kmecpp"
+group = project_group
 version = project_version
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+//sourceCompatibility = java_version
+//targetCompatibility = java_version
 
 eclipse {
     classpath {
@@ -25,8 +24,8 @@ eclipse {
 
 configurations {
     shade
-    compile.extendsFrom shade
-    testCompile.extendsFrom compile
+    implementation.extendsFrom shade
+    testCompile.extendsFrom implementation
 }
 
 /*
@@ -68,6 +67,12 @@ publishing {
     }
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
 /*
  * COMPILIATION
  */
@@ -75,8 +80,7 @@ compileJava {
     options.compilerArgs += ["-proc:none"]
 //    options.compilerArgs += ["-processor", "com.kmecpp.osmium.ap.ConfigTypeProcessor"]
 //    compileJava.options.compilerArgs.addAll(["-processor", "com.kmecpp.osmium.ap.ConfigTypeProcessor"])
-    sourceCompatibility = 8
-    targetCompatibility = 8
+
 }
  
 processResources {
@@ -134,21 +138,22 @@ repositories {
 configurations.all {
 	resolutionStrategy {
 		//force 'org.javassist:javassist:3.22.0-GA'
-		force 'org.javassist:javassist:3.27.0-GA'
+		//force 'org.javassist:javassist:3.27.0-GA'
+		//force 'org.javassist:javassist:3.28.0-GA'
 	}
 }
 
 dependencies {
 	//annotationProcessor("com.kmecpp:osmium:1.0.0-SNAPSHOT")
 	//compile files("lib/spigot-1.13.2.jar")
-	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648_DEOBF.jar")
-	compile files("lib/spongevanilla-1.12.2-8.0.0-BETA-448.jar");
-	compile files("lib/Travertine-175.jar");
+	implementation files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648_DEOBF.jar")
+	implementation files("lib/spongevanilla-1.12.2-8.0.0-BETA-448.jar");
+	implementation files("lib/Travertine-175.jar");
 	//compile "org.spigotmc:spigot:$bukkit_version"
 	//compile "org.spongepowered:spongeapi:$sponge_version"
-	compile files("build/generated/com/kmecpp/osmium/AppInfo.class")
+	implementation files("build/generated/com/kmecpp/osmium/AppInfo.class")
 	//compileOnly "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75" //Breaking builds. Find alternative for this
-	shade "org.javassist:javassist:3.22.0-GA"
+	shade "org.javassist:javassist:3.20.0-GA" //Last version where Java8 was the latest
 	
 	//shade "com.kmecpp:jlib:+"
 	shade "com.eclipsesource.minimal-json:minimal-json:0.9.5"
@@ -169,8 +174,8 @@ dependencies {
 	//shade "com.zsoltfabok:sqlite-dialect:1.0"
 	shade "org.apache.logging.log4j:log4j-api:2.11.1"
 		
-    testCompile 'junit:junit:4.12'
-}
+    testImplementation 'junit:junit:4.12'
+} 
 /*
 sponge {
     plugin {
@@ -198,6 +203,7 @@ jar {
     }
 }
 
+/*
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -216,11 +222,12 @@ uploadArchives {
             		password project.properties.mavenPassword
             	}
             	url "http://repo.kmecpp.com"
-            }*/
+            }
+            * /
         }
     }
-
 }
+*/
 
 build.doLast {
 	//BUKKIT
