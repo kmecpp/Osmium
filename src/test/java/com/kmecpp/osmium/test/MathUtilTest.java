@@ -21,6 +21,9 @@ public class MathUtilTest {
 
 		avg = MathUtil.average(avg, 0, ++count); // (1 + 5 + 6 + 0) / 4
 		assertEquals(avg, 3.0, 1e-5);
+		
+		avg = MathUtil.average(avg, 0, ++count); // (1 + 5 + 6 + 0 + 12) / 5
+		assertEquals(avg, 3.0, 4.8);
 	}
 
 }

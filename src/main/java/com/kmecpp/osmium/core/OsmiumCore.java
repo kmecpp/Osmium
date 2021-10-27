@@ -96,11 +96,11 @@ public class OsmiumCore extends OsmiumPlugin {
 		for (OsmiumPlugin plugin : Osmium.getPlugins()) {
 			try {
 				Osmium.savePluginData(plugin);
-				Osmium.getPlayerDataManager().saveAllPlayers();
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
 		}
+		Osmium.getPlayerDataManager().saveAllPlayers();
 	}
 
 	public static OsmiumCore getPlugin() {
