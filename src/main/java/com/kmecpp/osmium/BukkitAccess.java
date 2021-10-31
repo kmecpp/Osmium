@@ -3,6 +3,7 @@ package com.kmecpp.osmium;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -21,6 +22,7 @@ import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
+import com.kmecpp.osmium.api.command.OverrideMode;
 import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.EntityType;
 import com.kmecpp.osmium.api.entity.Player;
@@ -119,19 +121,20 @@ public class BukkitAccess {
 			SimpleCommandMap commandMap = (SimpleCommandMap) Reflection.getFieldValue(Bukkit.getServer(), "commandMap");
 			List<String> aliases = Arrays.asList(Arrays.copyOfRange(command.getAliases(), 1, command.getAliases().length));
 
-			if (!command.isOverride()) {
-				String name = command.getPrimaryAlias();
-				if (commandMap.getCommand(name) != null) {
-					for (int i = 0; i < command.getAliases().length; i++) {
-						String alias = command.getAliases()[i];
-						if (commandMap.getCommand(alias) == null) {
-							OsmiumLogger.debug("Remapped primary alias: " + name + " -> " + alias);
-							command.setPrimaryAlias(alias);
-							break;
-						} else if (i == command.getAliases().length) {
-							CommandManager.sendFailedRegistrationMessage(plugin, command);
-						}
+			//If the primary alias is taken and we don't have a specified override method, change the primary alias to the first available alias
+			if (command.getOverrideMode() == OverrideMode.NONE && commandMap.getCommand(command.getPrimaryAlias()) != null) {
+				boolean success = false;
+				for (String alias : command.getAliases()) {
+					if (commandMap.getCommand(alias) == null) {
+						String originalPrimaryAlias = command.getPrimaryAlias();
+						command.setPrimaryAlias(alias);
+						OsmiumLogger.debug("Remapped primary alias: " + originalPrimaryAlias + " -> " + alias);
+						success = true;
+						break;
 					}
+				}
+				if (!success) {
+					CommandManager.sendFailedRegistrationMessage(plugin, command);
 				}
 			}
 
@@ -165,13 +168,25 @@ public class BukkitAccess {
 			});
 
 			commandMap.register(plugin.getName(), bukkitCommand);
-			if (command.isOverride()) {
+
+			if (command.getOverrideMode() != OverrideMode.NONE) {
+				//@formatter:off
+				List<String> aliasesToOverride =
+							  command.getOverrideMode() == OverrideMode.PRIMARY ? Arrays.asList(command.getPrimaryAlias())
+							: command.getOverrideMode() == OverrideMode.SPECIFIC ? Arrays.asList(command.getOverrideAliases())
+							: command.getOverrideMode() == OverrideMode.ALL ? Arrays.asList(command.getAliases())
+							: Collections.emptyList();
+				//@formatter:on
+
 				Map<String, org.bukkit.command.Command> map = Reflection.getFieldValue(commandMap, "knownCommands");
-				org.bukkit.command.Command existing = map.put(command.getPrimaryAlias().toLowerCase(), bukkitCommand);
-				System.out.println("EXISTING COMMAND: " + existing);
-				if (existing != bukkitCommand) {
-					OsmiumLogger.info("Overriding command: " + existing);
+				for (String overrideAlias : aliasesToOverride) {
+					org.bukkit.command.Command existing = map.put(overrideAlias.toLowerCase(), bukkitCommand);
+					System.out.println("EXISTING COMMAND: " + existing);
+					if (existing != bukkitCommand) {
+						OsmiumLogger.info("Overriding command: " + existing);
+					}
 				}
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

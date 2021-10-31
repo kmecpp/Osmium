@@ -14,7 +14,8 @@ public class CommandBase {
 	private String usage = "";
 	private String[] usageParams = new String[0];
 	private boolean admin;
-	private boolean override;
+	private OverrideMode overrideMode;
+	private String[] overrideAliases;
 	private CommandExecutor executor;
 
 	private String primaryAlias;
@@ -123,12 +124,21 @@ public class CommandBase {
 		return this;
 	}
 
-	public boolean isOverride() {
-		return override;
+	public OverrideMode getOverrideMode() {
+		return overrideMode;
 	}
 
-	public void setOverride(boolean override) {
-		this.override = override;
+	public void setOverrideMode(OverrideMode overrideMode) {
+		this.overrideMode = overrideMode;
+	}
+
+	public void setOverrideAliases(String... aliases) {
+		this.overrideAliases = aliases;
+		this.overrideMode = OverrideMode.SPECIFIC;
+	}
+
+	public String[] getOverrideAliases() {
+		return overrideAliases;
 	}
 
 	public void setExecutor(CommandExecutor executor) {

@@ -60,6 +60,7 @@ public final class CommandManager {
 	}
 
 	public void processConsoleCommand(String command) {
+		OsmiumLogger.info("Programmatically processing console command: " + command);
 		if (Platform.isBukkit()) {
 			BukkitAccess.processConsoleCommand(command);
 		} else if (Platform.isSponge()) {
@@ -70,6 +71,7 @@ public final class CommandManager {
 	}
 
 	public void processConsoleCommand(CommandSender outputReceiver, String command) {
+		OsmiumLogger.info("Programmatically processing and capturing output for console command: " + command);
 		if (Platform.isBukkit()) {
 			BukkitAccess.processConsoleCommand(outputReceiver, command);
 		} else if (Platform.isSponge()) {
@@ -80,6 +82,7 @@ public final class CommandManager {
 	}
 
 	public void processCommand(CommandSender sender, String command) {
+		OsmiumLogger.info("Programmatically processing command for " + sender.getName() + ": " + command);
 		if (Platform.isBukkit()) {
 			BukkitAccess.processCommand((org.bukkit.command.CommandSender) sender.getSource(), command);
 		} else if (Platform.isSponge()) {
@@ -185,7 +188,6 @@ public final class CommandManager {
 			command.execute(event);
 			if (!cooldownBypass && event.isCooldownActivated()) {
 				Player player = (Player) sender;
-				System.out.println("SETTING COOLDOWN!");
 				cooldownData.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>()).put(command, currentTime);
 			}
 		} else {
