@@ -8,12 +8,28 @@ public class MathUtil {
 
 	private static final ThreadLocalRandom RAND = ThreadLocalRandom.current();
 
-	public static float average(float currentAverage, float sample, int sampleCount) {
-		return currentAverage + (sample - currentAverage) / (float) sampleCount;
+	public static float averageTotal(float currentAverage, int totalSampleCount, float sample) {
+		return currentAverage + (sample - currentAverage) / (float) totalSampleCount;
 	}
 
-	public static double average(double currentAverage, double sample, int sampleCount) {
-		return currentAverage + (sample - currentAverage) / (double) sampleCount;
+	public static double averageTotal(double currentAverage, int totalSampleCount, double sample) {
+		return currentAverage + (sample - currentAverage) / (double) totalSampleCount;
+	}
+
+	public static float average(float currentAverage, int currentSampleCount, float sample) {
+		return average(currentAverage, currentSampleCount, sample, 1);
+	}
+
+	public static double average(double currentAverage, int currentSampleCount, double sample) {
+		return average(currentAverage, currentSampleCount, sample, 1);
+	}
+
+	public static float average(float currentAverage, int currentSampleCount, float sample, int newSampleCount) {
+		return (currentSampleCount * currentAverage + newSampleCount * sample) / (float) (currentSampleCount + newSampleCount);
+	}
+
+	public static double average(double currentAverage, int currentSampleCount, double sample, int newSampleCount) {
+		return (currentSampleCount * currentAverage + newSampleCount * sample) / (double) (currentSampleCount + newSampleCount);
 	}
 
 	public static int cap(long n) {
