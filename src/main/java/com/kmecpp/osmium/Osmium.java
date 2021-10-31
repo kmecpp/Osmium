@@ -37,6 +37,7 @@ import com.kmecpp.osmium.api.event.events.osmium.PluginReloadEvent;
 import com.kmecpp.osmium.api.inventory.BlockType;
 import com.kmecpp.osmium.api.inventory.ItemManager;
 import com.kmecpp.osmium.api.inventory.ItemType;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.platform.UnsupportedPlatformException;
 import com.kmecpp.osmium.api.plugin.OsmiumMetrics;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -44,9 +45,9 @@ import com.kmecpp.osmium.api.plugin.PluginLoader;
 import com.kmecpp.osmium.api.tasks.CountdownTask;
 import com.kmecpp.osmium.api.tasks.OsmiumTask;
 import com.kmecpp.osmium.api.util.FileUtil;
+import com.kmecpp.osmium.api.util.MojangUtil;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.TimeUtil;
-import com.kmecpp.osmium.api.util.WebUtil;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.core.OsmiumUserIds;
@@ -343,6 +344,8 @@ public final class Osmium {
 	}
 
 	public static boolean reloadPlugin(OsmiumPlugin plugin, boolean reloadDatabase) {
+		OsmiumLogger.info("Reloading plugin: " + plugin.getName());
+
 		for (Class<?> config : configManager.getPluginConfigs(plugin)) {
 			try {
 				configManager.load(config);
@@ -438,7 +441,7 @@ public final class Osmium {
 
 	public static Optional<UUID> lookupUUID(String playerName) {
 		try {
-			return Optional.of(WebUtil.getPlayerUUID(playerName));
+			return Optional.of(MojangUtil.getPlayerUUID(playerName));
 		} catch (Exception e) {
 			return Optional.empty();
 		}
@@ -446,7 +449,7 @@ public final class Osmium {
 
 	public static Optional<String> lookupName(UUID uuid) {
 		try {
-			return Optional.of(WebUtil.getPlayerName(uuid));
+			return Optional.of(MojangUtil.getPlayerName(uuid));
 		} catch (Exception e) {
 			return Optional.empty();
 		}
@@ -492,6 +495,9 @@ public final class Osmium {
 			if (user.isPresent()) {
 				return Optional.of(new SpongeUser(user.get()));
 			}
+		} else if (Platform.isBungeeCord()) {
+			Optional<String> optionalName = lookupName(uuid); //TODO: Implement BungeeCord user storage for consistency with players that haven't played on the server before and hasPlayedBefore()
+			return Optional.ofNullable(optionalName.isPresent() ? new BungeeUser(uuid, optionalName.get()) : null);
 		}
 		return Optional.empty();
 	}
@@ -512,6 +518,9 @@ public final class Osmium {
 			if (user.isPresent()) {
 				return Optional.of(new SpongeUser(user.get()));
 			}
+		} else if (Platform.isBungeeCord()) {
+			Optional<UUID> optionalUniqueId = lookupUUID(name); //TODO: Implement BungeeCord user storage for consistency with players that haven't played on the server before and hasPlayedBefore()
+			return Optional.ofNullable(optionalUniqueId.isPresent() ? new BungeeUser(optionalUniqueId.get(), name) : null);
 		}
 		return Optional.empty();
 	}
