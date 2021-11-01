@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -27,6 +28,11 @@ public class BukkitUtil {
 		ItemMeta meta = itemStack.getItemMeta();
 		meta.setLore(description == null ? null : Chat.styleLines(description));
 		itemStack.setItemMeta(meta);
+	}
+
+	public static String getNMSVersion() {
+		String v = Bukkit.getServer().getClass().getPackage().getName();
+		return v.substring(v.lastIndexOf('.') + 1);
 	}
 
 	@FunctionalInterface
