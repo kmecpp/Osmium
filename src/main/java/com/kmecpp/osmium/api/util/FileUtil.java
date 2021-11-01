@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.stream.Stream;
 
 public abstract class FileUtil {
 
@@ -136,6 +138,24 @@ public abstract class FileUtil {
 			}
 		}
 		return !file.exists() || file.delete();
+	}
+
+	public static boolean deleteFile(Path file) {
+		try {
+			Files.delete(file);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static Stream<Path> list(Path path) {
+		try {
+			return Files.list(path);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static boolean isSymlink(File file) {

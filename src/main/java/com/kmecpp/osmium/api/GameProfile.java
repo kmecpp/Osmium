@@ -20,4 +20,9 @@ public class GameProfile {
 		return name;
 	}
 
+	@Override
+	public String toString() {
+		return "(" + uuid + ", " + name + ")";
+	}
+
 }

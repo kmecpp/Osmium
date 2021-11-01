@@ -16,23 +16,23 @@ public class MojangUtil {
 
 	public static final Pattern UUID_PATTERN = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
 
-	public static Optional<GameProfile> getProfile(String name) {
-		try {
-			JsonObject json = WebUtil.get(new URL("https://api.mojang.com/users/profiles/minecraft/" + name)).asObject();
-			UUID uuid = UUID.fromString(UUID_PATTERN.matcher(json.get("id").asString()).replaceAll("$1-$2-$3-$4-$5"));;
-			return Optional.of(new GameProfile(uuid, json.get("name").asString()));
-		} catch (IOException | ParseException ex) {
-			return Optional.empty(); //ParseException occurs when no data is returned from the server (user does not exist)
-		}
-	}
-
-	public static Optional<GameProfile> getProfile(UUID uuid) {
+	public static Optional<GameProfile> getProfileRaw(UUID uuid) throws IOException {
 		try {
 			JsonArray response = WebUtil.get(new URL("https://api.mojang.com/user/profiles/" + String.valueOf(uuid) + "/names")).asArray();
 			String name = response.get(response.size() - 1).asObject().get("name").asString();
 			return Optional.of(new GameProfile(uuid, name));
-		} catch (IOException | ParseException ex) {
-			return Optional.empty(); //ParseException occurs when no data is returned from the server (user does not exist)
+		} catch (ParseException ex) {
+			return Optional.empty(); //ParseException occurs when no data is returned from the server (user does not exist). IOException occurs when the server is down
+		}
+	}
+
+	public static Optional<GameProfile> getProfileRaw(String name) throws IOException {
+		try {
+			JsonObject json = WebUtil.get(new URL("https://api.mojang.com/users/profiles/minecraft/" + name)).asObject();
+			UUID uuid = UUID.fromString(UUID_PATTERN.matcher(json.get("id").asString()).replaceAll("$1-$2-$3-$4-$5"));;
+			return Optional.of(new GameProfile(uuid, json.get("name").asString()));
+		} catch (ParseException ex) {
+			return Optional.empty(); //ParseException occurs when no data is returned from the server (user does not exist). IOException occurs when the server is down
 		}
 	}
 
