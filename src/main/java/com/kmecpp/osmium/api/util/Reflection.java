@@ -733,15 +733,43 @@ public class Reflection {
 	}
 
 	public static void printMethods(Class<?> cls) {
+		printMethods(cls, false);
+	}
+
+	public static void printMethods(Class<?> cls, boolean recurse) {
+		System.out.println(cls.getSimpleName() + " METHODS:");
 		for (Method method : cls.getDeclaredMethods()) {
-			System.out.println(method.getReturnType().getName() + " " + method.getName() + "(" + String.join(", ", getSimpleNames(method.getParameterTypes())) + ")");
+			int modifiers = method.getModifiers();
+			String accessModifier = Modifier.isPublic(modifiers) ? "public" : Modifier.isProtected(modifiers) ? "protected" : Modifier.isPrivate(modifiers) ? "private" : "";
+
+			System.out.println(accessModifier + (accessModifier.isEmpty() ? "" : " ")
+					+ method.getReturnType().getName() + " " + method.getName() + "(" + String.join(", ", getSimpleNames(method.getParameterTypes())) + ")");
+		}
+
+		if (recurse && cls.getSuperclass() != Object.class) {
+			System.out.println("Recursing into superclass: " + cls.getSuperclass().getName());
+			printMethods(cls.getSuperclass(), recurse);
 		}
 	}
 
 	public static void printFields(Class<?> cls) {
+		printFields(cls, false);
+	}
+
+	public static void printFields(Class<?> cls, boolean recurse) {
+		System.out.println(cls.getSimpleName() + " FIELDS:");
 		for (Field field : cls.getDeclaredFields()) {
-			System.out.println(field.getType().getSimpleName() + " " + field.getName());
+			int modifiers = field.getModifiers();
+			String accessModifier = Modifier.isPublic(modifiers) ? "public" : Modifier.isProtected(modifiers) ? "protected" : Modifier.isPrivate(modifiers) ? "private" : "";
+
+			System.out.println(accessModifier + (accessModifier.isEmpty() ? "" : " ") + field.getType().getSimpleName() + " " + field.getName());
 		}
+
+		if (recurse && cls.getSuperclass() != Object.class) {
+			System.out.println("Recursing into superclass: " + cls.getSuperclass().getName());
+			printFields(cls.getSuperclass(), recurse);
+		}
+
 	}
 
 }

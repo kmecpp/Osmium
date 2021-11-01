@@ -1,8 +1,11 @@
 # Osmium API
 
-Osmium is an abstraction layer for Bukkit and Sponge which aims to provide the *easiest most concise way to create Minecraft plugins period!*
+Osmium is an abstraction layer for Bukkit, Sponge AND BungeeCord which aims to provide the *easiest and most concise way to create Minecraft plugins period!*
 
-Say goodbye to registering commands or listeners! Writing code to handle configuration files or databases? NOT ANYMORE! No need to store your plugin instance anywhere. No need to write SQL code. Compile your plugin, and it will work automatically on both Bukkit/Spigot and Sponge servers!
+There is no need to register commands or listeners. Configuration files can be generated, loaded, and saved directly from a class representation of the data. Many database tools have been implemented. 
+The entire API is designed to be as concise and as least redundant as possible.
+
+ Writing code to handle configuration files or databases? NOT ANYMORE! No need to store your plugin instance anywhere. No need to write SQL code. Compile your plugin, and it will work automatically on both Bukkit/Spigot and Sponge servers!
 
 Everything in Osmium is also completely optional. Don't want to use our config or database system. You don't have to! If there is any part of our API that we haven't finished yet, just write platform specific code. Osmium is designed to work with existing codebases and helps you handle platform specific code correctly.
 
@@ -19,14 +22,17 @@ Some servers already using Osmium:
 
 * Platform independent
 * No need to register commands or listeners
-* Resources files like plugin.yml don't exist anymore
-* Easily schedule a method to run with a single annotation
-* Built in custom database or Hibernate + HikariCP integration
-* Custom made, state-of-the-art configuration handling API  
-* Configuration files are generated automatically from a class file
-* Totally amazing command API that combines the best of both Bukkit and Sponge
+* No resources files like plugin.yml or bungee.yml
+* Use a single main plugin class for all platforms
+* Beautifully designed command API that combines the best of both Bukkit and Sponge
+* Custom, state-of-the-art, automatic configuration handling API. Map any class file into a human readable config
+* Cross platform task/scheduling API
+* Easily schedule a method to run with the @Schedule annotation
+* Easily run a method at startup with the @Initializer annotation
+* Built in HikariCP integration with easy to use wrappers that make common database operations a breeze
 * Server operators can easily manage databases, config formats, command aliases and more
-* Easy persistence API with built in redundancy and backups to avoid any loss of data
+* Easily persist variables across server restarts with @Persistent. Built in redundancy and backups are used to avoid any loss of data and ensure easy refactoring
+* Cross platform events that require no setup and run automatically on whichever server implementation the server is running
 * All of the above features are completely optional
 * And much much more...
 
@@ -56,14 +62,15 @@ Osmium can be downloaded from Maven Central.
     	<version>1.0-SNAPSHOT</version>
 	</dependency>
 
- 
+Note: Artifacts on Maven Central may not be up to date. Please clone the repo to ensure you are using the latest version
+
 <hr>
 
 # Examples
 
 To see a fully working example of an Osmium plugin, check out the [built in plugin we have here](https://github.com/kmecpp/Osmium/tree/master/src/main/java/com/kmecpp/osmium/core).
 
-You can ignore OsmiumBukkitMain and OsmiumSpongeMain as those will be automatically generated for regular Osmium plugins.
+You can ignore OsmiumBukkitMain, OsmiumSpongeMain, and OsmiumBungeeMain as those will be automatically generated for regular Osmium plugins.
 
 ## Listeners
 
@@ -132,7 +139,7 @@ The first way is the shortest and is useful when you only have a few very simple
 Osmium.registerCommand("spawn", "sp")
 	.setDescription("Teleport to the spawn point of your current world")
 	.setPermission("myplugin.spawn")
-	.onExecute((e) -> {
+	.onExecute(e -> {
 		Player player = e.getPlayer(); // Gets the command sender as a Player object. Prints a useful error message if the command was not run by a player
 		player.teleport(player.getWorld().getSpawn());
 		player.sendMessage(Chat.GREEN + "You have been teleported to this world's spawn point!");
@@ -177,21 +184,21 @@ public class KillCommands extends Command {
 
 	public KillCommand() {
 		super("kill", "destroy");
-		setDescription("Kills everyone in the current world");
+		setDescription("Kill certain players on the server");
 		setPermission("myplugin.kill");
 		
-		add("all").setExecutor(e) -> {
+		add("all").setExecutor(e -> {
 			Osmium.getOnlinePlayers().stream().filter(p -> !p.isOp()).forEach(Player::kill);
 			e.sendMessage(Chat.GREEN + "You have killed everyone!");
 		});
 		
-		add("world").setExecutor(e) -> {
+		add("world").setUsage("<world">).setExecutor(e -> {
 			World world = e.getWorld(0); //Gets the argument at index 0 and parses it as a World
 			world.getPlayers().filter(p -> !p.isOp()).forEach(Player::kill)
 			e.sendMessage(Chat.GREEN + "You have killed everyone in " + world.getName());
 		});
 		
-		add("player").setExecutor(e) -> {
+		add("player").setUsage("<player>").setExecutor(e -> {
 			e.getPlayer(0).kill(); //Gets the argument at index 0 and parses it as a Player
 			e.sendMessage(Chat.GREEN + "You have killed " + player.getName());
 		});
