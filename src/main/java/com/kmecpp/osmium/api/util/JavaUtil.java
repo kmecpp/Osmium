@@ -2,8 +2,11 @@ package com.kmecpp.osmium.api.util;
 
 import java.lang.reflect.Array;
 import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
@@ -22,6 +25,16 @@ public class JavaUtil {
 
 	public static String getOSName() {
 		return System.getProperty("os.name");
+	}
+
+	public static <E extends Comparable<? super E>, T extends List<E>> T sorted(T list) {
+		Collections.sort(list);
+		return list;
+	}
+
+	public static <E extends Comparable<? super E>, T extends List<E>> T sorted(T list, Comparator<? super E> c) {
+		Collections.sort(list, c);
+		return list;
 	}
 
 	@SuppressWarnings("unchecked")
