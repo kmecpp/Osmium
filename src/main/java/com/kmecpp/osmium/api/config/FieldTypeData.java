@@ -142,6 +142,10 @@ public class FieldTypeData {
 		return new FieldTypeData(type, Collections.emptyList()); //Simple type
 	}
 
+	/**
+	 * This converts a value loaded from the config by Configurate (ex: Set
+	 * (HashSet)) to its ACTUAL type as given in the class (ex: LinkedHashSet)
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object convertToActualType(Object loadedValue, PluginConfigTypeData pluginData) {
 		//		System.out.println("CONVERT TO " + type.getName() + ": " + loadedValue + " :: " + (loadedValue != null ? loadedValue.getClass() : ""));
@@ -155,17 +159,17 @@ public class FieldTypeData {
 			}
 			return loadedValue;
 		} else if (Collection.class.isAssignableFrom(loadedValue.getClass())) {
-			ArrayList convertedList = new ArrayList<>();
+			Collection result = (Collection) ConfigSerialization.getDefaultFor(type, true); //Collections must have a default value because we initialize them to be empty
+
 			for (Object o : (Collection) loadedValue) {
 				if (args.size() >= 1) {
-					convertedList.add(args.get(0).convertToActualType(o, pluginData));
+					result.add(args.get(0).convertToActualType(o, pluginData));
 				}
 			}
-			Collection result = (Collection) ConfigSerialization.getDefaultFor(type, true); //Collections must have a default value because we initialize them to be empty
-			result.addAll(convertedList);
+
 			return result;
 		} else if (Map.class.isAssignableFrom(loadedValue.getClass())) {
-			if (!Map.class.isAssignableFrom(type)) { //If the original type was not a Map we did our own map serialization on it
+			if (!Map.class.isAssignableFrom(type)) { //If we loaded a Map but the field is not a Map we probably used @ConfigSerializable
 				return ConfigUtil.deserializeFromConfigurateMap((Map) loadedValue, this, pluginData);
 				//				return ObjectMapSerialization.deserialize((Map) loadedValue, type);
 			}
