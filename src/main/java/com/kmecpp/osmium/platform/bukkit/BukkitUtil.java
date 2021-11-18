@@ -1,6 +1,9 @@
 package com.kmecpp.osmium.platform.bukkit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -33,6 +36,16 @@ public class BukkitUtil {
 	public static String getNMSVersion() {
 		String v = Bukkit.getServer().getClass().getPackage().getName();
 		return v.substring(v.lastIndexOf('.') + 1);
+	}
+
+	public static void teleportWithoutChangingDirection(Entity entity, Location location) { //"player.teleport(new Location" should never be used unless trying to reset direction
+		Location currentLocation = entity.getLocation();
+		entity.teleport(new Location(location.getWorld(), location.getX(), location.getY(), location.getZ(), currentLocation.getYaw(), currentLocation.getPitch()));
+	}
+
+	public static void teleportWithoutChangingDirection(Entity entity, World world, double x, double y, double z) { //"player.teleport(new Location" should never be used unless trying to reset direction
+		Location currentLocation = entity.getLocation();
+		entity.teleport(new Location(world, x, y, z, currentLocation.getYaw(), currentLocation.getPitch()));
 	}
 
 	@FunctionalInterface
