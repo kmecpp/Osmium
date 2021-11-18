@@ -38,6 +38,7 @@ public class ConfigSerialization {
 	private static final Supplier<?> ZERO = () -> 0;
 
 	static {
+		//Primitives
 		defaults.put(byte.class, ZERO);
 		defaults.put(short.class, ZERO);
 		defaults.put(int.class, ZERO);
@@ -46,6 +47,8 @@ public class ConfigSerialization {
 		defaults.put(double.class, ZERO);
 		defaults.put(char.class, ZERO);
 		defaults.put(boolean.class, () -> false);
+
+		//Primitive Wrappers & String
 		defaults.put(Byte.class, ZERO);
 		defaults.put(Short.class, ZERO);
 		defaults.put(Integer.class, ZERO);

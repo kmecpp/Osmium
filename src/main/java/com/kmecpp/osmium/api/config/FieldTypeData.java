@@ -3,6 +3,7 @@ package com.kmecpp.osmium.api.config;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -169,17 +170,20 @@ public class FieldTypeData {
 				//				return ObjectMapSerialization.deserialize((Map) loadedValue, type);
 			}
 
-			HashMap convertedMap = new HashMap();
+			Map result;
+			if (this.type == EnumMap.class) { //Can't have a default value for EnumMap because it requires generic type info which we only have here
+				result = new EnumMap<>((Class<Enum>) args.get(0).type);
+			} else {
+				result = (Map) ConfigSerialization.getDefaultFor(type, true); //Map must have a default value because we initialize them to be empty
+			}
 
 			for (Entry entry : (Set<Entry>) ((Map) loadedValue).entrySet()) {
 				if (args.size() >= 2) {
-					convertedMap.put(
+					result.put(
 							args.get(0).convertToActualType(entry.getKey(), pluginData),
 							args.get(1).convertToActualType(entry.getValue(), pluginData));
 				}
 			}
-			Map result = (Map) ConfigSerialization.getDefaultFor(type, true); //Map must have a default value because we initialize them to be empty
-			result.putAll(convertedMap);
 			return result;
 		} else if (loadedValue instanceof String) { //type can't be string because java.lang is handled already
 			return Serialization.deserialize(type, (String) loadedValue);
