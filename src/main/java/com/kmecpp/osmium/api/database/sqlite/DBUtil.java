@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.kmecpp.osmium.api.database.DBColumn;
 import com.kmecpp.osmium.api.database.mysql.MDBColumnData;
 import com.kmecpp.osmium.api.database.mysql.MDBTableData;
 import com.kmecpp.osmium.api.persistence.Serialization;
@@ -119,9 +118,9 @@ public class DBUtil {
 		//		}
 
 		boolean autoIncrement = false;
-		for (MDBColumnData columnData : properties.getColumns()) {
-			Field field = columnData.getField();
-			DBColumn column = field.getAnnotation(DBColumn.class);
+		for (MDBColumnData column : properties.getColumns()) {
+			Field field = column.getField();
+			//			DBColumn column = field.getAnnotation(DBColumn.class);
 
 			try {
 				if (!field.getType().isPrimitive()) {
@@ -144,15 +143,15 @@ public class DBUtil {
 				}
 			}
 
-			if (column.autoIncrement()) {
+			if (column.isAutoIncrement()) {
 				autoIncrement = true;
 				schema.append(getColumnName(field)).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
 			} else {
 				schema.append(getColumnName(field))
 						.append(" " + typeString)
-						.append(column.nullable() ? "" : " NOT NULL")
-						.append(column.autoIncrement() ? " AUTOINCREMENT" : "")
-						.append(column.unique() ? " UNIQUE" : "")
+						.append(column.isNullable() ? "" : " NOT NULL")
+						.append(column.isAutoIncrement() ? " AUTOINCREMENT" : "")
+						.append(column.isUnique() ? " UNIQUE" : "")
 						.append(", ");
 			}
 
