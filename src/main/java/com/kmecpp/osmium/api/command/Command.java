@@ -2,6 +2,10 @@ package com.kmecpp.osmium.api.command;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.bukkit.ChatColor;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.util.StringUtil;
@@ -11,6 +15,7 @@ public class Command extends CommandBase {
 	private ArrayList<CommandBase> args = new ArrayList<>();
 
 	private String title = "&a&l" + StringUtil.capitalize(getPrimaryAlias()) + " Commands";
+	private boolean hideDescriptions;
 
 	public Command() {
 		this(null);
@@ -44,6 +49,31 @@ public class Command extends CommandBase {
 		}
 	}
 
+	public void addHelpCommand() {
+		addHelpCommand(true);
+	}
+
+	public void addHelpCommand(boolean hideDescriptions) {
+		CommandBase helpArg = new CommandBase("help", "?");
+		helpArg.setDescription("Shows the descriptions for each subcommand");
+		helpArg.setExecutor(e -> {
+			e.sendTitle(title);
+			String shortestAlias = this.getShortestAlias();
+
+			String requestedCommand = e.getString(0, null);
+
+			List<CommandBase> displayArgs = requestedCommand != null ? Arrays.asList(getArgumentMatching(requestedCommand, e.getSender())) : args.subList(1, args.size());
+			for (CommandBase arg : displayArgs) {
+				if (arg.isAllowed(e.getSender())) {
+					e.sendMessage(ChatColor.GREEN + "/" + shortestAlias + " " + arg.getAliases()[0] + ChatColor.AQUA + ": " + Chat.YELLOW + arg.getDescription());
+				}
+			}
+		});
+		args.add(0, helpArg);
+
+		this.hideDescriptions = hideDescriptions;
+	}
+
 	public final void setTitle(String title) {
 		this.title = Chat.GREEN + Chat.BOLD.toString() + Chat.style(title);
 	}
@@ -65,7 +95,7 @@ public class Command extends CommandBase {
 				if (arg.isAllowed(event.getSender())) {
 					event.send("&b/" + event.getBaseLabel() + " " + arg.getPrimaryAlias()
 							+ (arg.hasUsage() ? " " + arg.getUsage() : "")
-							+ (arg.hasDescription() ? "&e - &b" + arg.getDescription() : ""));
+							+ (arg.hasDescription() && !hideDescriptions ? "&e - &b" + arg.getDescription() : ""));
 				}
 			}
 		}
