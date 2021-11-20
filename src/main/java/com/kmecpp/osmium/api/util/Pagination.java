@@ -26,6 +26,9 @@ public class Pagination {
 	}
 
 	public static PaginationResult compute(int page, int pageSize, int totalRecords) {
+		if (page < 1) {
+			throw new IllegalArgumentException("Page number must be at least 1!");
+		}
 		return new PaginationResult(page, Pagination.getPageCount(totalRecords, pageSize),
 				Pagination.getStartIndex(page, pageSize), Pagination.getEndIndex(page, pageSize, totalRecords));
 	}
@@ -36,12 +39,14 @@ public class Pagination {
 		private final int pageCount;
 		private final int startIndex;
 		private final int endIndex;
+		private final boolean passedEnd;
 
-		public PaginationResult(int page, int pageCount, int startIndex, int endIndex) {
-			this.page = page;
+		private PaginationResult(int page, int pageCount, int startIndex, int endIndex) {
+			this.page = Math.min(page, pageCount);
 			this.pageCount = pageCount;
 			this.startIndex = startIndex;
 			this.endIndex = endIndex;
+			this.passedEnd = page > pageCount;
 		}
 
 		public int getPage() {
@@ -58,6 +63,10 @@ public class Pagination {
 
 		public int getEndIndex() {
 			return endIndex;
+		}
+
+		public boolean isPassedEnd() {
+			return passedEnd;
 		}
 
 	}
