@@ -189,7 +189,7 @@ public class CommandEvent implements Messageable {
 	public int getIntBound(int index, int min, int max) {
 		int result = getInt(index);
 		if (result < min || result > max) {
-			throw new CommandException("Input '" + result + "' must be between " + min + " and " + max);
+			throw new CommandException(getInputReference(index, result) + " must be between " + min + " and " + max);
 		}
 		return result;
 	}
@@ -458,5 +458,11 @@ public class CommandEvent implements Messageable {
 	//	public void sendRawMessage(String style, String message) {
 	//		sender.sendMessage(style, message);
 	//	}
+
+	private String getInputReference(int index, int providedValue) {
+		CommandBase target = subCommand == null ? command : subCommand;
+		String usageParameter = target.getUsageParameter(index);
+		return usageParameter != null ? ("Value for <" + usageParameter + "> (" + providedValue + ")") : ("Input '" + providedValue + "'");
+	}
 
 }

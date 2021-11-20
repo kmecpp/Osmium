@@ -226,6 +226,10 @@ public class CommandBase {
 		return sb.toString();
 	}
 
+	public String getUsageParameter(int index) {
+		return index >= 0 && index < usageParams.length ? usageParams[index] : null;
+	}
+
 	public String[] getUsageParams() {
 		return usageParams;
 	}
