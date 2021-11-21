@@ -2,7 +2,7 @@ package com.kmecpp.osmium.core;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
@@ -22,7 +22,7 @@ public class OsmiumBukkitMain extends BukkitPlugin {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerLogin(PlayerLoginEvent e) {
+	public void onPlayerLogin(PlayerJoinEvent e) { //PlayerQuitEvent is not always called if PlayerLoginEvent is called
 		PlayerList.addPlayer(e.getPlayer());
 	}
 
