@@ -139,20 +139,16 @@ public final class CommandManager {
 		} catch (CommandException e) {
 			//			e.printStackTrace(); //WARNING: THIS IS USELESS FOR DEFAULT EXCEPTIONS
 			if (e == CommandException.USAGE_ERROR) {
-				if (e.getMessage().isEmpty()) {
-					if (args.length > 0) {
-						CommandBase arg = command.getArgumentMatching(args[0]);
-						if (arg != null) {
-							sender.sendMessage(Chat.RED + "Usage: /" + commandLabel + " " + arg.getPrimaryAlias() + " " + arg.getUsage());
-							return false;
-						}
+				if (args.length > 0) {
+					CommandBase arg = command.getArgumentMatching(args[0]);
+					if (arg != null) {
+						sender.sendMessage(Chat.RED + "Usage: /" + commandLabel + " " + arg.getPrimaryAlias() + " " + arg.getUsage());
+						return false;
 					}
-					sender.send("&cUsage: /" + commandLabel + " " + command.getUsage());
-				} else {
-					sender.sendMessage(Chat.RED + e.getMessage());
 				}
+				sender.send("&cUsage: /" + commandLabel + " " + command.getUsage());
 			} else {
-				sender.send("&c" + e.getLocalizedMessage());
+				sender.send("&c" + e.getMessage());
 			}
 			return false;
 		} catch (ArrayIndexOutOfBoundsException e) {

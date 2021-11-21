@@ -158,11 +158,11 @@ public class BukkitAccess {
 										: bukkitSender instanceof org.bukkit.command.BlockCommandSender
 												? new BukkitBlockCommandSender((org.bukkit.command.BlockCommandSender) bukkitSender)
 												: new GenericBukkitCommandSender(bukkitSender);
-						return CommandManager.invokeCommand(command, sender, label, args);
+						CommandManager.invokeCommand(command, sender, label, args);
 					} catch (Throwable t) {
 						t.printStackTrace();
-						return false;
 					}
+					return true; //Always return true, otherwise Bukkit will print command usage
 				}
 
 			});

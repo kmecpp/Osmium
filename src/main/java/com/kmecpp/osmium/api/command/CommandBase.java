@@ -240,9 +240,12 @@ public class CommandBase {
 
 	//<add/remove>
 	private static String[] parseUsage(String usage) {
-		String[] params = usage.split(">.+<");
+		String[] params = usage.split(">\\s+<");
 		for (int i = 0; i < params.length; i++) {
 			params[i] = params[i].replace("<", "").replace(">", "").trim();
+			if (params[i].contains(" ")) {
+				params[i] = params[i].split(" ")[0];
+			}
 		}
 		return params;
 	}
