@@ -162,6 +162,8 @@ public class MDBUtil {
 		StringBuilder sb = new StringBuilder("create table if not exists " + data.getName() + "(");
 		ArrayList<String> primaryKeys = new ArrayList<>();
 		//		LinkedHashMap<Class<?>, ArrayList<String>> foreignKeys = new LinkedHashMap<>();
+
+		//create table if not exists TABLE(`col1` varchar(32) not null, `col2`, primary key(col1, col2));
 		for (MDBColumnData column : data.getColumns()) {
 			String columnName = column.getName();
 			sb.append("`" + columnName + "` " + getColumnAttributeString(data, column) + ", ");
@@ -174,7 +176,7 @@ public class MDBUtil {
 			//			}
 		}
 		if (!primaryKeys.isEmpty()) {
-			sb.append("primary key(" + String.join(", ", primaryKeys) + "),");
+			sb.append("primary key(" + String.join(", ", primaryKeys) + "), ");
 		}
 		//		for (Entry<Class<?>, ArrayList<String>> entry : foreignKeys.entrySet()) {
 		//			Class<?> target = entry.getKey();
@@ -185,8 +187,8 @@ public class MDBUtil {
 		//			sb.append("references " + foreignTableData.getTableName() + "(id) on delete cascade,");
 		//		}
 
-		if (sb.charAt(sb.length() - 1) == ',') {
-			sb.setLength(sb.length() - 1);
+		if (sb.charAt(sb.length() - 1) == ' ' && sb.charAt(sb.length() - 2) == ',') {
+			sb.setLength(sb.length() - 2);
 		}
 		sb.append(");");
 		return sb.toString();
