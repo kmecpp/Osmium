@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.util;
+package com.kmecpp.osmium.api.util.lib;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,6 +24,16 @@ public class History<T> implements Iterable<T> {
 	public T getMostRecent() {
 		return get(0);
 		//		return index == 0 ? data[data.length - 1] : get(index - 1);
+	}
+
+	public T[] getMostRecent(T[] arr) {
+		if (arr.length > data.length) {
+			throw new IllegalArgumentException("Cannot get more elements than history length: " + arr.length + " > " + data.length);
+		}
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = get(i);
+		}
+		return arr;
 	}
 
 	public T get(int index) {
