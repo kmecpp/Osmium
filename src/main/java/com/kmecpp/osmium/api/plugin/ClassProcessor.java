@@ -8,8 +8,11 @@ import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import org.hibernate.mapping.Map;
 
 import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.BungeeAccess;
@@ -346,7 +349,30 @@ public class ClassProcessor {
 					}
 				}
 			}
+		}
 
+		for (Field field : cls.getDeclaredFields()) {
+			OnlinePlayerData onlinePlayerDataAnnotation = field.getDeclaredAnnotation(OnlinePlayerData.class);
+			if (onlinePlayerDataAnnotation != null) {
+				try {
+					Class<?> fieldType = field.getType();
+					field.setAccessible(true);
+
+					if (!Modifier.isStatic(field.getModifiers())) {
+						OsmiumLogger.warn("Fields annotated with @" + OnlinePlayerData.class.getSimpleName() + " must be static!");
+					} else if (!Modifier.isFinal(field.getModifiers())) {
+						OsmiumLogger.warn("Fields annotated with @" + OnlinePlayerData.class.getSimpleName() + " must be final!");
+					} else if (field.get(null) == null) {
+						OsmiumLogger.warn("Fields annotated with @" + OnlinePlayerData.class.getSimpleName() + " must not be null!");
+					} else if (!Map.class.isAssignableFrom(fieldType) && !Set.class.isAssignableFrom(fieldType)) {
+						OsmiumLogger.warn("Fields annotated with @" + OnlinePlayerData.class.getSimpleName() + " must have type Map<UUID, ?> or Set<UUID>");
+					} else {
+						Osmium.getPlayerDataManager().registerOnlinePlayerDataField(field, onlinePlayerDataAnnotation);
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
 
 		AutoRegister autoRegister = cls.getDeclaredAnnotation(AutoRegister.class);

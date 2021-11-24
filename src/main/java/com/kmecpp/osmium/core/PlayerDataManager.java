@@ -1,11 +1,14 @@
 package com.kmecpp.osmium.core;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.Osmium;
@@ -17,6 +20,8 @@ import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.database.mysql.MDBTableData;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.plugin.OnlinePlayerData;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
 
@@ -29,15 +34,65 @@ public class PlayerDataManager {
 
 	private final HashMap<Class<?>, Function<User, ?>> loaders = new HashMap<>();
 
+	private final HashMap<Field, OnlinePlayerData> onlinePlayerDataFields = new HashMap<>();
+	//	private final HashMap<UUID, Long> pendingDeletion = new HashMap<>();
+
 	void start() {
 		//Safely remove offline players
 		Osmium.getTask().setInterval(30, TickTimeUnit.SECOND).setExecutor(t -> {
+			System.out.println("Osmium Online Players: " + Osmium.getOnlinePlayers().size() + " == " + Osmium.getOnlinePlayers());
+
 			Set<UUID> onlineIds = new HashSet<>(Osmium.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet()));
 			for (UUID uuid : onlineIds) {
 				if (!onlineIds.contains(uuid)) {
 					Osmium.getPlayerDataManager().data.remove(uuid);
 				}
 			}
+
+			long start = System.nanoTime();
+
+			Predicate<UUID> playerChecker = (uuid) -> {
+				if (uuid.getClass() != UUID.class) {
+					OsmiumLogger.warn("Data annotated with @" + OnlinePlayerData.class.getSimpleName() + " must map/store UUID's");
+					return false; //Don't remove
+				}
+
+				boolean offline = !onlineIds.contains(uuid);
+
+				//				if (offline) {
+				//					Long logoutTime = pendingDeletion.get(uuid);
+				//					if (logoutTime != null) {
+				//						long minutesSinceLogout = (currentTime - logoutTime) / 60000;
+				//					} else {
+				//						pendingDeletion.put(uuid, System.currentTimeMillis());
+				//					}
+				//				}
+
+				return offline;
+				/*
+				 * TODO: OnlinePlayerData.retention is not implemented yet.
+				 * Store users in a Map<UUID, Long> pendingDeletionMap when
+				 * they logout.
+				 * - When they don't exist in any
+				 * onlinePlayerDataFields and are not online, remove them
+				 * from the pendingDeletionMap
+				 */
+			};
+
+			for (Entry<Field, OnlinePlayerData> entry : onlinePlayerDataFields.entrySet()) {
+				try {
+					Object data = entry.getKey().get(null);
+					if (Map.class.isAssignableFrom(data.getClass())) {
+						Reflection.<Map<UUID, ?>> cast(data).entrySet().removeIf(e -> playerChecker.test(e.getKey()));
+					} else if (Set.class.isAssignableFrom(data.getClass())) {
+						Reflection.<Set<UUID>> cast(data).removeIf(uuid -> playerChecker.test(uuid));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			long end = System.nanoTime();
+			System.out.println("Cleaned " + onlinePlayerDataFields.size() + " Player Maps (" + ((end - start) / 1000F) + "us)");
 		}).start();
 	}
 
@@ -159,6 +214,7 @@ public class PlayerDataManager {
 							((PlayerData) value).updatePlayerData(user.getUniqueId(), user.getName());
 						}
 
+						System.out.println("LOADED PLAYER DATA: " + value);
 						this.data.computeIfAbsent(user.getUniqueId(), k -> new HashMap<>()).put(type, value);
 						//				System.out.println("UPDATED PLAYER DATA: " + e.getPlayerName() + ", " + data);
 						//						data.put(type, value);
@@ -176,6 +232,7 @@ public class PlayerDataManager {
 	}
 
 	public void savePlayer(Player player) {
+		System.out.println("OSMIUM SAVING PLAYER DATA FOR " + player);
 		HashMap<Class<?>, Object> playerData = this.data.get(player.getUniqueId());
 		if (playerData != null) {
 			playerData.entrySet().forEach(e -> {
@@ -200,6 +257,14 @@ public class PlayerDataManager {
 		for (Player player : Osmium.getOnlinePlayers()) {
 			savePlayer(player);
 		}
+	}
+
+	public void registerOnlinePlayerDataField(Field field, OnlinePlayerData playerMap) {
+		onlinePlayerDataFields.put(field, playerMap);
+	}
+
+	public void unregisterOnlinePlayerDataField(Field field) {
+		onlinePlayerDataFields.remove(field);
 	}
 
 }
