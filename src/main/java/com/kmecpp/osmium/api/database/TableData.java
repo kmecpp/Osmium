@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 
+import com.kmecpp.osmium.api.database.api.DBTable;
+import com.kmecpp.osmium.api.database.api.DatabaseType;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 

@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database.sqlite;
+package com.kmecpp.osmium.api.database;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -7,15 +7,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.kmecpp.osmium.api.database.DatabaseType;
-import com.kmecpp.osmium.api.database.ColumnData;
-import com.kmecpp.osmium.api.database.TableData;
-import com.kmecpp.osmium.api.database.OrderBy;
-import com.kmecpp.osmium.api.database.ResultSetTransformer;
-import com.kmecpp.osmium.api.database.SQLConfiguration;
-import com.kmecpp.osmium.api.database.SQLDatabase;
-import com.kmecpp.osmium.api.database.mysql.MDBUtil;
-import com.kmecpp.osmium.api.database.sqlite.DatabaseQueue.QueueExecutor;
+import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
+import com.kmecpp.osmium.api.database.api.DatabaseType;
+import com.kmecpp.osmium.api.database.api.OrderBy;
+import com.kmecpp.osmium.api.database.api.ResultSetTransformer;
+import com.kmecpp.osmium.api.database.api.SQLConfiguration;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -52,13 +48,13 @@ public class SQLiteDatabase extends SQLDatabase {
 		//		update(DBUtil.createReplaceInto(this, cls, obj));
 
 		TableData tableData = tables.get(cls);
-		String update = MDBUtil.createReplaceInto(tableData);
+		String update = DBUtil.createReplaceInto(tableData);
 
 		this.preparedUpdateStatement(update, s -> {
 			try {
 				ColumnData[] columns = tableData.getColumns();
 				for (int i = 0; i < columns.length; i++) {
-					DBUtil.updatePreparedStatement(s, i + 1, columns[i].getField().get(obj));
+					SQLiteDBUtil.updatePreparedStatement(s, i + 1, columns[i].getField().get(obj));
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);
@@ -123,13 +119,13 @@ public class SQLiteDatabase extends SQLDatabase {
 	}
 
 	public void setAll(Class<?> tableClass, String column, Object value) {
-		update("UPDATE " + getTableName(tableClass) + " SET " + DBUtil.getColumnName(column) + "='" + value + "'");
+		update("UPDATE " + getTableName(tableClass) + " SET " + SQLiteDBUtil.getColumnName(column) + "='" + value + "'");
 	}
 
 	public <T> Optional<T> getFirst(Class<T> tableClass, OrderBy orderBy, String columns, Object... values) {
 		TableData properties = tables.get(tableClass);
 		ArrayList<T> result = this.<T> query("SELECT * FROM " + properties.getName()
-				+ " WHERE " + DBUtil.createWhere(columns.split(","), values)
+				+ " WHERE " + SQLiteDBUtil.createWhere(columns.split(","), values)
 				+ " " + orderBy + " LIMIT 1", properties);
 		return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
 
@@ -192,7 +188,7 @@ public class SQLiteDatabase extends SQLDatabase {
 			columns = table.getPrimaryColumnNames();
 		}
 
-		String query = "SELECT * FROM " + table.getName() + " WHERE " + DBUtil.createWhere(columns, values);
+		String query = "SELECT * FROM " + table.getName() + " WHERE " + SQLiteDBUtil.createWhere(columns, values);
 		return query(query, table);
 	}
 

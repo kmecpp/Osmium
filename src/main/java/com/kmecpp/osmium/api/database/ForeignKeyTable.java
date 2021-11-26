@@ -1,6 +1,6 @@
-package com.kmecpp.osmium.api.database.mysql;
+package com.kmecpp.osmium.api.database;
 
-import com.kmecpp.osmium.api.database.DBColumn;
+import com.kmecpp.osmium.api.database.api.DBColumn;
 
 public abstract class ForeignKeyTable {
 

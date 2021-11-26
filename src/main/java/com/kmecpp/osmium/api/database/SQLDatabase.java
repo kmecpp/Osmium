@@ -12,10 +12,13 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
-import com.kmecpp.osmium.api.database.mysql.MDBUtil;
-import com.kmecpp.osmium.api.database.mysql.PreparedStatementBuilder;
-import com.kmecpp.osmium.api.database.sqlite.DBUtil;
-import com.kmecpp.osmium.api.database.sqlite.DatabaseQueue;
+import com.kmecpp.osmium.api.database.api.DBTable;
+import com.kmecpp.osmium.api.database.api.DatabaseType;
+import com.kmecpp.osmium.api.database.api.Filter;
+import com.kmecpp.osmium.api.database.api.PreparedStatementBuilder;
+import com.kmecpp.osmium.api.database.api.ResultSetProcessor;
+import com.kmecpp.osmium.api.database.api.ResultSetTransformer;
+import com.kmecpp.osmium.api.database.api.SQLConfiguration;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Callback;
@@ -267,8 +270,8 @@ public abstract class SQLDatabase {
 
 	public int increment(Class<?> tableClass, String column, Filter filter) {
 		TableData table = getTable(tableClass);
-		String where = MDBUtil.createWhere(filter);
-		return preparedUpdateStatement("UPDATE " + table.getName() + " SET " + column + " = " + column + " + 1 WHERE " + where, MDBUtil.filterLinker(filter));
+		String where = DBUtil.createWhere(filter);
+		return preparedUpdateStatement("UPDATE " + table.getName() + " SET " + column + " = " + column + " + 1 WHERE " + where, DBUtil.filterLinker(filter));
 	}
 
 	public int deleteAll(Class<?> tableClass) {
@@ -278,8 +281,8 @@ public abstract class SQLDatabase {
 
 	public int deleteFrom(Class<?> tableClass, Filter filter) {
 		TableData table = getTable(tableClass);
-		String update = "DELETE FROM " + table.getName() + " WHERE " + MDBUtil.createWhere(filter);
-		return preparedUpdateStatement(update, MDBUtil.filterLinker(filter));
+		String update = "DELETE FROM " + table.getName() + " WHERE " + DBUtil.createWhere(filter);
+		return preparedUpdateStatement(update, DBUtil.filterLinker(filter));
 	}
 
 	public int update(String update) {
@@ -529,9 +532,9 @@ public abstract class SQLDatabase {
 		TableData data = getTableMeta(cls);
 		OsmiumLogger.info("Creating " + type.getName() + " database table: " + data.getName());
 		if (type == DatabaseType.MYSQL) {
-			this.update(MDBUtil.getCreateTableUpdate(data));
+			this.update(DBUtil.getCreateTableUpdate(data));
 		} else {
-			update(DBUtil.createTable(data));
+			update(SQLiteDBUtil.createTable(data));
 		}
 
 		//		TableProperties data = new TableProperties(this, cls);

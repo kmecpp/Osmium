@@ -12,7 +12,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import com.kmecpp.osmium.api.config.ConfigClass;
-import com.kmecpp.osmium.api.database.DBTable;
+import com.kmecpp.osmium.api.database.api.DBTable;
 import com.kmecpp.osmium.api.event.Listener;
 import com.kmecpp.osmium.api.plugin.Initializer;
 import com.kmecpp.osmium.api.tasks.Schedule;

@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database.mysql;
+package com.kmecpp.osmium.api.database;
 
 import java.lang.reflect.Field;
 import java.sql.Date;
@@ -11,14 +11,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.kmecpp.osmium.api.database.Filter;
-import com.kmecpp.osmium.api.database.ColumnData;
-import com.kmecpp.osmium.api.database.TableData;
-import com.kmecpp.osmium.api.database.DBColumn;
-import com.kmecpp.osmium.api.database.SQLPhrase;
+import com.kmecpp.osmium.api.database.api.DBColumn;
+import com.kmecpp.osmium.api.database.api.Filter;
+import com.kmecpp.osmium.api.database.api.PreparedStatementBuilder;
+import com.kmecpp.osmium.api.database.api.SQLPhrase;
 import com.kmecpp.osmium.api.util.StringUtil;
 
-public class MDBUtil {
+public class DBUtil {
 
 	public static HashMap<Class<?>, String> types = new HashMap<>();
 

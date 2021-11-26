@@ -1,7 +1,7 @@
 package com.kmecpp.osmium.test;
 
-import com.kmecpp.osmium.api.database.DBColumn;
-import com.kmecpp.osmium.api.database.DBTable;
+import com.kmecpp.osmium.api.database.api.DBColumn;
+import com.kmecpp.osmium.api.database.api.DBTable;
 
 public class Test {
 

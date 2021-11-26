@@ -2,9 +2,9 @@ package com.kmecpp.osmium.core;
 
 import java.util.UUID;
 
-import com.kmecpp.osmium.api.database.DBColumn;
-import com.kmecpp.osmium.api.database.DBTable;
-import com.kmecpp.osmium.api.database.DatabaseType;
+import com.kmecpp.osmium.api.database.api.DBColumn;
+import com.kmecpp.osmium.api.database.api.DBTable;
+import com.kmecpp.osmium.api.database.api.DatabaseType;
 
 @DBTable(name = "users", type = { DatabaseType.SQLITE, DatabaseType.MYSQL }, autoCreate = false)
 //@MySQLTable(name = "users", autoCreate = false)

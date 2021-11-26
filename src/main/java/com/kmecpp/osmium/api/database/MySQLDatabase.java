@@ -1,15 +1,12 @@
-package com.kmecpp.osmium.api.database.mysql;
+package com.kmecpp.osmium.api.database;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.kmecpp.osmium.api.database.Filter;
-import com.kmecpp.osmium.api.database.ColumnData;
-import com.kmecpp.osmium.api.database.TableData;
-import com.kmecpp.osmium.api.database.DatabaseType;
-import com.kmecpp.osmium.api.database.OrderBy;
-import com.kmecpp.osmium.api.database.SQLDatabase;
+import com.kmecpp.osmium.api.database.api.DatabaseType;
+import com.kmecpp.osmium.api.database.api.Filter;
+import com.kmecpp.osmium.api.database.api.OrderBy;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
@@ -46,8 +43,8 @@ public class MySQLDatabase extends SQLDatabase {
 
 	public int count(Class<?> tableClass, Filter filter) {
 		TableData table = tables.get(tableClass);
-		String where = MDBUtil.createWhere(filter);
-		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where, MDBUtil.filterLinker(filter), rs -> {
+		String where = DBUtil.createWhere(filter);
+		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where, DBUtil.filterLinker(filter), rs -> {
 			if (rs.next()) {
 				return rs.getInt(1);
 			} else {
@@ -58,11 +55,11 @@ public class MySQLDatabase extends SQLDatabase {
 
 	public int count(Class<?> tableClass, String columns, Object... values) {
 		TableData table = tables.get(tableClass);
-		String where = MDBUtil.createWhere(columns.split(","));
+		String where = DBUtil.createWhere(columns.split(","));
 		//		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where + (StringUtil.isNullOrEmpty(extraFilter) ? "" : " AND " + extraFilter), ps -> {
 		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where, ps -> {
 			for (int i = 0; i < values.length; i++) {
-				MDBUtil.updatePreparedStatement(ps, i + 1, values[i]);
+				DBUtil.updatePreparedStatement(ps, i + 1, values[i]);
 			}
 		}, rs -> {
 			if (rs.next()) {
@@ -75,7 +72,7 @@ public class MySQLDatabase extends SQLDatabase {
 
 	public int setAll(Class<?> tableClass, String column, Object value) {
 		TableData table = tables.get(tableClass);
-		return preparedUpdateStatement("update " + table.getName() + " set " + SQLDatabase.getColumnName(column) + "=?", ps -> MDBUtil.updatePreparedStatement(ps, 1, value));
+		return preparedUpdateStatement("update " + table.getName() + " set " + SQLDatabase.getColumnName(column) + "=?", ps -> DBUtil.updatePreparedStatement(ps, 1, value));
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit) {
@@ -86,14 +83,14 @@ public class MySQLDatabase extends SQLDatabase {
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit, String columns, Object... values) {
 		TableData table = tables.get(tableClass);
 		return query(table, "SELECT * FROM " + table.getName()
-				+ " WHERE " + MDBUtil.createWhere(columns.split(","))
+				+ " WHERE " + DBUtil.createWhere(columns.split(","))
 				+ " " + orderBy + " LIMIT " + limit);
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int min, int max, String columns, Object... values) {
 		TableData table = tables.get(tableClass);
 		return query(table, "SELECT * FROM " + table.getName()
-				+ " WHERE " + MDBUtil.createWhere(columns.split(","))
+				+ " WHERE " + DBUtil.createWhere(columns.split(","))
 				+ " " + orderBy + " LIMIT " + min + "," + max, values);
 	}
 
@@ -109,7 +106,7 @@ public class MySQLDatabase extends SQLDatabase {
 	public <T> Optional<T> getFirst(Class<T> tableClass, OrderBy orderBy, String columns, Object... values) {
 		TableData table = tables.get(tableClass);
 		ArrayList<T> result = query(table, "SELECT * FROM " + table.getName()
-				+ " WHERE " + MDBUtil.createWhere(columns.split(","))
+				+ " WHERE " + DBUtil.createWhere(columns.split(","))
 				+ " " + orderBy + " LIMIT 1", values);
 		return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
 	}
@@ -121,7 +118,7 @@ public class MySQLDatabase extends SQLDatabase {
 			columns = tableData.getPrimaryColumnNames();
 		}
 
-		String query = "SELECT * FROM " + tableData.getName() + " WHERE " + MDBUtil.createWhere(columns);
+		String query = "SELECT * FROM " + tableData.getName() + " WHERE " + DBUtil.createWhere(columns);
 		return query(tableData, query, values);
 
 		//		//		DB.get().preparedStatement("", s ->{});
@@ -177,7 +174,7 @@ public class MySQLDatabase extends SQLDatabase {
 		ArrayList<T> results = new ArrayList<>();
 		this.preparedQueryStatement(query, s -> {
 			for (int i = 0; i < values.length; i++) {
-				MDBUtil.updatePreparedStatement(s, i + 1, values[i]);
+				DBUtil.updatePreparedStatement(s, i + 1, values[i]);
 			}
 		}, rs -> {
 			try {
@@ -192,7 +189,7 @@ public class MySQLDatabase extends SQLDatabase {
 					}
 					for (ColumnData column : table.getColumns()) {
 						//						if (!column.isForeignKey()) {
-						MDBUtil.processResultSet(obj, rs, index, column);
+						DBUtil.processResultSet(obj, rs, index, column);
 						//						}
 						index++;
 					}
@@ -215,13 +212,13 @@ public class MySQLDatabase extends SQLDatabase {
 	@Override
 	public void replaceInto(Class<?> tableClass, Object obj) {
 		TableData tableData = tables.get(tableClass);
-		String update = MDBUtil.createReplaceInto(tableData);
+		String update = DBUtil.createReplaceInto(tableData);
 
 		this.preparedUpdateStatement(update, s -> {
 			try {
 				ColumnData[] columns = tableData.getColumns();
 				for (int i = 0; i < columns.length; i++) {
-					MDBUtil.updatePreparedStatement(s, i + 1, columns[i].getField().get(obj));
+					DBUtil.updatePreparedStatement(s, i + 1, columns[i].getField().get(obj));
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);

@@ -1,10 +1,10 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.database.api;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.kmecpp.osmium.api.database.mysql.MDBUtil;
+import com.kmecpp.osmium.api.database.DBUtil;
 
 public class Filter {
 
@@ -55,7 +55,7 @@ public class Filter {
 
 	public void link(PreparedStatement ps) throws SQLException {
 		for (int i = 0; i < filters.size(); i++) {
-			MDBUtil.updatePreparedStatement(ps, i + 1, values.get(i));
+			DBUtil.updatePreparedStatement(ps, i + 1, values.get(i));
 		}
 	}
 

@@ -9,7 +9,7 @@ import com.kmecpp.osmium.api.SoundType;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.database.MultiplePlayerData;
-import com.kmecpp.osmium.api.database.Saveable;
+import com.kmecpp.osmium.api.database.api.Saveable;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Location;

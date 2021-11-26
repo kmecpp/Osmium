@@ -2,6 +2,8 @@ package com.kmecpp.osmium.api.database;
 
 import java.util.UUID;
 
+import com.kmecpp.osmium.api.database.api.DBColumn;
+import com.kmecpp.osmium.api.database.api.Saveable;
 import com.kmecpp.osmium.api.util.StringUtil;
 
 public abstract class PlayerData implements Saveable {

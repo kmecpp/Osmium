@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database.mysql;
+package com.kmecpp.osmium.api.database.api;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

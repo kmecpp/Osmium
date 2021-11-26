@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database.sqlite;
+package com.kmecpp.osmium.api.database;
 
 import java.lang.reflect.Field;
 import java.sql.Date;
@@ -10,12 +10,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.kmecpp.osmium.api.database.ColumnData;
-import com.kmecpp.osmium.api.database.TableData;
 import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.util.StringUtil;
 
-public class DBUtil {
+public class SQLiteDBUtil {
 
 	public static HashMap<Class<?>, String> types = new HashMap<>();
 
@@ -91,36 +89,9 @@ public class DBUtil {
 
 		StringBuilder schema = new StringBuilder("CREATE TABLE IF NOT EXISTS " + properties.getName() + " (");
 
-		//		if (CoreOsmiumConfig.Database.enableMysql) {
-		//			String[] primaryColumnLengths = new String[];
-		//
-		//			for (Field field : properties.getFields()) {
-		//				DBColumn column = field.getAnnotation(DBColumn.class);
-		//
-		//				schema.append(getColumnName(field))
-		//						.append(" " + db.getSerializationData(field.getType()).getType().getName())
-		//						.append(column.notNull() ? " NOT NULL" : "")
-		//						.append(column.autoIncrement() ? " AUTOINCREMENT" : "")
-		//						.append(column.unique() ? " UNIQUE" : "")
-		//						.append(", ");
-		//				if (column.primary()) {
-		//
-		//				}
-		//			}
-		//
-		//			if (properties.getPrimaryColumns().length > 0) {
-		//				schema.append("PRIMARY KEY(" + StringUtil.join(properties.getPrimaryColumns(), ", ") + ")");
-		//			} else {
-		//				schema.setLength(schema.length() - 2);
-		//			}
-		//		} else {
-		//
-		//		}
-
 		boolean autoIncrement = false;
 		for (ColumnData column : properties.getColumns()) {
 			Field field = column.getField();
-			//			DBColumn column = field.getAnnotation(DBColumn.class);
 
 			try {
 				if (!field.getType().isPrimitive()) {
@@ -129,10 +100,6 @@ public class DBUtil {
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
-			//			SerializationData<?> serializationData = Serialization.getData(field.getType());
-			//			if (serializationData == null) {
-			//				throw new IllegalArgumentException("Cannot create database table with unregistered type: " + field.getType());
-			//			}
 
 			String typeString = types.get(field.getType());
 			if (typeString == null) {

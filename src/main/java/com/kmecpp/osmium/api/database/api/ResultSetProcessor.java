@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.database.api;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -2,7 +2,7 @@ package com.kmecpp.osmium.api.database;
 
 import java.lang.reflect.Field;
 
-import com.kmecpp.osmium.api.database.mysql.MDBUtil;
+import com.kmecpp.osmium.api.database.api.DBColumn;
 import com.kmecpp.osmium.api.util.Require;
 
 public class ColumnData {
@@ -19,7 +19,7 @@ public class ColumnData {
 
 	private Object defaultValue;
 
-	private static final DBColumn DEFAULT_META = MDBUtil.createDefaultColumnAnnotation();
+	private static final DBColumn DEFAULT_META = DBUtil.createDefaultColumnAnnotation();
 	//	private static final MDBColumn FOREIGN_KEY_META = MDBUtil.createForeignKeyMeta();
 
 	public ColumnData(Field field) {

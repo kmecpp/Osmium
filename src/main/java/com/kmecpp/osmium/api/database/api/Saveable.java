@@ -1,8 +1,10 @@
-package com.kmecpp.osmium.api.database;
+package com.kmecpp.osmium.api.database.api;
 
 import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.api.database.mysql.MySQLDatabase;
-import com.kmecpp.osmium.api.database.sqlite.SQLiteDatabase;
+import com.kmecpp.osmium.api.database.MySQLDatabase;
+import com.kmecpp.osmium.api.database.SQLDatabase;
+import com.kmecpp.osmium.api.database.SQLiteDatabase;
+import com.kmecpp.osmium.api.database.TableData;
 
 public interface Saveable {
 

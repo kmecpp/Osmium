@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.database.sqlite;
+package com.kmecpp.osmium.api.database;
 
 import java.lang.Thread.State;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -46,7 +46,6 @@ public class DatabaseQueue {
 		public void run() {
 			while (true) {
 				try {
-
 					ContextRunnable contextRunnable = queue.take();
 
 					try {
@@ -66,7 +65,7 @@ public class DatabaseQueue {
 
 	}
 
-	public static class ContextRunnable {
+	private static class ContextRunnable {
 
 		private Runnable runnable;
 		private StackTraceElement[] stack;
