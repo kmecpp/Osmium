@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
-import com.kmecpp.osmium.api.database.mysql.MDBTableData;
 import com.kmecpp.osmium.api.database.mysql.MDBUtil;
 import com.kmecpp.osmium.api.database.mysql.PreparedStatementBuilder;
 import com.kmecpp.osmium.api.database.sqlite.DBUtil;
@@ -39,7 +38,7 @@ public abstract class SQLDatabase {
 	private HikariDataSource hikariSource;
 	private boolean initialized; //Represents whether or not this database has any tables associated with it
 
-	protected static final HashMap<Class<?>, MDBTableData> tables = new HashMap<>();
+	protected static final HashMap<Class<?>, TableData> tables = new HashMap<>();
 
 	public SQLDatabase(OsmiumPlugin plugin, DatabaseType type) {
 		this.plugin = plugin;
@@ -262,23 +261,23 @@ public abstract class SQLDatabase {
 	}
 
 	public int increment(Class<?> tableClass, String column) {
-		MDBTableData table = getTable(tableClass);
+		TableData table = getTable(tableClass);
 		return update("UPDATE " + table.getName() + " SET " + column + " = " + column + " + 1");
 	}
 
 	public int increment(Class<?> tableClass, String column, Filter filter) {
-		MDBTableData table = getTable(tableClass);
+		TableData table = getTable(tableClass);
 		String where = MDBUtil.createWhere(filter);
 		return preparedUpdateStatement("UPDATE " + table.getName() + " SET " + column + " = " + column + " + 1 WHERE " + where, MDBUtil.filterLinker(filter));
 	}
 
 	public int deleteAll(Class<?> tableClass) {
-		MDBTableData table = getTable(tableClass);
+		TableData table = getTable(tableClass);
 		return update("DELETE FROM " + table.getName());
 	}
 
 	public int deleteFrom(Class<?> tableClass, Filter filter) {
-		MDBTableData table = getTable(tableClass);
+		TableData table = getTable(tableClass);
 		String update = "DELETE FROM " + table.getName() + " WHERE " + MDBUtil.createWhere(filter);
 		return preparedUpdateStatement(update, MDBUtil.filterLinker(filter));
 	}
@@ -479,12 +478,12 @@ public abstract class SQLDatabase {
 		start();
 	}
 
-	public static MDBTableData getTable(Class<?> cls) {
+	public static TableData getTable(Class<?> cls) {
 		return tables.get(cls);
 	}
 
-	public MDBTableData getTableMeta(Class<?> cls) {
-		MDBTableData data = tables.get(cls);
+	public TableData getTableMeta(Class<?> cls) {
+		TableData data = tables.get(cls);
 		if (data != null) {
 			return data;
 		}
@@ -493,7 +492,7 @@ public abstract class SQLDatabase {
 	}
 
 	public void registerTable(Class<?> cls) {
-		MDBTableData data = new MDBTableData(this, cls);
+		TableData data = new TableData(this, cls);
 		tables.put(cls, data);
 	}
 
@@ -527,7 +526,7 @@ public abstract class SQLDatabase {
 		if (cls.getSuperclass() != Object.class && cls.getSuperclass().isAnnotationPresent(DBTable.class)) {
 			createTable(cls.getSuperclass()); //Create parent first if it exists
 		}
-		MDBTableData data = getTableMeta(cls);
+		TableData data = getTableMeta(cls);
 		OsmiumLogger.info("Creating " + type.getName() + " database table: " + data.getName());
 		if (type == DatabaseType.MYSQL) {
 			this.update(MDBUtil.getCreateTableUpdate(data));

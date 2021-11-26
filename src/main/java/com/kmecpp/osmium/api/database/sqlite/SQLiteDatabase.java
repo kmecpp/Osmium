@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.kmecpp.osmium.api.database.DatabaseType;
+import com.kmecpp.osmium.api.database.ColumnData;
+import com.kmecpp.osmium.api.database.TableData;
 import com.kmecpp.osmium.api.database.OrderBy;
 import com.kmecpp.osmium.api.database.ResultSetTransformer;
 import com.kmecpp.osmium.api.database.SQLConfiguration;
 import com.kmecpp.osmium.api.database.SQLDatabase;
-import com.kmecpp.osmium.api.database.mysql.MDBColumnData;
-import com.kmecpp.osmium.api.database.mysql.MDBTableData;
 import com.kmecpp.osmium.api.database.mysql.MDBUtil;
 import com.kmecpp.osmium.api.database.sqlite.DatabaseQueue.QueueExecutor;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
@@ -51,12 +51,12 @@ public class SQLiteDatabase extends SQLDatabase {
 	public void replaceInto(Class<?> cls, Object obj) {
 		//		update(DBUtil.createReplaceInto(this, cls, obj));
 
-		MDBTableData tableData = tables.get(cls);
+		TableData tableData = tables.get(cls);
 		String update = MDBUtil.createReplaceInto(tableData);
 
 		this.preparedUpdateStatement(update, s -> {
 			try {
-				MDBColumnData[] columns = tableData.getColumns();
+				ColumnData[] columns = tableData.getColumns();
 				for (int i = 0; i < columns.length; i++) {
 					DBUtil.updatePreparedStatement(s, i + 1, columns[i].getField().get(obj));
 				}
@@ -127,7 +127,7 @@ public class SQLiteDatabase extends SQLDatabase {
 	}
 
 	public <T> Optional<T> getFirst(Class<T> tableClass, OrderBy orderBy, String columns, Object... values) {
-		MDBTableData properties = tables.get(tableClass);
+		TableData properties = tables.get(tableClass);
 		ArrayList<T> result = this.<T> query("SELECT * FROM " + properties.getName()
 				+ " WHERE " + DBUtil.createWhere(columns.split(","), values)
 				+ " " + orderBy + " LIMIT 1", properties);
@@ -140,7 +140,7 @@ public class SQLiteDatabase extends SQLDatabase {
 	}
 
 	public int count(Class<?> tableClass) {
-		MDBTableData properties = tables.get(tableClass);
+		TableData properties = tables.get(tableClass);
 		return rawQuery("SELECT COUNT(*) FROM " + properties.getName(), r -> {
 			try {
 				return r.getInt(1);
@@ -155,7 +155,7 @@ public class SQLiteDatabase extends SQLDatabase {
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit) {
-		MDBTableData properties = tables.get(tableClass);
+		TableData properties = tables.get(tableClass);
 		return query("SELECT * FROM " + properties.getName() + " " + orderBy + " LIMIT " + limit, properties);
 	}
 
@@ -164,7 +164,7 @@ public class SQLiteDatabase extends SQLDatabase {
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int min, int max) {
-		MDBTableData properties = tables.get(tableClass);
+		TableData properties = tables.get(tableClass);
 		return query("SELECT * FROM " + properties.getName() + " " + orderBy + " LIMIT " + min + "," + max, properties);
 	}
 
@@ -187,7 +187,7 @@ public class SQLiteDatabase extends SQLDatabase {
 	}
 
 	public <T> ArrayList<T> query(Class<T> tableClass, String[] columns, Object... values) {
-		MDBTableData table = tables.get(tableClass);
+		TableData table = tables.get(tableClass);
 		if (columns == null) {
 			columns = table.getPrimaryColumnNames();
 		}
@@ -234,12 +234,12 @@ public class SQLiteDatabase extends SQLDatabase {
 	 *            the query to execute
 	 * @return the result of the query
 	 */
-	public <T> ArrayList<T> query(String query, MDBTableData properties) {
+	public <T> ArrayList<T> query(String query, TableData properties) {
 		Connection connection = null;
 		Statement statement = null;
 		ResultSet resultSet = null;
 		try {
-			MDBColumnData[] columns = properties.getColumns();
+			ColumnData[] columns = properties.getColumns();
 			ArrayList<T> result = new ArrayList<>();
 
 			OsmiumLogger.debug("Executing query: \"" + query + "\"");

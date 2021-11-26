@@ -1,27 +1,24 @@
-package com.kmecpp.osmium.api.database.mysql;
+package com.kmecpp.osmium.api.database;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 
-import com.kmecpp.osmium.api.database.DBTable;
-import com.kmecpp.osmium.api.database.DatabaseType;
-import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 
-public class MDBTableData {
+public class TableData {
 
 	private String name;
 	private Class<?> tableClass;
-	private LinkedHashMap<String, MDBColumnData> columnMap;
+	private LinkedHashMap<String, ColumnData> columnMap;
 
 	private String[] columnNames;
 	private String[] escapedColumnNames;
-	private MDBColumnData[] columns;
+	private ColumnData[] columns;
 
-	private MDBColumnData[] primaryColumns;
+	private ColumnData[] primaryColumns;
 	private String[] primaryColumnNames;
 
 	private DatabaseType[] types;
@@ -31,7 +28,7 @@ public class MDBTableData {
 	//	private MDBColumnData[] foreignKeyColumns;
 	//	private String[] foreignKeyColumnNames;
 
-	public MDBTableData(SQLDatabase database, Class<?> cls) {
+	public TableData(SQLDatabase database, Class<?> cls) {
 		DBTable meta = cls.getDeclaredAnnotation(DBTable.class);
 		this.tableClass = cls;
 		this.columnMap = new LinkedHashMap<>();
@@ -53,11 +50,11 @@ public class MDBTableData {
 		//			this.columnMap.put(column.getName(), column);
 		//		}
 
-		ArrayList<MDBColumnData> columns = new ArrayList<>();
-		ArrayList<MDBColumnData> primaryColumns = new ArrayList<>();
+		ArrayList<ColumnData> columns = new ArrayList<>();
+		ArrayList<ColumnData> primaryColumns = new ArrayList<>();
 		//		ArrayList<MDBColumnData> foreignKeyColumns = new ArrayList<>();
 		Reflection.walk(cls, false, field -> {
-			MDBColumnData columnData = new MDBColumnData(field);
+			ColumnData columnData = new ColumnData(field);
 			this.columnMap.put(columnData.getName(), columnData);
 
 			columns.add(columnData);
@@ -68,11 +65,11 @@ public class MDBTableData {
 			//				foreignKeyColumns.add(columnData);
 			//			}
 		});
-		this.columns = columns.toArray(new MDBColumnData[columns.size()]);
-		this.columnNames = columns.stream().map(MDBColumnData::getName).toArray(String[]::new);
+		this.columns = columns.toArray(new ColumnData[columns.size()]);
+		this.columnNames = columns.stream().map(ColumnData::getName).toArray(String[]::new);
 		this.escapedColumnNames = columns.stream().map(data -> "`" + data.getName() + "`").toArray(String[]::new);
-		this.primaryColumns = primaryColumns.toArray(new MDBColumnData[primaryColumns.size()]);
-		this.primaryColumnNames = primaryColumns.stream().map(MDBColumnData::getName).toArray(String[]::new);
+		this.primaryColumns = primaryColumns.toArray(new ColumnData[primaryColumns.size()]);
+		this.primaryColumnNames = primaryColumns.stream().map(ColumnData::getName).toArray(String[]::new);
 		//		this.foreignKeyColumns = foreignKeyColumns.toArray(new MDBColumnData[foreignKeyColumns.size()]);
 		//		this.foreignKeyColumnNames = foreignKeyColumns.stream().map(MDBColumnData::getName).toArray(String[]::new);
 	}
@@ -89,7 +86,7 @@ public class MDBTableData {
 		return name;
 	}
 
-	public MDBColumnData getColumnMeta(String columnName) {
+	public ColumnData getColumnMeta(String columnName) {
 		return columnMap.get(SQLDatabase.getColumnName(columnName));
 	}
 
@@ -97,11 +94,11 @@ public class MDBTableData {
 		getColumnMeta(column).setDefaultValue(value);
 	}
 
-	public LinkedHashMap<String, MDBColumnData> getColumnMap() {
+	public LinkedHashMap<String, ColumnData> getColumnMap() {
 		return columnMap;
 	}
 
-	public MDBColumnData[] getColumns() {
+	public ColumnData[] getColumns() {
 		return columns;
 	}
 
@@ -117,7 +114,7 @@ public class MDBTableData {
 		return escapedColumnNames;
 	}
 
-	public MDBColumnData[] getPrimaryColumns() {
+	public ColumnData[] getPrimaryColumns() {
 		return primaryColumns;
 	}
 

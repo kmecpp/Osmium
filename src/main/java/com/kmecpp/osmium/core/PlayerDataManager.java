@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.TickTimeUnit;
 import com.kmecpp.osmium.api.User;
+import com.kmecpp.osmium.api.database.TableData;
 import com.kmecpp.osmium.api.database.MultiplePlayerData;
 import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.database.SQLDatabase;
-import com.kmecpp.osmium.api.database.mysql.MDBTableData;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -139,7 +139,7 @@ public class PlayerDataManager {
 						data.put(type, map);
 					} else {
 						Class<? extends PlayerData> type = Reflection.cast(rawType);
-						MDBTableData table = SQLDatabase.getTable(type);
+						TableData table = SQLDatabase.getTable(type);
 						PlayerData value;
 						if (table.isMySQL()) {
 							//						if (AdvancedPlayerData.class.isAssignableFrom(type)) {

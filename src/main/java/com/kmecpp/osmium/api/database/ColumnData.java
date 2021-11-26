@@ -1,12 +1,11 @@
-package com.kmecpp.osmium.api.database.mysql;
+package com.kmecpp.osmium.api.database;
 
 import java.lang.reflect.Field;
 
-import com.kmecpp.osmium.api.database.DBColumn;
-import com.kmecpp.osmium.api.database.SQLDatabase;
+import com.kmecpp.osmium.api.database.mysql.MDBUtil;
 import com.kmecpp.osmium.api.util.Require;
 
-public class MDBColumnData {
+public class ColumnData {
 
 	private final String name;
 	private final Field field;
@@ -23,11 +22,11 @@ public class MDBColumnData {
 	private static final DBColumn DEFAULT_META = MDBUtil.createDefaultColumnAnnotation();
 	//	private static final MDBColumn FOREIGN_KEY_META = MDBUtil.createForeignKeyMeta();
 
-	public MDBColumnData(Field field) {
+	public ColumnData(Field field) {
 		this(field, field.getType(), Require.nonNull(field.getDeclaredAnnotation(DBColumn.class), DEFAULT_META)); //, MDBUtil.createForeignKey(field));
 	}
 
-	public MDBColumnData(Field field, Class<?> type, DBColumn meta) {
+	public ColumnData(Field field, Class<?> type, DBColumn meta) {
 		//		MDBColumn meta = Require.nonNull(field.getDeclaredAnnotation(MDBColumn.class), DEFAULT_META);
 		//		Class<?> type = field.getType();
 

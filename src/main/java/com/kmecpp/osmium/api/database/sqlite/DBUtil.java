@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.kmecpp.osmium.api.database.mysql.MDBColumnData;
-import com.kmecpp.osmium.api.database.mysql.MDBTableData;
+import com.kmecpp.osmium.api.database.ColumnData;
+import com.kmecpp.osmium.api.database.TableData;
 import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.util.StringUtil;
 
@@ -84,7 +84,7 @@ public class DBUtil {
 		return sb.toString();
 	}
 
-	public static final String createTable(MDBTableData properties) {
+	public static final String createTable(TableData properties) {
 		if (properties.getColumnCount() == 0) {
 			throw new IllegalArgumentException("Invalid database table '" + properties.getName() + "' Must contain at least one column!");
 		}
@@ -118,7 +118,7 @@ public class DBUtil {
 		//		}
 
 		boolean autoIncrement = false;
-		for (MDBColumnData column : properties.getColumns()) {
+		for (ColumnData column : properties.getColumns()) {
 			Field field = column.getField();
 			//			DBColumn column = field.getAnnotation(DBColumn.class);
 
@@ -197,7 +197,7 @@ public class DBUtil {
 	//				+ "VALUES(" + StringUtil.join(values, ", ") + ");";
 	//	}
 
-	public static final String createReplaceInto(MDBTableData table) {
+	public static final String createReplaceInto(TableData table) {
 		return "REPLACE INTO " + table.getName()
 				+ "(" + StringUtil.join(table.getColumns(), ", ") + ") "
 				+ "VALUES(" + StringUtil.join('?', ",", table.getColumnCount()) + ");";

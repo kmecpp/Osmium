@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.database.Filter;
+import com.kmecpp.osmium.api.database.ColumnData;
+import com.kmecpp.osmium.api.database.TableData;
 import com.kmecpp.osmium.api.database.DBColumn;
 import com.kmecpp.osmium.api.database.SQLPhrase;
 import com.kmecpp.osmium.api.util.StringUtil;
@@ -41,7 +43,7 @@ public class MDBUtil {
 		types.put(Timestamp.class, "TIMESTAMP");
 	}
 
-	public static String getTypeString(MDBTableData tableData, MDBColumnData data) {
+	public static String getTypeString(TableData tableData, ColumnData data) {
 		//		if (data.isForeignKey()) {
 		//			return "INT";
 		//		}
@@ -104,7 +106,7 @@ public class MDBUtil {
 		}
 	}
 
-	public static void processResultSet(Object instance, ResultSet rs, int index, MDBColumnData column) throws Exception {
+	public static void processResultSet(Object instance, ResultSet rs, int index, ColumnData column) throws Exception {
 		Field field = column.getField();
 		Class<?> type = field.getType();
 		if (type == boolean.class || type == Boolean.class) {
@@ -138,7 +140,7 @@ public class MDBUtil {
 		return ps -> filter.link(ps);
 	}
 
-	public static String getColumnAttributeString(MDBTableData tableData, MDBColumnData data) {
+	public static String getColumnAttributeString(TableData tableData, ColumnData data) {
 		StringBuilder sb = new StringBuilder();
 		StringUtil.add(sb, getTypeString(tableData, data));
 		StringUtil.add(sb, data.isUnique() ? "unique" : "");
@@ -158,13 +160,13 @@ public class MDBUtil {
 		return sb.toString();
 	}
 
-	public static String getCreateTableUpdate(MDBTableData data) {
+	public static String getCreateTableUpdate(TableData data) {
 		StringBuilder sb = new StringBuilder("create table if not exists " + data.getName() + "(");
 		ArrayList<String> primaryKeys = new ArrayList<>();
 		//		LinkedHashMap<Class<?>, ArrayList<String>> foreignKeys = new LinkedHashMap<>();
 
 		//create table if not exists TABLE(`col1` varchar(32) not null, `col2`, primary key(col1, col2));
-		for (MDBColumnData column : data.getColumns()) {
+		for (ColumnData column : data.getColumns()) {
 			String columnName = column.getName();
 			sb.append("`" + columnName + "` " + getColumnAttributeString(data, column) + ", ");
 
@@ -226,7 +228,7 @@ public class MDBUtil {
 		return sb.toString();
 	}
 
-	public static final String createReplaceInto(MDBTableData table) {
+	public static final String createReplaceInto(TableData table) {
 		return "REPLACE INTO " + table.getName()
 				+ "(" + StringUtil.join(table.getEscapedColumnNames(), ", ") + ") "
 				+ "VALUES(" + StringUtil.join('?', ",", table.getColumnCount()) + ");";
