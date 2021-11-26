@@ -4,7 +4,6 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	
-	id 'maven'
 	id 'maven-publish'
 	//id 'com.github.johnrengelman.shadow' version '1.2.3'
     //id 'org.spongepowered.plugin' version '0.8.1'
@@ -25,7 +24,7 @@ eclipse {
 
 configurations {
     shade
-    compile.extendsFrom shade
+    implementation.extendsFrom shade
     testCompile.extendsFrom compile
 }
 
@@ -140,13 +139,13 @@ configurations.all {
 
 dependencies {
 	//annotationProcessor("com.kmecpp:osmium:1.0.0-SNAPSHOT")
-	//compile files("lib/spigot-1.13.2.jar")
-	compile files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648_DEOBF.jar")
-	compile files("lib/spongevanilla-1.12.2-8.0.0-BETA-448.jar");
-	compile files("lib/Travertine-175.jar");
-	//compile "org.spigotmc:spigot:$bukkit_version"
-	//compile "org.spongepowered:spongeapi:$sponge_version"
-	compile files("build/generated/com/kmecpp/osmium/AppInfo.class")
+	//implementation files("lib/spigot-1.13.2.jar")
+	implementation files("lib/spigot-1.12.2-R0.1-SNAPSHOT-b1648_DEOBF.jar")
+	implementation files("lib/spongevanilla-1.12.2-8.0.0-BETA-448.jar");
+	implementation files("lib/Travertine-175.jar");
+	//implementation "org.spigotmc:spigot:$bukkit_version"
+	//implementation "org.spongepowered:spongeapi:$sponge_version"
+	implementation files("build/generated/com/kmecpp/osmium/AppInfo.class")
 	//compileOnly "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75" //Breaking builds. Find alternative for this
 	shade "org.javassist:javassist:3.22.0-GA"
 	
@@ -169,7 +168,7 @@ dependencies {
 	//shade "com.zsoltfabok:sqlite-dialect:1.0"
 	shade "org.apache.logging.log4j:log4j-api:2.11.1"
 		
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
 /*
 sponge {
@@ -198,10 +197,10 @@ jar {
     }
 }
 
+/*
 uploadArchives {
     repositories {
         mavenDeployer {
-        /*
         	uniqueVersion = false
         	repository(url: "http://repo.spongepowered.org") {
         	}
@@ -216,11 +215,10 @@ uploadArchives {
             		password project.properties.mavenPassword
             	}
             	url "http://repo.kmecpp.com"
-            }*/
+            }
         }
     }
-
-}
+}*/
 
 build.doLast {
 	//BUKKIT
