@@ -35,6 +35,7 @@ import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.location.WorldPosition;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.util.ReflectField;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
@@ -119,6 +120,9 @@ public class BukkitAccess {
 	public static void registerCommand(OsmiumPlugin plugin, Command command) {
 		try {
 			SimpleCommandMap commandMap = (SimpleCommandMap) Reflection.getFieldValue(Bukkit.getServer(), "commandMap");
+			ReflectField<Map<String, org.bukkit.command.Command>> knownCommandsField = new ReflectField<>(SimpleCommandMap.class, "knownCommands");
+			Map<String, org.bukkit.command.Command> bukkitInternalKnownCommands = knownCommandsField.get(commandMap);
+
 			List<String> aliases = Arrays.asList(Arrays.copyOfRange(command.getAliases(), 1, command.getAliases().length));
 
 			//If the primary alias is taken and we don't have a specified override method, change the primary alias to the first available alias
@@ -178,9 +182,8 @@ public class BukkitAccess {
 							: Collections.emptyList();
 				//@formatter:on
 
-				Map<String, org.bukkit.command.Command> map = Reflection.getFieldValue(commandMap, "knownCommands");
 				for (String overrideAlias : aliasesToOverride) {
-					org.bukkit.command.Command existing = map.put(overrideAlias.toLowerCase(), bukkitCommand);
+					org.bukkit.command.Command existing = bukkitInternalKnownCommands.put(overrideAlias.toLowerCase(), bukkitCommand);
 					System.out.println("EXISTING COMMAND: " + existing);
 					if (existing != bukkitCommand) {
 						OsmiumLogger.info("Overriding command: " + existing);
