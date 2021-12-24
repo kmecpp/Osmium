@@ -1,9 +1,8 @@
-package com.kmecpp.osmium.api.util;
+package com.kmecpp.osmium.api.util.lib;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -21,8 +20,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class PlayerQueue {
 
-	private Queue<UUID> queue = new ArrayDeque<>();
 	private HashSet<UUID> queueSet = new HashSet<>();
+	private ArrayDeque<UUID> queue = new ArrayDeque<>();
 
 	/**
 	 * Run a consumer on at least <i>limit</i> Players that are removed from the
