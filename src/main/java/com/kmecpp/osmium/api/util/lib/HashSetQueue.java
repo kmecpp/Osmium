@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.function.Consumer;
 
-public class RateLimitedHashSetQueue<T> {
+public class HashSetQueue<T> {
 
 	protected HashSet<T> queueSet = new HashSet<>();
 	protected ArrayDeque<T> queue = new ArrayDeque<>();
