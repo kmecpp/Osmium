@@ -1,14 +1,14 @@
-package com.kmecpp.osmium.api.util;
+package com.kmecpp.osmium.api.util.lib;
 
 import java.util.Iterator;
 import java.util.function.Function;
 
-public class IterableWrapper<T, R> implements Iterable<R> {
+public class WrappedIterator<T, R> implements Iterable<R> {
 
 	private Iterable<T> source;
 	private Function<T, R> mapper;
 
-	public IterableWrapper(Iterable<T> source, Function<T, R> mapper) {
+	public WrappedIterator(Iterable<T> source, Function<T, R> mapper) {
 		this.source = source;
 		this.mapper = mapper;
 	}
