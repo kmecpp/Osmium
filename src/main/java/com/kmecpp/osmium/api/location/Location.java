@@ -113,6 +113,20 @@ public class Location {
 	}
 
 	@Override
+	public int hashCode() {
+		return (((31 + worldName.hashCode()) * 31 + Double.hashCode(x)) * 31 + Double.hashCode(y)) * 31 + Double.hashCode(z);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Location) {
+			Location other = (Location) obj;
+			return x == other.x && y == other.y && z == other.z && worldName.equals(other.worldName);
+		}
+		return false;
+	}
+
+	@Override
 	public String toString() {
 		return getWorldName() + "," + x + "," + y + "," + z;
 	}
