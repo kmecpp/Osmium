@@ -20,6 +20,9 @@ import java.util.jar.JarFile;
 
 import com.kmecpp.osmium.api.Transient;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+
 public class Reflection {
 
 	public static Class<?> getInvokingClass() {
@@ -33,6 +36,11 @@ public class Reflection {
 		} catch (ClassNotFoundException e) {
 			return null;
 		}
+	}
+
+	public static <T> Class<T> injectClass(Class<T> cls, Class<?> targetClass) throws Exception {
+		CtClass ctClass = ClassPool.getDefault().makeClass(cls.getClassLoader().getResource(cls.getName().replace('.', '/') + ".class").openStream());
+		return Reflection.cast(ctClass.toClass(targetClass.getClassLoader(), targetClass.getProtectionDomain()));
 	}
 
 	public static void walk(Class<?> cls, boolean visitStatic, Consumer<Field> processor) {

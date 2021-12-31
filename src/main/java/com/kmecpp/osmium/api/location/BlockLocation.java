@@ -1,5 +1,10 @@
 package com.kmecpp.osmium.api.location;
 
+import org.bukkit.Bukkit;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.world.extent.Extent;
+
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.persistence.Serialization;
 
 public class BlockLocation {
@@ -56,6 +61,26 @@ public class BlockLocation {
 	public static BlockLocation fromString(String str) {
 		String[] parts = str.split(",");
 		return new BlockLocation(parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static BlockLocation fromImplementation(Object implementation) {
+		if (Platform.isBukkit()) {
+			org.bukkit.Location l = (org.bukkit.Location) implementation;
+			return new BlockLocation(l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+		} else if (Platform.isSponge()) {
+			org.spongepowered.api.world.Location<org.spongepowered.api.world.World> l = (org.spongepowered.api.world.Location<org.spongepowered.api.world.World>) implementation;
+			return new BlockLocation(l.getExtent().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+		}
+		return null;
+	}
+
+	public org.bukkit.Location asBukkitLocation() {
+		return new org.bukkit.Location(Bukkit.getWorld(worldName), x, y, z);
+	}
+
+	public org.spongepowered.api.world.Location<Extent> asSpongeLocation() {
+		return new org.spongepowered.api.world.Location<Extent>((Extent) Sponge.getServer().getWorld(worldName).get(), x, y, z);
 	}
 
 }
