@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.api.location;
 
+import com.kmecpp.osmium.api.persistence.Serialization;
+
 public class BlockLocation {
 
 	private String worldName;
@@ -10,6 +12,10 @@ public class BlockLocation {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+
+	static {
+		Serialization.register(BlockLocation.class, BlockLocation::fromString);
 	}
 
 	public String getWorldName() {
@@ -29,22 +35,27 @@ public class BlockLocation {
 	}
 
 	@Override
+	public int hashCode() {
+		return (((31 + worldName.hashCode()) * 31 + Integer.hashCode(x)) * 31 + Integer.hashCode(y)) * 31 + Integer.hashCode(z);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof BlockLocation) {
-			BlockLocation location = (BlockLocation) obj;
-			return x == location.x && y == location.y && z == location.z;
+			BlockLocation other = (BlockLocation) obj;
+			return x == other.x && y == other.y && z == other.z && worldName.equals(other.worldName);
 		}
 		return false;
 	}
 
 	@Override
-	public int hashCode() {
-		return x * y * z;
+	public String toString() {
+		return getWorldName() + "," + x + "," + y + "," + z;
 	}
 
-	@Override
-	public String toString() {
-		return "<" + x + ", " + y + ", " + z + ">";
+	public static BlockLocation fromString(String str) {
+		String[] parts = str.split(",");
+		return new BlockLocation(parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
 	}
 
 }
