@@ -58,7 +58,7 @@ public class JavaUtil {
 		return new AbstractMap.SimpleEntry<>(key, value);
 	}
 
-	public static <K, V> LinkedHashMap<K, V> lmap(Object... data) {
+	public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(Object... data) {
 		LinkedHashMap<K, V> map = new LinkedHashMap<>();
 		if (data.length % 2 != 0) {
 			throw new IllegalArgumentException("Data must have even length");
@@ -67,6 +67,10 @@ public class JavaUtil {
 			map.put(Reflection.cast(data[i]), Reflection.cast(data[i + 1]));
 		}
 		return map;
+	}
+
+	public static <K, V> LinkedHashMap<K, V> lmap(Object... data) {
+		return newLinkedHashMap(data);
 	}
 
 	public static <T> T getIndex(Iterable<T> iterable, int index) {
