@@ -40,6 +40,11 @@ public class BlockLocation {
 	}
 
 	@Override
+	public int hashCode() {
+		return (((31 + worldName.hashCode()) * 31 + Integer.hashCode(x)) * 31 + Integer.hashCode(y)) * 31 + Integer.hashCode(z);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof BlockLocation) {
 			BlockLocation other = (BlockLocation) obj;
