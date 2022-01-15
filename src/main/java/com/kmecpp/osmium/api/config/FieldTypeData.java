@@ -148,7 +148,7 @@ public class FieldTypeData {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object convertToActualType(Object loadedValue, PluginConfigTypeData pluginData) {
-		//		System.out.println("CONVERT TO " + type.getName() + ": " + loadedValue + " :: " + (loadedValue != null ? loadedValue.getClass() : ""));
+		//		System.out.println("CONVERT TO " + type + ": " + loadedValue + " :: " + (loadedValue != null ? loadedValue.getClass() : ""));
 		//		System.out.println(type.getPackage() == null ? "NULL" : type.getPackage().getName());
 
 		if (loadedValue == null) {
@@ -156,6 +156,8 @@ public class FieldTypeData {
 		} else if (type.isPrimitive() || type.getName().startsWith("java.lang")) {
 			if (type != String.class && loadedValue instanceof String) {
 				return Serialization.deserialize(type, (String) loadedValue);
+			} else if (type == float.class || type == Float.class) {
+				return ((Double) loadedValue).floatValue(); //Decimals are loaded as double by default. Need this to convert to floats
 			}
 			return loadedValue;
 		} else if (Collection.class.isAssignableFrom(loadedValue.getClass())) {
