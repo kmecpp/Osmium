@@ -12,6 +12,7 @@ import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.TimeUtil;
+import com.kmecpp.osmium.core.OsmiumCoreCommands;
 import com.kmecpp.osmium.platform.osmium.CommandRedirectSender;
 
 public final class CommandManager {
@@ -107,6 +108,10 @@ public final class CommandManager {
 
 			//Simple commands
 			if (command.getArgs().isEmpty()) {
+				if (OsmiumCoreCommands.processAliasRequest(event)) {
+					return true;
+				}
+
 				command.validate(event);
 				tryExecuteCommand(sender, command, event);
 				command.finalize(event);
@@ -129,6 +134,10 @@ public final class CommandManager {
 						invokeCommand((Command) arg, sender, commandLabel + " " + event.getArgLabel(), event.getArgs());
 					} else {
 						event.consumeArgument(arg);
+
+						if (OsmiumCoreCommands.processAliasRequest(event)) {
+							return true;
+						}
 
 						command.validate(event);
 						tryExecuteCommand(sender, arg, event);
