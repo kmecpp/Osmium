@@ -119,17 +119,16 @@ public final class CommandManager {
 				} else {
 					CommandBase arg = command.getArgumentMatching(args[0]);
 					if (arg == null) {
-						sender.sendMessage(Chat.RED + "Unknown command! Type /" + command.getPrimaryAlias() + " for a list of commands.");
+						sender.sendMessage(Chat.RED + "Unknown command! Type " + Chat.YELLOW + "/" + commandLabel + Chat.RED + " for a list of commands.");
 						return false;
 					} else if (!arg.isAllowed(sender)) {
 						sender.sendMessage(Chat.RED + "You do not have permission to perform this command!");
 						return false;
 					} else if (arg instanceof Command) {
-						event.consumeArgument();
+						event.consumeArgument(arg);
 						invokeCommand((Command) arg, sender, commandLabel + " " + event.getArgLabel(), event.getArgs());
 					} else {
-						event.consumeArgument();
-						event.setSubCommand(arg);
+						event.consumeArgument(arg);
 
 						command.validate(event);
 						tryExecuteCommand(sender, arg, event);

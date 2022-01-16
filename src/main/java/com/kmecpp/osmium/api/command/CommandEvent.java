@@ -54,10 +54,6 @@ public class CommandEvent implements Messageable {
 	//		return cooldownOverride;
 	//	}
 
-	void setSubCommand(CommandBase subCommand) {
-		this.subCommand = subCommand;
-	}
-
 	public Command getCommand() {
 		return command;
 	}
@@ -379,7 +375,7 @@ public class CommandEvent implements Messageable {
 			if (index < target.getUsageParams().length) {
 				throw new CommandException("Missing " + StringUtil.nth(index + 1) + " argument"
 						+ (target.getUsage().isEmpty() ? "!"
-								: (": /" + this.baseLabel + " " + (subCommand != null ? subCommand.getPrimaryAlias() + " " : "") + target.getUsageHighlight(index))));
+								: (": /" + this.baseLabel + " " + (subCommand != null ? this.argLabel + " " : "") + target.getUsageHighlight(index))));
 			}
 			//			throw new CommandException("Expected at least " + index + 1 + " arguments");
 			throw CommandException.USAGE_ERROR;
@@ -390,11 +386,13 @@ public class CommandEvent implements Messageable {
 		return sender.hasPermission(permission);
 	}
 
-	public void consumeArgument() {
+	void consumeArgument(CommandBase subCommand) {
 		this.argLabel = args[0]; //Update arg label
 		String[] temp = new String[args.length - 1];
 		System.arraycopy(args, 1, temp, 0, temp.length);
 		this.args = temp;
+
+		this.subCommand = subCommand;
 	}
 
 	public boolean matches(int index, String... labels) {

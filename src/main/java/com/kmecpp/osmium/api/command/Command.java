@@ -16,6 +16,7 @@ public class Command extends CommandBase {
 
 	private String title = "&a&l" + StringUtil.capitalize(getPrimaryAlias()) + " Commands";
 	private boolean hideDescriptions;
+	private boolean nested;
 
 	public Command() {
 		this(null);
@@ -58,14 +59,15 @@ public class Command extends CommandBase {
 		helpArg.setDescription("Shows the descriptions for each subcommand");
 		helpArg.setExecutor(e -> {
 			e.sendTitle(title);
-			String shortestAlias = this.getShortestAlias();
 
 			String requestedCommand = e.getString(0, null);
 
 			List<CommandBase> displayArgs = requestedCommand != null ? Arrays.asList(getArgumentMatching(requestedCommand, e.getSender())) : args.subList(1, args.size());
+
+			String baseLabel = this.nested ? e.getBaseLabel() : this.getShortestAlias();
 			for (CommandBase arg : displayArgs) {
 				if (arg.isAllowed(e.getSender())) {
-					e.sendMessage(ChatColor.GREEN + "/" + shortestAlias + " " + arg.getAliases()[0] + ChatColor.AQUA + ": " + Chat.YELLOW + arg.getDescription());
+					e.sendMessage(ChatColor.GREEN + "/" + baseLabel + " " + arg.getPrimaryAlias() + ChatColor.AQUA + ": " + Chat.YELLOW + arg.getDescription());
 				}
 			}
 		});
@@ -93,16 +95,19 @@ public class Command extends CommandBase {
 			event.send("");
 			for (CommandBase arg : args) {
 				if (arg.isAllowed(event.getSender())) {
-					event.send("&b/" + event.getBaseLabel() + " " + arg.getPrimaryAlias()
+					event.sendMessage(Chat.AQUA + "/" + event.getBaseLabel() + " " + arg.getPrimaryAlias()
 							+ (arg.hasUsage() ? " " + arg.getUsage() : "")
-							+ (arg.hasDescription() && !hideDescriptions ? "&e - &b" + arg.getDescription() : ""));
+							+ (arg.hasDescription() && !hideDescriptions ? Chat.YELLOW + " - " + Chat.AQUA + arg.getDescription() : ""));
 				}
 			}
 		}
 	}
 
 	public final void addSubCommand(Command command) {
-		command.setPrimaryAlias(this.getPrimaryAlias() + " " + command.getPrimaryAlias());
+		if (!command.hasDescription()) {
+			command.setDescription("View " + command.getPrimaryAlias() + " commands");
+		}
+		command.nested = true;
 		args.add(command);
 	}
 
