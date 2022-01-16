@@ -156,7 +156,7 @@ public class FieldTypeData {
 		} else if (type.isPrimitive() || type.getName().startsWith("java.lang")) {
 			if (type != String.class && loadedValue instanceof String) {
 				return Serialization.deserialize(type, (String) loadedValue);
-			} else if (type == float.class || type == Float.class) {
+			} else if ((type == float.class || type == Float.class) && loadedValue instanceof Double) {
 				return ((Double) loadedValue).floatValue(); //Decimals are loaded as double by default. Need this to convert to floats
 			}
 			return loadedValue;
