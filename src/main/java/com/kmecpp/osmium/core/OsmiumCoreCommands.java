@@ -1,14 +1,17 @@
 package com.kmecpp.osmium.core;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.command.Command;
+import com.kmecpp.osmium.api.command.CommandEvent;
 import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.StringUtil;
@@ -17,9 +20,13 @@ import com.kmecpp.osmium.api.util.StringUtil;
 // "Base command for interacting with the Osmium API")
 public class OsmiumCoreCommands extends Command {
 
+	private static final HashSet<UUID> playersWaitingForAliases = new HashSet<>();
+	private static final UUID CONSOLE_UUID = new UUID(0, 0);
+
 	public OsmiumCoreCommands() {
-		super("osmium", "os", "om", "o");
+		super(Platform.isGame() ? "osmium" : "osmiumbungee", Platform.isGame() ? new String[] { "os", "o" } : new String[] { "osb", "ob" });
 		setDescription("Base command for interacting with the Osmium API");
+		addHelpCommand();
 
 		add("info").setDescription("Displays information about the Osmium API").setExecutor(e -> {
 			e.send("&aPlugin: " + "&b" + AppInfo.NAME);
@@ -28,14 +35,25 @@ public class OsmiumCoreCommands extends Command {
 			e.send("&aWebsite: " + "&b" + "https://github.com/kmecpp/Osmium");
 		});
 
-		add("tps").setDescription("Displays the server TPS").setExecutor(e -> {
+		add("aliases").setUsage("<command>").setDescription("View the aliases for the given Osmium command").setExecutor(e -> {
+			String command = e.getRemainingJoined(0);
+			if (command.isEmpty()) {
+				usageError();
+			}
+			UUID senderId = e.isPlayer() ? e.getPlayer().getUniqueId() : CONSOLE_UUID;
+			playersWaitingForAliases.add(senderId);
+
+			Osmium.getCommandManager().processCommand(e.getSender(), command);
+		});
+
+		add("tps").setDescription("Displays the server TPS").setPermission("osmium.command.tps").setExecutor(e -> {
 			e.send("&aLast 60s: &b" + StringUtil.round(TPSTask.getAverage(60), 1));
 			e.send("&aLast 30s: &b" + StringUtil.round(TPSTask.getAverage(30), 1));
 			e.send("&aLast 10s: &b" + StringUtil.round(TPSTask.getAverage(10), 1));
 			e.send("&aLast Tick: &b" + StringUtil.round(TPSTask.getLastTickSpeed(), 1));
 		});
 
-		add("debug").setDescription("Toggles debug mode").setExecutor(e -> {
+		add("debug").setDescription("Toggles debug mode").setPermission("osmium.command.debug").setExecutor(e -> {
 			boolean result = OsmiumCoreConfig.debug = !OsmiumCoreConfig.debug;
 			Osmium.saveConfig(OsmiumCoreConfig.class);
 			e.send("&eOsmium debug mode: " + (result ? "&aenabled" : "&cdisabled"));
@@ -125,6 +143,18 @@ public class OsmiumCoreCommands extends Command {
 			CommandManager.getCooldownData().remove(user.getUniqueId());
 			e.sendMessage(Chat.GREEN + "User cooldowns cleared successfully!");
 		});
+	}
+
+	public static boolean processAliasRequest(CommandEvent e) {
+		boolean wasWaitingForAliases = e.isPlayer() ? playersWaitingForAliases.contains(e.getPlayer().getUniqueId()) : playersWaitingForAliases.contains(CONSOLE_UUID);
+		if (wasWaitingForAliases) {
+			e.sendMessage(Chat.GREEN + "Command Aliases: " + String.join(Chat.GREEN + ", " + Chat.YELLOW, e.getCommand().getAliases()));
+			if (e.getSubCommand().isPresent()) {
+				e.sendMessage(Chat.GREEN + "Subcommand Aliases: " + String.join(Chat.GREEN + ", " + Chat.YELLOW, e.getSubCommand().get().getAliases()));
+			}
+			return true;
+		}
+		return false;
 	}
 
 }
