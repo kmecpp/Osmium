@@ -101,6 +101,11 @@ public class Command extends CommandBase {
 		}
 	}
 
+	public final void addSubCommand(Command command) {
+		command.setPrimaryAlias(this.getPrimaryAlias() + " " + command.getPrimaryAlias());
+		args.add(command);
+	}
+
 	public final CommandBase add(String name, String... aliases) {
 		CommandBase arg = new CommandBase(name, aliases);
 		args.add(arg);

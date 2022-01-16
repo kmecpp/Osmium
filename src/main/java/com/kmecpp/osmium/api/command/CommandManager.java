@@ -124,6 +124,9 @@ public final class CommandManager {
 					} else if (!arg.isAllowed(sender)) {
 						sender.sendMessage(Chat.RED + "You do not have permission to perform this command!");
 						return false;
+					} else if (arg instanceof Command) {
+						event.consumeArgument();
+						invokeCommand((Command) arg, sender, commandLabel + " " + event.getArgLabel(), event.getArgs());
 					} else {
 						event.consumeArgument();
 						event.setSubCommand(arg);
@@ -189,7 +192,6 @@ public final class CommandManager {
 		} else {
 			command.execute(event);
 		}
-
 	}
 
 	public static void sendFailedRegistrationMessage(OsmiumPlugin plugin, CommandBase command) {
