@@ -52,7 +52,7 @@ public class Counter {
 		HashMap<K, Integer> counts = count(elements, mapper);
 
 		ArrayList<Entry<K, Integer>> sortedEntries = new ArrayList<>(counts.entrySet());
-		sortedEntries.sort(Collections.reverseOrder());
+		sortedEntries.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue())); //Decreasing value
 
 		return amount < elements.size() ? sortedEntries.subList(0, amount) : sortedEntries;
 	}

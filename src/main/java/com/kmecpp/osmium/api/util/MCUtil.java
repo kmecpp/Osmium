@@ -6,6 +6,10 @@ public class MCUtil {
 		return (int) Math.floor(x);
 	}
 
+	public static final int getBlockCoordFromChunkOffset(int chunkCoord, int chunkOffset) {
+		return (chunkCoord << 4) + chunkOffset;
+	}
+
 	//	public static int fastFloor(double x) {
 	//		int truncated = (int) x;
 	//		return x < (double) truncated ? truncated - 1 : truncated;
@@ -32,11 +36,11 @@ public class MCUtil {
 	}
 
 	public static final int getChunkOrigin(int n) {
-		return n >> 4 << 4;
+		return (n >> 4) << 4;
 	}
 
 	public static final int getChunkOrigin(double n) {
-		return (int) Math.floor(n) >> 4 << 4;
+		return ((int) Math.floor(n) >> 4) << 4;
 	}
 
 	/**
