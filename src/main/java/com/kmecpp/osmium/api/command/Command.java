@@ -24,8 +24,12 @@ public class Command extends CommandBase {
 
 	public Command(String name, String... aliases) {
 		super(name, aliases);
-		setPermission("osmium.commands." + Osmium.getPlugin(this.getClass()).getName().toLowerCase()); //Default permission
+		setPermission(getDefaultPermission()); //Default permission
 		configure();
+	}
+
+	private String getDefaultPermission() {
+		return "osmium.commands." + Osmium.getPlugin(this.getClass()).getName().toLowerCase();
 	}
 
 	public void configure() {
@@ -117,6 +121,9 @@ public class Command extends CommandBase {
 	public final void addSubCommand(Command command) {
 		if (!command.hasDescription()) {
 			command.setDescription("View " + command.getPrimaryAlias() + " commands");
+		}
+		if (command.getPermission().equals(command.getDefaultPermission())) {
+			command.setPermission(this.getPermission()); //Inherit parent command's permission if sub command is not set
 		}
 		command.nested = true;
 		args.add(command);
