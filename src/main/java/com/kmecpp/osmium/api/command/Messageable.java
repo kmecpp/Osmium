@@ -1,6 +1,5 @@
 package com.kmecpp.osmium.api.command;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -46,15 +45,15 @@ public interface Messageable {
 		}
 	}
 
-	default void sendList(Collection<?> list) {
+	default void sendList(Iterable<?> list) {
 		sendList(CS.XAEB, list, String::valueOf);
 	}
 
-	default void sendList(CS colors, Collection<?> list) {
+	default void sendList(CS colors, Iterable<?> list) {
 		sendList(colors, list, String::valueOf);
 	}
 
-	default <T> void sendList(Collection<T> list, Function<T, String> serializer) {
+	default <T> void sendList(Iterable<T> list, Function<T, String> serializer) {
 		sendList(CS.XAEB, list, serializer);
 	}
 
@@ -66,21 +65,21 @@ public interface Messageable {
 		sendList(colors, map.entrySet(), entry -> serializer.apply(entry.getKey(), entry.getValue()));
 	}
 
-	default <T> void sendList(CS colors, Collection<T> list, Function<T, String> serializer) {
+	default <T> void sendList(CS colors, Iterable<T> list, Function<T, String> serializer) {
 		for (T item : list) {
 			sendMessage(colors.getSecondary() + " - " + colors.getPrimary() + serializer.apply(item));
 		}
 	}
 
-	default void sendNumberedList(Collection<?> list) {
+	default void sendNumberedList(Iterable<?> list) {
 		sendNumberedList(CS.XAEB, list, String::valueOf);
 	}
 
-	default <T> void sendNumberedList(Collection<T> list, Function<T, String> serializer) {
+	default <T> void sendNumberedList(Iterable<T> list, Function<T, String> serializer) {
 		sendNumberedList(CS.XAEB, list, serializer);
 	}
 
-	default <T> void sendNumberedList(CS colors, Collection<T> list, Function<T, String> serializer) {
+	default <T> void sendNumberedList(CS colors, Iterable<T> list, Function<T, String> serializer) {
 		int i = 1;
 		for (T item : list) {
 			sendMessage("" + colors.getSecondary() + i + ") " + colors.getPrimary() + serializer.apply(item));
