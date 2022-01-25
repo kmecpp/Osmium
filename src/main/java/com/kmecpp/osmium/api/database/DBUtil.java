@@ -156,6 +156,11 @@ public class DBUtil {
 				StringUtil.add(sb, "default " + value);
 			}
 		}
+
+		if (tableData.isMySQL() && data.getType() == Timestamp.class && data.getDefaultValue() == null) {
+			StringUtil.add(sb, "default 0");
+		}
+
 		return sb.toString();
 	}
 
