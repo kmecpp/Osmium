@@ -26,6 +26,6 @@ public @interface DBColumn {
 
 	int maxLength() default -1;
 
-	String defaultValue() default "";
+	String defaultValue() default SQL.NULL;
 
 }

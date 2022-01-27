@@ -2,6 +2,7 @@ package com.kmecpp.osmium.api.database.api;
 
 public class SQL {
 
+	public static final String NULL = "NULL";
 	public static final String CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP";
 	public static final String CURRENT_TIMESTAMP_ON_UPDATE = "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
 

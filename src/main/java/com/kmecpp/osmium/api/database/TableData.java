@@ -92,7 +92,7 @@ public class TableData {
 		return columnMap.get(SQLDatabase.getColumnName(columnName));
 	}
 
-	public void setDefaultValue(String column, Object value) {
+	public void setDefaultValue(String column, String value) {
 		getColumnMeta(column).setDefaultValue(value);
 	}
 

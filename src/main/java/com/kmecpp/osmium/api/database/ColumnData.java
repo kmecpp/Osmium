@@ -17,7 +17,7 @@ public class ColumnData {
 	//	private final MDBTableData foreignKey;
 	private final int maxLength;
 
-	private Object defaultValue;
+	private String defaultValue;
 
 	private static final DBColumn DEFAULT_META = DBUtil.createDefaultColumnAnnotation();
 	//	private static final MDBColumn FOREIGN_KEY_META = MDBUtil.createForeignKeyMeta();
@@ -88,11 +88,11 @@ public class ColumnData {
 		return autoIncrement;
 	}
 
-	public void setDefaultValue(Object defaultValue) {
+	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
-	public Object getDefaultValue() {
+	public String getDefaultValue() {
 		return defaultValue;
 	}
 
