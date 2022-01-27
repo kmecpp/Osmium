@@ -49,7 +49,7 @@ public class ColumnData {
 		this.nullable = meta.nullable();
 		this.maxLength = meta.maxLength();
 		this.autoIncrement = meta.autoIncrement();
-		//		this.defaultValue = meta.defaultValue();
+		this.defaultValue = meta.defaultValue();
 	}
 
 	//	public static MDBColumnData createForeignKeyData(MDB manager, Class<?> target) {

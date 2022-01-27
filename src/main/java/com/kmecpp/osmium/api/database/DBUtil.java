@@ -14,7 +14,6 @@ import java.util.UUID;
 import com.kmecpp.osmium.api.database.api.DBColumn;
 import com.kmecpp.osmium.api.database.api.Filter;
 import com.kmecpp.osmium.api.database.api.PreparedStatementBuilder;
-import com.kmecpp.osmium.api.database.api.SQLPhrase;
 import com.kmecpp.osmium.api.util.StringUtil;
 
 public class DBUtil {
@@ -148,10 +147,8 @@ public class DBUtil {
 		if (data.getDefaultValue() != null) {
 			Object value = data.getDefaultValue();
 
-			if (value instanceof String || value instanceof UUID) {
+			if (data.getType() == String.class || data.getType() == UUID.class) {
 				StringUtil.add(sb, "default '" + value + "'");
-			} else if (value instanceof SQLPhrase) {
-				StringUtil.add(sb, "default " + ((SQLPhrase) value).getPhrase());
 			} else {
 				StringUtil.add(sb, "default " + value);
 			}
