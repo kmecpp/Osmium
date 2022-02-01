@@ -198,6 +198,37 @@ public class CommandEvent implements Messageable {
 		return result;
 	}
 
+	public boolean isLong(int index) {
+		if (index >= 0 && index < args.length) {
+			try {
+				Long.parseLong(get(index));
+				return true;
+			} catch (NumberFormatException ex) {}
+		}
+		return false;
+	}
+
+	public long getLong(int index) {
+		String input = get(index);
+		try {
+			return Long.parseLong(input);
+		} catch (NumberFormatException e) {
+			if (StringUtil.isMathematicalInteger(input)) {
+				throw new CommandException("Expected an integer but given value was too large: '" + input + "'");
+			} else {
+				if (index >= 0 && index < command.getUsageParams().length) {
+					throw new CommandException("Expected an integer " + Chat.DARK_RED + "<" + command.getUsageParams()[index] + ">" + Chat.RED + " received: '" + input + "'");
+				} else {
+					throw new CommandException("Expected an integer received: '" + input + "'");
+				}
+			}
+		}
+	}
+
+	public long getLong(int index, long defaultValue) {
+		return index < args.length ? getLong(index) : defaultValue;
+	}
+
 	public double getDouble(int index) {
 		String input = get(index);
 		try {
