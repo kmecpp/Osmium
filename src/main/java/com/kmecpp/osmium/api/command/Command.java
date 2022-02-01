@@ -67,7 +67,17 @@ public class Command extends CommandBase {
 			boolean aliases = e.hasString(0) && e.getString(0).equalsIgnoreCase("aliases");
 			String requestedCommand = e.getString(aliases ? 1 : 0, null);
 
-			List<CommandBase> displayArgs = requestedCommand != null ? Arrays.asList(getArgumentMatching(requestedCommand, e.getSender())) : args.subList(1, args.size());
+			List<CommandBase> displayArgs;
+			if (requestedCommand != null) {
+				CommandBase arg = getArgumentMatching(requestedCommand, e.getSender());
+				if (arg != null) {
+					displayArgs = Arrays.asList(arg);
+				} else {
+					throw new CommandException("Unknown subcommand '" + requestedCommand + "'");
+				}
+			} else {
+				displayArgs = args.subList(1, args.size());
+			}
 
 			String baseLabel = this.nested ? e.getBaseLabel() : this.getShortestAlias();
 
