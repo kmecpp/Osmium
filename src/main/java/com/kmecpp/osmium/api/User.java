@@ -25,6 +25,10 @@ public interface User extends Abstraction {
 
 	boolean isOnline();
 
+	default GameProfile getGameProfile() {
+		return new GameProfile(getUniqueId(), getName());
+	}
+
 	default Optional<Player> getPlayer() {
 		return Osmium.getPlayer(getName());
 	}
