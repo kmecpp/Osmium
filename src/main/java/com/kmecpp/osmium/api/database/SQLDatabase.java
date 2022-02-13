@@ -22,6 +22,7 @@ import com.kmecpp.osmium.api.database.api.SQLConfiguration;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Callback;
+import com.kmecpp.osmium.api.util.IOUtil;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 import com.zaxxer.hikari.HikariConfig;
@@ -256,6 +257,34 @@ public abstract class SQLDatabase {
 	}
 
 	public abstract <T> ArrayList<T> query(Class<T> tableClass, String[] columns, Object... values);
+
+	public <T> ArrayList<T> query(Class<T> tableClass, String query) {
+		TableData tableData = tables.get(tableClass);
+
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			ArrayList<T> result = new ArrayList<>();
+
+			OsmiumLogger.debug("Executing query: \"" + query + "\"");
+			connection = getConnection();
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			while (resultSet.next()) {
+				result.add(parse(resultSet, tableData));
+			}
+			return result;
+		} catch (Exception e) {
+			OsmiumLogger.error("Failed to execute database query: \"" + query + "\"");
+			e.printStackTrace();
+			return null;
+		} finally {
+			IOUtil.close(connection, statement, resultSet);
+		}
+	}
+
+	public abstract <T> T parse(ResultSet resultSet, TableData tableData) throws Exception;
 
 	public abstract void replaceInto(Class<?> tableClass, Object obj);
 

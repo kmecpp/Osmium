@@ -235,7 +235,6 @@ public class SQLiteDatabase extends SQLDatabase {
 		Statement statement = null;
 		ResultSet resultSet = null;
 		try {
-			ColumnData[] columns = properties.getColumns();
 			ArrayList<T> result = new ArrayList<>();
 
 			OsmiumLogger.debug("Executing query: \"" + query + "\"");
@@ -243,12 +242,7 @@ public class SQLiteDatabase extends SQLDatabase {
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
 			while (resultSet.next()) {
-				T obj = Reflection.cast(Reflection.createInstance(properties.getTableClass()));
-
-				for (int i = 0; i < columns.length; i++) {
-					columns[i].getField().set(obj, Serialization.deserialize(properties.getColumns()[i].getType(), (resultSet.getString(i + 1))));
-				}
-				result.add(obj);
+				result.add(parse(resultSet, properties));
 			}
 			return result;
 		} catch (Exception e) {
@@ -258,6 +252,19 @@ public class SQLiteDatabase extends SQLDatabase {
 		} finally {
 			IOUtil.close(connection, statement, resultSet);
 		}
+	}
+
+	@Override
+	public <T> T parse(ResultSet resultSet, TableData tableData) throws Exception {
+		ColumnData[] columns = tableData.getColumns();
+
+		T obj = Reflection.cast(Reflection.createInstance(tableData.getTableClass()));
+
+		for (int i = 0; i < columns.length; i++) {
+			columns[i].getField().set(obj, Serialization.deserialize(tableData.getColumns()[i].getType(), (resultSet.getString(i + 1))));
+		}
+
+		return obj;
 	}
 
 	public <T> T rawQuery(String query, ResultSetTransformer<T> processor) {

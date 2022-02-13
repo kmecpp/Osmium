@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api.database;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -182,31 +183,36 @@ public class MySQLDatabase extends SQLDatabase {
 				//					//Empty
 				//				}
 				while (rs.next()) {
-					T obj = Reflection.createInstance(Reflection.cast(table.getTableClass()));
-					int index = 1;
-					if (rs.getMetaData().getColumnCount() != table.getColumnCount()) {
-						throw new SQLException("Column count mismatch. Database: " + rs.getMetaData().getColumnCount() + " class: " + table.getColumnCount());
-					}
-					for (ColumnData column : table.getColumns()) {
-						//						if (!column.isForeignKey()) {
-						DBUtil.processResultSet(obj, rs, index, column);
-						//						}
-						index++;
-					}
-					//					for (MDBColumnData foreignKeyColumn : tableData.getForeignKeyColumns()) {
-					//						//TODO: Can't have foreign key to foreign key. Make this recursive?
-					//						for (MDBColumnData foreignObjectColumn : foreignKeyColumn.getForeignKey().getColumns()) {
-					//							MDBUtil.processResultSet(obj, rs, index, foreignObjectColumn);
-					//							index++;
-					//						}
-					//					}
-					results.add(obj);
+					results.add(parse(rs, table));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		});
 		return results;
+	}
+
+	@Override
+	public <T> T parse(ResultSet resultSet, TableData tableData) throws Exception {
+		T obj = Reflection.createInstance(Reflection.cast(tableData.getTableClass()));
+		int index = 1;
+		if (resultSet.getMetaData().getColumnCount() != tableData.getColumnCount()) {
+			throw new SQLException("Column count mismatch. Database: " + resultSet.getMetaData().getColumnCount() + " class: " + tableData.getColumnCount());
+		}
+		for (ColumnData column : tableData.getColumns()) {
+			//						if (!column.isForeignKey()) {
+			DBUtil.processResultSet(obj, resultSet, index, column);
+			//						}
+			index++;
+		}
+		//					for (MDBColumnData foreignKeyColumn : tableData.getForeignKeyColumns()) {
+		//						//TODO: Can't have foreign key to foreign key. Make this recursive?
+		//						for (MDBColumnData foreignObjectColumn : foreignKeyColumn.getForeignKey().getColumns()) {
+		//							MDBUtil.processResultSet(obj, rs, index, foreignObjectColumn);
+		//							index++;
+		//						}
+		//					}
+		return obj;
 	}
 
 	@Override
