@@ -43,7 +43,11 @@ public class TimeUtil {
 		return ZonedDateTime.now(zoneId);
 	}
 
-	public static long getStartOfDay(int dayOffset) {
+	public static long getStartOfDay(long epochMilli) {
+		return Instant.ofEpochMilli(epochMilli).atZone(zoneId).toLocalDate().atStartOfDay().atZone(zoneId).toInstant().toEpochMilli();
+	}
+
+	public static long getStartOfDayFromDayOffset(int dayOffset) {
 		return LocalDate.now().plusDays(dayOffset).atStartOfDay(zoneId).toInstant().toEpochMilli();
 	}
 
