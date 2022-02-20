@@ -39,10 +39,13 @@ public class DBUtil {
 		types.put(UUID.class, "CHAR(36)");
 		types.put(Date.class, "DATE");
 		types.put(Time.class, "TIME");
-		types.put(Timestamp.class, "TIMESTAMP");
+
+		//These types accept variable lengths and are handled separately by getTypeString()
+		//		types.put(String.class, "VARCHAR");
+		//		types.put(Timestamp.class, "TIMESTAMP");
 	}
 
-	public static String getTypeString(TableData tableData, ColumnData data) {
+	private static String getDBType(TableData tableData, ColumnData data) {
 		//		if (data.isForeignKey()) {
 		//			return "INT";
 		//		}
@@ -57,19 +60,27 @@ public class DBUtil {
 		}
 
 		int maxLength = data.getMaxLength();
-		if (maxLength <= 0) {
-			throw new IllegalArgumentException("Column has non-positive max length on a string field: " + tableData.getName() + "." + data.getName());
-		}
-		if (maxLength <= 1000) {
-			return "VARCHAR(" + maxLength + ")";
-		} else if (maxLength <= 65_535) {
-			return "TEXT";
-		} else if (maxLength <= 16_777_215) {
-			return "MEDIUMTEXT";
-		} else if (maxLength <= 4_294_967_295L) {
-			return "LONGTEXT";
+		if (type == String.class) {
+			if (maxLength <= 0) {
+				throw new IllegalArgumentException("Column has non-positive max length on a string field: " + tableData.getName() + "." + data.getName());
+			}
+			if (maxLength <= 1000) {
+				return "VARCHAR(" + maxLength + ")";
+			} else if (maxLength <= 65_535) {
+				return "TEXT";
+			} else if (maxLength <= 16_777_215) {
+				return "MEDIUMTEXT";
+			} else {
+				return "LONGTEXT"; //Max Length is 4_294_967_295 characters
+			}
+		} else if (type == Timestamp.class) {
+			if (maxLength <= 0) {
+				return "TIMESTAMP";
+			} else {
+				return "TIMESTAMP(" + maxLength + ")";
+			}
 		} else {
-			throw new RuntimeException("Unsupported MySQL type: " + type.getName());
+			throw new RuntimeException("Database type: " + type.getName() + " does not support maxLength!");
 		}
 	}
 
@@ -141,7 +152,7 @@ public class DBUtil {
 
 	public static String getColumnAttributeString(TableData tableData, ColumnData data) {
 		StringBuilder sb = new StringBuilder();
-		StringUtil.add(sb, getTypeString(tableData, data));
+		StringUtil.add(sb, getDBType(tableData, data));
 		StringUtil.add(sb, data.isUnique() ? "unique" : "");
 		StringUtil.add(sb, data.isNullable() ? "" : "not null");
 		StringUtil.add(sb, data.isAutoIncrement() ? "auto_increment" : "");
