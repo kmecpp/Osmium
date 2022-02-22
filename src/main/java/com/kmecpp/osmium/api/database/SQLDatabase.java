@@ -88,7 +88,7 @@ public abstract class SQLDatabase {
 				OsmiumLogger.info("Successfully established SQLite connection!");
 			} else {
 				hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabase());
-				hikariConfig.setDriverClassName("com.mysql.jdbc.Driver");
+				hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
 				hikariConfig.setUsername(config.getUsername());
 				hikariConfig.setPassword(config.getPassword());
 				hikariConfig.setConnectionTestQuery("USE " + config.getDatabase());
