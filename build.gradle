@@ -161,6 +161,7 @@ dependencies {
 	//shade "org.bstats:bstats-sponge:1.2"
 	shade "com.zaxxer:HikariCP:3.4.5"
 	shade "org.xerial:sqlite-jdbc:3.25.2"
+	shade 'mysql:mysql-connector-java:8.0.28'
 	shade "com.github.gwenn:sqlite-dialect:0.1.0"
 	//shade "org.hibernate:hibernate-core:5.4.0.Final"
 	//shade "org.hibernate:hibernate-hikaricp:5.4.0.Final"
