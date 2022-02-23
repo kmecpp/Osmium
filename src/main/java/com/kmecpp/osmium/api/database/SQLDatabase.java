@@ -7,10 +7,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+
+import javax.annotation.Nonnull;
 
 import com.kmecpp.osmium.api.database.api.DBTable;
 import com.kmecpp.osmium.api.database.api.DatabaseType;
@@ -258,7 +262,7 @@ public abstract class SQLDatabase {
 
 	public abstract <T> ArrayList<T> query(Class<T> tableClass, String[] columns, Object... values);
 
-	public <T> ArrayList<T> query(Class<T> tableClass, String query) {
+	public <T> @Nonnull List<T> query(Class<T> tableClass, String query) {
 		TableData tableData = tables.get(tableClass);
 
 		Connection connection = null;
@@ -278,7 +282,7 @@ public abstract class SQLDatabase {
 		} catch (Exception e) {
 			OsmiumLogger.error("Failed to execute database query: \"" + query + "\"");
 			e.printStackTrace();
-			return null;
+			return Collections.emptyList();
 		} finally {
 			IOUtil.close(connection, statement, resultSet);
 		}
