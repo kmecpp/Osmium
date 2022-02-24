@@ -142,7 +142,8 @@ public class DBUtil {
 		} else if (type == String.class) {
 			field.set(instance, rs.getString(index));
 		} else if (type == UUID.class) {
-			field.set(instance, UUID.fromString(rs.getString(index)));
+			String uuidString = rs.getString(index);
+			field.set(instance, uuidString == null ? null : UUID.fromString(uuidString));
 		}
 	}
 
