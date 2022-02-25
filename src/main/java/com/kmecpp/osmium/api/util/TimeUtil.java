@@ -185,23 +185,19 @@ public class TimeUtil {
 		return getCalendar().get(Calendar.YEAR);
 	}
 
-	public static long millis(long start) {
-		return System.currentTimeMillis() - start;
-	}
-
-	public static double seconds(long start) {
+	public static double secondsSince(long start) {
 		return (System.currentTimeMillis() - start) / 1000D;
 	}
 
-	public static double minutes(long start) {
+	public static double minutesSince(long start) {
 		return (System.currentTimeMillis() - start) / 1000D / 60D;
 	}
 
-	public static double hours(long start) {
+	public static double hoursSince(long start) {
 		return (System.currentTimeMillis() - start) / 1000D / 60D / 60D;
 	}
 
-	public static double days(long start) {
+	public static double daysSince(long start) {
 		return (System.currentTimeMillis() - start) / 1000D / 60D / 60D / 24D;
 	}
 
