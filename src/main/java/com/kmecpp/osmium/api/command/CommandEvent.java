@@ -262,7 +262,10 @@ public class CommandEvent implements Messageable {
 	}
 
 	public boolean getBoolean(int index, String trueString, String falseString) {
-		String input = getString(index);
+		return getBoolean(getString(index), trueString, falseString);
+	}
+
+	public boolean getBoolean(String input, String trueString, String falseString) {
 		if (input.equalsIgnoreCase(trueString)) {
 			return true;
 		} else if (input.equalsIgnoreCase(falseString)) {
