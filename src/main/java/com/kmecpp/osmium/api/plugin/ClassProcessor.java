@@ -87,7 +87,7 @@ public class ClassProcessor {
 		//			OsmiumLogger.warn("LOAD FILE: " + staticLoadFile);
 		//		}
 
-		Enumeration<JarEntry> entry = jarFile.entries();
+		Enumeration<JarEntry> entry = jarFile.entries(); //NOTE: THIS INCLUDES NESTED CLASSES
 		while (entry.hasMoreElements()) {
 			String elementName = entry.nextElement().getName().replace("/", ".");
 
@@ -112,7 +112,7 @@ public class ClassProcessor {
 						continue;
 					}
 					cls.getDeclaredMethods(); //Verify that return types exist
-					pluginClasses.add(cls);
+					pluginClasses.add(cls); //NOTE: THIS ADDS NESTED CLASSES TOO
 					//					Class<?> cls = Class.forName(className, false, classLoader);
 					//					cls.getFields();
 					onLoad(cls);
