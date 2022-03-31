@@ -55,7 +55,8 @@ public class TableData {
 		ArrayList<ColumnData> columns = new ArrayList<>();
 		ArrayList<ColumnData> primaryColumns = new ArrayList<>();
 		//		ArrayList<MDBColumnData> foreignKeyColumns = new ArrayList<>();
-		Reflection.walk(cls, false, field -> {
+		
+		Reflection.walk(cls, false, false, field -> {
 			ColumnData columnData = new ColumnData(field);
 			this.columnMap.put(columnData.getName(), columnData);
 

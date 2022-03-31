@@ -43,9 +43,9 @@ public class Reflection {
 		return Reflection.cast(ctClass.toClass(targetClass.getClassLoader(), targetClass.getProtectionDomain()));
 	}
 
-	public static void walk(Class<?> cls, boolean visitStatic, Consumer<Field> processor) {
+	public static void walk(Class<?> cls, boolean visitNestedClasses, boolean visitStatic, Consumer<Field> processor) {
 		if (cls.getSuperclass() != Object.class) {
-			walk(cls.getSuperclass(), visitStatic, processor);
+			walk(cls.getSuperclass(), visitNestedClasses, visitStatic, processor);
 		}
 
 		for (Field field : cls.getDeclaredFields()) {
@@ -57,11 +57,13 @@ public class Reflection {
 			processor.accept(field);
 		}
 
-		for (Class<?> nestedClass : cls.getDeclaredClasses()) {
-			if (nestedClass.isAnnotationPresent(Transient.class)) {
-				continue;
+		if (visitNestedClasses) {
+			for (Class<?> nestedClass : cls.getDeclaredClasses()) {
+				if (nestedClass.isAnnotationPresent(Transient.class)) {
+					continue;
+				}
+				walk(nestedClass, visitNestedClasses, visitStatic, processor);
 			}
-			walk(nestedClass, visitStatic, processor);
 		}
 	}
 
@@ -749,8 +751,10 @@ public class Reflection {
 		for (Method method : cls.getDeclaredMethods()) {
 			int modifiers = method.getModifiers();
 			String accessModifier = Modifier.isPublic(modifiers) ? "public" : Modifier.isProtected(modifiers) ? "protected" : Modifier.isPrivate(modifiers) ? "private" : "";
+			String staticStr = Modifier.isStatic(modifiers) ? "static" : "";
 
 			System.out.println(accessModifier + (accessModifier.isEmpty() ? "" : " ")
+					+ staticStr + (staticStr.isEmpty() ? "" : " ")
 					+ method.getReturnType().getName() + " " + method.getName() + "(" + String.join(", ", getSimpleNames(method.getParameterTypes())) + ")");
 		}
 

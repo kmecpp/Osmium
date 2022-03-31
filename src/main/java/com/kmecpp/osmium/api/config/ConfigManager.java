@@ -122,7 +122,7 @@ public class ConfigManager {
 		//		System.out.println("FIELD TYPE MAP: " + configTypeData);
 
 		HashMap<String, FieldData> fieldDataMap = new HashMap<>();
-		Reflection.walk(configClass, true, (field) -> {
+		Reflection.walk(configClass, true, true, (field) -> {
 			Setting setting = field.getAnnotation(Setting.class);
 			String name = getName(field, setting);
 			String virtualPath = getVirtualPath(field, name);
