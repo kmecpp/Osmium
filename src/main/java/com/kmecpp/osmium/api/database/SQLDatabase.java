@@ -39,6 +39,7 @@ public abstract class SQLDatabase {
 	protected final OsmiumPlugin plugin;
 	protected final DatabaseType type;
 
+	protected DatabaseQueue queue = new DatabaseQueue();
 	protected CountDownLatch availableLatch = new CountDownLatch(1);
 
 	protected SQLConfiguration config;
@@ -46,7 +47,6 @@ public abstract class SQLDatabase {
 	private boolean initialized; //Represents whether or not this database has any tables associated with it
 
 	protected static final HashMap<Class<?>, TableData> tables = new HashMap<>();
-	protected static final DatabaseQueue queue = new DatabaseQueue();
 
 	public SQLDatabase(OsmiumPlugin plugin, DatabaseType type) {
 		this.plugin = plugin;

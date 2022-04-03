@@ -315,7 +315,7 @@ public final class Osmium {
 	//	}
 
 	public static void savePluginData(OsmiumPlugin plugin) {
-		plugin.saveData();
+		plugin.savePersistentData();
 	}
 
 	public static final Platform getPlatform() {
