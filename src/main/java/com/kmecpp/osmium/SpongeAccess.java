@@ -118,7 +118,7 @@ public class SpongeAccess {
 
 						String[] args = context.<String> getOne("args").map((s) -> s.split(" ")).orElse(new String[0]);
 
-						return CommandManager.invokeCommand(command, sender, command.getAliases()[0], args)
+						return Osmium.getCommandManager().invokeCommand(command, sender, command.getAliases()[0], args)
 								? CommandResult.success()
 								: CommandResult.empty();
 					} catch (Throwable t) {

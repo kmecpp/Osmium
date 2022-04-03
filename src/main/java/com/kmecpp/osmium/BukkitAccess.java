@@ -162,7 +162,7 @@ public class BukkitAccess {
 										: bukkitSender instanceof org.bukkit.command.BlockCommandSender
 												? new BukkitBlockCommandSender((org.bukkit.command.BlockCommandSender) bukkitSender)
 												: new GenericBukkitCommandSender(bukkitSender);
-						CommandManager.invokeCommand(command, sender, label, args);
+						Osmium.getCommandManager().invokeCommand(command, sender, label, args);
 					} catch (Throwable t) {
 						t.printStackTrace();
 					}

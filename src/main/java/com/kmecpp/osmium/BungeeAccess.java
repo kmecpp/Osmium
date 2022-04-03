@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.api.command.Command;
-import com.kmecpp.osmium.api.command.CommandManager;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Order;
@@ -59,7 +58,7 @@ public class BungeeAccess {
 				@Override
 				public void execute(net.md_5.bungee.api.CommandSender bungeeSender, String[] args) {
 					CommandSender sender = bungeeSender instanceof ProxiedPlayer ? new BungeePlayer((ProxiedPlayer) bungeeSender) : new BungeeGenericCommandSender(bungeeSender);
-					CommandManager.invokeCommand(command, sender, command.getPrimaryAlias(), args);
+					Osmium.getCommandManager().invokeCommand(command, sender, command.getPrimaryAlias(), args);
 				}
 
 			};

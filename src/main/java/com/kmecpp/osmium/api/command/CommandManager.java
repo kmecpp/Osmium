@@ -1,7 +1,10 @@
 package com.kmecpp.osmium.api.command;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.kmecpp.osmium.BukkitAccess;
@@ -19,8 +22,9 @@ public final class CommandManager {
 
 	//	private HashMap<OsmiumPlugin, Boolean> defaultAllowConsole = new HashMap<>();
 	private HashMap<OsmiumPlugin, ArrayList<Command>> commands = new HashMap<>();
+	private HashMap<Class<?>, Command> commandClassMap = new HashMap<>();
 
-	private static HashMap<UUID, HashMap<CommandBase, Long>> cooldownData = new HashMap<>();
+	private HashMap<UUID, HashMap<CommandBase, Long>> cooldownData = new HashMap<>();
 
 	static {
 		initializeDefaultExceptions();
@@ -32,6 +36,7 @@ public final class CommandManager {
 
 	public Command register(OsmiumPlugin plugin, Command command) {
 		commands.computeIfAbsent(plugin, k -> new ArrayList<>()).add(command);
+		commandClassMap.put(command.getClass(), command);
 
 		plugin.debug("Registered command: /" + command.getPrimaryAlias());
 		if (Platform.isBukkit()) {
@@ -52,12 +57,20 @@ public final class CommandManager {
 	//		return defaultAllowConsole.getOrDefault(plugin, true);
 	//	}
 
-	public HashMap<OsmiumPlugin, ArrayList<Command>> getCommands() {
-		return commands;
+	public Command getCommand(Class<? extends Command> commandClass) {
+		return commandClassMap.get(commandClass);
 	}
 
-	public ArrayList<Command> getCommands(OsmiumPlugin plugin) {
-		return commands.getOrDefault(plugin, new ArrayList<>());
+	public Map<OsmiumPlugin, ArrayList<Command>> getCommands() {
+		return Collections.unmodifiableMap(commands);
+	}
+
+	public List<Command> getCommands(OsmiumPlugin plugin) {
+		return Collections.unmodifiableList(commands.getOrDefault(plugin, new ArrayList<>()));
+	}
+
+	public HashMap<UUID, HashMap<CommandBase, Long>> getCooldownData() {
+		return cooldownData;
 	}
 
 	public void processConsoleCommand(String command) {
@@ -97,7 +110,7 @@ public final class CommandManager {
 		processCommand(new CommandRedirectSender(sender, receiver), command);
 	}
 
-	public static boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {
+	public boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {
 		try {
 			//			if (sender instanceof ConsoleCommandSender && !command.isConsole()) {
 			//				throw CommandException.PLAYERS_ONLY;
@@ -173,7 +186,7 @@ public final class CommandManager {
 		}
 	}
 
-	private static void tryExecuteCommand(CommandSender sender, CommandBase command, CommandEvent event) {
+	private void tryExecuteCommand(CommandSender sender, CommandBase command, CommandEvent event) {
 		if (sender instanceof Player) {
 			long currentTime = System.currentTimeMillis();
 
@@ -210,10 +223,6 @@ public final class CommandManager {
 
 	private static void initializeDefaultExceptions() {
 		new CommandException("");
-	}
-
-	public static HashMap<UUID, HashMap<CommandBase, Long>> getCooldownData() {
-		return cooldownData;
 	}
 
 	//	private static ArrayList<Command> commands = new ArrayList<>();
