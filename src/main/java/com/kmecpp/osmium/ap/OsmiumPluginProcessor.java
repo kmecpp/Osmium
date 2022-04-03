@@ -82,7 +82,7 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 				String id = annotation.name().replace(' ', '-').toLowerCase();
 				if (!plugins.containsKey(id)) {
 					plugins.put(id, new OsmiumMetaContainer(((TypeElement) e).getQualifiedName().toString(),
-							annotation.name(), annotation.version(), annotation.description(), annotation.url(),
+							annotation.name(), annotation.version(), annotation.minecraftVersion(), annotation.description(), annotation.url(),
 							annotation.authors(), annotation.dependencies(), annotation.loadBefore()));
 				} else {
 					error("Plugin with id '" + id + "' already exists!");
@@ -115,6 +115,7 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 		StringBuilder pluginYml = new StringBuilder().append("name: " + meta.getName() + "\n")
 				.append("main: " + meta.getName() + "Bukkit" + "\n")
 				.append("version: " + meta.getVersion() + "\n")
+				.append("api-version: " + meta.getMinecraftVersion() + "\n")
 				.append("description: " + meta.getDescription() + "\n")
 				.append("website: " + meta.getUrl() + "\n")
 				.append("authors: " + Arrays.toString(meta.getAuthors()) + "\n")

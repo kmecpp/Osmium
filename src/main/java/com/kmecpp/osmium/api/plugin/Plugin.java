@@ -13,6 +13,8 @@ public @interface Plugin {
 
 	String version(); //Required by Bukkit
 
+	String minecraftVersion() default ""; //Converted to "api-version"
+
 	String description() default "";
 
 	String url() default "";

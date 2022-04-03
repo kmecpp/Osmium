@@ -9,6 +9,7 @@ public class OsmiumMetaContainer {
 
 	private final String name;
 	private final String version;
+	private final String minecraftVersion;
 	private final String description;
 	private final String url;
 	private final String[] authors;
@@ -16,11 +17,11 @@ public class OsmiumMetaContainer {
 	private final String[] bukkitDependencies;
 	private final String[] spongeDependencies;
 
-	public OsmiumMetaContainer(String sourceClass, String name, String version, String description, String url, String[] authors, String[] dependencies, String[] loadBeforePlugins) {
+	public OsmiumMetaContainer(String sourceClass, String name, String version, String minecraftVersion, String description, String url, String[] authors, String[] dependencies, String[] loadBeforePlugins) {
 		this.sourceClass = sourceClass;
-
 		this.name = name;
 		this.version = version;
+		this.minecraftVersion = minecraftVersion;
 		this.description = description;
 		this.url = url;
 		this.authors = authors;
@@ -48,6 +49,10 @@ public class OsmiumMetaContainer {
 
 	public String getVersion() {
 		return version;
+	}
+
+	public String getMinecraftVersion() {
+		return minecraftVersion;
 	}
 
 	public String getDescription() {
