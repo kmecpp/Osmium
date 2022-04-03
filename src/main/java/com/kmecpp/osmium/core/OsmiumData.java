@@ -38,7 +38,7 @@ public class OsmiumData {
 			}
 			dayOfMonth = currentDay;
 
-			OsmiumCore.getPlugin().saveData();
+			OsmiumCore.getPlugin().savePersistentData();
 		}
 	}
 

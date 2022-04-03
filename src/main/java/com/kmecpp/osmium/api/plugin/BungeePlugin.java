@@ -73,7 +73,7 @@ public abstract class BungeePlugin extends Plugin implements Listener {
 	@Override
 	public void onDisable() {
 		if (plugin != null) {
-			plugin.saveData();
+			plugin.savePersistentData();
 			plugin.onDisable();
 		}
 	}

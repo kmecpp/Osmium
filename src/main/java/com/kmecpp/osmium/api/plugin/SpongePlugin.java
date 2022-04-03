@@ -79,7 +79,7 @@ public abstract class SpongePlugin {
 
 	@Listener
 	public void on(GameStoppingEvent e) {
-		plugin.saveData();
+		plugin.savePersistentData();
 		plugin.onDisable();
 	}
 

@@ -39,7 +39,6 @@ public abstract class SQLDatabase {
 	protected final OsmiumPlugin plugin;
 	protected final DatabaseType type;
 
-	protected DatabaseQueue queue;
 	protected CountDownLatch availableLatch = new CountDownLatch(1);
 
 	protected SQLConfiguration config;
@@ -47,25 +46,28 @@ public abstract class SQLDatabase {
 	private boolean initialized; //Represents whether or not this database has any tables associated with it
 
 	protected static final HashMap<Class<?>, TableData> tables = new HashMap<>();
+	protected static final DatabaseQueue queue = new DatabaseQueue();
 
 	public SQLDatabase(OsmiumPlugin plugin, DatabaseType type) {
 		this.plugin = plugin;
 		this.type = type;
 	}
 
-	public void configure(String host, int port, String database, String username, String password) {
-		configure(null, host, port, database, username, password);
+	public <T extends SQLDatabase> T configure(String host, int port, String database, String username, String password) {
+		return configure(null, host, port, database, username, password);
 	}
 
-	public void configure(String prefix, String host, int port, String database, String username, String password) {
-		configure(new SQLConfiguration(host, database, username, password, port, prefix));
+	public <T extends SQLDatabase> T configure(String prefix, String host, int port, String database, String username, String password) {
+		return configure(new SQLConfiguration(host, database, username, password, port, prefix));
 	}
 
-	public void configure(SQLConfiguration config) {
+	@SuppressWarnings("unchecked")
+	public <T extends SQLDatabase> T configure(SQLConfiguration config) {
 		if (StringUtil.isNullOrEmpty(config.getDatabase())) {
 			throw new IllegalArgumentException("Database is not configured for plugin: " + plugin.getName());
 		}
 		this.config = config;
+		return (T) this;
 	}
 
 	public String getTablePrefix() {
@@ -88,19 +90,21 @@ public abstract class SQLDatabase {
 			if (type == DatabaseType.SQLITE) {
 				hikariConfig.setJdbcUrl("jdbc:sqlite:" + plugin.getFolder() + File.separator + "data.db");
 				hikariConfig.setDriverClassName("org.sqlite.JDBC");
+				hikariConfig.setMinimumIdle(2);
+				hikariConfig.setMaximumPoolSize(10);
 				hikariConfig.setConnectionTestQuery("SELECT 1");
 				OsmiumLogger.info("Successfully established SQLite connection!");
 			} else {
-				hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabase());
+				hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabase() + (config.isAllowMultiQueries() ? "?allowMultiQueries=true" : ""));
 				hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
 				hikariConfig.setUsername(config.getUsername());
 				hikariConfig.setPassword(config.getPassword());
+				hikariConfig.setMinimumIdle(config.getMinimumIdle());
+				hikariConfig.setMaximumPoolSize(config.getMaximumPoolSize());
 				hikariConfig.setConnectionTestQuery("USE " + config.getDatabase());
 				OsmiumLogger.info("Successfully established connection to " + type.getName() + " database: " + config.getDatabase());
 			}
 
-			hikariConfig.setMinimumIdle(2);
-			hikariConfig.setMaximumPoolSize(10);
 			hikariConfig.setConnectionTimeout(500L);
 			hikariSource = new HikariDataSource(hikariConfig);
 			availableLatch.countDown(); //Mark database as available
@@ -108,8 +112,11 @@ public abstract class SQLDatabase {
 			OsmiumLogger.error("Invalid database configuration! Failed to execute: '" + hikariConfig.getConnectionTestQuery() + "'");
 			e.printStackTrace();
 		}
-		queue = new DatabaseQueue();
 		queue.start();
+	}
+
+	public SQLConfiguration getConfig() {
+		return config;
 	}
 
 	public void query(String query, Consumer<ResultSet> handler) {

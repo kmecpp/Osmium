@@ -31,8 +31,8 @@ import com.kmecpp.osmium.api.util.Reflection;
 public abstract class OsmiumPlugin {
 
 	private final Plugin properties = this.getClass().getAnnotation(Plugin.class);
-	private final SQLiteDatabase database = new SQLiteDatabase(this);
-	private final MySQLDatabase mdb = new MySQLDatabase(this);
+	private final SQLiteDatabase sqliteDatabase = new SQLiteDatabase(this);
+	private final MySQLDatabase mysqlDatabase = new MySQLDatabase(this);
 
 	//Effectively final variables
 	private Object pluginImplementation; //This field is set on instantiation using reflection
@@ -176,7 +176,7 @@ public abstract class OsmiumPlugin {
 		return Osmium.getMetrics().isEnabled(this);
 	}
 
-	public void saveData() {
+	public void savePersistentData() {
 		persistentData.save();
 		//TODO: SAVE PLAYER DB RECORDS
 		//		database.getTables().forEach(TableProperties::get);
@@ -282,11 +282,11 @@ public abstract class OsmiumPlugin {
 	//	}
 
 	public SQLiteDatabase getSQLiteDatabase() {
-		return database;
+		return sqliteDatabase;
 	}
 
 	public MySQLDatabase getMySQLDatabase() {
-		return mdb;
+		return mysqlDatabase;
 	}
 
 	//	public void disable() {

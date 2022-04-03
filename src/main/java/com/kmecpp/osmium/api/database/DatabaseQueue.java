@@ -1,6 +1,5 @@
 package com.kmecpp.osmium.api.database;
 
-import java.lang.Thread.State;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.kmecpp.osmium.Osmium;
@@ -10,9 +9,11 @@ public class DatabaseQueue {
 
 	private final LinkedBlockingQueue<ContextRunnable> queue = new LinkedBlockingQueue<>();
 	private final QueueExecutor executor = new QueueExecutor();
+	private boolean started;
 
-	public void start() {
-		if (executor.getState() == State.NEW) {
+	public synchronized void start() {
+		if (!started) {
+			started = true;
 			executor.start();
 		}
 	}
@@ -50,9 +51,9 @@ public class DatabaseQueue {
 
 					try {
 						contextRunnable.runnable.run();
-					} catch (Exception ex) {
-						ex.printStackTrace();
-						OsmiumLogger.warn("Caused By:");
+					} catch (Throwable t) {
+						t.printStackTrace();
+						OsmiumLogger.warn("Caused By:"); //Display stack trace of where the ContextRunnable was added to the queue
 						for (StackTraceElement element : contextRunnable.stack) {
 							System.err.println(element);
 						}

@@ -90,6 +90,15 @@ public class OsmiumCore extends OsmiumPlugin {
 		saveAllData();
 
 		Osmium.getEventManager().callEvent(new OsmiumServerShutdownEvent());
+
+		for (OsmiumPlugin plugin : Osmium.getPlugins()) {
+			try {
+				plugin.getSQLiteDatabase().shutdown();
+				plugin.getMySQLDatabase().shutdown();
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
 	}
 
 	private static void saveAllData() {

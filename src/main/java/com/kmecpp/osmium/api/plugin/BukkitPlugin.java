@@ -108,7 +108,7 @@ public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 	@Override
 	public void onDisable() {
 		if (plugin != null) {
-			plugin.saveData();
+			plugin.savePersistentData();
 			plugin.onDisable();
 		}
 	}
