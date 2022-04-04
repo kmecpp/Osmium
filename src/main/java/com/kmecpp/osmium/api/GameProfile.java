@@ -25,4 +25,18 @@ public class GameProfile {
 		return "(" + uuid + ", " + name + ")";
 	}
 
+	@Override
+	public int hashCode() {
+		return uuid.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof GameProfile) {
+			GameProfile other = (GameProfile) obj;
+			return uuid.equals(other.uuid);
+		}
+		return false;
+	}
+
 }
