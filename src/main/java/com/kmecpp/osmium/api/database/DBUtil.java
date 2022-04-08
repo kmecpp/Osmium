@@ -15,6 +15,7 @@ import com.kmecpp.osmium.api.database.api.DBColumn;
 import com.kmecpp.osmium.api.database.api.Filter;
 import com.kmecpp.osmium.api.database.api.PreparedStatementBuilder;
 import com.kmecpp.osmium.api.database.api.SQL;
+import com.kmecpp.osmium.api.util.Pagination;
 import com.kmecpp.osmium.api.util.StringUtil;
 
 public class DBUtil {
@@ -246,6 +247,10 @@ public class DBUtil {
 		return "REPLACE INTO " + table.getName()
 				+ "(" + StringUtil.join(table.getEscapedColumnNames(), ", ") + ") "
 				+ "VALUES(" + StringUtil.join('?', ",", table.getColumnCount()) + ");";
+	}
+
+	public static String pageLimit(int page, int pageSize) {
+		return "LIMIT " + Pagination.getStartIndex(page, pageSize) + ", " + pageSize;
 	}
 
 	public static DBColumn createForeignKeyMeta() {
