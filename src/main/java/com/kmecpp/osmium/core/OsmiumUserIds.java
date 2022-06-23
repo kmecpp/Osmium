@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.GameProfile;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Pair;
 
@@ -16,20 +17,29 @@ public class OsmiumUserIds {
 	private static final HashMap<UUID, Pair<Integer, Long>> ids = new HashMap<>();
 	private static final HashMap<Integer, Pair<GameProfile, Long>> idToProfileMap = new HashMap<>();
 
-	public static void onAsyncPreLogin(UUID uuid, String name) {
+	public static void onAsyncPreLogin(PlayerConnectionEvent.Auth e) {
+		UUID uuid = e.getUniqueId();
+		String name = e.getPlayerName();
+
 		if (uuid == null) {
 			uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8)); //Bukkit/Bungee convention
 			OsmiumLogger.warn("Utilizing offline UUIDs to generate an ID for " + name);
 		}
 
-		OsmiumUserIds.createUserId(uuid, name);
+		try {
+			OsmiumUserIds.createUserId(uuid, name);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			e.setCancelled(true);
+			e.setKickMessage("[Osmium] Unable to create or retrieve user ID");
+		}
 		//		INSERT INTO visits (ip, hits)
 		//		VALUES ('127.0.0.1', 1)
 		//		ON CONFLICT(ip) DO UPDATE SET hits = hits + 1;
 
 		int id = getUserId(uuid).get(); //Cache ID
 		idToProfileMap.put(id, new Pair<>(new GameProfile(uuid, name), System.currentTimeMillis()));
-		Osmium.getPlayerDataManager().onPlayerAuthenticate(Osmium.getOrCreateUser(uuid, name).get());
+		Osmium.getPlayerDataManager().onPlayerStartAuthentication(Osmium.getOrCreateUser(uuid, name).get());
 	}
 
 	public static GameProfile getProfile(int userId, boolean lookup) {
