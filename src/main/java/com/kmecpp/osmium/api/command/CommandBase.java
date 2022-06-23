@@ -240,7 +240,12 @@ public class CommandBase {
 
 	//<add/remove>
 	private static String[] parseUsage(String usage) {
+		//TODO: This isn't working for some existing usages. Forgot which ones... but should revisit this
+		//		for (String part : usage.split("\\s+")) {
+		//		}
+		//		System.out.println(usage);
 		String[] params = usage.split(">\\s+<");
+		//		System.out.println(Arrays.asList(params));
 		for (int i = 0; i < params.length; i++) {
 			params[i] = params[i].replace("<", "").replace(">", "").trim();
 			if (params[i].contains(" ")) {

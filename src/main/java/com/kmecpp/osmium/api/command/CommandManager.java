@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.kmecpp.osmium.BukkitAccess;
-import com.kmecpp.osmium.BungeeAccess;
 import com.kmecpp.osmium.Platform;
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.TimeUtil;
 import com.kmecpp.osmium.core.OsmiumCoreCommands;
+import com.kmecpp.osmium.platform.BukkitAccess;
+import com.kmecpp.osmium.platform.BungeeAccess;
+import com.kmecpp.osmium.platform.SpongeAccess;
 import com.kmecpp.osmium.platform.osmium.CommandRedirectSender;
 
 public final class CommandManager {
