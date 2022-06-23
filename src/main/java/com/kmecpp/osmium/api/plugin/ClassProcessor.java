@@ -8,16 +8,17 @@ import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import com.kmecpp.osmium.BukkitAccess;
-import com.kmecpp.osmium.BungeeAccess;
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
-import com.kmecpp.osmium.SpongeAccess;
+import com.kmecpp.osmium.api.AutoRegister;
 import com.kmecpp.osmium.api.HookClass;
+import com.kmecpp.osmium.api.OnlinePlayerData;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.config.ConfigClass;
 import com.kmecpp.osmium.api.database.MultiplePlayerData;
@@ -34,6 +35,9 @@ import com.kmecpp.osmium.api.persistence.PersistentField;
 import com.kmecpp.osmium.api.persistence.PersistentPluginData;
 import com.kmecpp.osmium.api.tasks.Schedule;
 import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.platform.BukkitAccess;
+import com.kmecpp.osmium.platform.BungeeAccess;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
@@ -119,7 +123,7 @@ public class ClassProcessor {
 				} catch (ClassNotFoundException | NoClassDefFoundError ex) {
 					String exceptionMessage = ex.getMessage().toLowerCase();
 					if (exceptionMessage.contains("spongepowered") || exceptionMessage.contains("bukkit") || exceptionMessage.contains("bungee")) {
-						OsmiumLogger.debug("SKIPPING: " + className);
+						OsmiumLogger.debug("SKIPPING: " + className + " (CLASS NOT FOUND: " + exceptionMessage + ")");
 					} else {
 						OsmiumLogger.warn("Could not load class: " + className);
 						OsmiumLogger.warn(ex.getLocalizedMessage());
@@ -252,12 +256,12 @@ public class ClassProcessor {
 		OsmiumLogger.debug("Initializing class: " + cls.getName());
 
 		//COMMANDS
-		if (Command.class.isAssignableFrom(cls)) {
+		if (Command.class.isAssignableFrom(cls) && !Modifier.isAbstract(cls.getModifiers())) {
 			Command command;
 			try {
 				command = (Command) cls.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
-				OsmiumLogger.warn("Cannot cannot be initialized! Class must have a default constructor!");
+				OsmiumLogger.warn("Command class: '" + cls.getName() + "' cannot be initialized! It must have a default constructor!");
 				return;
 			}
 
@@ -346,7 +350,30 @@ public class ClassProcessor {
 					}
 				}
 			}
+		}
 
+		for (Field field : cls.getDeclaredFields()) {
+			OnlinePlayerData onlinePlayerDataAnnotation = field.getDeclaredAnnotation(OnlinePlayerData.class);
+			if (onlinePlayerDataAnnotation != null) {
+				try {
+					Class<?> fieldType = field.getType();
+					field.setAccessible(true);
+
+					if (!Modifier.isStatic(field.getModifiers())) {
+						OsmiumLogger.warn("Fields annotated with @" + OnlinePlayerData.class.getSimpleName() + " must be static!");
+					} else if (!Modifier.isFinal(field.getModifiers())) {
+						OsmiumLogger.warn("Fields annotated with @" + OnlinePlayerData.class.getSimpleName() + " must be final!");
+					} else if (field.get(null) == null) {
+						OsmiumLogger.warn("Fields annotated with @" + OnlinePlayerData.class.getSimpleName() + " must not be null!");
+					} else if (!Map.class.isAssignableFrom(fieldType) && !Set.class.isAssignableFrom(fieldType)) {
+						OsmiumLogger.warn("Fields annotated with @" + OnlinePlayerData.class.getSimpleName() + " must have type Map<UUID, ?> or Set<UUID>");
+					} else {
+						Osmium.getPlayerDataManager().registerOnlinePlayerDataField(field, onlinePlayerDataAnnotation);
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
 
 		AutoRegister autoRegister = cls.getDeclaredAnnotation(AutoRegister.class);

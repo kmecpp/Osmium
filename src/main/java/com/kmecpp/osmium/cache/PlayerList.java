@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.platform.UnsupportedPlatformException;
 import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
 import com.kmecpp.osmium.platform.bungee.BungeePlayer;
@@ -38,7 +39,7 @@ public class PlayerList {
 
 		List<Player> offlinePlayers = players.values().stream().filter(p -> !p.isOnline()).collect(Collectors.toList());
 		if (offlinePlayers != null && !offlinePlayers.isEmpty()) {
-			System.out.println("OFFLINE PLAYERS DETECTED IN OSMIUM PLAYER LIST CACHE: " + offlinePlayers);
+			OsmiumLogger.warn("OFFLINE PLAYERS DETECTED IN OSMIUM PLAYER LIST CACHE: " + offlinePlayers);
 		}
 	}
 

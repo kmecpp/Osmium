@@ -1,20 +1,23 @@
 package com.kmecpp.osmium.core;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.api.OnlinePlayerData;
 import com.kmecpp.osmium.api.TickTimeUnit;
 import com.kmecpp.osmium.api.User;
-import com.kmecpp.osmium.api.database.TableData;
 import com.kmecpp.osmium.api.database.MultiplePlayerData;
 import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.database.SQLDatabase;
+import com.kmecpp.osmium.api.database.TableData;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -29,16 +32,63 @@ public class PlayerDataManager {
 
 	private final HashMap<Class<?>, Function<User, ?>> loaders = new HashMap<>();
 
+	private final HashMap<Field, OnlinePlayerData> onlinePlayerDataFields = new HashMap<>();
+	private final HashMap<UUID, Long> logoutTimes = new HashMap<>();
+
 	void start() {
 		//Safely remove offline players
 		Osmium.getTask().setInterval(30, TickTimeUnit.SECOND).setExecutor(t -> {
-			Set<UUID> onlineIds = new HashSet<>(Osmium.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet()));
-			for (UUID uuid : onlineIds) {
-				if (!onlineIds.contains(uuid)) {
-					Osmium.getPlayerDataManager().data.remove(uuid);
+			cleanRegisteredPlayerData();
+		}).start();
+	}
+
+	private void cleanRegisteredPlayerData() {
+		System.out.println("Osmium Online Players: " + Osmium.getOnlinePlayers().size() + " == " + Osmium.getOnlinePlayers());
+		long start = System.nanoTime();
+
+		long currentTime = System.currentTimeMillis();
+
+		synchronized (logoutTimes) {
+			Iterator<Entry<UUID, Long>> offlinePlayerIterator = logoutTimes.entrySet().iterator();
+			while (offlinePlayerIterator.hasNext()) {
+				Entry<UUID, Long> entry = offlinePlayerIterator.next();
+				UUID playerId = entry.getKey();
+				long logoutTime = entry.getValue();
+				long timeSinceLogout = currentTime - logoutTime;
+				boolean removePlayerMetadata = true;
+
+				for (Entry<Field, OnlinePlayerData> fieldEntry : onlinePlayerDataFields.entrySet()) {
+					try {
+						Object dataObject = fieldEntry.getKey().get(null);
+						OnlinePlayerData annotation = fieldEntry.getValue();
+						if (dataObject == null) {
+							continue;
+						}
+
+						int retainThreshold = annotation.retainMinutes() * 1000 * 60;
+						boolean shouldRemove = timeSinceLogout > retainThreshold;
+
+						if (shouldRemove) {
+							if (Map.class.isAssignableFrom(dataObject.getClass())) {
+								Reflection.<Map<UUID, ?>> cast(dataObject).remove(playerId);
+							} else if (Set.class.isAssignableFrom(dataObject.getClass())) {
+								Reflection.<Set<UUID>> cast(dataObject).remove(playerId);
+							}
+						} else {
+							removePlayerMetadata = false;
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+				if (removePlayerMetadata) {
+					offlinePlayerIterator.remove();
 				}
 			}
-		}).start();
+			long end = System.nanoTime();
+			System.out.println("Cleaned " + onlinePlayerDataFields.size() + " Player Maps (" + ((end - start) / 1000F) + "us)");
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -107,9 +157,12 @@ public class PlayerDataManager {
 	//	}
 
 	//This is not in core so it can't listen to events
-	public <K> void onPlayerAuthenticate(User user) {
+	public <K> void onPlayerStartAuthentication(User user) {
 		//		System.out.println("AUTHENCIATED!");
 		long start = System.currentTimeMillis();
+		synchronized (logoutTimes) {
+			logoutTimes.remove(user.getUniqueId());
+		}
 
 		loaders.entrySet().forEach(entry -> {
 			try {
@@ -159,6 +212,7 @@ public class PlayerDataManager {
 							((PlayerData) value).updatePlayerData(user.getUniqueId(), user.getName());
 						}
 
+						System.out.println("LOADED PLAYER DATA: " + value);
 						this.data.computeIfAbsent(user.getUniqueId(), k -> new HashMap<>()).put(type, value);
 						//				System.out.println("UPDATED PLAYER DATA: " + e.getPlayerName() + ", " + data);
 						//						data.put(type, value);
@@ -172,10 +226,12 @@ public class PlayerDataManager {
 	}
 
 	public void onPlayerQuit(PlayerConnectionEvent.Quit e) {
+		logoutTimes.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
 		savePlayer(e.getPlayer());
 	}
 
 	public void savePlayer(Player player) {
+		System.out.println("OSMIUM SAVING PLAYER DATA FOR " + player);
 		HashMap<Class<?>, Object> playerData = this.data.get(player.getUniqueId());
 		if (playerData != null) {
 			playerData.entrySet().forEach(e -> {
@@ -200,6 +256,14 @@ public class PlayerDataManager {
 		for (Player player : Osmium.getOnlinePlayers()) {
 			savePlayer(player);
 		}
+	}
+
+	public void registerOnlinePlayerDataField(Field field, OnlinePlayerData playerMap) {
+		onlinePlayerDataFields.put(field, playerMap);
+	}
+
+	public void unregisterOnlinePlayerDataField(Field field) {
+		onlinePlayerDataFields.remove(field);
 	}
 
 }

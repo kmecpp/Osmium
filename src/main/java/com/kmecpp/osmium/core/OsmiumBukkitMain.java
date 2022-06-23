@@ -22,7 +22,7 @@ public class OsmiumBukkitMain extends BukkitPlugin {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerLogin(PlayerJoinEvent e) { //PlayerQuitEvent is not always called if PlayerLoginEvent is called
+	public void onPlayerJoin(PlayerJoinEvent e) { //PlayerQuitEvent is not always called if PlayerLoginEvent is called
 		PlayerList.addPlayer(e.getPlayer());
 	}
 
