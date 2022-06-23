@@ -398,10 +398,14 @@ public final class Osmium {
 		if (Platform.isBukkit()) {
 			Object bukkitPlayer = Bukkit.getPlayer(uuid);
 			return bukkitPlayer != null ? Optional.of(PlayerList.getPlayer(bukkitPlayer)) : Optional.empty();
-		} else {
+		} else if (Platform.isSponge()) {
 			Optional<?> spongePlayer = Sponge.getServer().getPlayer(uuid);
 			return spongePlayer.isPresent() ? Optional.of(PlayerList.getPlayer(spongePlayer.get())) : Optional.empty();
+		} else if (Platform.isProxy()) {
+			Object proxyPlayer = BungeeCord.getInstance().getPlayer(uuid);
+			return proxyPlayer != null ? Optional.of(PlayerList.getPlayer(proxyPlayer)) : Optional.empty();
 		}
+		return Optional.empty();
 	}
 
 	public static boolean isPlayerOnline(UUID uuid) {
