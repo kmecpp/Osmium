@@ -2,7 +2,6 @@ package com.kmecpp.osmium.api.plugin;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -22,15 +21,6 @@ import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 
 	private final OsmiumPlugin plugin = Osmium.getPluginLoader().createOsmiumPlugin(this); //OsmiumData.constructPlugin();
-
-	public OsmiumPlugin execute(Callable<OsmiumPlugin> callable) {
-		try {
-			return callable.call();
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
 
 	@Override
 	public void onLoad() {
@@ -117,5 +107,14 @@ public abstract class BukkitPlugin extends JavaPlugin implements Listener {
 		t.printStackTrace();
 		plugin.startError = true;
 	}
+
+	//	public OsmiumPlugin execute(Callable<OsmiumPlugin> callable) {
+	//		try {
+	//			return callable.call();
+	//		} catch (Exception e) {
+	//			e.printStackTrace();
+	//			throw new RuntimeException(e);
+	//		}
+	//	}
 
 }

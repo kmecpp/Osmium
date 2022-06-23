@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.plugin;
+package com.kmecpp.osmium.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

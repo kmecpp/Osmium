@@ -24,6 +24,10 @@ public class OsmiumCoreCommands extends Command {
 
 	public OsmiumCoreCommands() {
 		super(Platform.isGame() ? "osmium" : "osmiumbungee", Platform.isGame() ? new String[] { "os", "o" } : new String[] { "osb", "ob" });
+		if (Platform.isProxy()) {
+			setTitle("Osmium BungeeCord Commands");
+		}
+
 		setDescription("Base command for interacting with the Osmium API");
 		addHelpCommand();
 
@@ -58,7 +62,7 @@ public class OsmiumCoreCommands extends Command {
 			e.send("&eOsmium debug mode: " + (result ? "&aenabled" : "&cdisabled"));
 		});
 
-		add("reload").setUsage("[plugin/all] [full]").setAdmin(true).setExecutor(e -> {
+		add("reload").setUsage("{<plugin>/all} [full]").setAdmin(true).setExecutor(e -> {
 			long startTime = System.currentTimeMillis();
 
 			String pluginName = e.getString(0);
