@@ -15,7 +15,8 @@ public class TimeUtil {
 	private static ZoneId zoneId = timeZone.toZoneId();
 
 	public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy h:mm:ss a");
+	public static final DateTimeFormatter DATE_TIME_PADDED_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 
 	public static TimeZone getTimeZone() {
 		return timeZone;
@@ -98,6 +99,10 @@ public class TimeUtil {
 
 	public static String formatEpoch(long epoch) {
 		return formatEpoch(epoch, DATE_TIME_FORMATTER);
+	}
+
+	public static String formatEpochPadded(long epoch) {
+		return formatEpoch(epoch, DATE_TIME_PADDED_FORMATTER);
 	}
 
 	public static String formatEpoch(long epoch, DateTimeFormatter formatter) {
