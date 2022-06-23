@@ -126,7 +126,7 @@ public class SQLiteDatabase extends SQLDatabase {
 		TableData properties = tables.get(tableClass);
 		ArrayList<T> result = this.<T> query("SELECT * FROM " + properties.getName()
 				+ " WHERE " + SQLiteDBUtil.createWhere(columns.split(","), values)
-				+ " " + orderBy + " LIMIT 1", properties);
+				+ orderBy + " LIMIT 1", properties);
 		return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
 
 		//		TableProperties properties = tables.get(tableClass);
@@ -152,7 +152,7 @@ public class SQLiteDatabase extends SQLDatabase {
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit) {
 		TableData properties = tables.get(tableClass);
-		return query("SELECT * FROM " + properties.getName() + " " + orderBy + " LIMIT " + limit, properties);
+		return query("SELECT * FROM " + properties.getName() + orderBy + " LIMIT " + limit, properties);
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, String orderBy, int min, int max) {
@@ -161,7 +161,7 @@ public class SQLiteDatabase extends SQLDatabase {
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int min, int max) {
 		TableData properties = tables.get(tableClass);
-		return query("SELECT * FROM " + properties.getName() + " " + orderBy + " LIMIT " + min + "," + max, properties);
+		return query("SELECT * FROM " + properties.getName() + orderBy + " LIMIT " + min + "," + max, properties);
 	}
 
 	public <T> T get(Class<T> tableClass, Object... primaryKeys) {

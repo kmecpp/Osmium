@@ -23,6 +23,7 @@ import com.kmecpp.osmium.api.database.api.PreparedStatementBuilder;
 import com.kmecpp.osmium.api.database.api.ResultSetProcessor;
 import com.kmecpp.osmium.api.database.api.ResultSetTransformer;
 import com.kmecpp.osmium.api.database.api.SQLConfiguration;
+import com.kmecpp.osmium.api.database.api.SelectQuery;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Callback;
@@ -119,6 +120,10 @@ public abstract class SQLDatabase {
 		return config;
 	}
 
+	public <T> SelectQuery<T> query(Class<T> tableClass) {
+		return new SelectQuery<>(this, tableClass);
+	}
+
 	public void query(String query, Consumer<ResultSet> handler) {
 		get(query, rs -> {
 			handler.accept(rs);
@@ -213,14 +218,6 @@ public abstract class SQLDatabase {
 		return getOrDefault(tableClass, null, columns, primaryKeys);
 	}
 
-	public <T> T getOrCreate(Class<T> tableClass, String columns, Object... primaryKeys) {
-		T result = getOrDefault(tableClass, null, columns, primaryKeys);
-		if (result == null) {
-			result = Reflection.createInstance(tableClass);
-		}
-		return result;
-	}
-
 	public <T> Optional<T> getOptional(Class<T> tableClass, String columns, Object... primaryKeys) {
 		return getOptional(tableClass, columns.split(","), primaryKeys);
 	}
@@ -310,8 +307,7 @@ public abstract class SQLDatabase {
 
 	public int increment(Class<?> tableClass, String column, Filter filter) {
 		TableData table = getTable(tableClass);
-		String where = DBUtil.createWhere(filter);
-		return preparedUpdateStatement("UPDATE " + table.getName() + " SET " + column + " = " + column + " + 1 WHERE " + where, DBUtil.filterLinker(filter));
+		return preparedUpdateStatement("UPDATE " + table.getName() + " SET " + column + " = " + column + " + 1" + filter.createParameterizedStatement(), DBUtil.filterLinker(filter));
 	}
 
 	public int deleteAll(Class<?> tableClass) {
@@ -321,7 +317,7 @@ public abstract class SQLDatabase {
 
 	public int deleteFrom(Class<?> tableClass, Filter filter) {
 		TableData table = getTable(tableClass);
-		String update = "DELETE FROM " + table.getName() + " WHERE " + DBUtil.createWhere(filter);
+		String update = "DELETE FROM " + table.getName() + filter.createParameterizedStatement();
 		return preparedUpdateStatement(update, DBUtil.filterLinker(filter));
 	}
 

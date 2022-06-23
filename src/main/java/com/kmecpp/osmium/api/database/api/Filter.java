@@ -35,6 +35,19 @@ public class Filter {
 		return new Filter(filter, value);
 	}
 
+	public String createParameterizedStatement() {
+		StringBuilder sb = new StringBuilder();
+
+		if (!filters.isEmpty()) {
+			sb.append(" WHERE ");
+			for (int i = 0; i < filters.size(); ++i) {
+				sb.append((i > 0 ? " AND " : "") + filters.get(i) + "?");
+			}
+		}
+
+		return sb.toString();
+	}
+
 	public Filter and(String filter, Object value) {
 		this.filters.add(filter);
 		this.values.add(value);

@@ -14,7 +14,7 @@ public interface Saveable {
 	default void save(boolean flush) {
 		TableData table = SQLDatabase.getTable(this.getClass());
 		if (table == null) {
-			OsmiumLogger.warn("Classes implementing Savable must be annotated with @" + DBTable.class.getSimpleName());
+			OsmiumLogger.warn("Missing table registration for " + this.getClass().getName() + "! Is it annotated with @" + DBTable.class.getSimpleName() + "?");
 			return;
 		}
 

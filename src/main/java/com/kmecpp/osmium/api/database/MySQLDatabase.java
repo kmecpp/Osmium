@@ -44,8 +44,7 @@ public class MySQLDatabase extends SQLDatabase {
 
 	public int count(Class<?> tableClass, Filter filter) {
 		TableData table = tables.get(tableClass);
-		String where = DBUtil.createWhere(filter);
-		return query("SELECT COUNT(*) FROM " + table.getName() + " WHERE " + where, DBUtil.filterLinker(filter), rs -> {
+		return query("SELECT COUNT(*) FROM " + table.getName() + filter.createParameterizedStatement(), DBUtil.filterLinker(filter), rs -> {
 			if (rs.next()) {
 				return rs.getInt(1);
 			} else {
@@ -78,21 +77,21 @@ public class MySQLDatabase extends SQLDatabase {
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit) {
 		TableData table = tables.get(tableClass);
-		return query(table, "SELECT * FROM " + table.getName() + " " + orderBy + " LIMIT " + limit);
+		return query(table, "SELECT * FROM " + table.getName() + orderBy + " LIMIT " + limit);
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int limit, String columns, Object... values) {
 		TableData table = tables.get(tableClass);
 		return query(table, "SELECT * FROM " + table.getName()
 				+ " WHERE " + DBUtil.createWhere(columns.split(","))
-				+ " " + orderBy + " LIMIT " + limit);
+				+ orderBy + " LIMIT " + limit);
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int min, int max, String columns, Object... values) {
 		TableData table = tables.get(tableClass);
 		return query(table, "SELECT * FROM " + table.getName()
 				+ " WHERE " + DBUtil.createWhere(columns.split(","))
-				+ " " + orderBy + " LIMIT " + min + "," + max, values);
+				+ orderBy + " LIMIT " + min + "," + max, values);
 	}
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, String orderBy, int min, int max) {
@@ -101,14 +100,14 @@ public class MySQLDatabase extends SQLDatabase {
 
 	public <T> ArrayList<T> orderBy(Class<T> tableClass, OrderBy orderBy, int min, int max) {
 		TableData table = tables.get(tableClass);
-		return query(table, "SELECT * FROM " + table.getName() + " " + orderBy + " LIMIT " + min + "," + max);
+		return query(table, "SELECT * FROM " + table.getName() + orderBy + " LIMIT " + min + "," + max);
 	}
 
 	public <T> Optional<T> getFirst(Class<T> tableClass, OrderBy orderBy, String columns, Object... values) {
 		TableData table = tables.get(tableClass);
 		ArrayList<T> result = query(table, "SELECT * FROM " + table.getName()
 				+ " WHERE " + DBUtil.createWhere(columns.split(","))
-				+ " " + orderBy + " LIMIT 1", values);
+				+ orderBy + " LIMIT 1", values);
 		return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
 	}
 
