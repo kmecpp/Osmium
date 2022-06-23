@@ -2,9 +2,9 @@ package com.kmecpp.osmium.platform.bukkit;
 
 import org.bukkit.Material;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.location.Location;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitBlock implements Block {
 

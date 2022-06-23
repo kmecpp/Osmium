@@ -5,11 +5,11 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitItemStack implements ItemStack {
 

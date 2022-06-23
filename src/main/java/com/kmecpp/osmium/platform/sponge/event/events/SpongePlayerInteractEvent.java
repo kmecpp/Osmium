@@ -6,11 +6,11 @@ import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerInteractEvent;
 import com.kmecpp.osmium.api.inventory.ClickType;
 import com.kmecpp.osmium.api.inventory.ItemStack;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongePlayerInteractEvent implements PlayerInteractEvent {
 

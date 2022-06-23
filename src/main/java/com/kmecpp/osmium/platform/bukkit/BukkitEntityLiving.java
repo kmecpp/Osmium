@@ -43,13 +43,13 @@ public class BukkitEntityLiving extends BukkitEntity implements EntityLiving {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void launch(Class<? extends com.kmecpp.osmium.api.Projectile> projectile) {
+	public void launch(Class<? extends com.kmecpp.osmium.api.entity.Projectile> projectile) {
 		entity.launchProjectile((Class<? extends Projectile>) projectile);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void launch(Class<? extends com.kmecpp.osmium.api.Projectile> projectile, Direction direction) {
+	public void launch(Class<? extends com.kmecpp.osmium.api.entity.Projectile> projectile, Direction direction) {
 		entity.launchProjectile((Class<? extends Projectile>) projectile, direction.toBukkitVector());
 	}
 

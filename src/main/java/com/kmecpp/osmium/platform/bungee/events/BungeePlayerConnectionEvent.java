@@ -3,9 +3,9 @@ package com.kmecpp.osmium.platform.bungee.events;
 import java.net.InetAddress;
 import java.util.UUID;
 
-import com.kmecpp.osmium.BungeeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
+import com.kmecpp.osmium.platform.BungeeAccess;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;

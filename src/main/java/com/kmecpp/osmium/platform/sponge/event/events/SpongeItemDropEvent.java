@@ -2,8 +2,8 @@ package com.kmecpp.osmium.platform.sponge.event.events;
 
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.event.events.ItemDropEvent;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongeItemDropEvent implements ItemDropEvent {
 

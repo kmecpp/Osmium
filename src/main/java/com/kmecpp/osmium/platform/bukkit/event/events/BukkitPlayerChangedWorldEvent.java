@@ -2,10 +2,10 @@ package com.kmecpp.osmium.platform.bukkit.event.events;
 
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.cache.WorldList;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitPlayerChangedWorldEvent implements com.kmecpp.osmium.api.event.events.PlayerChangedWorldEvent {
 

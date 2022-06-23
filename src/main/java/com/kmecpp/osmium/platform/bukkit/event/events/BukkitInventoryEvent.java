@@ -9,11 +9,11 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.InventoryEvent;
 import com.kmecpp.osmium.api.inventory.ClickType;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public abstract class BukkitInventoryEvent implements InventoryEvent {
 

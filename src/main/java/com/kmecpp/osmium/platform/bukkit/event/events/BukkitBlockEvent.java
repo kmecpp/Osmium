@@ -3,10 +3,10 @@ package com.kmecpp.osmium.platform.bukkit.event.events;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.BlockEvent;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitBlockEvent {
 

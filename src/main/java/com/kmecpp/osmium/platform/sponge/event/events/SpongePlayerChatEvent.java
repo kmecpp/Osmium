@@ -6,9 +6,9 @@ import java.util.Set;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.channel.MessageReceiver;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerChatEvent;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongePlayerChatEvent implements PlayerChatEvent {
 

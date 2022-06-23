@@ -1,4 +1,4 @@
-package com.kmecpp.osmium;
+package com.kmecpp.osmium.api.util;
 
 import java.util.ArrayList;
 import java.util.Collection;

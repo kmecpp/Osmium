@@ -4,10 +4,10 @@ import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.world.World;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 import com.kmecpp.osmium.api.location.Location;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongePlayerMoveEvent implements PlayerMoveEvent {
 

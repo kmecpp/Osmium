@@ -2,9 +2,9 @@ package com.kmecpp.osmium.platform.bukkit.event.events;
 
 import org.bukkit.event.entity.EntitySpawnEvent;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.EntityType;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public abstract class BukkitEntityEvent implements EntityEvent {
 

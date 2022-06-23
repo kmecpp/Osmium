@@ -3,9 +3,9 @@ package com.kmecpp.osmium.platform.sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.world.World;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.location.Location;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongeBlock implements Block {
 

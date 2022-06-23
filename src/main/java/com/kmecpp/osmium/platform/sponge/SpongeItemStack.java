@@ -7,11 +7,11 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.text.Text;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongeItemStack implements ItemStack {
 

@@ -6,9 +6,9 @@ import java.util.UUID;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongePlayerConnectEvent implements PlayerConnectionEvent {
 

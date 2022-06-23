@@ -8,13 +8,13 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
-import com.kmecpp.osmium.BukkitAccess;
-import com.kmecpp.osmium.BungeeAccess;
 import com.kmecpp.osmium.Platform;
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
+import com.kmecpp.osmium.platform.BukkitAccess;
+import com.kmecpp.osmium.platform.BungeeAccess;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class EventManager {
 

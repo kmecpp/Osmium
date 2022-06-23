@@ -1,10 +1,11 @@
-package com.kmecpp.osmium;
+package com.kmecpp.osmium.platform;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.entity.Player;

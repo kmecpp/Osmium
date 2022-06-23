@@ -1,10 +1,10 @@
 package com.kmecpp.osmium.platform.bukkit;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Entity;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitChunk implements Chunk {
 

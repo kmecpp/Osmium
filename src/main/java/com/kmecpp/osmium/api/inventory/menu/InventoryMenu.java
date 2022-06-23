@@ -4,10 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.InventoryHolder;
 import org.spongepowered.api.item.inventory.InventoryArchetype;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Listener;
@@ -19,6 +17,8 @@ import com.kmecpp.osmium.api.inventory.ItemType;
 import com.kmecpp.osmium.api.inventory.menu.MenuItem.ItemCost;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.core.OsmiumCore;
+import com.kmecpp.osmium.platform.BukkitAccess;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class InventoryMenu extends AbstractInventoryMenu<InventoryMenu> {
 

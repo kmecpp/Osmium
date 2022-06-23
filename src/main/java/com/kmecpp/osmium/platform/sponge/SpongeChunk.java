@@ -2,11 +2,11 @@ package com.kmecpp.osmium.platform.sponge;
 
 import java.util.Collection;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Entity;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongeChunk implements Chunk {
 

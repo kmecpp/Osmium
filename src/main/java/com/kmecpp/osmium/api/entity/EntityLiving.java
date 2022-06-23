@@ -1,7 +1,5 @@
 package com.kmecpp.osmium.api.entity;
 
-import com.kmecpp.osmium.api.ProjectileSource;
-
 public interface EntityLiving extends Entity, ProjectileSource {
 
 	double getHealth();

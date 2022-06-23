@@ -2,8 +2,8 @@ package com.kmecpp.osmium.platform.bukkit.event.events;
 
 import org.bukkit.event.player.PlayerDropItemEvent;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.event.events.ItemDropEvent;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitItemDropEvent implements ItemDropEvent {
 

@@ -1,4 +1,4 @@
-package com.kmecpp.osmium;
+package com.kmecpp.osmium.platform;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -16,6 +16,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
+import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.OsmiumRegistry;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;

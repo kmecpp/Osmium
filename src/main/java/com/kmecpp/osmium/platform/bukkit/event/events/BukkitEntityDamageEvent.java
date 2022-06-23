@@ -1,8 +1,8 @@
 package com.kmecpp.osmium.platform.bukkit.event.events;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.event.events.EntityDamageEvent;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitEntityDamageEvent implements EntityDamageEvent {
 

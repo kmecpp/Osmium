@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;
@@ -16,6 +15,7 @@ import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.EntityType;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.util.lib.WrappedCollection;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongeWorld implements World {
 

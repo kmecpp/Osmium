@@ -9,11 +9,11 @@ import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.spongepowered.api.Sponge;
 
-import com.kmecpp.osmium.BukkitAccess;
-import com.kmecpp.osmium.BungeeAccess;
 import com.kmecpp.osmium.Platform;
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.platform.BukkitAccess;
+import com.kmecpp.osmium.platform.BungeeAccess;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

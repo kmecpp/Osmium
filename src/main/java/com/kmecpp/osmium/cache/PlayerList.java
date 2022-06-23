@@ -2,10 +2,12 @@ package com.kmecpp.osmium.cache;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.entity.Player;
-import com.kmecpp.osmium.api.platform.UnsupportedPlatformException;
+import com.kmecpp.osmium.platform.UnsupportedPlatformException;
 import com.kmecpp.osmium.platform.bukkit.BukkitPlayer;
 import com.kmecpp.osmium.platform.bungee.BungeePlayer;
 import com.kmecpp.osmium.platform.sponge.SpongePlayer;
@@ -33,10 +35,15 @@ public class PlayerList {
 
 	public static void removePlayer(String name) {
 		players.remove(name.toLowerCase());
+
+		List<Player> offlinePlayers = players.values().stream().filter(p -> !p.isOnline()).collect(Collectors.toList());
+		if (offlinePlayers != null && !offlinePlayers.isEmpty()) {
+			System.out.println("OFFLINE PLAYERS DETECTED IN OSMIUM PLAYER LIST CACHE: " + offlinePlayers);
+		}
 	}
 
 	public static boolean contains(String name) {
-		return players.containsKey(name);
+		return players.containsKey(name.toLowerCase());
 	}
 
 	public static Player getPlayer(Object sourcePlayer) {

@@ -2,14 +2,14 @@ package com.kmecpp.osmium.api.location;
 
 import org.spongepowered.api.world.extent.Extent;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.Platform;
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.cache.WorldList;
+import com.kmecpp.osmium.platform.BukkitAccess;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class Location {
 

@@ -2,10 +2,10 @@ package com.kmecpp.osmium.platform.sponge.event.events;
 
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.BlockEvent;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongeBlockEvent implements BlockEvent {
 

@@ -5,11 +5,11 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerInteractEvent;
 import com.kmecpp.osmium.api.inventory.ClickType;
 import com.kmecpp.osmium.api.inventory.ItemStack;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitPlayerInteractEvent implements PlayerInteractEvent {
 

@@ -3,11 +3,11 @@ package com.kmecpp.osmium.platform.bungee;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.GameMode;
-import com.kmecpp.osmium.api.Projectile;
 import com.kmecpp.osmium.api.SoundType;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.EntityType;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.entity.Projectile;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Direction;

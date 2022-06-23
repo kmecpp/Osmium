@@ -4,12 +4,12 @@ import java.util.UUID;
 
 import org.bukkit.util.Vector;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Entity;
 import com.kmecpp.osmium.api.entity.EntityType;
 import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitEntity implements Entity {
 

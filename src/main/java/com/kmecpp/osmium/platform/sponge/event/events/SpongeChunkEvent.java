@@ -4,9 +4,9 @@ import org.spongepowered.api.event.world.chunk.LoadChunkEvent;
 import org.spongepowered.api.event.world.chunk.PopulateChunkEvent;
 import org.spongepowered.api.event.world.chunk.UnloadChunkEvent;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.event.ChunkEvent;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongeChunkEvent {
 

@@ -1,4 +1,4 @@
-package com.kmecpp.osmium;
+package com.kmecpp.osmium.platform;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
@@ -15,6 +15,8 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.text.Text;
 
+import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.OsmiumRegistry;
 import com.kmecpp.osmium.api.Block;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.World;

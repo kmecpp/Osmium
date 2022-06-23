@@ -4,12 +4,12 @@ import java.util.Collection;
 
 import org.bukkit.Material;
 
-import com.kmecpp.osmium.BukkitAccess;
-import com.kmecpp.osmium.Wrappers;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.InventoryType;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.inventory.ItemType;
+import com.kmecpp.osmium.api.util.Wrappers;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitInventory implements Inventory {
 

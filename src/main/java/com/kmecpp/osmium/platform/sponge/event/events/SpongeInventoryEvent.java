@@ -7,11 +7,11 @@ import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.InventoryEvent;
 import com.kmecpp.osmium.api.inventory.ClickType;
 import com.kmecpp.osmium.api.inventory.Inventory;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongeInventoryEvent implements InventoryEvent {
 

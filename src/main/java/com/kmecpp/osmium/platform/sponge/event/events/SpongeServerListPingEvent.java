@@ -2,8 +2,8 @@ package com.kmecpp.osmium.platform.sponge.event.events;
 
 import org.spongepowered.api.event.server.ClientPingServerEvent;
 
-import com.kmecpp.osmium.SpongeAccess;
 import com.kmecpp.osmium.api.event.events.ServerListPingEvent;
+import com.kmecpp.osmium.platform.SpongeAccess;
 
 public class SpongeServerListPingEvent implements ServerListPingEvent {
 

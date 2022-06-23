@@ -3,9 +3,9 @@ package com.kmecpp.osmium.platform.bukkit.event.events;
 import java.net.InetAddress;
 import java.util.UUID;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public abstract class BukkitPlayerConnectionEvent implements PlayerConnectionEvent {
 

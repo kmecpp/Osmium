@@ -1,4 +1,4 @@
-package com.kmecpp.osmium.api.platform;
+package com.kmecpp.osmium.platform;
 
 @SuppressWarnings("serial")
 public class UnsupportedPlatformException extends RuntimeException {

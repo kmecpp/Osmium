@@ -5,9 +5,9 @@ import java.util.Set;
 
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerChatEvent;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitPlayerChatEvent implements PlayerChatEvent {
 

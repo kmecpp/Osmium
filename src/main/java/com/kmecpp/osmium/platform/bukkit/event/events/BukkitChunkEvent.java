@@ -4,9 +4,9 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.Chunk;
 import com.kmecpp.osmium.api.event.ChunkEvent;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitChunkEvent {
 

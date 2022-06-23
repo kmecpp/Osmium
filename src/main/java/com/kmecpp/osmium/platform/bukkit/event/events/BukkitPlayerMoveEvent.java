@@ -1,9 +1,9 @@
 package com.kmecpp.osmium.platform.bukkit.event.events;
 
-import com.kmecpp.osmium.BukkitAccess;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerMoveEvent;
 import com.kmecpp.osmium.api.location.Location;
+import com.kmecpp.osmium.platform.BukkitAccess;
 
 public class BukkitPlayerMoveEvent implements PlayerMoveEvent {
 
