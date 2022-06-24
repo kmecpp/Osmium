@@ -132,8 +132,7 @@ repositories {
 
 configurations.all {
 	resolutionStrategy {
-		//force 'org.javassist:javassist:3.22.0-GA'
-		force 'org.javassist:javassist:3.27.0-GA'
+		//force 'org.javassist:javassist:3.21.0-GA'
 	}
 }
 
@@ -147,8 +146,8 @@ dependencies {
 	//implementation "org.spongepowered:spongeapi:$sponge_version"
 	implementation files("build/generated/com/kmecpp/osmium/AppInfo.class")
 	//compileOnly "org.spongepowered:spongevanilla:1.12.2-7.1.0-BETA-75" //Breaking builds. Find alternative for this
-	shade "org.javassist:javassist:3.22.0-GA"
-	
+	shade "org.javassist:javassist:3.21.0-GA"
+
 	//shade "com.kmecpp:jlib:+"
 	shade "com.eclipsesource.minimal-json:minimal-json:0.9.5"
 	shade "org.spongepowered:configurate-hocon:3.6.1"
