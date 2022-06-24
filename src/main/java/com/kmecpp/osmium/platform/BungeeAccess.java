@@ -79,6 +79,7 @@ public class BungeeAccess {
 		//		for (Class<? extends Event> bungeeEventClass : eventInfo.<Event> getSourceClasses()) {
 		try {
 			ClassPool pool = ClassPool.getDefault();
+			pool.insertClassPath(new ClassClassPath(Listener.class));
 
 			String className = listenerInstance.getClass().getName() + "##OsmiumBungeeEventHandlerWrapper#" + method.getName() + "#" + parameterString + "#" + bungeeEventClass.getSimpleName();
 
