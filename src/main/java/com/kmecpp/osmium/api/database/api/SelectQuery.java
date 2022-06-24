@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.database.TableData;
@@ -30,12 +31,12 @@ public class SelectQuery<T> implements SISelect<T> {
 	}
 
 	@Override
-	public T get() {
+	public Optional<T> get() {
 		List<T> result = this.execute();
-		if (result.size() != 1) {
-			throw new RuntimeException("Expected 1 row. Got: " + result.size());
+		if (result.size() > 1) {
+			throw new RuntimeException("Query returned multiple rows: " + result.size());
 		}
-		return result.get(0);
+		return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
 	}
 
 	@Override
