@@ -213,7 +213,7 @@ public class OsmiumPluginProcessor extends OsmiumAnnotationProcessor {
 			// Write file
 			writeClassToRoot(ctClassSponge);
 
-			//Generate main Bukkit class
+			//Generate main BungeeCord class
 			CtClass ctClassBungee = pool.makeClass(meta.getName() + Platform.BUNGEE.getName());
 			ctClassBungee.setSuperclass(pool.makeClass(BUNGEE_PARENT));
 			ctClassBungee.addConstructor(CtNewConstructor.make(null, null, CtNewConstructor.PASS_PARAMS, null, null, ctClassBungee));
