@@ -14,9 +14,12 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import com.kmecpp.osmium.Directory;
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.config.PluginConfigTypeData;
+import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.IOUtil;
+import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 
 public class PluginLoader {
 
@@ -80,16 +83,78 @@ public class PluginLoader {
 
 				return plugin;
 			} catch (InvocationTargetException e) {
-				e.getTargetException().printStackTrace();
+				//				e.getTargetException().printStackTrace();
+				throw new RuntimeException(e);
 			} catch (Exception e) {
 				OsmiumLogger.error("Could not load Osmium plugin: " + lines[1].split(":")[1].trim());
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		} catch (IOException e) {
 			OsmiumLogger.error("Could not load Osmium plugin. Failed to read osmium.properties from jar: " + pluginImpl.getClass().getName());
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return null;
+	}
+
+	public void onLoad(OsmiumPlugin plugin) {
+		try {
+			plugin.getClassProcessor().loadAll();
+			plugin.onLoad();
+		} catch (Throwable t) {
+			catchStartError(plugin, t);
+		}
+	}
+
+	public void onPreInit(OsmiumPlugin plugin) {
+		try {
+			plugin.onPreInit();
+		} catch (Throwable t) {
+			catchStartError(plugin, t);
+		}
+	}
+
+	public void onInit(OsmiumPlugin plugin) {
+		try {
+			plugin.getClassProcessor().initializeClasses();
+		} catch (Throwable t) {
+			catchStartError(plugin, t);
+		}
+
+		try {
+			plugin.onInit();
+		} catch (Throwable t) {
+			catchStartError(plugin, t);
+		}
+
+		try {
+			plugin.getClassProcessor().createDatabaseTables();
+		} catch (Throwable t) {
+			catchStartError(plugin, t);
+		}
+	}
+
+	public void onPostInit(OsmiumPlugin plugin) {
+		try {
+			plugin.onPostInit();
+		} catch (Throwable t) {
+			catchStartError(plugin, t);
+		}
+
+		PluginRefreshEvent refreshEvent = new OsmiumPluginRefreshEvent(plugin, true);
+		plugin.onRefresh(refreshEvent);
+		Osmium.getEventManager().callEvent(refreshEvent);
+		plugin.startComplete = true;
+	}
+
+	public void onDisable(OsmiumPlugin plugin) {
+		if (plugin != null) {
+			plugin.savePersistentData();
+			plugin.onDisable();
+		}
+	}
+
+	private void catchStartError(OsmiumPlugin plugin, Throwable t) {
+		t.printStackTrace();
+		plugin.startError = true;
 	}
 
 	public void assignPluginToExternalClass(Class<?> cls, OsmiumPlugin plugin) {

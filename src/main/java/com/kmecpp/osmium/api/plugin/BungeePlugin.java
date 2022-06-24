@@ -1,10 +1,7 @@
 package com.kmecpp.osmium.api.plugin;
 
 import com.kmecpp.osmium.Osmium;
-import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
-import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -18,69 +15,19 @@ public abstract class BungeePlugin extends Plugin implements Listener {
 
 	@Override
 	public void onLoad() {
-		if (plugin != null) {
-			try {
-				plugin.getClassProcessor().loadAll();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			plugin.onLoad();
-		}
+		Osmium.getPluginLoader().onLoad(plugin);
 	}
 
 	@Override
 	public void onEnable() {
-		if (plugin != null) {
-			try {
-				plugin.onPreInit();
-			} catch (Throwable t) {
-				catchError(t);
-			}
-
-			BungeeCord.getInstance().getPluginManager().registerListener(this, this);
-
-			try {
-				plugin.getClassProcessor().initializeClasses();
-			} catch (Throwable t) {
-				catchError(t);
-			}
-
-			try {
-				plugin.onInit();
-			} catch (Throwable t) {
-				catchError(t);
-			}
-
-			try {
-				plugin.getClassProcessor().createDatabaseTables();
-			} catch (Throwable t) {
-				catchError(t);
-			}
-
-			try {
-				plugin.onPostInit();
-			} catch (Throwable t) {
-				catchError(t);
-			}
-
-			PluginRefreshEvent refreshEvent = new OsmiumPluginRefreshEvent(plugin, true);
-			plugin.onRefresh(refreshEvent);
-			Osmium.getEventManager().callEvent(refreshEvent);
-			plugin.startComplete = true;
-		}
+		Osmium.getPluginLoader().onPreInit(plugin);
+		Osmium.getPluginLoader().onInit(plugin);
+		Osmium.getPluginLoader().onPostInit(plugin);
 	}
 
 	@Override
 	public void onDisable() {
-		if (plugin != null) {
-			plugin.savePersistentData();
-			plugin.onDisable();
-		}
-	}
-
-	private void catchError(Throwable t) {
-		t.printStackTrace();
-		plugin.startError = true;
+		Osmium.getPluginLoader().onDisable(plugin);
 	}
 
 }
