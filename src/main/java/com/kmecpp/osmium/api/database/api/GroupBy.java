@@ -4,7 +4,7 @@ public class GroupBy {
 	
 	private final String column;
 	
-	GroupBy(String column) {
+	private GroupBy(String column) {
 		if (column == null) {
 			throw new IllegalArgumentException("Database GroupBy column cannot be null!");
 		} else if (column.isEmpty()) {

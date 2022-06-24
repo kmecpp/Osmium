@@ -16,6 +16,10 @@ public interface SQLInterfaces {
 		}
 
 		public static interface SIGroupBy<T> extends SIOrderBy<T> {
+			
+			default SIOrderBy<T> groupBy(String column) {
+				return groupBy(column);
+			}
 
 			SIOrderBy<T> groupBy(GroupBy groupBy);
 
