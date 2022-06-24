@@ -8,9 +8,15 @@ public interface SQLInterfaces {
 
 	public static interface SelectInterfaces {
 
-		public static interface SISelect<T> extends SIOrderBy<T> {
+		public static interface SISelect<T> extends SIGroupBy<T> {
 
-			SIOrderBy<T> where(Filter filter);
+			SIGroupBy<T> where(Filter filter);
+
+		}
+
+		public static interface SIGroupBy<T> extends SIOrderBy<T> {
+
+			SIOrderBy<T> groupBy(GroupBy groupBy);
 
 		}
 

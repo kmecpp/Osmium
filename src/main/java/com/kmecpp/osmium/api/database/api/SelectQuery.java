@@ -8,8 +8,9 @@ import java.util.List;
 
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.database.TableData;
-import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SILimit;
+import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SIGroupBy;
 import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SIOrderBy;
+import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SILimit;
 import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SISelect;
 import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SITerminal;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
@@ -20,6 +21,7 @@ public class SelectQuery<T> implements SISelect<T> {
 	private final SQLDatabase database;
 	private final TableData tableData;
 
+	private GroupBy groupBy;
 	private OrderBy orderBy;
 	private Filter filter;
 	private LimitClause limit;
@@ -41,7 +43,8 @@ public class SelectQuery<T> implements SISelect<T> {
 	@Override
 	public List<T> execute() {
 		String query = "SELECT * FROM " + this.tableData.getName()
-				+ (filter != null ? filter.createParameterizedStatement() : "")
+				+ (filter != null ? filter.createParameterizedStatement() : "") 
+				+ (groupBy != null ? groupBy : "")
 				+ (orderBy != null ? orderBy : "")
 				+ (limit != null ? limit : "");
 
@@ -69,8 +72,14 @@ public class SelectQuery<T> implements SISelect<T> {
 	}
 
 	@Override
-	public SIOrderBy<T> where(Filter filter) {
+	public SIGroupBy<T> where(Filter filter) {
 		this.filter = filter;
+		return this;
+	}
+
+	@Override
+	public SIOrderBy<T> groupBy(GroupBy groupBy) {
+		this.groupBy = groupBy;
 		return this;
 	}
 
