@@ -91,6 +91,9 @@ public class ClassProcessor {
 		//			OsmiumLogger.warn("LOAD FILE: " + staticLoadFile);
 		//		}
 
+		//		System.out.println(this.getClass().getClassLoader());
+		//		URLClassLoader classLoader = new URLClassLoader(new URL[] { new File(jarFile.getName()).toURI().toURL() }, this.getClass().getClassLoader());
+
 		Enumeration<JarEntry> entry = jarFile.entries(); //NOTE: THIS INCLUDES NESTED CLASSES
 		while (entry.hasMoreElements()) {
 			String elementName = entry.nextElement().getName().replace("/", ".");
@@ -110,6 +113,7 @@ public class ClassProcessor {
 					OsmiumLogger.debug("Loading class: " + className);
 					//					Class<?> cls = classLoader.loadClass(className, true);
 					Class<?> cls = plugin.getSource().getClass().getClassLoader().loadClass(className);
+					//					Class<?> cls = Class.forName(className, false, classLoader);
 
 					if (cls.isAnnotationPresent(HookClass.class) || cls.isAnnotationPresent(SkipProcessing.class)) {
 						skipClasses.add(cls.getName());
