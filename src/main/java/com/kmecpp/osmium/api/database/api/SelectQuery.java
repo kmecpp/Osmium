@@ -55,7 +55,9 @@ public class SelectQuery<T> implements SISelect<T> {
 			OsmiumLogger.debug("Executing query: \"" + query + "\"");
 			connection = this.database.getConnection();
 			statement = connection.prepareStatement(query);
-			filter.link(statement);
+			if (filter != null) {
+				filter.link(statement);
+			}
 			resultSet = statement.executeQuery();
 			while (resultSet.next()) {
 				result.add(this.database.parse(resultSet, tableData));
