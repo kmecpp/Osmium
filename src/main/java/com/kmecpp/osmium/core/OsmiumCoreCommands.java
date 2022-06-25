@@ -85,6 +85,14 @@ public class OsmiumCoreCommands extends Command {
 			}
 		});
 
+		add("restart").setAdmin(true).setUsage("<plugin>").setExecutor(e -> {
+			long startTime = System.currentTimeMillis();
+			OsmiumPlugin plugin = e.getPlugin(0);
+
+			Osmium.getPluginLoader().restartPlugin(plugin);
+			e.sendMessage(Chat.GREEN + plugin.getName() + " reloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
+		});
+
 		add("plugins").setAdmin(true).setUsage("{plugin}").setExecutor(e -> {
 			if (e.isBaseCommand()) {
 				e.sendTitle("Osmium Plugins");

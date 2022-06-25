@@ -1,12 +1,11 @@
 package com.kmecpp.osmium.core;
 
-import org.bukkit.event.Listener;
-
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.plugin.BungeePlugin;
 import com.kmecpp.osmium.cache.PlayerList;
 
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 public class OsmiumBungeeMain extends BungeePlugin implements Listener {

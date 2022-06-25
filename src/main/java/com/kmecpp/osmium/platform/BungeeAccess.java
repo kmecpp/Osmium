@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -122,6 +123,17 @@ public class BungeeAccess {
 			e.printStackTrace();
 		}
 		//		}
+	}
+
+	public static void loadPlugin(File pluginFile) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	public static void unloadPlugin(OsmiumPlugin plugin) {
+		throw new UnsupportedOperationException("Not implemented yet");
+		//		BungeeCord.getInstance().getScheduler().cancel(plugin.<Plugin> getSource());
+		//		BungeeCord.getInstance().getPluginManager().unregisterCommands(plugin.getSource());
+		//		BungeeCord.getInstance().getPluginManager().unregisterListeners(plugin.getSource());
 	}
 
 }

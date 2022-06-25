@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -167,6 +168,14 @@ public class SpongeAccess {
 		//				}
 		//			}
 		//		});
+	}
+
+	public static void loadPlugin(File pluginFile) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	public static void unloadPlugin(OsmiumPlugin plugin) {
+		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 }

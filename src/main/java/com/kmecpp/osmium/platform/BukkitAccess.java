@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -13,8 +14,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.OsmiumRegistry;
@@ -208,6 +211,23 @@ public class BukkitAccess {
 				(bukkitListener, bukkitEvent) -> sourceEventConsumer.accept(bukkitEvent),
 				plugin.getSource(), false);
 		//		}
+	}
+
+	public static void loadPlugin(File pluginFile) {
+		try {
+			Plugin pluginInstance = Bukkit.getPluginManager().loadPlugin(pluginFile);
+			Bukkit.getPluginManager().enablePlugin(pluginInstance);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void unloadPlugin(OsmiumPlugin plugin) {
+		Bukkit.getScheduler().cancelTasks(plugin.getSource());
+		HandlerList.unregisterAll(plugin.<JavaPlugin> getSource());
+		//TODO: Commands?
+
+		Bukkit.getPluginManager().disablePlugin(plugin.getSource());
 	}
 
 }

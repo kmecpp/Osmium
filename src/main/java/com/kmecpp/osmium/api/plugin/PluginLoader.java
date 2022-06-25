@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api.plugin;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,10 +16,14 @@ import java.util.jar.JarFile;
 
 import com.kmecpp.osmium.Directory;
 import com.kmecpp.osmium.Osmium;
+import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.config.PluginConfigTypeData;
 import com.kmecpp.osmium.api.event.events.osmium.PluginRefreshEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.IOUtil;
+import com.kmecpp.osmium.platform.BukkitAccess;
+import com.kmecpp.osmium.platform.BungeeAccess;
+import com.kmecpp.osmium.platform.SpongeAccess;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 
 public class PluginLoader {
@@ -36,9 +41,20 @@ public class PluginLoader {
 			try {
 				String mainClassName = lines[0].split(":")[1].trim();
 				ClassLoader pluginClassLoader = pluginImpl.getClass().getClassLoader();
+				//Note: Class loaders are parent-first so it's difficult to override class loading like this
+				//				URLClassLoader classLoader = new URLClassLoader(new URL[] { new File(jar.getName()).toURI().toURL() }, pluginImpl.getClass().getClassLoader());
+				//				URLClassLoader classLoader = new URLClassLoader(new URL[] { new File(jar.getName()).toURI().toURL() });
+				//				System.out.println("TEST: " + Class.forName(OsmiumPlugin.class.getName(), true, classLoader).getClassLoader());
+				/*
+				 * - Maybe its because the class isn't findable by the Plugin class loader b/c its not in the plugins folder?
+				 */
+
+				//				Class<OsmiumPlugin> osmiumPluginClass = Reflection.cast(Class.forName(OsmiumPlugin.class.getName(), true, classLoader));
+
 				Class<? extends OsmiumPlugin> main;
 				try {
-					main = pluginClassLoader.loadClass(mainClassName).asSubclass(OsmiumPlugin.class);
+					main = Class.forName(mainClassName, false, pluginClassLoader).asSubclass(OsmiumPlugin.class);
+					//					main = classLoader.loadClass(mainClassName).asSubclass(OsmiumPlugin.class);
 				} catch (ClassCastException e) {
 					OsmiumLogger.error("Failed to load plugin: " + mainClassName + ". Does this class extend " + OsmiumPlugin.class.getSimpleName() + "?");
 					throw new RuntimeException(e);
@@ -155,6 +171,39 @@ public class PluginLoader {
 	private void catchStartError(OsmiumPlugin plugin, Throwable t) {
 		t.printStackTrace();
 		plugin.startError = true;
+	}
+
+	public void restartPlugin(OsmiumPlugin oldInstance) {
+		unloadPlugin(oldInstance);
+		loadPlugin(new File(Directory.getJarFilePath(oldInstance.getClass())));
+	}
+
+	public void loadPlugin(File jarFile) {
+		OsmiumLogger.info("Loading plugin: " + jarFile);
+
+		if (Platform.isBukkit()) {
+			BukkitAccess.loadPlugin(jarFile);
+		} else if (Platform.isSponge()) {
+			SpongeAccess.loadPlugin(jarFile);
+		} else if (Platform.isBungeeCord()) {
+			BungeeAccess.loadPlugin(jarFile);
+		}
+	}
+
+	public void unloadPlugin(OsmiumPlugin plugin) {
+		OsmiumLogger.info("Unloading plugin: " + plugin.getName());
+
+		if (Platform.isBukkit()) {
+			BukkitAccess.unloadPlugin(plugin);
+		} else if (Platform.isSponge()) {
+			SpongeAccess.unloadPlugin(plugin);
+		} else if (Platform.isBungeeCord()) {
+			BungeeAccess.unloadPlugin(plugin);
+		}
+
+		plugins.remove(plugin.getClass());
+		pluginFiles.remove(Directory.getJarFilePath(plugin.getClass()));
+		externalClasses.entrySet().removeIf(e -> e.getValue() == plugin);
 	}
 
 	public void assignPluginToExternalClass(Class<?> cls, OsmiumPlugin plugin) {
