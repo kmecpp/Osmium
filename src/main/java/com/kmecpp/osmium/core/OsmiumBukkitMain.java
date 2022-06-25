@@ -2,6 +2,7 @@ package com.kmecpp.osmium.core;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldInitEvent;
@@ -13,7 +14,7 @@ import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.platform.bukkit.BukkitWorld;
 
-public class OsmiumBukkitMain extends BukkitPlugin {
+public class OsmiumBukkitMain extends BukkitPlugin implements Listener {
 
 	@Override
 	public void onDisable() {
