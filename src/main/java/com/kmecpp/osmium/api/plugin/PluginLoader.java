@@ -179,7 +179,7 @@ public class PluginLoader {
 	}
 
 	public void loadPlugin(File jarFile) {
-		OsmiumLogger.info("Loading plugin: " + jarFile);
+		OsmiumLogger.info("Loading plugin: " + jarFile.getName());
 
 		if (Platform.isBukkit()) {
 			BukkitAccess.loadPlugin(jarFile);

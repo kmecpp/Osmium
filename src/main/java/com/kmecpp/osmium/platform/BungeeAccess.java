@@ -1,10 +1,19 @@
 package com.kmecpp.osmium.platform;
 
 import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.logging.Handler;
 import java.util.stream.Collectors;
+
+import org.yaml.snakeyaml.Yaml;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.command.Command;
@@ -13,6 +22,7 @@ import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.platform.bungee.BungeeGenericCommandSender;
 import com.kmecpp.osmium.platform.bungee.BungeePlayer;
@@ -29,9 +39,12 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ByteMemberValue;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Event;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginDescription;
 import net.md_5.bungee.event.EventHandler;
 
 public class BungeeAccess {
@@ -126,14 +139,60 @@ public class BungeeAccess {
 	}
 
 	public static void loadPlugin(File pluginFile) {
-		throw new UnsupportedOperationException("Not implemented yet");
+		try {
+			PluginDescription pluginDescription;
+
+			try (JarFile jar = new JarFile(pluginFile, true)) {
+				JarEntry pluginDescriptionJarEntry = jar.getJarEntry("bungee.yml");
+				if (pluginDescriptionJarEntry == null) {
+					pluginDescriptionJarEntry = jar.getJarEntry("plugin.yml");
+				}
+
+				try (InputStream in = jar.getInputStream(pluginDescriptionJarEntry)) {
+					pluginDescription = new Yaml().loadAs(in, PluginDescription.class);
+					pluginDescription.setFile(pluginFile);
+				}
+			}
+
+			//			Object pluginManagerLibraryLoader = new ReflectField<>(PluginManager.class, "libraryLoader").get(ProxyServer.getInstance().getPluginManager());
+			//			Object libraryLoader = pluginManagerLibraryLoader != null ? Reflection.invokeMethod(pluginManagerLibraryLoader, "createLoader", pluginDescription) : null;
+			//			ClassLoader classLoader = Reflection.newInstance("net.md_5.bungee.api.plugin.PluginClassLoader", ProxyServer.getInstance(), pluginDescription, new File(pluginFile.getAbsolutePath()), libraryLoader);
+
+			Constructor<ClassLoader> constructor = Reflection.getConstructor("net.md_5.bungee.api.plugin.PluginClassloader", ProxyServer.class, PluginDescription.class, File.class, ClassLoader.class);
+			ClassLoader pluginClassLoader = constructor.newInstance(ProxyServer.getInstance(), pluginDescription, pluginDescription.getFile(), null);
+
+			Class<?> main = pluginClassLoader.loadClass(pluginDescription.getMain());
+			Plugin plugin = (Plugin) main.getDeclaredConstructor().newInstance(); //This will call PluginClassLoader.init(plugin)
+
+			Reflection.<Map<String, Plugin>> getFieldValue(ProxyServer.getInstance().getPluginManager(), "plugins")
+					.put(pluginDescription.getName(), plugin);
+
+			plugin.onLoad();
+			plugin.onEnable();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	public static void unloadPlugin(OsmiumPlugin plugin) {
-		throw new UnsupportedOperationException("Not implemented yet");
-		//		BungeeCord.getInstance().getScheduler().cancel(plugin.<Plugin> getSource());
-		//		BungeeCord.getInstance().getPluginManager().unregisterCommands(plugin.getSource());
-		//		BungeeCord.getInstance().getPluginManager().unregisterListeners(plugin.getSource());
+	public static void unloadPlugin(OsmiumPlugin osmiumPlugin) {
+		Plugin plugin = osmiumPlugin.getSource();
+		plugin.getDescription();
+
+		plugin.onDisable();
+		for (Handler handler : plugin.getLogger().getHandlers()) {
+			handler.close();
+		}
+		BungeeCord.getInstance().getScheduler().cancel(plugin);
+		BungeeCord.getInstance().getPluginManager().unregisterListeners(plugin);
+		BungeeCord.getInstance().getPluginManager().unregisterCommands(plugin);
+
+		try {
+			URLClassLoader pluginClassLoader = (URLClassLoader) plugin.getClass().getClassLoader();
+			pluginClassLoader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
