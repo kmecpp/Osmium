@@ -273,6 +273,17 @@ public class Reflection {
 	}
 
 	@SuppressWarnings("unchecked")
+	public static <T> Constructor<T> getConstructor(String className, Class<?>... params) {
+		try {
+			Constructor<T> result = (Constructor<T>) Class.forName(className).getConstructor(params);
+			result.setAccessible(true);
+			return result;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> getConstructor(Class<T> cls, Object... params) {
 		try {
 			return (Constructor<T>) findMatch(cls.getDeclaredConstructors(), null, params);
