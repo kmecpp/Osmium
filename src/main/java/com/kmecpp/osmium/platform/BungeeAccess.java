@@ -24,6 +24,7 @@ import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.cache.PlayerList;
+import com.kmecpp.osmium.core.OsmiumCore;
 import com.kmecpp.osmium.platform.bungee.BungeeGenericCommandSender;
 import com.kmecpp.osmium.platform.bungee.BungeePlayer;
 import com.kmecpp.osmium.platform.osmium.CommandRedirectSender;
@@ -129,7 +130,8 @@ public class BungeeAccess {
 			Listener bungeeListener = (Listener) cls.getConstructor(Consumer.class).newInstance(osmiumSourceEventConsumer);
 
 			//				Listener bungeeListener = (Listener) generatedClass.toClass(listenerInstance.getClass().getClassLoader(), listenerInstance.getClass().getProtectionDomain()).newInstance();
-			BungeeCord.getInstance().getPluginManager().registerListener(plugin.getSource(), bungeeListener);
+			//			BungeeCord.getInstance().getPluginManager().registerListener(plugin.getSource(), bungeeListener);
+			BungeeCord.getInstance().getPluginManager().registerListener(OsmiumCore.getPlugin().getSource(), bungeeListener);
 
 			//Note: can't create a Listener instance because bungeeEventClass is dynamic
 		} catch (Exception e) {

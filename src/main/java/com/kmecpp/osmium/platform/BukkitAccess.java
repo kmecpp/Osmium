@@ -44,6 +44,7 @@ import com.kmecpp.osmium.api.util.ReflectField;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
+import com.kmecpp.osmium.core.OsmiumCore;
 import com.kmecpp.osmium.platform.bukkit.BukkitBlock;
 import com.kmecpp.osmium.platform.bukkit.BukkitBlockCommandSender;
 import com.kmecpp.osmium.platform.bukkit.BukkitChunk;
@@ -207,7 +208,8 @@ public class BukkitAccess {
 
 	public static void registerOsmiumListener(OsmiumPlugin plugin, Class<? extends org.bukkit.event.Event> bukkitEventClass, Order order, Method method, Object listenerInstance, Consumer<Object> sourceEventConsumer) {
 		//		for (Class<? extends org.bukkit.event.Event> bukkitEventClass : eventInfo.<org.bukkit.event.Event> getSourceClasses()) {
-		Bukkit.getPluginManager().registerEvent(bukkitEventClass, plugin.getSource(), (EventPriority) order.getSource(),
+
+		Bukkit.getPluginManager().registerEvent(bukkitEventClass, OsmiumCore.getPlugin().getSource(), (EventPriority) order.getSource(), //NOTE: 
 				(bukkitListener, bukkitEvent) -> sourceEventConsumer.accept(bukkitEvent),
 				plugin.getSource(), false);
 		//		}

@@ -20,7 +20,7 @@ public class EventManager {
 
 	//Event key is combination of event class and order 
 	//Order doesn't have to be maintained here because we're simply passing the source order to the platform specific registerListener method
-	private final HashMap<EventKey, HashMap<Object, ArrayList<Method>>> proxyListeners = new HashMap<>();
+	private final HashMap<EventKey, HashMap<Object, ArrayList<Method>>> proxyListeners = new HashMap<>(); //EventKey -> Map<SourceListenerInstance, List<EventHandlerMethod>>
 
 	//Only for Osmium events
 	//The Listener event list must be kept in sorted order (by priority)
@@ -111,6 +111,8 @@ public class EventManager {
 				final Constructor<? extends EventAbstraction> eventWrapperConstructor = getConstructor(eventInfo, sourceEventClass);
 				//				System.out.println("EVENT WRAPPER CONSTRUCTOR FOR " + sourceEventClass + " == " + eventWrapperConstructor);
 
+				//Create a global event handler to forward the source platform's event to all registered Osmium listeners
+				//This global event handler is registered through the OsmiumCore as the listener instance
 				Consumer<Object> globalOsmiumHandlerForEvent = (sourceEventInstance) -> {
 					//					System.out.println("SOURCE EVENT INSTANCE: " + sourceEventInstance);
 					//					if (!sourceEventClass.isAssignableFrom(sourceEventInstance.getClass())) {

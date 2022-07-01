@@ -3,7 +3,6 @@ package com.kmecpp.osmium.api.plugin;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.kmecpp.osmium.Osmium;
@@ -14,7 +13,7 @@ import com.kmecpp.osmium.api.util.Reflection;
 /**
  * Osmium plugins automatically subclass this class as their entry point for Bukkit
  */
-public abstract class BukkitPlugin extends JavaPlugin implements Listener {
+public abstract class BukkitPlugin extends JavaPlugin {
 
 	private final OsmiumPlugin plugin = Osmium.getPluginLoader().createOsmiumPlugin(this); //OsmiumData.constructPlugin();
 

@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.core;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -15,6 +16,12 @@ import com.kmecpp.osmium.cache.WorldList;
 import com.kmecpp.osmium.platform.bukkit.BukkitWorld;
 
 public class OsmiumBukkitMain extends BukkitPlugin implements Listener {
+
+	@Override
+	public void onEnable() {
+		Bukkit.getPluginManager().registerEvents(this, this);
+		super.onEnable();
+	}
 
 	@Override
 	public void onDisable() {
