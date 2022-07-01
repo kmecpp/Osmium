@@ -14,8 +14,10 @@ import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.TimeUtil;
 import com.kmecpp.osmium.core.OsmiumCoreCommands;
 import com.kmecpp.osmium.platform.BukkitAccess;
+import com.kmecpp.osmium.platform.BukkitCaptureCommandSender;
 import com.kmecpp.osmium.platform.BungeeAccess;
 import com.kmecpp.osmium.platform.SpongeAccess;
+import com.kmecpp.osmium.platform.bungee.BungeeCaptureCommandSender;
 import com.kmecpp.osmium.platform.osmium.CommandRedirectSender;
 
 public final class CommandManager {
@@ -108,6 +110,17 @@ public final class CommandManager {
 
 	public void processCommand(CommandSender sender, CommandSender receiver, String command) {
 		processCommand(new CommandRedirectSender(sender, receiver), command);
+	}
+
+	public String[] captureConsoleCommand(String command) {
+		if (Platform.isBukkit()) {
+			return BukkitCaptureCommandSender.execute(command);
+		} else if (Platform.isSponge()) {
+			throw new IllegalStateException("Not implemented");
+		} else if (Platform.isProxy()) {
+			return BungeeCaptureCommandSender.execute(command);
+		}
+		return null;
 	}
 
 	public boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {

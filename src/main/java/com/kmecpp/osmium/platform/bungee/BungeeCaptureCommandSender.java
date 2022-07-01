@@ -4,59 +4,63 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.kmecpp.osmium.api.CaptureCommandSender;
+
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public class BungeeCaptureCommandSender implements CommandSender {
+public class BungeeCaptureCommandSender implements CommandSender, CaptureCommandSender {
 
-	private ArrayList<String> messages = new ArrayList<>();
+	private static final BungeeCaptureCommandSender INSTANCE = new BungeeCaptureCommandSender("Osmium Capture Command Sender");
 
-	private static BungeeCaptureCommandSender sender = new BungeeCaptureCommandSender();
-
-	public static String getOutput(String command) {
-		BungeeCord.getInstance().getPluginManager().dispatchCommand(sender, command);
-		return sender.extractOutput();
-	}
-
-	public String extractOutput() {
-		String result = String.join("\n", messages);
-		messages.clear();
+	public static String[] execute(String command) {
+		BungeeCord.getInstance().getPluginManager().dispatchCommand(INSTANCE, command);
+		String[] result = INSTANCE.getOutput();
+		INSTANCE.output.clear();
 		return result;
 	}
 
-	public ArrayList<String> getMessages() {
-		return messages;
+	private final String name;
+	private final ArrayList<String> output;
+
+	public BungeeCaptureCommandSender(String name) {
+		this.name = name;
+		this.output = new ArrayList<>();
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String[] getOutput() {
+		return output.toArray(new String[0]);
 	}
 
 	@Override
 	public void sendMessage(String message) {
-		messages.add(message);
-	}
-
-	@Override
-	public void sendMessage(BaseComponent... message) {
-		sendMessage(BaseComponent.toLegacyText(message));
-	}
-
-	@Override
-	public void sendMessage(BaseComponent message) {
-		sendMessage(message.toLegacyText());
+		output.add(message);
 	}
 
 	@Override
 	public void sendMessages(String... messages) {
 		for (String message : messages) {
-			this.messages.add(message);
+			output.add(message);
 		}
 	}
 
 	@Override
-	public void addGroups(String... groups) {
+	public void sendMessage(BaseComponent... components) {
+		for (BaseComponent component : components) {
+			output.add(component.toPlainText());
+		}
 	}
 
 	@Override
-	public void removeGroups(String... arg0) {
+	public void sendMessage(BaseComponent component) {
+		output.add(component.toPlainText());
 	}
 
 	@Override
@@ -65,22 +69,25 @@ public class BungeeCaptureCommandSender implements CommandSender {
 	}
 
 	@Override
-	public String getName() {
-		return "VF Custom Command Sender";
+	public void addGroups(String... var1) {
+	}
+
+	@Override
+	public void removeGroups(String... var1) {
+	}
+
+	@Override
+	public boolean hasPermission(String var1) {
+		return true;
+	}
+
+	@Override
+	public void setPermission(String var1, boolean var2) {
 	}
 
 	@Override
 	public Collection<String> getPermissions() {
 		return Collections.emptyList();
-	}
-
-	@Override
-	public void setPermission(String permission, boolean value) {
-	}
-
-	@Override
-	public boolean hasPermission(String permission) {
-		return true;
 	}
 
 }
