@@ -153,20 +153,23 @@ dependencies {
 	shade "org.spongepowered:configurate-hocon:3.6.1"
 	shade "org.spongepowered:plugin-meta:0.4.1"
 	//shade "log4j:log4j:1.2.17"
-	shade "org.yaml:snakeyaml:1.25"
-	shade "org.fusesource.jansi:jansi:1.18"
+	//shade "org.yaml:snakeyaml:1.25"
+	shade "org.apache.logging.log4j:log4j-api:2.11.1"
+
+	//shade "org.fusesource.jansi:jansi:1.18"
 
 	//shade "org.bstats:bstats-bukkit:1.2"
 	//shade "org.bstats:bstats-sponge:1.2"
-	shade "com.zaxxer:HikariCP:3.4.5"
+	//shade "com.zaxxer:HikariCP:3.4.5"
+	shade "com.zaxxer:HikariCP:4.0.3"
+
 	shade "org.xerial:sqlite-jdbc:3.25.2"
-	shade 'mysql:mysql-connector-java:8.0.28'
-	shade "com.github.gwenn:sqlite-dialect:0.1.0"
+	shade 'mysql:mysql-connector-java:8.0.29'
+	//shade "com.github.gwenn:sqlite-dialect:0.1.0"
 	//shade "org.hibernate:hibernate-core:5.4.0.Final"
 	//shade "org.hibernate:hibernate-hikaricp:5.4.0.Final"
 	//shade "org.hibernate:hibernate-annotations:3.4.0-Final"
 	//shade "com.zsoltfabok:sqlite-dialect:1.0"
-	shade "org.apache.logging.log4j:log4j-api:2.11.1"
 		
     testImplementation 'junit:junit:4.12'
 }
@@ -236,18 +239,19 @@ build.doLast {
 	
 	//SERVER
 	if (project.hasProperty("server_path")) {
-		exec {
-			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path").replaceAll("%20", " ") + "\\plugins", '/Y'
-		}
+		exec { commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path").replaceAll("%20", " ") + "\\plugins", '/Y' }
+		println("Copied plugin jar to " + project.getProperty("server_path").replaceAll("%20", " ") + "\\plugins");
 	}
 	if (project.hasProperty("server_path2")) {
-		exec {
-			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path2").replaceAll("%20", " ") + "\\plugins", '/Y'
-		}
+		exec { commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path2").replaceAll("%20", " ") + "\\plugins", '/Y' }
+		println("Copied plugin jar to " + project.getProperty("server_path2").replaceAll("%20", " ") + "\\plugins");
 	}
 	if (project.hasProperty("server_path3")) {
-		exec {
-			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path3").replaceAll("%20", " ") + "\\plugins", '/Y'
-		}
+		exec { commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path3").replaceAll("%20", " ") + "\\plugins", '/Y' }
+		println("Copied plugin jar to " + project.getProperty("server_path3").replaceAll("%20", " ") + "\\plugins");
+	}
+	if (project.hasProperty("server_path4")) {
+		exec { commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path4").replaceAll("%20", " ") + "\\plugins", '/Y' }
+		println("Copied plugin jar to " + project.getProperty("server_path4").replaceAll("%20", " ") + "\\plugins");
 	}
 }
