@@ -8,8 +8,10 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.kmecpp.osmium.api.database.api.DBColumn;
 import com.kmecpp.osmium.api.database.api.Filter;
@@ -80,6 +82,9 @@ public class DBUtil {
 			} else {
 				return "TIMESTAMP(" + maxLength + ")";
 			}
+		} else if (Enum.class.isAssignableFrom(type)) {
+			Enum<?>[] enumConstants = (Enum[]) type.getEnumConstants();
+			return "ENUM(" + Arrays.stream(enumConstants).map(e -> "'" + e.name() + "'").collect(Collectors.joining(", ")) + ")";
 		} else {
 			throw new RuntimeException("Database type: " + type.getName() + " does not support maxLength!");
 		}
