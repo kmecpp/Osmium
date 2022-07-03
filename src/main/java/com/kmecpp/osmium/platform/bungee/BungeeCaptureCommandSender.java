@@ -1,32 +1,31 @@
 package com.kmecpp.osmium.platform.bungee;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.kmecpp.osmium.api.CaptureCommandSender;
+import com.kmecpp.osmium.api.command.CaptureCommandSender;
 
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public class BungeeCaptureCommandSender implements CommandSender, CaptureCommandSender {
+public class BungeeCaptureCommandSender extends CaptureCommandSender implements CommandSender {
 
-	private static final BungeeCaptureCommandSender INSTANCE = new BungeeCaptureCommandSender("Osmium Capture Command Sender");
+	private static final BungeeCaptureCommandSender INSTANCE = new BungeeCaptureCommandSender(NAME);
 
 	public static String[] execute(String command) {
-		BungeeCord.getInstance().getPluginManager().dispatchCommand(INSTANCE, command);
-		String[] result = INSTANCE.getOutput();
-		INSTANCE.output.clear();
-		return result;
+		return INSTANCE.executeGetLines(command);
 	}
 
 	private final String name;
-	private final ArrayList<String> output;
 
 	public BungeeCaptureCommandSender(String name) {
 		this.name = name;
-		this.output = new ArrayList<>();
+	}
+
+	@Override
+	public void dispatchCommand(String command) {
+		BungeeCord.getInstance().getPluginManager().dispatchCommand(this, command);
 	}
 
 	@Override
@@ -35,32 +34,27 @@ public class BungeeCaptureCommandSender implements CommandSender, CaptureCommand
 	}
 
 	@Override
-	public String[] getOutput() {
-		return output.toArray(new String[0]);
-	}
-
-	@Override
 	public void sendMessage(String message) {
-		output.add(message);
+		captureMessage(message);
 	}
 
 	@Override
 	public void sendMessages(String... messages) {
 		for (String message : messages) {
-			output.add(message);
+			captureMessage(message);
 		}
 	}
 
 	@Override
 	public void sendMessage(BaseComponent... components) {
 		for (BaseComponent component : components) {
-			output.add(component.toPlainText());
+			captureMessage(component.toPlainText());
 		}
 	}
 
 	@Override
 	public void sendMessage(BaseComponent component) {
-		output.add(component.toPlainText());
+		captureMessage(component.toPlainText());
 	}
 
 	@Override

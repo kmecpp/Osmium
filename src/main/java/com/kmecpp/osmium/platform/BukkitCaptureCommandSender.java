@@ -1,6 +1,5 @@
 package com.kmecpp.osmium.platform;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -14,49 +13,44 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-import com.kmecpp.osmium.api.CaptureCommandSender;
+import com.kmecpp.osmium.api.command.CaptureCommandSender;
 
-public class BukkitCaptureCommandSender implements ConsoleCommandSender, CaptureCommandSender {
+public class BukkitCaptureCommandSender extends CaptureCommandSender implements ConsoleCommandSender {
 
-	private static final BukkitCaptureCommandSender INSTANCE = new BukkitCaptureCommandSender("Osmium Capture Command Sender");
+	private static final BukkitCaptureCommandSender INSTANCE = new BukkitCaptureCommandSender(NAME);
 
 	public static String[] execute(String command) {
-		Bukkit.dispatchCommand(INSTANCE, command);
-		String[] result = INSTANCE.getOutput();
-		INSTANCE.output.clear();
-		return result;
+		return INSTANCE.executeGetLines(command);
 	}
 
 	private final String name;
 	private final PermissibleBase perm;
-	private final ArrayList<String> output;
 
 	public BukkitCaptureCommandSender(String name) {
 		this.name = name;
 		this.perm = new PermissibleBase(this);
-		this.output = new ArrayList<>();
+	}
+
+	@Override
+	public void dispatchCommand(String command) {
+		Bukkit.dispatchCommand(this, command);
 	}
 
 	@Override
 	public void sendMessage(String message) {
-		output.add(message);
+		captureMessage(message);
 	}
 
 	@Override
 	public void sendMessage(String[] messages) {
 		for (String message : messages) {
-			output.add(message);
+			captureMessage(message);
 		}
 	}
 
 	@Override
 	public void sendRawMessage(String message) {
-		output.add(message);
-	}
-
-	@Override
-	public String[] getOutput() {
-		return output.toArray(new String[0]);
+		captureMessage(message);
 	}
 
 	@Override

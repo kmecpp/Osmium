@@ -75,6 +75,9 @@ public final class CommandManager {
 		return cooldownData;
 	}
 
+	/**
+	 * Executes the given command as console
+	 */
 	public void processConsoleCommand(String command) {
 		OsmiumLogger.info("Programmatically processing console command: " + command);
 		if (Platform.isBukkit()) {
@@ -86,6 +89,9 @@ public final class CommandManager {
 		}
 	}
 
+	/**
+	 * Executes the given command as console but forwards the output to the specified command sender
+	 */
 	public void processConsoleCommand(CommandSender outputReceiver, String command) {
 		OsmiumLogger.info("Programmatically processing and capturing output for console command: " + command);
 		if (Platform.isBukkit()) {
@@ -97,6 +103,9 @@ public final class CommandManager {
 		}
 	}
 
+	/**
+	 * Executes the given command as the specified command sender
+	 */
 	public void processCommand(CommandSender sender, String command) {
 		OsmiumLogger.info("Programmatically processing command for " + sender.getName() + ": " + command);
 		if (Platform.isBukkit()) {
@@ -112,6 +121,9 @@ public final class CommandManager {
 		processCommand(new CommandRedirectSender(sender, receiver), command);
 	}
 
+	/**
+	 * Executes the given command and returns the output
+	 */
 	public String[] captureConsoleCommand(String command) {
 		if (Platform.isBukkit()) {
 			return BukkitCaptureCommandSender.execute(command);
