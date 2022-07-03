@@ -18,6 +18,7 @@ import com.kmecpp.osmium.api.database.api.Filter;
 import com.kmecpp.osmium.api.database.api.PreparedStatementBuilder;
 import com.kmecpp.osmium.api.database.api.SQL;
 import com.kmecpp.osmium.api.util.Pagination;
+import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.StringUtil;
 
 public class DBUtil {
@@ -117,6 +118,8 @@ public class DBUtil {
 			s.setString(index, (String) value);
 		} else if (value instanceof UUID) {
 			s.setString(index, String.valueOf(value));
+		} else if (value instanceof Enum) {
+			s.setString(index, ((Enum<?>) value).name());
 		} else {
 			throw new UnsupportedOperationException("SQL serialization of " + value.getClass().getSimpleName() + " (" + value + ") is not supported yet!");
 		}
@@ -150,6 +153,8 @@ public class DBUtil {
 		} else if (type == UUID.class) {
 			String uuidString = rs.getString(index);
 			field.set(instance, uuidString == null ? null : UUID.fromString(uuidString));
+		} else if (Enum.class.isAssignableFrom(type)) {
+			field.set(instance, Enum.valueOf(Reflection.cast(type), rs.getString(index)));
 		}
 	}
 
