@@ -30,6 +30,9 @@ public class SelectQuery<T> implements SISelect<T> {
 	public SelectQuery(SQLDatabase database, Class<T> tableClass) {
 		this.database = database;
 		this.tableData = SQLDatabase.getTable(tableClass);
+		if (this.tableData == null) {
+			throw new IllegalArgumentException("Missing table registration for " + this.getClass().getName() + "! Is it annotated with @" + DBTable.class.getSimpleName() + "?");
+		}
 	}
 
 	@Override
@@ -44,7 +47,7 @@ public class SelectQuery<T> implements SISelect<T> {
 	@Override
 	public List<T> execute() {
 		String query = "SELECT * FROM " + this.tableData.getName()
-				+ (filter != null ? filter.createParameterizedStatement() : "") 
+				+ (filter != null ? filter.createParameterizedStatement() : "")
 				+ (groupBy != null ? groupBy : "")
 				+ (orderBy != null ? orderBy : "")
 				+ (limit != null ? limit : "");
