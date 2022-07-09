@@ -67,7 +67,7 @@ public class ClassProcessor {
 
 		JarFile jarFile = Directory.getJarFile(mainClass);
 		String packageName = Reflection.getPackageName(mainClass); //For some reason mainClass.getPackage() started returning null
-
+		
 		//		HashSet<String> staticLoadClasses = null;
 		//		ZipEntry staticLoadFile = jarFile.getEntry("static-load-classes");
 		//		if (staticLoadFile != null) {
@@ -127,7 +127,7 @@ public class ClassProcessor {
 					onLoad(cls);
 				} catch (ClassNotFoundException | NoClassDefFoundError ex) {
 					String exceptionMessage = ex.getMessage().toLowerCase();
-					if (exceptionMessage.contains("spongepowered") || exceptionMessage.contains("bukkit") || exceptionMessage.contains("bungee")) {
+					if (exceptionMessage.contains("spongepowered/") || exceptionMessage.contains("bukkit/") || exceptionMessage.contains("bungee/")) {
 						OsmiumLogger.debug("SKIPPING: " + className + " (CLASS NOT FOUND: " + exceptionMessage + ")");
 					} else {
 						OsmiumLogger.warn("Could not load class: " + className);
@@ -422,8 +422,8 @@ public class ClassProcessor {
 	 * This is called on startup and full reloads
 	 */
 	public void createDatabaseTables() {
-		Boolean mysql = null;
-		Boolean sqlite = null;
+		Boolean mysqlConnected = null;
+		Boolean sqliteConnected = null;
 
 		for (Class<?> cls : databaseTables) {
 			try {
@@ -441,7 +441,7 @@ public class ClassProcessor {
 					seen.add(type);
 
 					if (type == DatabaseType.MYSQL) {
-						if (mysql == null) {
+						if (mysqlConnected == null) {
 							try {
 								if (!plugin.getMySQLDatabase().isConnected()) {
 									plugin.getMySQLDatabase().initialize(); //Mark this database as active for Osmium
@@ -451,9 +451,9 @@ public class ClassProcessor {
 								OsmiumLogger.error("Failed to connect to " + plugin.getName() + "'s MySQL database!");
 								t.printStackTrace();
 							}
-							mysql = plugin.getMySQLDatabase().isConnected();
+							mysqlConnected = plugin.getMySQLDatabase().isConnected();
 						}
-						if (mysql) {
+						if (mysqlConnected) {
 							OsmiumLogger.debug("Initializing MySQL database table: " + table.name());
 
 							plugin.getMySQLDatabase().createTable(cls);
@@ -462,10 +462,10 @@ public class ClassProcessor {
 								Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
 							}
 						} else {
-							OsmiumLogger.warn("Cannot create " + plugin.getName() + "'s MySQL database table: " + table.name());
+							OsmiumLogger.warn("Missing database connection! Cannot create " + plugin.getName() + "'s MySQL database table: " + table.name());
 						}
 					} else if (type == DatabaseType.SQLITE) {
-						if (sqlite == null) {
+						if (sqliteConnected == null) {
 							try {
 								if (!plugin.getSQLiteDatabase().isConnected()) {
 									plugin.getSQLiteDatabase().initialize(); //Mark this database as active for Osmium
@@ -475,9 +475,9 @@ public class ClassProcessor {
 								OsmiumLogger.error("Failed to connect to " + plugin.getName() + "'s SQLite database!");
 								t.printStackTrace();
 							}
-							sqlite = plugin.getSQLiteDatabase().isConnected();
+							sqliteConnected = plugin.getSQLiteDatabase().isConnected();
 						}
-						if (sqlite) {
+						if (sqliteConnected) {
 							OsmiumLogger.debug("Initializing SQLite database table: " + table.name());
 							plugin.getSQLiteDatabase().createTable(cls);
 
@@ -485,7 +485,7 @@ public class ClassProcessor {
 								Osmium.getPlayerDataManager().registerPlayerDataType(plugin, Reflection.cast(cls));
 							}
 						} else {
-							OsmiumLogger.warn("Cannot create " + plugin.getName() + "'s SQLite database table: " + table.name());
+							OsmiumLogger.warn("Missing database connection! Cannot create " + plugin.getName() + "'s SQLite database table: " + table.name());
 						}
 					}
 				}

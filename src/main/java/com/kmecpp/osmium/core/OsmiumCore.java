@@ -5,6 +5,7 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.TickTimeUnit;
 import com.kmecpp.osmium.api.database.SQLDatabase;
+import com.kmecpp.osmium.api.database.api.SQLConfig;
 import com.kmecpp.osmium.api.inventory.menu.InventoryManager;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
@@ -30,8 +31,8 @@ public class OsmiumCore extends OsmiumPlugin {
 		TimeUtil.setTimeZone(OsmiumCoreConfig.timeZone);
 
 		if (OsmiumCoreConfig.Database.useMySql) {
-			this.getMySQLDatabase().configure("osmium", OsmiumCoreConfig.Database.host, OsmiumCoreConfig.Database.port,
-					OsmiumCoreConfig.Database.database, OsmiumCoreConfig.Database.username, OsmiumCoreConfig.Database.password);
+			this.getMySQLDatabase().configure(() -> SQLConfig.of("osmium", OsmiumCoreConfig.Database.host, OsmiumCoreConfig.Database.port,
+					OsmiumCoreConfig.Database.database, OsmiumCoreConfig.Database.username, OsmiumCoreConfig.Database.password));
 
 			this.getMySQLDatabase().createTable(UserTable.class);
 		} else {

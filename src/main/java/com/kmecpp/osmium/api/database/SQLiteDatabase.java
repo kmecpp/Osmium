@@ -11,7 +11,7 @@ import com.kmecpp.osmium.api.database.DatabaseQueue.QueueExecutor;
 import com.kmecpp.osmium.api.database.api.DatabaseType;
 import com.kmecpp.osmium.api.database.api.OrderBy;
 import com.kmecpp.osmium.api.database.api.ResultSetTransformer;
-import com.kmecpp.osmium.api.database.api.SQLConfiguration;
+import com.kmecpp.osmium.api.database.api.SQLConfig;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.persistence.Serialization;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -28,7 +28,7 @@ public class SQLiteDatabase extends SQLDatabase {
 	}
 
 	public void configure(String prefix) {
-		this.config = new SQLConfiguration(null, null, null, null, -1, prefix);
+		this.configSupplier = () -> SQLConfig.of(prefix, null, -1, null, null, null);
 	}
 
 	//	public final Collection<TableProperties> getTables() {

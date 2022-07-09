@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
@@ -22,7 +23,7 @@ import com.kmecpp.osmium.api.database.api.Filter;
 import com.kmecpp.osmium.api.database.api.PreparedStatementBuilder;
 import com.kmecpp.osmium.api.database.api.ResultSetProcessor;
 import com.kmecpp.osmium.api.database.api.ResultSetTransformer;
-import com.kmecpp.osmium.api.database.api.SQLConfiguration;
+import com.kmecpp.osmium.api.database.api.SQLConfig;
 import com.kmecpp.osmium.api.database.api.SelectQuery;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
@@ -40,12 +41,14 @@ public abstract class SQLDatabase {
 	protected final OsmiumPlugin plugin;
 	protected final DatabaseType type;
 
-	protected DatabaseQueue queue = new DatabaseQueue();
-	protected CountDownLatch availableLatch = new CountDownLatch(1);
+	protected Supplier<SQLConfig> configSupplier;
 
-	protected SQLConfiguration config;
+	private SQLConfig config;
 	private HikariDataSource hikariSource;
 	private boolean initialized; //Represents whether or not this database has any tables associated with it
+
+	private DatabaseQueue queue = new DatabaseQueue();
+	private CountDownLatch availableLatch = new CountDownLatch(1);
 
 	protected static final HashMap<Class<?>, TableData> tables = new HashMap<>();
 
@@ -54,20 +57,18 @@ public abstract class SQLDatabase {
 		this.type = type;
 	}
 
-	public <T extends SQLDatabase> T configure(String host, int port, String database, String username, String password) {
-		return configure(null, host, port, database, username, password);
-	}
-
-	public <T extends SQLDatabase> T configure(String prefix, String host, int port, String database, String username, String password) {
-		return configure(new SQLConfiguration(host, database, username, password, port, prefix));
-	}
+	//	public <T extends SQLDatabase> T configure(String host, int port, String database, String username, String password) {
+	//		return configure(null, host, port, database, username, password);
+	//	}
+	//
+	//	public <T extends SQLDatabase> T configure(String prefix, String host, int port, String database, String username, String password) {
+	//		return configure(new SQLConfiguration(host, database, username, password, port, prefix));
+	//	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends SQLDatabase> T configure(SQLConfiguration config) {
-		if (StringUtil.isNullOrEmpty(config.getDatabase())) {
-			throw new IllegalArgumentException("Database is not configured for plugin: " + plugin.getName());
-		}
-		this.config = config;
+	public <T extends SQLDatabase> T configure(Supplier<SQLConfig> configSupplier) {
+		this.configSupplier = configSupplier;
+		this.config = configSupplier.get();
 		return (T) this;
 	}
 
@@ -94,8 +95,13 @@ public abstract class SQLDatabase {
 				hikariConfig.setMinimumIdle(2);
 				hikariConfig.setMaximumPoolSize(10);
 				hikariConfig.setConnectionTestQuery("SELECT 1");
-				OsmiumLogger.info("Successfully established SQLite connection!");
 			} else {
+				config = this.configSupplier.get();
+
+				if (StringUtil.isNullOrEmpty(config.getDatabase())) {
+					throw new IllegalArgumentException("MySQL Database for " + plugin.getName() + " is not configured!");
+				}
+
 				hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabase() + (config.isAllowMultiQueries() ? "?allowMultiQueries=true" : ""));
 				hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
 				hikariConfig.setUsername(config.getUsername());
@@ -103,12 +109,15 @@ public abstract class SQLDatabase {
 				hikariConfig.setMinimumIdle(config.getMinimumIdle());
 				hikariConfig.setMaximumPoolSize(config.getMaximumPoolSize());
 				hikariConfig.setConnectionTestQuery("USE " + config.getDatabase());
-				OsmiumLogger.info("Successfully established connection to " + type.getName() + " database: " + config.getDatabase());
 			}
 
 			hikariConfig.setConnectionTimeout(500L);
-			hikariSource = new HikariDataSource(hikariConfig);
+			hikariSource = new HikariDataSource(hikariConfig); //This executes the test query
 			availableLatch.countDown(); //Mark database as available
+
+			OsmiumLogger.info(type == DatabaseType.SQLITE
+					? "Successfully established SQLite connection!"
+					: "Successfully established connection to " + type.getName() + " database: " + config.getDatabase());
 		} catch (PoolInitializationException e) {
 			OsmiumLogger.error("Invalid database configuration! Failed to execute: '" + hikariConfig.getConnectionTestQuery() + "'");
 			e.printStackTrace();
@@ -116,7 +125,29 @@ public abstract class SQLDatabase {
 		queue.start();
 	}
 
-	public SQLConfiguration getConfig() {
+	/**
+	 * Shuts down the connection pool
+	 */
+	public void shutdown() {
+		if (hikariSource != null && !hikariSource.isClosed()) {
+			queue.flush(); //Queue should already have connection
+			hikariSource.close();
+			hikariSource = null;
+		}
+	}
+
+	public void restart() {
+		OsmiumLogger.info("Reestablishing database connection");
+		this.availableLatch = new CountDownLatch(1);
+		shutdown();
+		start();
+	}
+
+	public boolean isClosed() {
+		return hikariSource.isClosed();
+	}
+
+	public SQLConfig getConfig() {
 		return config;
 	}
 
@@ -493,28 +524,6 @@ public abstract class SQLDatabase {
 
 	public boolean isConnected() {
 		return hikariSource != null && !hikariSource.isClosed();//&& source.isRunning();
-	}
-
-	public boolean isClosed() {
-		return hikariSource.isClosed();
-	}
-
-	/**
-	 * Shuts down the connection pool
-	 */
-	public void shutdown() {
-		if (hikariSource != null && !hikariSource.isClosed()) {
-			queue.flush(); //Queue should already have connection
-			hikariSource.close();
-			hikariSource = null;
-		}
-	}
-
-	public void reload() {
-		OsmiumLogger.info("Reestablishing database connection");
-		availableLatch = new CountDownLatch(1);
-		shutdown();
-		start();
 	}
 
 	public static TableData getTable(Class<?> cls) {

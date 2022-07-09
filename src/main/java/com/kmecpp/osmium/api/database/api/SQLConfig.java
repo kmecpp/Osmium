@@ -1,25 +1,33 @@
 package com.kmecpp.osmium.api.database.api;
 
-public class SQLConfiguration implements Cloneable {
+public class SQLConfig implements Cloneable {
 
+	private final String tablePrefix;
 	private final String host;
 	private final String database;
 	private final String username;
 	private final String password;
 	private final int port;
-	private final String tablePrefix;
 
 	private int minimumIdle = 2;
 	private int maximumPoolSize = 10;
 	private boolean allowMultiQueries;
 
-	public SQLConfiguration(String host, String database, String username, String password, int port, String tablePrefix) {
+	private SQLConfig(String tablePrefix, String host, int port, String database, String username, String password) {
+		this.tablePrefix = tablePrefix;
 		this.host = host;
+		this.port = port;
 		this.database = database;
 		this.username = username;
 		this.password = password;
-		this.port = port;
-		this.tablePrefix = tablePrefix;
+	}
+
+	public static SQLConfig of(String host, int port, String database, String username, String password) {
+		return new SQLConfig("", host, port, database, username, password);
+	}
+
+	public static SQLConfig of(String tablePrefix, String host, int port, String database, String username, String password) {
+		return new SQLConfig(tablePrefix, host, port, database, username, password);
 	}
 
 	public String getHost() {
@@ -58,21 +66,21 @@ public class SQLConfiguration implements Cloneable {
 		return allowMultiQueries;
 	}
 
-	public SQLConfiguration withPoolSize(int minimumIdle, int maximumPoolSize) {
+	public SQLConfig withPoolSize(int minimumIdle, int maximumPoolSize) {
 		this.minimumIdle = minimumIdle;
 		this.maximumPoolSize = maximumPoolSize;
 		return this;
 	}
 
-	public SQLConfiguration withAllowMultiQueries(boolean allowMultiQueries) {
+	public SQLConfig withAllowMultiQueries(boolean allowMultiQueries) {
 		this.allowMultiQueries = allowMultiQueries;
 		return this;
 	}
 
 	@Override
-	public SQLConfiguration clone() {
+	public SQLConfig clone() {
 		try {
-			return (SQLConfiguration) super.clone();
+			return (SQLConfig) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}

@@ -366,13 +366,13 @@ public final class Osmium {
 
 		if (reloadDatabase) {
 			if (plugin.getSQLiteDatabase().isInitialized()) {
-				plugin.getSQLiteDatabase().reload();
+				plugin.getSQLiteDatabase().restart();
 				if (plugin.getSQLiteDatabase().isConnected()) {
 					plugin.getClassProcessor().createDatabaseTables();
 				}
 			}
 			if (plugin.getMySQLDatabase().isInitialized()) {
-				plugin.getMySQLDatabase().reload();
+				plugin.getMySQLDatabase().restart();
 				if (plugin.getMySQLDatabase().isConnected()) {
 					plugin.getClassProcessor().createDatabaseTables();
 				}
