@@ -85,12 +85,23 @@ public class OsmiumCoreCommands extends Command {
 			}
 		});
 
-		add("restart").setAdmin(true).setUsage("<plugin>").setExecutor(e -> {
+		add("<load/unload/restart>").setAdmin(true).setUsage("<plugin>").setExecutor(e -> {
 			long startTime = System.currentTimeMillis();
-			OsmiumPlugin plugin = e.getPlugin(0);
+			OsmiumPlugin plugin = e.getPlugin(0, null);
 
-			Osmium.getPluginLoader().restartPlugin(plugin);
-			e.sendMessage(Chat.GREEN + plugin.getName() + " reloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
+			if (e.getArgLabel().equalsIgnoreCase("load")) {
+				if (plugin != null) {
+					fail("That plugin is already loaded!");
+				}
+
+				//Store Known Name -> File map, otherwise check if input is a file name
+			} else if (e.getArgLabel().equalsIgnoreCase("unload")) {
+				//				Osmium.getPluginLoader().unloadPlugin(plugin);
+				//				e.sendMessage(Chat.GREEN + plugin.getName() + " unloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
+			} else if (e.getArgLabel().equalsIgnoreCase("restart")) {
+				Osmium.getPluginLoader().restartPlugin(plugin);
+				e.sendMessage(Chat.GREEN + plugin.getName() + " reloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
+			}
 		});
 
 		add("plugins").setAdmin(true).setUsage("{plugin}").setExecutor(e -> {

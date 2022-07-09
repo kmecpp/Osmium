@@ -218,6 +218,7 @@ public class BukkitAccess {
 	public static void loadPlugin(File pluginFile) {
 		try {
 			Plugin pluginInstance = Bukkit.getPluginManager().loadPlugin(pluginFile);
+			pluginInstance.onLoad(); //This is called by CraftServer separately after PluginManager.loadPlugin() in 1.7.10
 			Bukkit.getPluginManager().enablePlugin(pluginInstance);
 		} catch (Exception e) {
 			e.printStackTrace();
