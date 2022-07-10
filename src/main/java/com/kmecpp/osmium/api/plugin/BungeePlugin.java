@@ -10,23 +10,27 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public abstract class BungeePlugin extends Plugin {
 
-	private final OsmiumPlugin plugin = Osmium.getPluginLoader().createOsmiumPlugin(this); //OsmiumData.constructPlugin();
+	private final OsmiumPlugin osmiumPlugin = Osmium.getPluginLoader().createOsmiumPlugin(this); //OsmiumData.constructPlugin();
+
+	public OsmiumPlugin getOsmiumPlugin() {
+		return osmiumPlugin;
+	}
 
 	@Override
 	public void onLoad() {
-		Osmium.getPluginLoader().onLoad(plugin);
+		Osmium.getPluginLoader().onLoad(osmiumPlugin);
 	}
 
 	@Override
 	public void onEnable() {
-		Osmium.getPluginLoader().onPreInit(plugin);
-		Osmium.getPluginLoader().onInit(plugin);
-		Osmium.getPluginLoader().onPostInit(plugin);
+		Osmium.getPluginLoader().onPreInit(osmiumPlugin);
+		Osmium.getPluginLoader().onInit(osmiumPlugin);
+		Osmium.getPluginLoader().onPostInit(osmiumPlugin);
 	}
 
 	@Override
 	public void onDisable() {
-		Osmium.getPluginLoader().onDisable(plugin);
+		Osmium.getPluginLoader().onDisable(osmiumPlugin);
 	}
 
 }

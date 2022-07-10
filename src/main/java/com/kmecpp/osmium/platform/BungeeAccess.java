@@ -21,6 +21,7 @@ import com.kmecpp.osmium.api.command.CommandSender;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.Order;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.plugin.BungeePlugin;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.cache.PlayerList;
@@ -140,7 +141,7 @@ public class BungeeAccess {
 		//		}
 	}
 
-	public static void loadPlugin(File pluginFile) {
+	public static OsmiumPlugin loadPlugin(File pluginFile) {
 		try {
 			PluginDescription pluginDescription;
 
@@ -172,9 +173,13 @@ public class BungeeAccess {
 			plugin.onLoad();
 			plugin.onEnable();
 
+			if (plugin instanceof BungeePlugin) {
+				return ((BungeePlugin) plugin).getOsmiumPlugin();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	public static void unloadPlugin(OsmiumPlugin osmiumPlugin) {

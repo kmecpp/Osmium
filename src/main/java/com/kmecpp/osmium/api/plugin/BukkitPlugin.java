@@ -15,31 +15,35 @@ import com.kmecpp.osmium.api.util.Reflection;
  */
 public abstract class BukkitPlugin extends JavaPlugin {
 
-	private final OsmiumPlugin plugin = Osmium.getPluginLoader().createOsmiumPlugin(this); //OsmiumData.constructPlugin();
+	private final OsmiumPlugin osmiumPlugin = Osmium.getPluginLoader().createOsmiumPlugin(this); //OsmiumData.constructPlugin();
+
+	public OsmiumPlugin getOsmiumPlugin() {
+		return osmiumPlugin;
+	}
 
 	@Override
 	public void onLoad() {
-		Osmium.getPluginLoader().onLoad(plugin);
+		Osmium.getPluginLoader().onLoad(osmiumPlugin);
 	}
 
 	@Override
 	public void onEnable() {
-		Osmium.getPluginLoader().onPreInit(plugin);
-		Osmium.getPluginLoader().onInit(plugin);
+		Osmium.getPluginLoader().onPreInit(osmiumPlugin);
+		Osmium.getPluginLoader().onInit(osmiumPlugin);
 		injectCommandMeta();
-		Osmium.getPluginLoader().onPostInit(plugin);
+		Osmium.getPluginLoader().onPostInit(osmiumPlugin);
 	}
 
 	@Override
 	public void onDisable() {
-		Osmium.getPluginLoader().onDisable(plugin);
+		Osmium.getPluginLoader().onDisable(osmiumPlugin);
 	}
 
 	private void injectCommandMeta() {
 		try {
 			Map<String, Map<String, Object>> originalCommandMap = this.getDescription().getCommands();
 			Map<String, Map<String, Object>> commands = originalCommandMap != null ? new HashMap<>(originalCommandMap) : new HashMap<>();
-			for (Command command : Osmium.getCommandManager().getCommands(plugin)) {
+			for (Command command : Osmium.getCommandManager().getCommands(osmiumPlugin)) {
 				HashMap<String, Object> commandProperties = new HashMap<>();
 				commandProperties.put("aliases", command.getAliases());
 				commandProperties.put("description", command.getDescription());

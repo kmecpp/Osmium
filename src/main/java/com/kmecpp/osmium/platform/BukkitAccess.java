@@ -43,6 +43,7 @@ import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.location.WorldPosition;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.plugin.BukkitPlugin;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.ReflectField;
 import com.kmecpp.osmium.api.util.Reflection;
@@ -237,14 +238,19 @@ public class BukkitAccess {
 		//		}
 	}
 
-	public static void loadPlugin(File pluginFile) {
+	public static OsmiumPlugin loadPlugin(File pluginFile) {
 		try {
 			Plugin pluginInstance = Bukkit.getPluginManager().loadPlugin(pluginFile);
 			pluginInstance.onLoad(); //This is called by CraftServer separately after PluginManager.loadPlugin() in 1.7.10
 			Bukkit.getPluginManager().enablePlugin(pluginInstance);
+
+			if (pluginInstance instanceof BukkitPlugin) {
+				return ((BukkitPlugin) pluginInstance).getOsmiumPlugin();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	public static void unloadPlugin(OsmiumPlugin plugin) {

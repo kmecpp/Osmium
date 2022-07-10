@@ -186,12 +186,19 @@ public class PluginLoader {
 	public void loadPlugin(File jarFile) {
 		OsmiumLogger.info("Loading plugin: " + jarFile.getName());
 
+		OsmiumPlugin plugin;
 		if (Platform.isBukkit()) {
-			BukkitAccess.loadPlugin(jarFile);
+			plugin = BukkitAccess.loadPlugin(jarFile);
 		} else if (Platform.isSponge()) {
-			SpongeAccess.loadPlugin(jarFile);
+			plugin = SpongeAccess.loadPlugin(jarFile);
 		} else if (Platform.isBungeeCord()) {
-			BungeeAccess.loadPlugin(jarFile);
+			plugin = BungeeAccess.loadPlugin(jarFile);
+		} else {
+			throw new UnsupportedOperationException("Unsupported platform!");
+		}
+
+		if (plugin != null) {
+			plugin.onServerStarted(); //Note: ServerStartedEvent is not called as that would go to all plugins. Here is slightly different behavior between the two
 		}
 	}
 

@@ -15,8 +15,12 @@ import com.kmecpp.osmium.Osmium;
 // @Plugin added by to subclass by Osmium annotation processor
 public abstract class SpongePlugin {
 
-	private final OsmiumPlugin plugin = Osmium.getPluginLoader().createOsmiumPlugin(this);
+	private final OsmiumPlugin osmiumPlugin = Osmium.getPluginLoader().createOsmiumPlugin(this);
 	private PluginContainer pluginContainer;
+
+	public OsmiumPlugin getOsmiumPlugin() {
+		return osmiumPlugin;
+	}
 
 	public PluginContainer getPluginContainer() {
 		return pluginContainer;
@@ -24,28 +28,28 @@ public abstract class SpongePlugin {
 
 	@Listener
 	public void on(GameConstructionEvent e) {
-		pluginContainer = Sponge.getPluginManager().getPlugin(plugin.getId()).get();
-		Osmium.getPluginLoader().onLoad(plugin);
+		pluginContainer = Sponge.getPluginManager().getPlugin(osmiumPlugin.getId()).get();
+		Osmium.getPluginLoader().onLoad(osmiumPlugin);
 	}
 
 	@Listener
 	public void on(GamePreInitializationEvent e) {
-		Osmium.getPluginLoader().onPreInit(plugin);
+		Osmium.getPluginLoader().onPreInit(osmiumPlugin);
 	}
 
 	@Listener
 	public void on(GameInitializationEvent e) {
-		Osmium.getPluginLoader().onInit(plugin);
+		Osmium.getPluginLoader().onInit(osmiumPlugin);
 	}
 
 	@Listener
 	public void on(GamePostInitializationEvent e) {
-		Osmium.getPluginLoader().onPostInit(plugin);
+		Osmium.getPluginLoader().onPostInit(osmiumPlugin);
 	}
 
 	@Listener
 	public void on(GameStoppingEvent e) {
-		Osmium.getPluginLoader().onDisable(plugin);
+		Osmium.getPluginLoader().onDisable(osmiumPlugin);
 
 		Sponge.getEventManager().unregisterPluginListeners(this);
 		Sponge.getCommandManager().getOwnedBy(this).forEach(Sponge.getCommandManager()::removeMapping);

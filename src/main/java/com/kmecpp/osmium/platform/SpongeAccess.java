@@ -170,7 +170,7 @@ public class SpongeAccess {
 		//		});
 	}
 
-	public static void loadPlugin(File pluginFile) {
+	public static OsmiumPlugin loadPlugin(File pluginFile) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
