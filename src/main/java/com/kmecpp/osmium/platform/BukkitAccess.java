@@ -1,8 +1,10 @@
 package com.kmecpp.osmium.platform;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -226,6 +228,14 @@ public class BukkitAccess {
 	}
 
 	public static void unloadPlugin(OsmiumPlugin plugin) {
+		new URLConnection(null) {
+
+			@Override
+			public void connect() throws IOException {
+			}
+
+		}.setDefaultUseCaches(false);
+
 		Bukkit.getScheduler().cancelTasks(plugin.getSource());
 		HandlerList.unregisterAll(plugin.<JavaPlugin> getSource());
 		//TODO: Commands?
