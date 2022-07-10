@@ -57,29 +57,67 @@ public class TimeUtil {
 	}
 
 	public static String formatTotalMillis(long time, int decimals) {
-		final double year = 365 * 86400 * 1000;
-		if (time > year) {
+		final double year = (long) 365 * 86400 * 1000;
+		if (Math.abs(time) > year) {
 			return MathUtil.format(time / year, decimals) + " years";
 		}
 
 		final double day = 86400 * 1000;
-		if (time > day) {
+		if (Math.abs(time) > day) {
 			return MathUtil.format(time / day, decimals) + " days";
 		}
 
 		final double hour = 3600 * 1000;
-		if (time > hour) {
+		if (Math.abs(time) > hour) {
 			return MathUtil.format(time / hour, decimals) + " hours";
 		}
 
 		final double minute = 60 * 1000;
-		if (time > minute) {
+		if (Math.abs(time) > minute) {
 			return MathUtil.format(time / minute, decimals) + " minutes";
 		}
 
 		final double second = 1000;
-		if (time >= second) {
+		if (Math.abs(time) >= second) {
 			return MathUtil.format(time / second, decimals) + " seconds";
+		}
+
+		return StringUtil.plural(time, "millisecond");
+	}
+
+	public static String formatTotalMillisPrecise(long time) {
+		final long year = (long) 365 * 86400 * 1000;
+		final long day = 86400 * 1000;
+		final long hour = 3600 * 1000;
+		final long minute = 60 * 1000;
+		final long second = 1000;
+
+		if (Math.abs(time) > year) {
+			long years = time / year;
+			long days = (time - years * year) / day;
+			return StringUtil.plural(years, "year") + " and " + StringUtil.plural(days, "day");
+		}
+
+		else if (Math.abs(time) > day) {
+			long days = time / day;
+			long hours = (time - days * day) / hour;
+			return StringUtil.plural(days, "day") + " and " + StringUtil.plural(hours, "hour");
+		}
+
+		else if (Math.abs(time) > hour) {
+			long hours = time / hour;
+			long minutes = (time - hours * hour) / minute;
+			return StringUtil.plural(hours, "hour") + " and " + StringUtil.plural(minutes, "minute");
+		}
+
+		else if (Math.abs(time) > minute) {
+			long minutes = time / minute;
+			long seconds = (time - minutes * minute) / second;
+			return StringUtil.plural(minutes, "minute") + " and " + StringUtil.plural(seconds, "second");
+		}
+
+		else if (Math.abs(time) >= second) {
+			return StringUtil.plural(time / second, "second");
 		}
 
 		return StringUtil.plural(time, "millisecond");
