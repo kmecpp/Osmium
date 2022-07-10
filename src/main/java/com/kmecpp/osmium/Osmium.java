@@ -60,12 +60,11 @@ import com.kmecpp.osmium.platform.osmium.OsmiumPluginRefreshEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumPluginReloadEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumServerShutdownEvent;
 import com.kmecpp.osmium.platform.sponge.SpongeUser;
+import com.mysql.cj.protocol.ExportControlled;
 
 import net.md_5.bungee.BungeeCord;
 
 public final class Osmium {
-
-	//	private static final HashMap<Class<? extends OsmiumPlugin>, Database> databases = new HashMap<>();
 
 	private static final PluginLoader pluginLoader = new PluginLoader();
 	private static final ConfigManager configManager = new ConfigManager();
@@ -78,7 +77,8 @@ public final class Osmium {
 
 	private static final ExecutorService genericThreadPool = Executors.newFixedThreadPool(3);
 
-	protected static boolean shuttingDown;
+	private static boolean shuttingDown;
+	private static boolean started;
 
 	/*
 	 * TODO:
@@ -100,6 +100,8 @@ public final class Osmium {
 			try {
 				Class.forName(BlockType.class.getName());
 				Class.forName(ItemType.class.getName());
+
+				Class.forName(ExportControlled.class.getName());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -112,16 +114,6 @@ public final class Osmium {
 			e.printStackTrace();
 		}
 	}
-
-	//	public static void main(String[] args) throws IOException {
-	//		long start = System.currentTimeMillis();
-	//		ConfigManager m = new ConfigManager();
-	//		ConfigData data = m.getConfigData(Config.class);
-	//		new ConfigParser(data, new File("test.txt")).load();
-	//		new ConfigWriter(data, new File("test.txt")).write();
-	//		System.out.println("TIME: " + (System.currentTimeMillis() - start));
-	//		//		com.kmecpp.osmium.api.config.ConfigManager.load(Test.class, new File("test.txt"));
-	//	}
 
 	private Osmium() {
 	}
@@ -220,6 +212,22 @@ public final class Osmium {
 		return (T) getInvokingPlugin().getClassProcessor().getClassInstances().get(cls);
 	}
 
+	public static void setStarted(boolean started) {
+		Osmium.started = started;
+	}
+
+	public static boolean isStarting() {
+		return !started;
+	}
+
+	public static boolean isShuttingDown() {
+		return shuttingDown;
+	}
+
+	public static void setShuttingDown() {
+		shuttingDown = true;
+	}
+
 	public static void shutdown() {
 		//Save plugin data first
 		for (OsmiumPlugin plugin : getPlugins()) {
@@ -302,14 +310,6 @@ public final class Osmium {
 	//	public static SimpleCommand registerCommand(OsmiumPlugin plugin, String name, String... aliases) {
 	//		return commandManager.register(plugin, new Command(name, aliases));
 	//	}
-
-	public static boolean isShuttingDown() {
-		return shuttingDown;
-	}
-
-	public static void setShuttingDown() {
-		shuttingDown = true;
-	}
 
 	//	public static Task getScheduler() {
 	//		return scheduler;

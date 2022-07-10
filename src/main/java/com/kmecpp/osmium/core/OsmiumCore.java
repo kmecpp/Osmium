@@ -62,6 +62,7 @@ public class OsmiumCore extends OsmiumPlugin {
 		Osmium.getTask().setExecutor(task -> {
 			Osmium.getPlugins().forEach(OsmiumPlugin::onServerStarted);
 			Osmium.getEventManager().callEvent(new OsmiumServerStartedEvent());
+			Osmium.setStarted(true);
 		}).start();
 
 		if (Platform.isGame()) {
