@@ -99,7 +99,7 @@ public class FieldTypeData {
 	 * java.util.ArrayList<java.util.HashSet<java.lang.String>>>
 	 */
 	//java.util.HashMap<java.util.HashMap<java.lang.String,java.lang.String>,java.util.ArrayList<java.util.HashSet<java.lang.String>>>
-	public static FieldTypeData parse(String str) throws ClassNotFoundException {
+	public static FieldTypeData parse(ClassLoader classLoader, String str) throws ClassNotFoundException {
 		Stack<FieldTypeData> stack = new Stack<>();
 		StringBuilder sb = new StringBuilder();
 
@@ -108,14 +108,14 @@ public class FieldTypeData {
 			if (c == ' ') {
 				continue; //There shouldn't be any strings in the actual string but this makes testing easier
 			} else if (c == '<') {
-				stack.push(new FieldTypeData(Class.forName(sb.toString()), new ArrayList<>()));
+				stack.push(new FieldTypeData(Class.forName(sb.toString(), false, classLoader), new ArrayList<>()));
 				sb.setLength(0);
 			} else if (c == '>') {
 				FieldTypeData popped = stack.pop();
 				//				System.out.println("POPPED: " + popped);
 
 				if (sb.length() > 0) { //Only do this if we're at the end of a type (we might not be)
-					Class<?> read = Class.forName(sb.toString());
+					Class<?> read = Class.forName(sb.toString(), false, classLoader);
 					popped.args.add(new FieldTypeData(read, new ArrayList<>()));
 					sb.setLength(0);
 				}
@@ -127,7 +127,7 @@ public class FieldTypeData {
 				}
 			} else if (c == ',') {
 				if (sb.length() > 0) { //There may be a comma after a '>' in which case we're at the begging of a type not the end like here
-					Class<?> read = Class.forName(sb.toString());
+					Class<?> read = Class.forName(sb.toString(), false, classLoader);
 					stack.peek().args.add(new FieldTypeData(read, new ArrayList<>()));
 					sb.setLength(0);
 				}
@@ -138,7 +138,8 @@ public class FieldTypeData {
 
 		String typeName = sb.toString();
 		Class<?> type = primitives.get(typeName);
-		type = type != null ? type : Class.forName(typeName); //Can't use getOrDefault because Class.forName() with throw and error
+		type = type != null ? type : Class.forName(typeName, false, classLoader); //Can't use getOrDefault because Class.forName() with throw and error
+
 		return new FieldTypeData(type, Collections.emptyList()); //Simple type
 	}
 
@@ -148,7 +149,7 @@ public class FieldTypeData {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object convertToActualType(Object loadedValue, PluginConfigTypeData pluginData) {
-		//		System.out.println("CONVERT TO " + type + ": " + loadedValue + " :: " + (loadedValue != null ? loadedValue.getClass() : ""));
+		//		System.out.println("CONVERT TO " + type + " FROM " + (loadedValue != null ? loadedValue.getClass() : "") + " :: " + loadedValue);
 		//		System.out.println(type.getPackage() == null ? "NULL" : type.getPackage().getName());
 
 		if (loadedValue == null) {

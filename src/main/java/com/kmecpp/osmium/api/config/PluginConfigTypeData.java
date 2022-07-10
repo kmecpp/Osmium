@@ -4,10 +4,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.annotation.Nullable;
+
+import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+
 public class PluginConfigTypeData {
 
-	private HashMap<String, HashMap<String, String>> unloadedData = new HashMap<>(); //<ConfigClass, <FieldPath, TypeData>>
-	private HashMap<Class<?>, HashMap<String, FieldTypeData>> loadedData = new HashMap<>(); //<ConfigClass, <FieldPath, TypeData>>
+	private final ClassLoader classLoader;
+
+	private final HashMap<String, HashMap<String, String>> unloadedData = new HashMap<>(); //<ConfigClass, <FieldPath, TypeData>>
+	private final HashMap<Class<?>, HashMap<String, FieldTypeData>> loadedData = new HashMap<>(); //<ConfigClass, <FieldPath, TypeData>>
+
+	public PluginConfigTypeData(@Nullable OsmiumPlugin plugin) {
+		this.classLoader = plugin != null ? plugin.getClass().getClassLoader() : this.getClass().getClassLoader();
+	}
 
 	public HashMap<Class<?>, ClassTypeData> getForConfigClass(Class<?> cls) throws ClassNotFoundException {
 		HashMap<Class<?>, ClassTypeData> result = new HashMap<>();
@@ -22,7 +32,7 @@ public class PluginConfigTypeData {
 			fieldTypeMap = new HashMap<>();
 			//			ConfigManager.getVirtualPath(enclosingPath, name, truncate)
 			for (Entry<String, String> entry : text.entrySet()) {
-				FieldTypeData typeData = FieldTypeData.parse(entry.getValue());
+				FieldTypeData typeData = FieldTypeData.parse(classLoader, entry.getValue());
 				fieldTypeMap.put(entry.getKey(), typeData);
 
 				//Visit all sub types
@@ -62,8 +72,8 @@ public class PluginConfigTypeData {
 		return result;
 	}
 
-	public static PluginConfigTypeData parse(List<String> configTypesFile) {
-		PluginConfigTypeData data = new PluginConfigTypeData();
+	public static PluginConfigTypeData parse(OsmiumPlugin plugin, List<String> configTypesFile) {
+		PluginConfigTypeData data = new PluginConfigTypeData(plugin);
 
 		HashMap<String, String> current = new HashMap<>();
 		String currentConfig = null;

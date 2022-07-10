@@ -78,7 +78,7 @@ public class PluginLoader {
 						}
 					}
 				}
-				PluginConfigTypeData configTypeData = PluginConfigTypeData.parse(configTypes);
+				PluginConfigTypeData configTypeData = PluginConfigTypeData.parse(plugin, configTypes);
 
 				for (Field field : plugin.getClass().getDeclaredFields()) {
 					if (field.isAnnotationPresent(PluginInstance.class)
@@ -207,6 +207,8 @@ public class PluginLoader {
 		}
 
 		Osmium.getEventManager().unregister(plugin);
+		Osmium.getConfigManager().unregister(plugin);
+		//TODO: Serialization class may remember stuff (minor memory leak only, shouldn't interfere with restart)
 
 		plugins.remove(plugin.getClass());
 		pluginFiles.remove(Directory.getJarFilePath(plugin.getClass()));

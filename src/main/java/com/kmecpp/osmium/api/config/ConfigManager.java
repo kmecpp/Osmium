@@ -54,6 +54,13 @@ public class ConfigManager {
 		pluginConfigs.computeIfAbsent(plugin, p -> new HashSet<>()).add(configClass);
 	}
 
+	public void unregister(OsmiumPlugin plugin) {
+		for (Class<?> config : pluginConfigs.remove(plugin)) {
+			configData.remove(config);
+			globalTypeData.remove(config);
+		}
+	}
+
 	public HashSet<Class<?>> getPluginConfigs(OsmiumPlugin plugin) {
 		return pluginConfigs.getOrDefault(plugin, new HashSet<>());
 	}
@@ -90,7 +97,7 @@ public class ConfigManager {
 		Path configPath;
 		if (Platform.isDev()) {
 			try {
-				pluginData = PluginConfigTypeData.parse(Arrays.asList(IOUtil.readLines(Paths.get("CONFIG_TYPES").toFile())));
+				pluginData = PluginConfigTypeData.parse(null, Arrays.asList(IOUtil.readLines(Paths.get("CONFIG_TYPES").toFile())));
 				configPath = Paths.get(configProperties.path());
 			} catch (Exception e) {
 				throw new RuntimeException(e);

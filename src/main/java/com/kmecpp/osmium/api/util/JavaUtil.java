@@ -19,8 +19,8 @@ public class JavaUtil {
 		}
 	}
 
-	public static String defaultToString(Object o) {
-		return o.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(o));
+	public static String defaultToString(Object obj) {
+		return obj == null ? null : obj.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(obj));
 	}
 
 	public static String getOSName() {
