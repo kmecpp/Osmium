@@ -67,7 +67,7 @@ public class ClassProcessor {
 
 		JarFile jarFile = Directory.getJarFile(mainClass);
 		String packageName = Reflection.getPackageName(mainClass); //For some reason mainClass.getPackage() started returning null
-		
+
 		//		HashSet<String> staticLoadClasses = null;
 		//		ZipEntry staticLoadFile = jarFile.getEntry("static-load-classes");
 		//		if (staticLoadFile != null) {
@@ -120,19 +120,21 @@ public class ClassProcessor {
 						skipClasses.add(cls.getName());
 						continue;
 					}
+					//TODO: Only load static-load-classes
 					cls.getDeclaredMethods(); //Verify that return types exist
+					cls.getDeclaredFields(); //Verify that field types exist
 					pluginClasses.add(cls); //NOTE: THIS ADDS NESTED CLASSES TOO
 					//					Class<?> cls = Class.forName(className, false, classLoader);
 					//					cls.getFields();
 					onLoad(cls);
 				} catch (ClassNotFoundException | NoClassDefFoundError ex) {
 					String exceptionMessage = ex.getMessage().toLowerCase();
-					if (exceptionMessage.contains("spongepowered/") || exceptionMessage.contains("bukkit/") || exceptionMessage.contains("bungee/")) {
+					if (exceptionMessage.contains("spongepowered") || exceptionMessage.contains("bukkit") || exceptionMessage.contains("bungee")) {
 						OsmiumLogger.debug("SKIPPING: " + className + " (CLASS NOT FOUND: " + exceptionMessage + ")");
 					} else {
 						OsmiumLogger.warn("Could not load class: " + className);
 						OsmiumLogger.warn(ex.getLocalizedMessage());
-						//						e.printStackTrace();
+						//						ex.printStackTrace();
 					}
 					//Ignore classes depending on different platforms (TODO: THIS COULD EASILY BREAK STUFF??)
 				} catch (Throwable t) {
