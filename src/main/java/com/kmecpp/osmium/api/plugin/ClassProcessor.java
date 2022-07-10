@@ -348,7 +348,7 @@ public class ClassProcessor {
 					if (eventInfo.isOsmiumEvent()) {
 						//Register implementation class for Osmium
 						OsmiumLogger.debug("Registering listener for " + eventInfo.getEventWrapperClass().getSimpleName() + ": " + cls.getSimpleName() + "." + method.getName());
-						Osmium.getEventManager().registerListener(eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
+						Osmium.getEventManager().registerOsmiumEventListener(plugin, eventInfo.getOsmiumImplementation(), listenerAnnotation.order(), instance, method);
 
 					} else {
 						Osmium.getEventManager().registerListener(plugin, eventInfo, listenerAnnotation.order(), method, instance);

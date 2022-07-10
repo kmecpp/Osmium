@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -30,14 +31,17 @@ public class PluginLoader {
 
 	private final HashMap<String, OsmiumPlugin> pluginFiles = new HashMap<>();
 	private final HashMap<Class<? extends OsmiumPlugin>, OsmiumPlugin> plugins = new HashMap<>();
+	private final HashMap<String, Path> pluginPaths = new HashMap<>(); //Map Plugin names to jar Path (this data is never cleared)
 
 	private final HashMap<Class<?>, OsmiumPlugin> externalClasses = new HashMap<>();
 
 	public OsmiumPlugin createOsmiumPlugin(Object pluginImpl) {
 		try {
 			//			String[] lines = IOUtil.readLines(pluginImpl.getClass().getResource("/osmium.properties")); //Weird sponge bug. Doesn't work anymore
-			JarFile jar = Directory.getJarFile(pluginImpl.getClass());
-			String[] lines = IOUtil.readLines(jar.getInputStream(jar.getEntry("osmium.properties")));
+			final JarFile jar = Directory.getJarFile(pluginImpl.getClass());
+			final Path jarPath = new File(Directory.getJarFilePath(pluginImpl.getClass())).toPath();
+
+			final String[] lines = IOUtil.readLines(jar.getInputStream(jar.getEntry("osmium.properties")));
 			try {
 				String mainClassName = lines[0].split(":")[1].trim();
 				ClassLoader pluginClassLoader = pluginImpl.getClass().getClassLoader();
@@ -62,6 +66,7 @@ public class PluginLoader {
 
 				OsmiumPlugin plugin = main.newInstance();
 				OsmiumLogger.info("Loading plugin: " + plugin.getName() + " v" + plugin.getVersion());
+				pluginPaths.put(plugin.getName(), jarPath);
 
 				ArrayList<String> configTypes = new ArrayList<>();
 				Enumeration<JarEntry> entries = jar.entries();
@@ -201,6 +206,8 @@ public class PluginLoader {
 			BungeeAccess.unloadPlugin(plugin);
 		}
 
+		Osmium.getEventManager().unregister(plugin);
+
 		plugins.remove(plugin.getClass());
 		pluginFiles.remove(Directory.getJarFilePath(plugin.getClass()));
 		externalClasses.entrySet().removeIf(e -> e.getValue() == plugin);
@@ -229,6 +236,10 @@ public class PluginLoader {
 			return plugin;
 		}
 		return externalClasses.get(cls);
+	}
+
+	public Path getPluginJarFile(String pluginName) {
+		return pluginPaths.get(pluginName);
 	}
 
 }

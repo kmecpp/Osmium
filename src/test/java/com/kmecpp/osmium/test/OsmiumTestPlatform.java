@@ -125,7 +125,7 @@ public class OsmiumTestPlatform extends TestCase {
 	@Test
 	public void testRegisterEvents() {
 		try {
-			Osmium.getEventManager().registerListener(PlayerMovePositionEvent.class, Order.DEFAULT, this,
+			Osmium.getEventManager().registerOsmiumEventListener(null, PlayerMovePositionEvent.class, Order.DEFAULT, this,
 					this.getClass().getMethod("onEvent", PlayerMovePositionEvent.class));
 			assertTrue(true);
 		} catch (NoSuchMethodException | SecurityException e) {

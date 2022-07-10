@@ -1,5 +1,8 @@
 package com.kmecpp.osmium.core;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
@@ -94,13 +97,30 @@ public class OsmiumCoreCommands extends Command {
 					fail("That plugin is already loaded!");
 				}
 
-				//Store Known Name -> File map, otherwise check if input is a file name
-			} else if (e.getArgLabel().equalsIgnoreCase("unload")) {
-				//				Osmium.getPluginLoader().unloadPlugin(plugin);
-				//				e.sendMessage(Chat.GREEN + plugin.getName() + " unloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
-			} else if (e.getArgLabel().equalsIgnoreCase("restart")) {
-				Osmium.getPluginLoader().restartPlugin(plugin);
-				e.sendMessage(Chat.GREEN + plugin.getName() + " reloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
+				String nameOrPath = e.getString(0);
+				Path jarFile = Osmium.getPluginLoader().getPluginJarFile(nameOrPath);
+				if (jarFile == null) {
+					jarFile = Paths.get("plugins", nameOrPath);
+				}
+
+				if (Files.exists(jarFile)) {
+					fail("That plugin does not exist! Enter a plugin or file name!");
+				}
+
+				Osmium.getPluginLoader().loadPlugin(jarFile.toFile());
+				e.sendMessage(Chat.GREEN + "Plugin loaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
+			} else {
+				if (plugin == null) {
+					fail("That plugin is not currently loaded!");
+				}
+
+				if (e.getArgLabel().equalsIgnoreCase("unload")) {
+					Osmium.getPluginLoader().unloadPlugin(plugin);
+					e.sendMessage(Chat.GREEN + plugin.getName() + " unloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
+				} else if (e.getArgLabel().equalsIgnoreCase("restart")) {
+					Osmium.getPluginLoader().restartPlugin(plugin);
+					e.sendMessage(Chat.GREEN + plugin.getName() + " reloaded successfully (" + (System.currentTimeMillis() - startTime) + "ms)!");
+				}
 			}
 		});
 
