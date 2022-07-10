@@ -208,6 +208,7 @@ public class PluginLoader {
 
 		Osmium.getEventManager().unregister(plugin);
 		Osmium.getConfigManager().unregister(plugin);
+		Osmium.getCommandManager().unregister(plugin);
 		//TODO: Serialization class may remember stuff (minor memory leak only, shouldn't interfere with restart)
 
 		plugins.remove(plugin.getClass());

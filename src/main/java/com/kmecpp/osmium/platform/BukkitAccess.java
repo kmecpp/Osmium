@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -58,6 +60,8 @@ import com.kmecpp.osmium.platform.bukkit.BukkitItemStack;
 import com.kmecpp.osmium.platform.bukkit.GenericBukkitCommandSender;
 
 public class BukkitAccess {
+
+	private static final HashMap<OsmiumPlugin, ArrayList<Runnable>> commandUnregistrators = new HashMap<>();
 
 	public static EntityType getEntityType(org.bukkit.entity.EntityType type) {
 		return OsmiumRegistry.fromSource(EntityType.class, type);
@@ -179,7 +183,15 @@ public class BukkitAccess {
 
 			});
 
-			commandMap.register(plugin.getName(), bukkitCommand);
+			boolean registrationSuccessful = commandMap.register(plugin.getName(), bukkitCommand);
+
+			if (registrationSuccessful) {
+				ArrayList<Runnable> unregistration = commandUnregistrators.computeIfAbsent(plugin, k -> new ArrayList<>());
+				unregistration.add(() -> {
+					bukkitCommand.unregister(commandMap);
+					bukkitInternalKnownCommands.entrySet().removeIf(e -> e.getValue() == bukkitCommand);
+				});
+			}
 
 			if (command.getOverrideMode() != OverrideMode.NONE) {
 				//@formatter:off
@@ -192,6 +204,7 @@ public class BukkitAccess {
 
 				for (String overrideAlias : aliasesToOverride) {
 					org.bukkit.command.Command existing = bukkitInternalKnownCommands.put(overrideAlias.toLowerCase(), bukkitCommand);
+
 					System.out.println("EXISTING COMMAND: " + existing);
 					if (existing != bukkitCommand) {
 						OsmiumLogger.info("Overriding command: " + existing);
@@ -201,6 +214,13 @@ public class BukkitAccess {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public static void unregisterCommands(OsmiumPlugin plugin) {
+		ArrayList<Runnable> unregistrators = commandUnregistrators.remove(plugin);
+		if (unregistrators != null) {
+			unregistrators.stream().forEach(Runnable::run);
 		}
 	}
 
@@ -236,9 +256,10 @@ public class BukkitAccess {
 
 		}.setDefaultUseCaches(false);
 
-		Bukkit.getScheduler().cancelTasks(plugin.getSource());
+		Bukkit.getScheduler().cancelTasks(plugin.getSource()); //This should be unnecessary on 1.7.10
+
 		HandlerList.unregisterAll(plugin.<JavaPlugin> getSource());
-		//TODO: Commands?
+		BukkitAccess.unregisterCommands(plugin);
 
 		Bukkit.getPluginManager().disablePlugin(plugin.getSource());
 	}

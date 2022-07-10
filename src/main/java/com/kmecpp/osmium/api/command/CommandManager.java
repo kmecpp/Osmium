@@ -51,6 +51,13 @@ public final class CommandManager {
 		return command;
 	}
 
+	public void unregister(OsmiumPlugin plugin) {
+		ArrayList<Command> pluginCommands = this.commands.remove(plugin);
+		for (Command command : pluginCommands) {
+			commandClassMap.remove(command.getClass());
+		}
+	}
+
 	//	public void setAllowConsoleByDefault(OsmiumPlugin plugin, boolean allow) {
 	//		defaultAllowConsole.put(plugin, allow);
 	//	}
