@@ -29,9 +29,9 @@ public class SelectQuery<T> implements SISelect<T> {
 
 	public SelectQuery(SQLDatabase database, Class<T> tableClass) {
 		this.database = database;
-		this.tableData = SQLDatabase.getTable(tableClass);
+		this.tableData = database.getTable(tableClass);
 		if (this.tableData == null) {
-			throw new IllegalArgumentException("Missing table registration for " + this.getClass().getName() + "! Is it annotated with @" + DBTable.class.getSimpleName() + "?");
+			throw new IllegalArgumentException("Missing table registration for " + tableClass.getName() + "! Is it annotated with @" + DBTable.class.getSimpleName() + "?");
 		}
 	}
 

@@ -1,6 +1,7 @@
 package com.kmecpp.osmium.core;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,8 +19,11 @@ import com.kmecpp.osmium.api.database.MultiplePlayerData;
 import com.kmecpp.osmium.api.database.PlayerData;
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.database.TableData;
+import com.kmecpp.osmium.api.database.api.DBTable;
+import com.kmecpp.osmium.api.database.api.DatabaseType;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
+import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.util.Reflection;
 
@@ -176,12 +180,22 @@ public class PlayerDataManager {
 
 		for (Entry<OsmiumPlugin, HashSet<Class<?>>> entry : registeredTypes.entrySet()) {
 			OsmiumPlugin plugin = entry.getKey();
+
 			for (Class<?> rawType : entry.getValue()) {
+				DBTable tableAnnotation = rawType.getDeclaredAnnotation(DBTable.class);
+				if (tableAnnotation.type().length != 1) {
+					OsmiumLogger.warn("Player data table '" + rawType.getName() + "' must have only a single type! Not: " + Arrays.toString(tableAnnotation.type()));
+					continue;
+				}
+				final DatabaseType dbType = tableAnnotation.type()[0];
+				final SQLDatabase database = dbType == DatabaseType.MYSQL ? plugin.getMySQLDatabase() : plugin.getSQLiteDatabase();
+				final TableData table = database.getTable(rawType);
+
 				try {
 					if (MultiplePlayerData.class.isAssignableFrom(rawType)) {
 						Class<? extends MultiplePlayerData<K>> type = Reflection.cast(rawType);
 						HashMap<K, MultiplePlayerData<K>> map = new HashMap<>();
-						plugin.getMySQLDatabase().queryColumns(type, "uuid", user.getUniqueId()).forEach(obj -> {
+						plugin.getMySQLDatabase().queryColumns(type, "uuid", user.getUniqueId()).forEach(obj -> { //TODO: MultiplePlayerData support for SQLite
 							obj.updatePlayerData(user.getUniqueId(), user.getName());
 							map.put(obj.getKey(), obj);
 						});
@@ -192,21 +206,9 @@ public class PlayerDataManager {
 						data.put(type, map);
 					} else {
 						Class<? extends PlayerData> type = Reflection.cast(rawType);
-						TableData table = SQLDatabase.getTable(type);
-						PlayerData value;
-						if (table.isMySQL()) {
-							//						if (AdvancedPlayerData.class.isAssignableFrom(type)) {
-							//							value = plugin.getMySQLDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), e.getUniqueId());
-							//						} else {
-							System.out.println("GET DATA: " + type.getName());
-
-							value = plugin.getMySQLDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), user.getUniqueId());
-							//						}
-						} else {
-							value = plugin.getSQLiteDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), user.getUniqueId());
-						}
-
-						//				System.out.println("VALUE: " + value);
+						PlayerData value = table.isMySQL()
+								? plugin.getMySQLDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), user.getUniqueId())
+								: plugin.getSQLiteDatabase().getOrDefault(type, Reflection.cast(Reflection.createInstance(type)), user.getUniqueId());
 
 						if (value instanceof PlayerData) {
 							((PlayerData) value).updatePlayerData(user.getUniqueId(), user.getName());
@@ -215,7 +217,6 @@ public class PlayerDataManager {
 						System.out.println("LOADED PLAYER DATA: " + value);
 						this.data.computeIfAbsent(user.getUniqueId(), k -> new HashMap<>()).put(type, value);
 						//				System.out.println("UPDATED PLAYER DATA: " + e.getPlayerName() + ", " + data);
-						//						data.put(type, value);
 					}
 				} catch (Throwable t) {
 					t.printStackTrace();

@@ -50,7 +50,7 @@ public abstract class SQLDatabase {
 	private DatabaseQueue queue = new DatabaseQueue();
 	private CountDownLatch availableLatch = new CountDownLatch(1);
 
-	protected static final HashMap<Class<?>, TableData> tables = new HashMap<>();
+	protected final HashMap<Class<?>, TableData> tables = new HashMap<>();
 
 	public SQLDatabase(OsmiumPlugin plugin, DatabaseType type) {
 		this.plugin = plugin;
@@ -526,7 +526,7 @@ public abstract class SQLDatabase {
 		return hikariSource != null && !hikariSource.isClosed();//&& source.isRunning();
 	}
 
-	public static TableData getTable(Class<?> cls) {
+	public TableData getTable(Class<?> cls) {
 		return tables.get(cls);
 	}
 
