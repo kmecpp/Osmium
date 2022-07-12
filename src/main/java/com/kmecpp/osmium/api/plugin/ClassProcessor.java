@@ -455,6 +455,8 @@ public class ClassProcessor {
 							}
 							mysqlConnected = plugin.getMySQLDatabase().isConnected();
 						}
+
+						plugin.getMySQLDatabase().registerTable(cls); //Should always register the table, even if we can't connect to the database. Otherwise, we might think there was a registration problem
 						if (mysqlConnected) {
 							OsmiumLogger.debug("Initializing MySQL database table: " + table.name());
 
@@ -479,6 +481,8 @@ public class ClassProcessor {
 							}
 							sqliteConnected = plugin.getSQLiteDatabase().isConnected();
 						}
+
+						plugin.getSQLiteDatabase().registerTable(cls); //Should always register the table, even if we can't connect to the database. Otherwise, we might think there was a registration problem
 						if (sqliteConnected) {
 							OsmiumLogger.debug("Initializing SQLite database table: " + table.name());
 							plugin.getSQLiteDatabase().createTable(cls);
