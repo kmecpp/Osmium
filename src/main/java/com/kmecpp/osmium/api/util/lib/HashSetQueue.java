@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class HashSetQueue<E> {
 
-	protected HashSet<E> queueSet = new HashSet<>();
+	protected HashSet<E> hashSet = new HashSet<>();
 	protected ArrayDeque<E> queue = new ArrayDeque<>();
 
 	/**
@@ -27,8 +27,8 @@ public class HashSetQueue<E> {
 	}
 
 	public boolean add(E element) {
-		if (!queueSet.contains(element)) {
-			queueSet.add(element);
+		if (!hashSet.contains(element)) {
+			hashSet.add(element);
 			queue.add(element);
 			return true;
 		}
@@ -37,12 +37,12 @@ public class HashSetQueue<E> {
 
 	public E poll() {
 		E element = queue.poll();
-		queueSet.remove(element);
+		hashSet.remove(element);
 		return element;
 	}
 
 	public void clear() {
-		queueSet.clear();
+		hashSet.clear();
 		queue.clear();
 	}
 
@@ -55,7 +55,11 @@ public class HashSetQueue<E> {
 	}
 
 	public boolean contains(Object o) {
-		return queue.contains(o);
+		return hashSet.contains(o);
+	}
+
+	public boolean containsAll(Collection<?> c) {
+		return hashSet.containsAll(c);
 	}
 
 	public Iterator<E> iterator() {
@@ -68,10 +72,6 @@ public class HashSetQueue<E> {
 
 	public <T> T[] toArray(T[] a) {
 		return queue.toArray(a);
-	}
-
-	public boolean containsAll(Collection<?> c) {
-		return queue.containsAll(c);
 	}
 
 	public E element() {
