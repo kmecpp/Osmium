@@ -28,6 +28,7 @@ public class HashSetQueue<E> {
 
 	public boolean add(E element) {
 		if (!queueSet.contains(element)) {
+			queueSet.add(element);
 			queue.add(element);
 			return true;
 		}
