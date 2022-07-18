@@ -90,6 +90,14 @@ public class History<T> implements Iterable<T> {
 		};
 	}
 
+	public ArrayList<T> toList() {
+		ArrayList<T> result = new ArrayList<>();
+		for (T obj : this) { //Need to use the History iterator
+			result.add(obj);
+		}
+		return result;
+	}
+
 	@Override
 	public String toString() {
 		ArrayList<T> list = new ArrayList<>();
