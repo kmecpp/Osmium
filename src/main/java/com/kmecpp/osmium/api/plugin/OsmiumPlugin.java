@@ -167,6 +167,10 @@ public abstract class OsmiumPlugin {
 		classProcessor.provideInstance(instance);
 		return instance;
 	}
+	
+	public <T> T getInstance(Class<T> cls) {
+		return classProcessor.getInstance(cls);
+	}
 
 	public void enableMetrics() {
 		Osmium.getMetrics().register(this);

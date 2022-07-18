@@ -73,7 +73,7 @@ public class PlayerDataManager {
 						boolean shouldRemove = timeSinceLogout > retainThreshold;
 
 						if (shouldRemove) {
-							if (Map.class.isAssignableFrom(dataObject.getClass())) {
+							if (Map.class.isAssignableFrom(dataObject.getClass())) { //TODO: Do we maybe want to support Map<GameProfile, ?> too?
 								Reflection.<Map<UUID, ?>> cast(dataObject).remove(playerId);
 							} else if (Set.class.isAssignableFrom(dataObject.getClass())) {
 								Reflection.<Set<UUID>> cast(dataObject).remove(playerId);

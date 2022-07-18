@@ -174,8 +174,8 @@ public class ClassProcessor {
 		return externalClasses;
 	}
 
-	public HashMap<Class<?>, Object> getClassInstances() {
-		return classInstances;
+	public <T> T getInstance(Class<T> cls) {
+		return Reflection.cast(classInstances.get(cls));
 	}
 
 	public void provideInstance(Object listener) {

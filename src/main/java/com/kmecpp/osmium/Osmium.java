@@ -207,9 +207,8 @@ public final class Osmium {
 	//		return database;
 	//	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> T getInstance(Class<T> cls) {
-		return (T) getInvokingPlugin().getClassProcessor().getClassInstances().get(cls);
+		return getInvokingPlugin().getClassProcessor().getInstance(cls);
 	}
 
 	public static void setStarted(boolean started) {
