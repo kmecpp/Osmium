@@ -51,7 +51,7 @@ public class OsmiumCore extends OsmiumPlugin {
 		}).start();
 
 		Osmium.getTask().setTime(0, 15, TickTimeUnit.MINUTE).setExecutor((t) -> {
-			OsmiumUserIds.cleanup();
+			OsmiumUserDataManager.cleanup();
 		}).start();
 
 		Osmium.getTask().setAsync(true).setTime(0, 1, TickTimeUnit.HOUR).setExecutor(task -> {

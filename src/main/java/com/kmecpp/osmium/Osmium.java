@@ -49,9 +49,10 @@ import com.kmecpp.osmium.api.util.Reflection;
 import com.kmecpp.osmium.api.util.TimeUtil;
 import com.kmecpp.osmium.cache.PlayerList;
 import com.kmecpp.osmium.cache.WorldList;
-import com.kmecpp.osmium.core.OsmiumUserIds;
+import com.kmecpp.osmium.core.OsmiumUserDataManager;
 import com.kmecpp.osmium.core.PlayerDataManager;
 import com.kmecpp.osmium.core.TPSTask;
+import com.kmecpp.osmium.core.UserTable;
 import com.kmecpp.osmium.platform.SpongeAccess;
 import com.kmecpp.osmium.platform.UnsupportedPlatformException;
 import com.kmecpp.osmium.platform.bukkit.BukkitUser;
@@ -477,15 +478,16 @@ public final class Osmium {
 	}
 
 	public static Optional<Integer> getUserId(UUID uuid) {
-		return OsmiumUserIds.getUserId(uuid);
+		Optional<UserTable> userData = OsmiumUserDataManager.getUserData(uuid);
+		return userData.isPresent() ? Optional.of(userData.get().getId()) : Optional.empty();
 	}
 
 	public static Optional<GameProfile> getGameProfile(int userId) {
-		return Optional.ofNullable(OsmiumUserIds.getProfile(userId, false));
+		return Optional.ofNullable(OsmiumUserDataManager.getProfile(userId, false));
 	}
 
 	public static Optional<GameProfile> getGameProfile(int userId, boolean lookup) {
-		return Optional.ofNullable(OsmiumUserIds.getProfile(userId, lookup));
+		return Optional.ofNullable(OsmiumUserDataManager.getProfile(userId, lookup));
 	}
 
 	public static Optional<User> getUser(UUID uuid) {

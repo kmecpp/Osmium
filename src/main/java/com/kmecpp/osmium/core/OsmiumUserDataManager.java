@@ -12,9 +12,10 @@ import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.Pair;
 
-public class OsmiumUserIds {
+public class OsmiumUserDataManager {
 
-	private static final HashMap<UUID, Pair<Integer, Long>> ids = new HashMap<>();
+	//	private static final HashMap<UUID, Pair<Integer, Long>> ids = new HashMap<>();
+	private static final HashMap<UUID, Pair<UserTable, Long>> userData = new HashMap<>();
 	private static final HashMap<Integer, Pair<GameProfile, Long>> idToProfileMap = new HashMap<>();
 
 	public static void onAsyncPreLogin(PlayerConnectionEvent.Auth e) {
@@ -27,18 +28,19 @@ public class OsmiumUserIds {
 		}
 
 		try {
-			OsmiumUserIds.createUserId(uuid, name);
+			OsmiumUserDataManager.createUserId(uuid, name); //Ensure 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			e.setCancelled(true);
 			e.setKickMessage("[Osmium] Unable to create or retrieve user ID");
+			return;
 		}
 		//		INSERT INTO visits (ip, hits)
 		//		VALUES ('127.0.0.1', 1)
 		//		ON CONFLICT(ip) DO UPDATE SET hits = hits + 1;
 
-		int id = getUserId(uuid).get(); //Cache ID
-		idToProfileMap.put(id, new Pair<>(new GameProfile(uuid, name), System.currentTimeMillis()));
+		UserTable data = getUserData(uuid).get(); //The above should ensure that we always get valid user data
+		idToProfileMap.put(data.getId(), new Pair<>(new GameProfile(uuid, name), System.currentTimeMillis()));
 		Osmium.getPlayerDataManager().onPlayerStartAuthentication(Osmium.getOrCreateUser(uuid, name).get());
 	}
 
@@ -58,49 +60,41 @@ public class OsmiumUserIds {
 	}
 
 	public static void createUserId(UUID uuid, String playerName) {
-		if (OsmiumCoreConfig.Database.useMySql) {
-			int result = OsmiumCore.getPlugin().getMySQLDatabase().update("update osmium_users set name='" + playerName + "' where uuid='" + uuid + "'");
-			if (result == 0) {
+		String tableName = OsmiumCoreConfig.Database.useMySql ? "osmium_users" : "users";
+		int result = OsmiumCore.getDatabase().update("update " + tableName + " set name='" + playerName + "' where uuid='" + uuid + "'");
+
+		if (result == 0) {
+			if (OsmiumCoreConfig.Database.useMySql) {
 				OsmiumCore.getPlugin().getMySQLDatabase().update("insert ignore into osmium_users(uuid, name) values ('" + uuid + "', '" + playerName + "')");
-			}
-		} else {
-			int result = OsmiumCore.getPlugin().getSQLiteDatabase().update("UPDATE users SET name='" + playerName + "' WHERE uuid='" + uuid + "'");
-			if (result == 0) {
+			} else {
 				OsmiumCore.getPlugin().getSQLiteDatabase().update("INSERT OR IGNORE INTO users(uuid, name) values ('" + uuid + "', '" + playerName + "');");
 			}
 		}
 	}
 
-	public static Optional<Integer> getUserId(UUID uuid) {
-		Pair<Integer, Long> data = ids.get(uuid);
-		if (data == null) {
-			String query = "select id from " + (OsmiumCoreConfig.Database.useMySql ? "osmium_users" : "users") + " where uuid='" + uuid + "'";
-
-			Integer id = OsmiumCore.getDatabase().get(query, rs -> rs.getInt(1));
-			if (id == null) {
-				return Optional.empty();
-			}
-			data = new Pair<>(id, System.currentTimeMillis());
-			ids.put(uuid, data);
+	public static Optional<UserTable> getUserData(UUID uuid) {
+		Pair<UserTable, Long> cachedData = userData.get(uuid);
+		if (cachedData != null) {
+			return Optional.of(cachedData.getFirst());
 		}
-		return Optional.of(data.getFirst());
+
+		UserTable result = OsmiumCore.getDatabase().get(UserTable.class, "uuid", uuid.toString());
+		if (result != null) {
+			userData.put(uuid, new Pair<>(result, System.currentTimeMillis()));
+		}
+		return Optional.ofNullable(result);
 	}
 
-	public static int getUserIdFromPlayer(Player player) {
-		if (player.getName().startsWith("[") || player.getName().contains("-")) {
-			return -1;
-		} else {
-			Optional<Integer> optionalId = Osmium.getUserId(player.getUniqueId());
-			if (!optionalId.isPresent()) {
-				OsmiumLogger.warn("Could not get user ID player: " + player.getName());
-			}
-			return optionalId.orElse(-1);
-		}
+	public static final UserTable FAKE_USER_DATA = UserTable.createFakeUserTable();
+
+	public static UserTable getUserDataFromPlayer(Player player) {
+		return player.getName().startsWith("[") || player.getName().contains("-") ? FAKE_USER_DATA
+				: getUserData(player.getUniqueId()).get();
 	}
 
 	public static void cleanup() {
 		long currentTime = System.currentTimeMillis();
-		ids.entrySet().removeIf(e -> currentTime - e.getValue().getSecond() > 1000 * 60 * 30); //30 Minutes
+		userData.entrySet().removeIf(e -> currentTime - e.getValue().getSecond() > 1000 * 60 * 30); //30 Minutes
 		idToProfileMap.entrySet().removeIf(e -> currentTime - e.getValue().getSecond() > 1000 * 60 * 30); //30 Minutes
 	}
 

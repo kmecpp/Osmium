@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -19,22 +20,28 @@ import com.kmecpp.osmium.api.SoundType;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
-import com.kmecpp.osmium.core.OsmiumUserIds;
+import com.kmecpp.osmium.core.OsmiumUserDataManager;
+import com.kmecpp.osmium.core.UserTable;
 
 public class SpongePlayer extends SpongeEntityLiving implements Player {
 
 	private org.spongepowered.api.entity.living.player.Player player;
-	private int osmiumId;
+	private UserTable osmiumData;
 
 	public SpongePlayer(org.spongepowered.api.entity.living.player.Player player) {
 		super(player);
 		this.player = player;
-		this.osmiumId = OsmiumUserIds.getUserIdFromPlayer(this);
+		this.osmiumData = OsmiumUserDataManager.getUserDataFromPlayer(this);
 	}
 
 	@Override
 	public int getOsmiumId() {
-		return osmiumId;
+		return osmiumData.getId();
+	}
+
+	@Override
+	public ZoneId getTimeZone() {
+		return osmiumData.getTimeZone();
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.api;
 
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +15,8 @@ public interface User extends Abstraction {
 	String getName();
 
 	int getOsmiumId();
+
+	ZoneId getTimeZone();
 
 	boolean isOp();
 

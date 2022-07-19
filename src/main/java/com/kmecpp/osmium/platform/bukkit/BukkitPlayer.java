@@ -1,5 +1,7 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import java.time.ZoneId;
+
 import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
@@ -10,22 +12,28 @@ import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.inventory.Inventory;
 import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Vector3d;
-import com.kmecpp.osmium.core.OsmiumUserIds;
+import com.kmecpp.osmium.core.OsmiumUserDataManager;
+import com.kmecpp.osmium.core.UserTable;
 
 public class BukkitPlayer extends BukkitEntityLiving implements Player {
 
 	private org.bukkit.entity.Player player;
-	private int osmiumId;
+	private UserTable osmiumData;
 
 	public BukkitPlayer(org.bukkit.entity.Player player) {
 		super(player);
 		this.player = player;
-		this.osmiumId = OsmiumUserIds.getUserIdFromPlayer(this);
+		this.osmiumData = OsmiumUserDataManager.getUserDataFromPlayer(this);
 	}
 
 	@Override
 	public int getOsmiumId() {
-		return osmiumId;
+		return osmiumData.getId();
+	}
+
+	@Override
+	public ZoneId getTimeZone() {
+		return osmiumData.getTimeZone();
 	}
 
 	@Override

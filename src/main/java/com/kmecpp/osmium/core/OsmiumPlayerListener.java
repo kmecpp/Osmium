@@ -9,7 +9,7 @@ public class OsmiumPlayerListener {
 
 	@Listener(order = Order.FIRST)
 	public void on(PlayerConnectionEvent.Auth e) {
-		OsmiumUserIds.onAsyncPreLogin(e);
+		OsmiumUserDataManager.onAsyncPreLogin(e);
 	}
 
 	@Listener(order = Order.FIRST)

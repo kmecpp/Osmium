@@ -1,11 +1,13 @@
 package com.kmecpp.osmium.platform.bukkit;
 
+import java.time.ZoneId;
 import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.User;
+import com.kmecpp.osmium.core.OsmiumUserDataManager;
 
 public class BukkitUser implements User {
 
@@ -35,6 +37,11 @@ public class BukkitUser implements User {
 	@Override
 	public int getOsmiumId() {
 		return Osmium.getUserId(user.getUniqueId()).orElse(-1);
+	}
+
+	@Override
+	public ZoneId getTimeZone() {
+		return OsmiumUserDataManager.getUserData(user.getUniqueId()).get().getTimeZone();
 	}
 
 	@Override

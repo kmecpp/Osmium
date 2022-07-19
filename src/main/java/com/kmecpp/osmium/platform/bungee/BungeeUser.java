@@ -1,9 +1,11 @@
 package com.kmecpp.osmium.platform.bungee;
 
+import java.time.ZoneId;
 import java.util.UUID;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.User;
+import com.kmecpp.osmium.core.OsmiumUserDataManager;
 
 import net.md_5.bungee.BungeeCord;
 
@@ -35,6 +37,11 @@ public class BungeeUser implements User {
 	@Override
 	public int getOsmiumId() {
 		return Osmium.getUserId(uuid).orElse(-1);
+	}
+
+	@Override
+	public ZoneId getTimeZone() {
+		return OsmiumUserDataManager.getUserData(uuid).get().getTimeZone();
 	}
 
 	@Override

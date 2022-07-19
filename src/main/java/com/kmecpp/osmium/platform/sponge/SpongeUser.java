@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform.sponge;
 
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -7,6 +8,7 @@ import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.User;
+import com.kmecpp.osmium.core.OsmiumUserDataManager;
 
 public class SpongeUser implements User {
 
@@ -34,6 +36,11 @@ public class SpongeUser implements User {
 	@Override
 	public int getOsmiumId() {
 		return Osmium.getUserId(user.getUniqueId()).orElse(-1);
+	}
+
+	@Override
+	public ZoneId getTimeZone() {
+		return OsmiumUserDataManager.getUserData(user.getUniqueId()).get().getTimeZone();
 	}
 
 	@Override

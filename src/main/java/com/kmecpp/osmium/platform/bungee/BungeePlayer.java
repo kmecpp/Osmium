@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.platform.bungee;
 
+import java.time.ZoneId;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.GameMode;
@@ -13,7 +14,8 @@ import com.kmecpp.osmium.api.inventory.ItemStack;
 import com.kmecpp.osmium.api.location.Direction;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.location.Vector3d;
-import com.kmecpp.osmium.core.OsmiumUserIds;
+import com.kmecpp.osmium.core.OsmiumUserDataManager;
+import com.kmecpp.osmium.core.UserTable;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -21,11 +23,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class BungeePlayer implements Player {
 
 	private ProxiedPlayer player;
-	private int osmiumId;
+	private UserTable osmiumData;
 
 	public BungeePlayer(ProxiedPlayer player) {
 		this.player = player;
-		this.osmiumId = OsmiumUserIds.getUserIdFromPlayer(this);
+		this.osmiumData = OsmiumUserDataManager.getUserDataFromPlayer(this);
 	}
 
 	@Override
@@ -40,7 +42,12 @@ public class BungeePlayer implements Player {
 
 	@Override
 	public int getOsmiumId() {
-		return osmiumId;
+		return osmiumData.getId();
+	}
+
+	@Override
+	public ZoneId getTimeZone() {
+		return osmiumData.getTimeZone();
 	}
 
 	@Override

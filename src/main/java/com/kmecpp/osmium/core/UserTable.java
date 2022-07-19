@@ -1,5 +1,6 @@
 package com.kmecpp.osmium.core;
 
+import java.time.ZoneId;
 import java.util.UUID;
 
 import com.kmecpp.osmium.api.database.api.DBColumn;
@@ -19,6 +20,17 @@ public class UserTable {
 	@DBColumn(maxLength = 16)
 	private String name;
 
+	@DBColumn(maxLength = 64, nullable = true)
+	private String timeZone;
+
+	public static UserTable createFakeUserTable() {
+		UserTable result = new UserTable();
+		result.uuid = new UUID(0, 0);
+		result.name = "[Fake User]";
+		result.id = -1;
+		return result;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -29,6 +41,14 @@ public class UserTable {
 
 	public String getName() {
 		return name;
+	}
+
+	public ZoneId getTimeZone() {
+		return timeZone != null ? ZoneId.of(timeZone) : null;
+	}
+
+	public void setTimezone(ZoneId timeZone) {
+		this.timeZone = timeZone != null ? timeZone.getId() : null;
 	}
 
 }
