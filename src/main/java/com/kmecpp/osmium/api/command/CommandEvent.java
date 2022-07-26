@@ -258,7 +258,7 @@ public class CommandEvent implements Messageable {
 	}
 
 	public boolean hasString(int index) {
-		return index < args.length;
+		return index >= 0 && index < args.length;
 	}
 
 	public boolean getBoolean(int index, String trueString, String falseString) {
