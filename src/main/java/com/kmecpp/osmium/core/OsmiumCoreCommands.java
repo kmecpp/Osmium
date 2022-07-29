@@ -11,6 +11,7 @@ import java.util.UUID;
 import com.kmecpp.osmium.AppInfo;
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
+import com.kmecpp.osmium.api.GameProfile;
 import com.kmecpp.osmium.api.User;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.command.Command;
@@ -177,6 +178,16 @@ public class OsmiumCoreCommands extends Command {
 				e.sendMessage(Chat.GREEN + "User ID for " + name + ": " + Chat.AQUA + id.get());
 			} else {
 				fail("That player does not have a user ID associated with their account");
+			}
+		});
+
+		add("whois").setAdmin(true).setUsage("<user-id>").setExecutor(e -> {
+			int userId = e.getInt(0);
+			Optional<GameProfile> optional = Osmium.getGameProfile(userId);
+			if (optional.isPresent()) {
+				e.sendMessage(Chat.GREEN + "User " + userId + " is " + optional.get().getName() + " (" + optional.get().getUniqueId() + ")");
+			} else {
+				fail("Unknown user: " + Chat.YELLOW + userId);
 			}
 		});
 
