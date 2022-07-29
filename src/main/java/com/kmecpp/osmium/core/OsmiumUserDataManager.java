@@ -28,20 +28,19 @@ public class OsmiumUserDataManager {
 		}
 
 		try {
-			OsmiumUserDataManager.createUserId(uuid, name); //Ensure 
+			OsmiumUserDataManager.createUserId(uuid, name); //Ensure user ID exists
+			UserTable data = getUserData(uuid).get(); //The above should ensure that we always get valid user data
+
+			idToProfileMap.put(data.getId(), new Pair<>(new GameProfile(uuid, name), System.currentTimeMillis()));
+			Osmium.getPlayerDataManager().onPlayerStartAuthentication(Osmium.getOrCreateUser(uuid, name).get());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			e.setCancelled(true);
 			e.setKickMessage("[Osmium] Unable to create or retrieve user ID");
-			return;
 		}
 		//		INSERT INTO visits (ip, hits)
 		//		VALUES ('127.0.0.1', 1)
 		//		ON CONFLICT(ip) DO UPDATE SET hits = hits + 1;
-
-		UserTable data = getUserData(uuid).get(); //The above should ensure that we always get valid user data
-		idToProfileMap.put(data.getId(), new Pair<>(new GameProfile(uuid, name), System.currentTimeMillis()));
-		Osmium.getPlayerDataManager().onPlayerStartAuthentication(Osmium.getOrCreateUser(uuid, name).get());
 	}
 
 	public static GameProfile getProfile(int userId, boolean lookup) {
