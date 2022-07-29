@@ -55,9 +55,12 @@ public class ConfigManager {
 	}
 
 	public void unregister(OsmiumPlugin plugin) {
-		for (Class<?> config : pluginConfigs.remove(plugin)) {
-			configData.remove(config);
-			globalTypeData.remove(config);
+		HashSet<Class<?>> pluginConfigClasses = pluginConfigs.remove(plugin);
+		if (pluginConfigClasses != null) { //Plugin may not have any configs
+			for (Class<?> config : pluginConfigClasses) {
+				configData.remove(config);
+				globalTypeData.remove(config);
+			}
 		}
 	}
 
