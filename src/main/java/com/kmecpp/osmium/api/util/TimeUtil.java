@@ -14,6 +14,7 @@ public class TimeUtil {
 	private static TimeZone timeZone = TimeZone.getDefault();
 	private static ZoneId zoneId = timeZone.toZoneId();
 
+	public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a");
 	public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy h:mm:ss a");
 	public static final DateTimeFormatter DATE_TIME_PADDED_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");

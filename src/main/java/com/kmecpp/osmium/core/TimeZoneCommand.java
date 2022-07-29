@@ -12,6 +12,7 @@ import com.kmecpp.osmium.api.MilliTimeUnit;
 import com.kmecpp.osmium.api.command.Chat;
 import com.kmecpp.osmium.api.command.Command;
 import com.kmecpp.osmium.api.entity.Player;
+import com.kmecpp.osmium.api.util.TimeUtil;
 
 public class TimeZoneCommand extends Command {
 
@@ -20,13 +21,15 @@ public class TimeZoneCommand extends Command {
 	public TimeZoneCommand() {
 		super(Platform.isProxy() ? "timezonebungee" : "timezone",
 				Platform.isProxy() ? "tzb" : "tz");
+		setPermission("osmium.command.timezone");
 		setTitle("Time Zone Commands");
 
 		add("check", "info").setCooldown(3, MilliTimeUnit.SECOND).setExecutor(e -> {
 			ZoneId timeZone = e.getPlayer().getTimeZone();
 
 			e.sendTitle("Time Zone Configuration");
-			e.sendMessage(Chat.GREEN + "Your time zone is currently set to: " + Chat.YELLOW + (timeZone != null ? timeZone.getId() : "DEFAULT"));
+			e.sendMessage(Chat.GREEN + "Your time zone is currently set to: " + Chat.YELLOW
+					+ (timeZone != null ? timeZone.getId() : "DEFAULT (" + TimeUtil.TIME_FORMATTER.format(TimeUtil.now()) + ")"));
 		});
 
 		add("set").setUsage("<timezone>").setCooldown(3, MilliTimeUnit.SECOND).setExecutor(e -> {
