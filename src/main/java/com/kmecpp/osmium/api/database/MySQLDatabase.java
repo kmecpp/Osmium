@@ -196,7 +196,7 @@ public class MySQLDatabase extends SQLDatabase {
 		T obj = Reflection.createInstance(Reflection.cast(tableData.getTableClass()));
 		int index = 1;
 		if (resultSet.getMetaData().getColumnCount() != tableData.getColumnCount()) {
-			throw new SQLException("Column count mismatch. Database: " + resultSet.getMetaData().getColumnCount() + " class: " + tableData.getColumnCount());
+			throw new SQLException("Column count mismatch for " + tableData.getName() + ". Database: " + resultSet.getMetaData().getColumnCount() + " class: " + tableData.getColumnCount());
 		}
 		for (ColumnData column : tableData.getColumns()) {
 			//						if (!column.isForeignKey()) {

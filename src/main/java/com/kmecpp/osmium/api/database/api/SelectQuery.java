@@ -5,23 +5,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.kmecpp.osmium.api.database.SQLDatabase;
 import com.kmecpp.osmium.api.database.TableData;
+import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SIBase;
 import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SIGroupBy;
-import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SIOrderBy;
 import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SILimit;
-import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SISelect;
+import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SIOrderBy;
 import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SITerminal;
+import com.kmecpp.osmium.api.database.api.SQLInterfaces.SelectInterfaces.SIWhere;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
 import com.kmecpp.osmium.api.util.IOUtil;
 
-public class SelectQuery<T> implements SISelect<T> {
+public class SelectQuery<T> implements SIBase<T> {
 
 	private final SQLDatabase database;
 	private final TableData tableData;
 
+	private JoinClause join;
 	private GroupBy groupBy;
 	private OrderBy orderBy;
 	private Filter filter;
@@ -36,17 +37,24 @@ public class SelectQuery<T> implements SISelect<T> {
 	}
 
 	@Override
-	public Optional<T> get() {
-		List<T> result = this.execute();
-		if (result.size() > 1) {
-			throw new RuntimeException("Query returned multiple rows: " + result.size());
-		}
-		return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+	public List<T> execute() {
+		return transform(resultSet -> {
+			try {
+				ArrayList<T> result = new ArrayList<>();
+				while (resultSet.next()) {
+					result.add(this.database.parse(resultSet, tableData));
+				}
+				return result;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
 	}
 
 	@Override
-	public List<T> execute() {
+	public <R> R transform(ResultSetTransformer<R> resultHandler) {
 		String query = "SELECT * FROM " + this.tableData.getName()
+				+ (join != null ? join : "")
 				+ (filter != null ? filter.createParameterizedStatement() : "")
 				+ (groupBy != null ? groupBy : "")
 				+ (orderBy != null ? orderBy : "")
@@ -56,8 +64,6 @@ public class SelectQuery<T> implements SISelect<T> {
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try {
-			ArrayList<T> result = new ArrayList<>();
-
 			OsmiumLogger.debug("Executing query: \"" + query + "\"");
 			connection = this.database.getConnection();
 			statement = connection.prepareStatement(query);
@@ -65,16 +71,19 @@ public class SelectQuery<T> implements SISelect<T> {
 				filter.link(statement);
 			}
 			resultSet = statement.executeQuery();
-			while (resultSet.next()) {
-				result.add(this.database.parse(resultSet, tableData));
-			}
-			return result;
+			return resultHandler.process(resultSet);
 		} catch (Exception e) {
 			OsmiumLogger.error("Failed to execute database query: \"" + query + "\"");
 			throw new RuntimeException(e);
 		} finally {
 			IOUtil.close(connection, statement, resultSet);
 		}
+	}
+
+	@Override
+	public SIWhere<T> join(JoinClause join) {
+		this.join = join;
+		return this;
 	}
 
 	@Override
