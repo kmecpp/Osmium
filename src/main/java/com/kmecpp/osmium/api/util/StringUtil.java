@@ -69,23 +69,22 @@ public class StringUtil {
 	}
 
 	public static long parseAmount(String str) {
-		Long number = null;
-		String unit = null;
+		int unitIndex = -1;
 		for (int i = 0; i < str.length(); i++) {
 			char c = str.charAt(i);
 			if (c != '-' && !Character.isDigit(c)) {
-				try {
-					number = Long.parseLong(str.substring(0, i));
-				} catch (NumberFormatException ex) {
-					throw new IllegalArgumentException("Invalid duration: " + str.substring(0, i));
-				}
-				unit = str.substring(i, str.length());
-				break;
+				unitIndex = i;
 			}
 		}
-		if (number == null) {
-			throw new IllegalArgumentException("Invalid input: " + str);
+		boolean hasUnit = unitIndex != -1;
+
+		Long number = null;
+		try {
+			number = Long.parseLong(hasUnit ? str.substring(0, unitIndex) : str);
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("Expected a quantity. Got: '" + str + "'");
 		}
+		String unit = hasUnit ? str.substring(unitIndex, str.length()) : null;
 		if (unit == null) {
 			return number;
 		} else if (unit.equalsIgnoreCase("K")) {
