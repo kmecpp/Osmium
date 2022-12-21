@@ -14,5 +14,7 @@ public @interface DBTable {
 	DatabaseType[] type() default DatabaseType.SQLITE;
 
 	boolean autoCreate() default true;
+	
+	boolean autoSave() default true;
 
 }

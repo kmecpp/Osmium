@@ -236,7 +236,9 @@ public class PlayerDataManager {
 		HashMap<Class<?>, Object> playerData = this.data.get(player.getUniqueId());
 		if (playerData != null) {
 			playerData.entrySet().forEach(e -> {
-				if (e.getValue() instanceof PlayerData) {
+				DBTable table = e.getKey().getAnnotation(DBTable.class);
+				
+				if (e.getValue() instanceof PlayerData && table.autoSave()) {
 					((PlayerData) e.getValue()).save();
 				}
 			});
