@@ -128,20 +128,9 @@ public class DBUtil {
 	public static void processResultSet(Object instance, ResultSet rs, int index, ColumnData column) throws Exception {
 		Field field = column.getField();
 		Class<?> type = field.getType();
-		if (type == boolean.class || type == Boolean.class) {
-			field.setBoolean(instance, rs.getBoolean(index));
-		} else if (type == byte.class || type == Byte.class) {
-			field.setByte(instance, rs.getByte(index));
-		} else if (type == short.class || type == Short.class) {
-			field.setShort(instance, rs.getShort(index));
-		} else if (type == int.class || type == Integer.class) {
-			field.setInt(instance, rs.getInt(index));
-		} else if (type == long.class || type == Long.class) {
-			field.setLong(instance, rs.getLong(index));
-		} else if (type == float.class || type == Float.class) {
-			field.setFloat(instance, rs.getFloat(index));
-		} else if (type == double.class || type == Double.class) {
-			field.setDouble(instance, rs.getDouble(index));
+		if (type == boolean.class || type == byte.class || type == short.class || type == int.class || type == long.class || type == float.class || type == double.class ||
+				type == Boolean.class || type == Byte.class || type == Short.class || type == Integer.class || type == Long.class || type == Float.class || type == Double.class) {
+			field.set(instance, rs.getObject(index, type));
 		} else if (type == Date.class) {
 			field.set(instance, rs.getDate(index));
 		} else if (type == Time.class) {
@@ -155,6 +144,8 @@ public class DBUtil {
 			field.set(instance, uuidString == null ? null : UUID.fromString(uuidString));
 		} else if (Enum.class.isAssignableFrom(type)) {
 			field.set(instance, Enum.valueOf(Reflection.cast(type), rs.getString(index)));
+		} else {
+			throw new UnsupportedOperationException("Deserialization of " + type.getSimpleName() + " is not supported yet! :: " + column.getField());
 		}
 	}
 
