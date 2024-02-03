@@ -112,6 +112,7 @@ public class OsmiumCore extends OsmiumPlugin {
 			}
 		}
 		Osmium.getPlayerDataManager().saveAllPlayers();
+		OsmiumUserDataManager.saveAllPlayers();
 	}
 
 	public static OsmiumCore getPlugin() {

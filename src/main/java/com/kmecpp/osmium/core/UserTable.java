@@ -20,6 +20,9 @@ public class UserTable {
 	@DBColumn(maxLength = 16)
 	private String name;
 
+	@DBColumn(nullable = true)
+	private Long lastSeen;
+
 	@DBColumn(maxLength = 64, nullable = true)
 	private String timeZone;
 
@@ -49,6 +52,14 @@ public class UserTable {
 
 	public void setTimezone(ZoneId timeZone) {
 		this.timeZone = timeZone != null ? timeZone.getId() : null;
+	}
+
+	public Long getLastSeen() {
+		return lastSeen;
+	}
+
+	public void setLastSeen(Long lastSeen) {
+		this.lastSeen = lastSeen;
 	}
 
 }

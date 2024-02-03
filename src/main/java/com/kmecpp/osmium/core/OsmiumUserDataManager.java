@@ -10,6 +10,7 @@ import com.kmecpp.osmium.api.GameProfile;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
+import com.kmecpp.osmium.api.util.MCUtil;
 import com.kmecpp.osmium.api.util.Pair;
 
 public class OsmiumUserDataManager {
@@ -27,6 +28,10 @@ public class OsmiumUserDataManager {
 			OsmiumLogger.warn("Utilizing offline UUIDs to generate an ID for " + name);
 		}
 
+		if (!MCUtil.isValidUsername(name)) {
+			return;
+		}
+
 		try {
 			OsmiumUserDataManager.createUserId(uuid, name); //Ensure user ID exists
 			UserTable data = getUserData(uuid).get(); //The above should ensure that we always get valid user data
@@ -41,6 +46,27 @@ public class OsmiumUserDataManager {
 		//		INSERT INTO visits (ip, hits)
 		//		VALUES ('127.0.0.1', 1)
 		//		ON CONFLICT(ip) DO UPDATE SET hits = hits + 1;
+	}
+
+	public static void onQuit(PlayerConnectionEvent.Quit e) {
+		savePlayer(e.getPlayer(), System.currentTimeMillis());
+	}
+
+	public static void savePlayer(Player player, long currentTime) {
+		getUserData(player.getUniqueId()).get().setLastSeen(currentTime); //Update cached data
+
+		if (OsmiumCoreConfig.Database.useMySql) {
+			OsmiumCore.getPlugin().getMySQLDatabase().update("UPDATE osmium_users SET name='" + player.getName() + "', last_seen=" + currentTime + " WHERE uuid='" + player.getUniqueId() + "';");
+		} else {
+			OsmiumCore.getPlugin().getSQLiteDatabase().update("UPDATE users SET name='" + player.getName() + "', last_seen=" + currentTime + " WHERE uuid='" + player.getUniqueId() + "';");
+		}
+	}
+
+	public static void saveAllPlayers() {
+		long currentTime = System.currentTimeMillis();
+		for (Player player : Osmium.getOnlinePlayers()) {
+			savePlayer(player, currentTime);
+		}
 	}
 
 	public static GameProfile getProfile(int userId, boolean lookup) {
@@ -60,9 +86,9 @@ public class OsmiumUserDataManager {
 
 	public static void createUserId(UUID uuid, String playerName) {
 		String tableName = OsmiumCoreConfig.Database.useMySql ? "osmium_users" : "users";
-		int result = OsmiumCore.getDatabase().update("update " + tableName + " set name='" + playerName + "' where uuid='" + uuid + "'");
+		int updateResult = OsmiumCore.getDatabase().update("update " + tableName + " set name='" + playerName + "' where uuid='" + uuid + "'");
 
-		if (result == 0) {
+		if (updateResult == 0) {
 			if (OsmiumCoreConfig.Database.useMySql) {
 				OsmiumCore.getPlugin().getMySQLDatabase().update("insert ignore into osmium_users(uuid, name) values ('" + uuid + "', '" + playerName + "')");
 			} else {

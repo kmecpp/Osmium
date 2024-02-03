@@ -18,6 +18,7 @@ public class OsmiumPlayerListener {
 
 	@Listener(order = Order.LAST)
 	public void on(PlayerConnectionEvent.Quit e) {
+		OsmiumUserDataManager.onQuit(e);
 		Osmium.getPlayerDataManager().onPlayerQuit(e);
 	}
 
