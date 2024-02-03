@@ -6,8 +6,13 @@ import java.util.TimeZone;
 
 public class SystemUtil {
 
-	public static final long MEGABYTE = 1048576L;
-	public static final long GIGABYTE = 1073741824L;
+	public static final long KB_2 = 1 << 10;
+	public static final long MB_2 = 1 << 20;
+	public static final long GB_2 = 1 << 30;
+
+	public static final long KB_10 = 1_000;
+	public static final long MB_10 = 1_000_000;
+	public static final long GB_10 = 1_000_000_000;
 
 	private static TimeZone timeZone = TimeZone.getDefault();
 
@@ -79,7 +84,7 @@ public class SystemUtil {
 	 * @return the total free memory
 	 */
 	public static long getFreeMemory() {
-		return (Runtime.getRuntime().maxMemory() - getUsedMemory()) / MEGABYTE;
+		return (Runtime.getRuntime().maxMemory() - getUsedMemory()) / MB_2;
 	}
 
 	/**
@@ -88,7 +93,7 @@ public class SystemUtil {
 	 * @return the current used memory
 	 */
 	public static long getUsedMemory() {
-		return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / MEGABYTE;
+		return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / MB_2;
 	}
 
 	/**
@@ -98,7 +103,7 @@ public class SystemUtil {
 	 * @return the maximum JVM memory
 	 */
 	public static long getTotalMemory() {
-		return Runtime.getRuntime().maxMemory() / MEGABYTE;
+		return Runtime.getRuntime().maxMemory() / MB_2;
 	}
 
 	/**
@@ -141,7 +146,7 @@ public class SystemUtil {
 	 * @return the amount of free disk space
 	 */
 	public static long getFreeDiskSpace() {
-		return getDiskRoot().getFreeSpace() / GIGABYTE;
+		return getDiskRoot().getFreeSpace() / GB_2;
 	}
 
 	/**
@@ -160,7 +165,7 @@ public class SystemUtil {
 	 * @return the total disk space
 	 */
 	public static long getTotalDiskSpace() {
-		return getDiskRoot().getTotalSpace() / GIGABYTE;
+		return getDiskRoot().getTotalSpace() / GB_2;
 	}
 
 }
