@@ -183,7 +183,7 @@ public class OsmiumCoreCommands extends Command {
 
 		add("whois").setAdmin(true).setUsage("<user-id>").setExecutor(e -> {
 			int userId = e.getInt(0);
-			Optional<GameProfile> optional = Osmium.getGameProfile(userId);
+			Optional<GameProfile> optional = Osmium.getGameProfile(userId, true);
 			if (optional.isPresent()) {
 				e.sendMessage(Chat.GREEN + "User " + userId + " is " + optional.get().getName() + " (" + optional.get().getUniqueId() + ")");
 			} else {

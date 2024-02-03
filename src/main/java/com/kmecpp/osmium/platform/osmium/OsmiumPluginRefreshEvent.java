@@ -8,9 +8,9 @@ public class OsmiumPluginRefreshEvent implements PluginRefreshEvent {
 	private OsmiumPlugin plugin;
 	private boolean database;
 
-	public OsmiumPluginRefreshEvent(OsmiumPlugin plugin, boolean database) {
+	public OsmiumPluginRefreshEvent(OsmiumPlugin plugin, boolean full) {
 		this.plugin = plugin;
-		this.database = database;
+		this.database = full;
 	}
 
 	@Override
