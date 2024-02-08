@@ -1,33 +1,43 @@
 package com.kmecpp.osmium.api.util.lib;
 
+import com.kmecpp.osmium.api.util.StringUtil;
+
 public class Time {
 
+	private static final long SECOND = (long) 1000;
+	private static final long MINUTE = (long) 1000 * 60;
+	private static final long HOUR = (long) 1000 * 60 * 60;
+	private static final long DAY = (long) 1000 * 60 * 60 * 24;
+	private static final long WEEK = (long) 1000 * 60 * 60 * 24 * 7;
+	private static final long MONTH = (long) 1000 * 60 * 60 * 24 * 30;
+	private static final long YEAR = (long) 1000 * 60 * 60 * 24 * 365;
+
 	public static long years(int years) {
-		return years * 1000 * 60 * 60 * 24 * 365;
+		return years * (long) 1000 * 60 * 60 * 24 * 365;
 	}
 
 	public static long months(int months) {
-		return months * 1000 * 60 * 60 * 24 * 30;
+		return months * (long) 1000 * 60 * 60 * 24 * 30;
 	}
 
 	public static long weeks(int weeks) {
-		return weeks * 1000 * 60 * 60 * 24 * 7;
+		return weeks * (long) 1000 * 60 * 60 * 24 * 7;
 	}
 
 	public static long days(int days) {
-		return days * 1000 * 60 * 60 * 24;
+		return days * (long) 1000 * 60 * 60 * 24;
 	}
 
 	public static long hours(int hours) {
-		return hours * 1000 * 60 * 60;
+		return hours * (long) 1000 * 60 * 60;
 	}
 
 	public static long minutes(int minutes) {
-		return minutes * 1000 * 60;
+		return minutes * (long) 1000 * 60;
 	}
 
 	public static long seconds(int seconds) {
-		return seconds * 1000;
+		return seconds * (long) 1000;
 	}
 
 	public static double toYears(long milliseconds) {
@@ -56,6 +66,26 @@ public class Time {
 
 	public static double toSeconds(long milliseconds) {
 		return (double) milliseconds / 1000;
+	}
+
+	public static String format(long milliseconds) {
+		if (milliseconds > YEAR) {
+			return StringUtil.plural(milliseconds / YEAR, "year");
+		} else if (milliseconds > MONTH) {
+			return StringUtil.plural(milliseconds / MONTH, "month");
+		} else if (milliseconds > WEEK) {
+			return StringUtil.plural(milliseconds / WEEK, "week");
+		} else if (milliseconds > DAY) {
+			return StringUtil.plural(milliseconds / DAY, "day");
+		} else if (milliseconds > HOUR) {
+			return StringUtil.plural(milliseconds / HOUR, "hour");
+		} else if (milliseconds > MINUTE) {
+			return StringUtil.plural(milliseconds / MINUTE, "minute");
+		} else if (milliseconds > SECOND) {
+			return StringUtil.plural(milliseconds / SECOND, "second");
+		} else {
+			return StringUtil.plural(milliseconds, "millisecond");
+		}
 	}
 
 }
