@@ -70,19 +70,19 @@ public class Time {
 
 	public static String format(long milliseconds) {
 		if (milliseconds > YEAR) {
-			return StringUtil.plural(milliseconds / YEAR, "year");
+			return StringUtil.plural(Math.round(milliseconds / YEAR), "year");
 		} else if (milliseconds > MONTH) {
-			return StringUtil.plural(milliseconds / MONTH, "month");
+			return StringUtil.plural(Math.round(milliseconds / MONTH), "month");
 		} else if (milliseconds > WEEK) {
-			return StringUtil.plural(milliseconds / WEEK, "week");
+			return StringUtil.plural(Math.round(milliseconds / WEEK), "week");
 		} else if (milliseconds > DAY) {
-			return StringUtil.plural(milliseconds / DAY, "day");
+			return StringUtil.plural(Math.round(milliseconds / DAY), "day");
 		} else if (milliseconds > HOUR) {
-			return StringUtil.plural(milliseconds / HOUR, "hour");
+			return StringUtil.plural(Math.round(milliseconds / HOUR), "hour");
 		} else if (milliseconds > MINUTE) {
-			return StringUtil.plural(milliseconds / MINUTE, "minute");
+			return StringUtil.plural(Math.round(milliseconds / MINUTE), "minute");
 		} else if (milliseconds > SECOND) {
-			return StringUtil.plural(milliseconds / SECOND, "second");
+			return StringUtil.plural(Math.round(milliseconds / SECOND), "second");
 		} else {
 			return StringUtil.plural(milliseconds, "millisecond");
 		}
