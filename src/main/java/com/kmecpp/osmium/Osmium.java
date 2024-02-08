@@ -490,6 +490,10 @@ public final class Osmium {
 		return Optional.ofNullable(OsmiumUserDataManager.getProfile(userId, lookup));
 	}
 
+	public static Optional<Long> getLastSeen(UUID playerId) {
+		return OsmiumUserDataManager.getLastSeen(playerId);
+	}
+
 	public static Optional<User> getUser(UUID uuid) {
 		if (Platform.isBukkit()) {
 			OfflinePlayer user = Bukkit.getOfflinePlayer(uuid);

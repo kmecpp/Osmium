@@ -84,6 +84,22 @@ public class OsmiumUserDataManager {
 		return null;
 	}
 
+	public static Optional<Long> getLastSeen(UUID uuid) {
+		if (Osmium.isPlayerOnline(uuid)) {
+			return Optional.of(System.currentTimeMillis());
+		}
+
+		Optional<Integer> userId = Osmium.getUserId(uuid);
+
+		if (userId.isPresent()) {
+			UserTable table = OsmiumCore.getDatabase().get(UserTable.class, userId.get());
+			if (table != null) {
+				return Optional.of(table.getLastSeen());
+			}
+		}
+		return Optional.empty();
+	}
+
 	public static void createUserId(UUID uuid, String playerName) {
 		String tableName = OsmiumCoreConfig.Database.useMySql ? "osmium_users" : "users";
 		int updateResult = OsmiumCore.getDatabase().update("update " + tableName + " set name='" + playerName + "' where uuid='" + uuid + "'");
