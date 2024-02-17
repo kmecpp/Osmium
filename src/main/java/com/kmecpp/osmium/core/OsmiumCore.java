@@ -10,6 +10,7 @@ import com.kmecpp.osmium.api.inventory.menu.InventoryManager;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
 import com.kmecpp.osmium.api.plugin.Plugin;
 import com.kmecpp.osmium.api.util.TimeUtil;
+import com.kmecpp.osmium.core.NameHistory.NameRecord;
 import com.kmecpp.osmium.platform.osmium.OsmiumServerShutdownEvent;
 import com.kmecpp.osmium.platform.osmium.OsmiumServerStartedEvent;
 
@@ -35,8 +36,10 @@ public class OsmiumCore extends OsmiumPlugin {
 					OsmiumCoreConfig.Database.database, OsmiumCoreConfig.Database.username, OsmiumCoreConfig.Database.password));
 
 			this.getMySQLDatabase().createTable(UserTable.class);
+			this.getMySQLDatabase().createTable(NameRecord.class);
 		} else {
 			this.getSQLiteDatabase().createTable(UserTable.class);
+			this.getSQLiteDatabase().createTable(NameRecord.class);
 		}
 	}
 

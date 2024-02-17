@@ -151,6 +151,10 @@ public abstract class SQLDatabase {
 		return config;
 	}
 
+	public <T> SelectQuery<T> select(Class<T> tableClass) {
+		return new SelectQuery<>(this, tableClass);
+	}
+
 	public <T> SelectQuery<T> query(Class<T> tableClass) {
 		return new SelectQuery<>(this, tableClass);
 	}

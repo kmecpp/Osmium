@@ -14,6 +14,7 @@ public class OsmiumPlayerListener {
 
 	@Listener(order = Order.FIRST)
 	public void on(PlayerConnectionEvent.Login e) {
+		NameHistory.onLogin(e);
 	}
 
 	@Listener(order = Order.LAST)
