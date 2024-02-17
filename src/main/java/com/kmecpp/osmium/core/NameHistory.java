@@ -7,7 +7,6 @@ import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.database.api.DBColumn;
 import com.kmecpp.osmium.api.database.api.DBTable;
 import com.kmecpp.osmium.api.database.api.DatabaseType;
-import com.kmecpp.osmium.api.database.api.Filter;
 import com.kmecpp.osmium.api.database.api.Saveable;
 import com.kmecpp.osmium.api.event.events.PlayerConnectionEvent;
 
@@ -18,7 +17,7 @@ public class NameHistory {
 
 		Optional<NameRecord> record = OsmiumCore.getDatabase()
 				.select(NameRecord.class)
-				.where(Filter.of("user_id=", userId))
+				.where("user_id=", userId)
 				.orderByDesc("first_seen")
 				.getFirst();
 

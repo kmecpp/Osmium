@@ -36,6 +36,10 @@ public interface SQLInterfaces {
 
 			SIGroupBy<T> where(Filter filter);
 
+			default SIGroupBy<T> where(String filter, Object value) {
+				return where(Filter.of(filter, value));
+			}
+
 		}
 
 		public static interface SIGroupBy<T> extends SIOrderBy<T> {
