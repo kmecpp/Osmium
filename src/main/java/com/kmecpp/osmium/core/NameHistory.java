@@ -28,7 +28,7 @@ public class NameHistory {
 		}
 	}
 
-	@DBTable(name = "names", type = { DatabaseType.SQLITE, DatabaseType.MYSQL })
+	@DBTable(name = "names", type = { DatabaseType.SQLITE, DatabaseType.MYSQL }, autoCreate = false)
 	public static class NameRecord implements Saveable {
 
 		@DBColumn(primary = true)

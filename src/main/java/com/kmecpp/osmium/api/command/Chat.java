@@ -86,6 +86,10 @@ public enum Chat {
 		return String.valueOf(bool ? Chat.GREEN : Chat.RED);
 	}
 
+	public static String status(boolean enabled) {
+		return String.valueOf(enabled ? Chat.GREEN + "enabled" : Chat.RED + "disabled");
+	}
+
 	public static char getColorChar() {
 		return COLOR_CHAR;
 	}
