@@ -231,14 +231,13 @@ public final class CommandManager {
 					if (lastUsed != null) {
 						long timePassed = currentTime - lastUsed;
 						if (timePassed < command.getCooldown()) {
-							System.out.println("REMAINING: " + (command.getCooldown() - timePassed));
 							throw new CommandException("You cannot use that command for another " + TimeUtil.formatTotalMillis(command.getCooldown() - timePassed));
 						}
 					}
 				}
 			}
 			command.execute(event);
-			if (!cooldownBypass && event.isCooldownActivated()) {
+			if (!cooldownBypass) { //Cooldown is only activate if the command completes successfully (without an exception)
 				Player player = (Player) sender;
 				cooldownData.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>()).put(command, currentTime);
 			}

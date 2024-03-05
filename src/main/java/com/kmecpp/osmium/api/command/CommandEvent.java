@@ -21,7 +21,7 @@ public class CommandEvent implements Messageable {
 	private String argLabel;
 	private String[] args;
 
-	private boolean cooldownActivated;
+	//	private boolean cooldownActivated;
 	//	private long cooldownOverride;
 
 	public CommandEvent(Command command, CommandSender sender, String baseLabel, String argLabel, String[] args) {
@@ -32,13 +32,13 @@ public class CommandEvent implements Messageable {
 		this.args = args;
 	}
 
-	public boolean isCooldownActivated() {
-		return cooldownActivated;
-	}
-
-	public void setCooldownActivated(boolean cooldownActivated) {
-		this.cooldownActivated = true;
-	}
+	//	public boolean isCooldownActivated() {
+	//		return cooldownActivated;
+	//	}
+	//
+	//	public void setCooldownActivated(boolean cooldownActivated) {
+	//		this.cooldownActivated = true;
+	//	}
 
 	//TODO: This is better. Just needs execution time + cooldown time
 	//	public void setCooldownActivated(boolean cooldownActivated, long cooldown) {
