@@ -21,6 +21,7 @@ public class CommandBase {
 	private String primaryAlias;
 	private String shortestAlias;
 	private long cooldown;
+	private boolean async;
 
 	public CommandBase(String name, String... aliases) {
 		if (name == null || name.isEmpty()) {
@@ -195,6 +196,15 @@ public class CommandBase {
 
 	public long getCooldown() {
 		return cooldown;
+	}
+
+	public CommandBase setAsync(boolean async) {
+		this.async = async;
+		return this;
+	}
+
+	public boolean isAsync() {
+		return async;
 	}
 
 	public boolean hasUsage() {

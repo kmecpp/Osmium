@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.Platform;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.logging.OsmiumLogger;
@@ -143,6 +144,17 @@ public final class CommandManager {
 	}
 
 	public boolean invokeCommand(Command command, CommandSender sender, String commandLabel, String[] args) {
+		if (command.isAsync()) {
+			Osmium.getPlugin(command.getClass()).getTask().setAsync(true).setExecutor(t -> {
+				processCommandExecution(command, sender, commandLabel, args);
+			}).start();
+			return true;
+		} else {
+			return processCommandExecution(command, sender, commandLabel, args);
+		}
+	}
+
+	private boolean processCommandExecution(Command command, CommandSender sender, String commandLabel, String[] args) {
 		try {
 			//			if (sender instanceof ConsoleCommandSender && !command.isConsole()) {
 			//				throw CommandException.PLAYERS_ONLY;
