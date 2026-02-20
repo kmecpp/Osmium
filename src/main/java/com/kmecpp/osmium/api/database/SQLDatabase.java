@@ -301,7 +301,7 @@ public abstract class SQLDatabase {
 
 	public abstract <T> ArrayList<T> query(Class<T> tableClass, String[] columns, Object... values);
 
-	public <T> @Nonnull List<T> query(Class<T> tableClass, String query) {
+	public @Nonnull <T> List<T> query(Class<T> tableClass, String query) {
 		TableData tableData = tables.get(tableClass);
 
 		Connection connection = null;
