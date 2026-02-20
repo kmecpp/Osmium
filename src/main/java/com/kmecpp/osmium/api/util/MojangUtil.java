@@ -26,13 +26,15 @@ public class MojangUtil {
 		}
 	}
 
-	public static Optional<GameProfile> getProfile(String name) throws IOException {
+	public static Optional<GameProfile> getProfile(String name) throws RuntimeException {
 		try {
 			JsonObject json = WebUtil.get(new URL("https://api.mojang.com/users/profiles/minecraft/" + name)).asObject();
 			UUID uuid = UUID.fromString(UUID_PATTERN.matcher(json.get("id").asString()).replaceAll("$1-$2-$3-$4-$5"));;
 			return Optional.of(new GameProfile(uuid, json.get("name").asString()));
 		} catch (ParseException ex) {
 			return Optional.empty(); //ParseException occurs when no data is returned from the server (user does not exist). IOException occurs when the server is down
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
