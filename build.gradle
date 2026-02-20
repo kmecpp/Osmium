@@ -118,8 +118,8 @@ compileJava.source sourceSets.generated.java, sourceSets.main.java
 repositories {
 	mavenCentral()
 	//maven { url "http://ci.kmecpp.com/plugin/repository/everything/" }
-	maven { url "https://repo.spongepowered.org/maven" }
-	maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+	maven { url = "https://repo.spongepowered.org/maven" }
+	maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 	//maven { url "http://repo.bstats.org/content/repositories/releases/" }
 }
 
@@ -216,30 +216,42 @@ uploadArchives {
     }
 }*/
 
+// Resolve JAR file at configuration time
 def jarFile = tasks.named('jar').get().archiveFile.get().asFile
 
-def servers = ['bukkit_server', 'sponge_server', 'server_path', 'server_path2', 'server_path3', 'server_path4']
+// Read all server paths at configuration time
+def servers = [
+		'spigot_server',
+		'thermos_server',
+		'bungee_server',
+		'hub_server',
+].collect { propName ->
+	def value = providers.environmentVariable(propName)
+			.map { it.replaceAll('%20', ' ').replaceAll('^"|"$', '') }
+			.orNull
 
-task deployPlugin {
-    doNotTrackState("Deploy plugin JAR to server directories; outputs are dynamic")
+	if (value) {
+		// Default folder is "plugins" except Sponge
+		def subFolder = (propName == 'sponge_server') ? "mods${File.separator}plugins" : "plugins"
+		new File(value, subFolder)
+	} else null
+}.findAll { it != null } // remove nulls
 
-    doLast {
-        servers.each { propName ->
-            def prop = project.findProperty(propName)?.replaceAll('%20', ' ')?.replaceAll('^"|"$', '')
-            if (prop) {
-                // Default folder is "plugins", except Sponge
-                def subFolder = (propName == 'sponge_server') ? "mods${File.separator}plugins" : "plugins"
-                def destDir = new File(prop, subFolder)
-                destDir.mkdirs()
-                println("Deploying plugin jar to $destDir")
-                copy {
-                    from jarFile
-                    into destDir
-                }
-            }
-        }
-    }
+// Deployment task
+tasks.register('deployPlugin') {
+	doNotTrackState("Deploy plugin JAR to server directories; outputs are dynamic")
+
+	doLast {
+		servers.each { destDir ->
+			destDir.mkdirs()
+			println("Deploying plugin jar to $destDir")
+			copy {
+				from jarFile
+				into destDir
+			}
+		}
+	}
 }
 
-// Run after build
+// Make deployPlugin run after build
 build.finalizedBy(tasks.named('deployPlugin'))
