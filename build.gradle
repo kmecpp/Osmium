@@ -1,9 +1,6 @@
 plugins {
 	id 'java'
-	
-	id 'eclipse'
-	id 'idea'
-	
+
 	id 'maven-publish'
 	//id 'com.github.johnrengelman.shadow' version '1.2.3'
     //id 'org.spongepowered.plugin' version '0.8.1'
@@ -12,15 +9,13 @@ plugins {
 group = "com.kmecpp"
 version = project_version
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
 
-eclipse {
-    classpath {
-        downloadJavadoc = true
-        downloadSources = true
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
+
 
 configurations {
     shade
@@ -74,10 +69,8 @@ compileJava {
     options.compilerArgs += ["-proc:none"]
 //    options.compilerArgs += ["-processor", "com.kmecpp.osmium.ap.ConfigTypeProcessor"]
 //    compileJava.options.compilerArgs.addAll(["-processor", "com.kmecpp.osmium.ap.ConfigTypeProcessor"])
-    sourceCompatibility = 8
-    targetCompatibility = 8
 }
- 
+
 processResources {
 	expand(project.properties)
 }
@@ -92,7 +85,7 @@ task processAppInfo(type: Copy) {
 task compileAppInfo(type: JavaCompile) {
     source = "build/generated"
     classpath = sourceSets.main.compileClasspath
-    destinationDir = file('build/generated')
+    destinationDirectory.set(file("build/generated"))
 }
 
 compileAppInfo.dependsOn processAppInfo
@@ -123,7 +116,7 @@ compileJava.source sourceSets.generated.java, sourceSets.main.java
  */
 
 repositories {
-	jcenter()
+	mavenCentral()
 	//maven { url "http://ci.kmecpp.com/plugin/repository/everything/" }
 	maven { url "https://repo.spongepowered.org/maven" }
 	maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
@@ -189,7 +182,7 @@ sponge {
 jar {
 	manifest.mainAttributes(
 		"Built-By": "kmecpp",
-		"Implementation-Title": archivesBaseName,
+		"Implementation-Title": project.name,
 		"Implementation-Version": project.version)
 						
     configurations.shade.each { dep ->
@@ -223,35 +216,30 @@ uploadArchives {
     }
 }*/
 
-build.doLast {
-	//BUKKIT
-	if (project.hasProperty("bukkit_server")) {
-		exec {
-			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("bukkit_server").replaceAll("%20", " ") + "\\plugins", '/Y'
-		}
-	}
-	//SPONGE
-	if (project.hasProperty("sponge_server")) {
-		exec {
-			commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("sponge_server").replaceAll("%20", " ") + "\\mods\\plugins", '/Y'
-		}
-	}
-	
-	//SERVER
-	if (project.hasProperty("server_path")) {
-		exec { commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path").replaceAll("%20", " ") + "\\plugins", '/Y' }
-		println("Copied plugin jar to " + project.getProperty("server_path").replaceAll("%20", " ") + "\\plugins");
-	}
-	if (project.hasProperty("server_path2")) {
-		exec { commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path2").replaceAll("%20", " ") + "\\plugins", '/Y' }
-		println("Copied plugin jar to " + project.getProperty("server_path2").replaceAll("%20", " ") + "\\plugins");
-	}
-	if (project.hasProperty("server_path3")) {
-		exec { commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path3").replaceAll("%20", " ") + "\\plugins", '/Y' }
-		println("Copied plugin jar to " + project.getProperty("server_path3").replaceAll("%20", " ") + "\\plugins");
-	}
-	if (project.hasProperty("server_path4")) {
-		exec { commandLine 'cmd', '/c', 'copy', jar.archivePath, project.getProperty("server_path4").replaceAll("%20", " ") + "\\plugins", '/Y' }
-		println("Copied plugin jar to " + project.getProperty("server_path4").replaceAll("%20", " ") + "\\plugins");
-	}
+def jarFile = tasks.named('jar').get().archiveFile.get().asFile
+
+def servers = ['bukkit_server', 'sponge_server', 'server_path', 'server_path2', 'server_path3', 'server_path4']
+
+task deployPlugin {
+    doNotTrackState("Deploy plugin JAR to server directories; outputs are dynamic")
+
+    doLast {
+        servers.each { propName ->
+            def prop = project.findProperty(propName)?.replaceAll('%20', ' ')?.replaceAll('^"|"$', '')
+            if (prop) {
+                // Default folder is "plugins", except Sponge
+                def subFolder = (propName == 'sponge_server') ? "mods${File.separator}plugins" : "plugins"
+                def destDir = new File(prop, subFolder)
+                destDir.mkdirs()
+                println("Deploying plugin jar to $destDir")
+                copy {
+                    from jarFile
+                    into destDir
+                }
+            }
+        }
+    }
 }
+
+// Run after build
+build.finalizedBy(tasks.named('deployPlugin'))
