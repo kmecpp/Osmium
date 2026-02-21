@@ -10,6 +10,32 @@ public class Vector3i {
 		this.z = z;
 	}
 
+	public Vector3i add(Vector3i v) {
+		return add(v.x, v.y, v.z);
+	}
+
+	public Vector3i add(int x, int y, int z) {
+		this.x += x;
+		this.y += y;
+		this.z += z;
+		return this;
+	}
+
+	public Vector3i subtract(Vector3i v) {
+		return add(-v.x, -v.y, -v.z);
+	}
+
+	public Vector3i subtract(int x, int y, int z) {
+		return add(-x, -y, -z);
+	}
+
+	public Vector3i multiply(int n) {
+		this.x *= n;
+		this.y *= n;
+		this.z *= n;
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Vector3i) {

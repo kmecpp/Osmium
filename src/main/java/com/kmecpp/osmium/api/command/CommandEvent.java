@@ -3,6 +3,7 @@ package com.kmecpp.osmium.api.command;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import com.kmecpp.osmium.Osmium;
 import com.kmecpp.osmium.api.User;
@@ -10,6 +11,7 @@ import com.kmecpp.osmium.api.World;
 import com.kmecpp.osmium.api.entity.Player;
 import com.kmecpp.osmium.api.location.Location;
 import com.kmecpp.osmium.api.plugin.OsmiumPlugin;
+import com.kmecpp.osmium.api.tasks.OsmiumTask;
 import com.kmecpp.osmium.api.util.StringUtil;
 
 public class CommandEvent implements Messageable {
@@ -469,6 +471,16 @@ public class CommandEvent implements Messageable {
 	public void handleError(Throwable t) {
 		t.printStackTrace();
 		send("&cError: " + t.getMessage());
+	}
+
+	public void async(Runnable runnable) {
+		Osmium.getPlugin(command.getClass()).getTask().setAsync(true).setExecutor(t -> {
+			runnable.run();
+		}).start();
+	}
+
+	public void async(Consumer<OsmiumTask> taskExecutor) {
+		Osmium.getPlugin(command.getClass()).getTask().setAsync(true).setExecutor(taskExecutor).start();
 	}
 
 	public void error(String message) {
