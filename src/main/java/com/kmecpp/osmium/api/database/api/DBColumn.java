@@ -28,4 +28,6 @@ public @interface DBColumn {
 
 	String defaultValue() default SQL.NULL;
 
+	String foreignKey() default "";
+
 }

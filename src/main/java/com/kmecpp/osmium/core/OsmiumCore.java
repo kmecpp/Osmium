@@ -35,6 +35,8 @@ public class OsmiumCore extends OsmiumPlugin {
 			this.getMySQLDatabase().configure(() -> SQLConfig.of("osmium", OsmiumCoreConfig.Database.host, OsmiumCoreConfig.Database.port,
 					OsmiumCoreConfig.Database.database, OsmiumCoreConfig.Database.username, OsmiumCoreConfig.Database.password));
 
+			//Note: Can't auto create these tables because Osmium supports both DB types for these tables
+			// but we only want to create them in one depending whether useMySQL is enabled in the config
 			this.getMySQLDatabase().createTable(UserTable.class);
 			this.getMySQLDatabase().createTable(NameRecord.class);
 		} else {

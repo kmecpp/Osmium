@@ -92,7 +92,6 @@ public class BungeeAccess {
 	public static void registerOsmiumListener(OsmiumPlugin plugin, Class<? extends Event> bungeeEventClass, Order order, Method method, Object listenerInstance, Consumer<Event> osmiumSourceEventConsumer) {
 		String parameterString = Arrays.stream(method.getParameterTypes()).map(c -> c.getSimpleName()).collect(Collectors.joining("|"));
 
-		//		for (Class<? extends Event> bungeeEventClass : eventInfo.<Event> getSourceClasses()) {
 		try {
 			ClassPool pool = ClassPool.getDefault();
 			pool.insertClassPath(new ClassClassPath(Listener.class));
@@ -103,12 +102,11 @@ public class BungeeAccess {
 			CtClass generatedClass = pool.makeClass(className);
 			ConstPool constPool = generatedClass.getClassFile().getConstPool();
 
-			generatedClass.addInterface(pool.get(Listener.class.getName()));
+			generatedClass.addInterface(pool.get(Listener.class.getName())); // implements net.md_5.bungee.api.plugin.Listener
 
 			pool.insertClassPath(new ClassClassPath(Osmium.class));
 
 			CtField ctField = CtField.make("private final java.util.function.Consumer consumer;", generatedClass);
-			//				generatedClass.addField(ctField, Initializer.byExpr(Osmium.class.getName() + ".getEventManager().getOsmiumSourceEventConsumer(" + bungeeEventClass.getName() + ".class);"));
 			generatedClass.addField(ctField);
 
 			CtConstructor ctConstructor = new CtConstructor(new CtClass[] { pool.get("java.util.function.Consumer") }, generatedClass);
@@ -138,7 +136,6 @@ public class BungeeAccess {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//		}
 	}
 
 	public static OsmiumPlugin loadPlugin(File pluginFile) {

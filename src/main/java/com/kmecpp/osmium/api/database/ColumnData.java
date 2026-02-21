@@ -14,6 +14,7 @@ public class ColumnData {
 	private final boolean unique;
 	private final boolean nullable;
 	private final boolean autoIncrement;
+	private final String foreignKey;
 	//	private final MDBTableData foreignKey;
 	private final int maxLength;
 
@@ -50,6 +51,7 @@ public class ColumnData {
 		this.maxLength = meta.maxLength();
 		this.autoIncrement = meta.autoIncrement();
 		this.defaultValue = meta.defaultValue();
+		this.foreignKey = meta.foreignKey().isEmpty() ? null : meta.foreignKey();
 	}
 
 	//	public static MDBColumnData createForeignKeyData(MDB manager, Class<?> target) {
@@ -94,6 +96,14 @@ public class ColumnData {
 
 	public String getDefaultValue() {
 		return defaultValue;
+	}
+
+	public String getForeignKey() {
+		return foreignKey;
+	}
+
+	public boolean isForeignKey() {
+		return foreignKey != null;
 	}
 
 	//	public MDBTableData getForeignKey() {

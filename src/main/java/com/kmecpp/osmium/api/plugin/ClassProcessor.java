@@ -436,6 +436,9 @@ public class ClassProcessor {
 				}
 
 				EnumSet<DatabaseType> seen = EnumSet.noneOf(DatabaseType.class);
+
+				//TODO: if table.type() contains multiple types we should NOT automatically try to create the table in multiple places 
+				// and instead defer to a plugin defined default
 				for (DatabaseType type : table.type()) {
 					if (seen.contains(type)) {
 						continue; //Skip duplicates
